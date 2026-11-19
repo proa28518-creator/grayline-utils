@@ -20,7 +20,7 @@ import time
 
 PROFILE = os.environ.get("QWEN_PROFILE", os.path.expanduser("~/qwen-profile"))
 CHAT_URL = "https://chat.qwen.ai/"
-MODEL_HINT = os.environ.get("QWEN_MODEL_HINT", "4.0")  # picker label fragment
+MODEL_HINT = os.environ.get("QWEN_MODEL_HINT", "Qwen4-Max")  # picker label fragment
 
 # Selector candidates, tried in order. Qwen Chat's DOM changes over time;
 # `probe` mode exists to recalibrate these without guessing.
@@ -63,25 +63,52 @@ def _logged_in(page):
 
 
 def _try_select_model(page):
-    """Best effort: open the model picker and choose the entry whose label
-    contains MODEL_HINT. Returns True if a matching entry was clicked."""
+    """Open the model picker (div[role=button].wms-trigger, or a legacy
+    <button> whose text mentions qwen/model), click the entry containing
+    MODEL_HINT, and return True only after verifying the trigger's label
+    now contains MODEL_HINT. (Patch by Qwen4-Max, 2026-11-19.)"""
     try:
-        buttons = page.locator("button")
-        for i in range(buttons.count()):
-            label = (buttons.nth(i).inner_text() or "").strip()
-            if "qwen" in label.lower() or "model" in label.lower():
-                buttons.nth(i).click()
-                page.wait_for_timeout(800)
-                opts = page.locator("[role='option'], [class*='menu'] *")
-                for j in range(opts.count()):
-                    text = (opts.nth(j).inner_text() or "").strip()
-                    if MODEL_HINT in text:
-                        opts.nth(j).click()
-                        return True
-                return False
+        trigger = None
+        modern = page.locator("div[role='button'].wms-trigger, [aria-label='Select Model']")
+        for i in range(modern.count()):
+            if modern.nth(i).is_visible():
+                trigger = modern.nth(i)
+                break
+        if trigger is None:  # legacy fallback: plain <button> trigger
+            buttons = page.locator("button")
+            for i in range(buttons.count()):
+                label = (buttons.nth(i).inner_text() or "").lower()
+                if "qwen" in label or "model" in label:
+                    trigger = buttons.nth(i)
+                    break
+        if trigger is None:
+            return False
+        if MODEL_HINT in (trigger.inner_text(timeout=2000) or ""):
+            return True  # already selected in this session
+        trigger.click(timeout=3000)
+        options = page.locator("[role='option'], [role='menuitem']").filter(has_text=MODEL_HINT)
+        option = None
+        for _ in range(15):  # poll up to ~3s for the menu to render
+            if options.count() and options.first.is_visible():
+                option = options.first
+                break
+            page.wait_for_timeout(200)
+        if option is None:  # last resort: leaf-most exact text match
+            option = page.get_by_text(MODEL_HINT, exact=True).last
+        option.click(timeout=3000)
+        for _ in range(10):  # verify the trigger label updated (~2s max)
+            label = ((trigger.inner_text(timeout=1000) or "") + " " +
+                     (trigger.get_attribute("aria-label") or ""))
+            if MODEL_HINT in label:
+                return True
+            page.wait_for_timeout(200)
+        try:
+            page.keyboard.press("Escape")  # close picker on failed verification
+        except Exception:
+            pass
+        return False
     except Exception:
         return False
-    return False
 
 
 def _last_answer(page):
