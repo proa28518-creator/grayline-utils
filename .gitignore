@@ -1,0 +1,12 @@
+# runtime panel state (per machine, per project)
+projects/*/panel_state.json
+panel_state.json.tmp.*
+# render outputs
+projects/*/out/
+# APInex key material — never commit (see mcp/apinex_helper.py)
+.env
+# MCP server runtime log
+mcp/server.log
+
+# python bytecode
+__pycache__/

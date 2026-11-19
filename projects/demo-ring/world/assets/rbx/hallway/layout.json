@@ -1,0 +1,127 @@
+{
+ "doc": "Roblox V3 school hallway (WP-S1). three.js axes, D (a character is 3 D). Walls never move: CONTRACT.md.",
+ "walls": {
+  "x": [
+   -3.6,
+   3.6
+  ],
+  "z": [
+   -38.0,
+   10.0
+  ],
+  "ceiling": 5.6
+ },
+ "lane": {
+  "x": [
+   -1.9,
+   1.9
+  ],
+  "z": [
+   -36.8,
+   9.5
+  ],
+  "note": "keep clear for walks and cameras: nothing tall, nothing hanging below y 4.4 except the EXIT sign at z -20"
+ },
+ "window": {
+  "x": -3.6,
+  "z": [
+   -15.0,
+   -23.0
+  ],
+  "sill": 1.2,
+  "top": 4.7
+ },
+ "doors": {
+  "right": [
+   -6.0,
+   -27.0
+  ],
+  "left": [
+   -31.0
+  ],
+  "library": [
+   0,
+   -38.0
+  ]
+ },
+ "panels": [
+  [
+   0,
+   5.4799999999999995,
+   6.0
+  ],
+  [
+   0,
+   5.4799999999999995,
+   0.0
+  ],
+  [
+   0,
+   5.4799999999999995,
+   -6.0
+  ],
+  [
+   0,
+   5.4799999999999995,
+   -12.0
+  ],
+  [
+   0,
+   5.4799999999999995,
+   -18.0
+  ],
+  [
+   0,
+   5.4799999999999995,
+   -24.0
+  ],
+  [
+   0,
+   5.4799999999999995,
+   -30.0
+  ]
+ ],
+ "marks": {
+  "hall_mid": [
+   0,
+   -4
+  ],
+  "by_lockers_r": [
+   2.0,
+   -3
+  ],
+  "by_lockers_l": [
+   -2.0,
+   -6
+  ],
+  "fountain": [
+   -2.2,
+   -11.5
+  ],
+  "window": [
+   -1.8,
+   -19.0
+  ],
+  "library": [
+   0,
+   -34.5
+  ],
+  "board": [
+   -1.9,
+   2.5
+  ],
+  "door_r1": [
+   2.0,
+   -6.0
+  ],
+  "door_r2": [
+   2.0,
+   -27.0
+  ],
+  "door_l": [
+   -2.0,
+   -31.0
+  ]
+ },
+ "kenney": "CC0, Kenney Furniture Kit 2.0 + Nature Kit (experiments/roblox-style/v3/assets/kenney)"
+}

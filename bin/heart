@@ -1,0 +1,263 @@
+#!/usr/bin/env node
+'use strict';
+/* Heart Studio CLI.
+ *   heart new <name>            scaffold a project under projects/
+ *   heart serve [project]       start the local server (default project: demo-ring)
+ *   heart still <project> <t> <out.png>
+ *                               boot the project's host page headless and capture one still
+ *   heart models [substr]       APInex model catalog (via mcp/apinex_helper.py)
+ *   heart consult <model> <f>   send a prompt file to a model, print its reply
+ *   heart critic <evidence>     GLM critic verdict on build evidence
+ * [project] may be a project name (under projects/) or a filesystem path. */
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
+const { spawn, spawnSync } = require('child_process');
+const os = require('os');
+
+const HEART_HOME = process.env.HEART_HOME || path.resolve(__dirname, '..');
+const UI_DIR = path.join(HEART_HOME, 'ui');
+const { createHeartServer } = require(path.join(HEART_HOME, 'server', 'server.js'));
+
+function resolveProject(arg) {
+  if (!arg) return path.join(HEART_HOME, 'projects', 'demo-ring');
+  if (fs.existsSync(arg) && fs.statSync(arg).isDirectory()) return path.resolve(arg);
+  const p = path.join(HEART_HOME, 'projects', arg);
+  if (fs.existsSync(p)) return p;
+  console.error('المشروع غير موجود: ' + arg);
+  process.exit(1);
+}
+
+function findChrome() {
+  if (process.env.CHROME_PATH && fs.existsSync(process.env.CHROME_PATH)) return process.env.CHROME_PATH;
+  const cache = path.join(process.env.HOME || '', '.cache', 'ms-playwright');
+  try {
+    const dirs = fs.readdirSync(cache).filter(d => /^chromium-\d+$/.test(d)).sort().reverse();
+    for (const d of dirs) {
+      const p = path.join(cache, d, 'chrome-linux64', 'chrome');
+      if (fs.existsSync(p)) return p;
+    }
+  } catch (e) { /* no playwright cache */ }
+  for (const p of ['/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable'])
+    if (fs.existsSync(p)) return p;
+  return null;
+}
+
+function copyDir(src, dst, skip) {
+  fs.mkdirSync(dst, { recursive: true });
+  for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+    if (skip && skip(item.name)) continue;
+    const s = path.join(src, item.name), d = path.join(dst, item.name);
+    if (item.isDirectory()) copyDir(s, d, skip);
+    else if (item.isFile()) fs.copyFileSync(s, d);
+  }
+}
+
+function cmdNew(name) {
+  if (!name) { console.error('الاستخدام: heart new <name>'); process.exit(1); }
+  const dst = path.join(HEART_HOME, 'projects', name);
+  if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
+  const template = path.join(HEART_HOME, 'projects', 'demo-ring');
+  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
+  try {
+    const pjPath = path.join(dst, 'project.json');
+    const pj = JSON.parse(fs.readFileSync(pjPath, 'utf8'));
+    pj.title = name;
+    fs.writeFileSync(pjPath, JSON.stringify(pj));
+  } catch (e) { /* keep template project.json */ }
+  fs.writeFileSync(path.join(dst, 'script.txt'), '');
+  console.log('تم إنشاء المشروع: ' + dst);
+  console.log('ابدأ الخادم: heart serve ' + name);
+}
+
+async function cmdServe(arg, portArg) {
+  const projectDir = resolveProject(arg);
+  const port = Number(portArg || process.env.HEART_PORT || 8903);
+  const { port: p } = await createHeartServer({ projectDir, uiDir: UI_DIR, port });
+  console.log('صفحة التحكم: http://127.0.0.1:' + p + '/');
+  console.log('صفحة العرض:  http://127.0.0.1:' + p + '/project/__suite/cartoon.html');
+  console.log('المشروع: ' + projectDir);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function httpJson(url) {
+  return new Promise((resolve, reject) => {
+    http.get(url, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => { try { resolve(JSON.parse(d)); } catch (e) { reject(e); } });
+    }).on('error', reject);
+  });
+}
+
+async function cmdStill(arg, tArg, out) {
+  if (typeof WebSocket === 'undefined') {
+    console.error('أمر still يحتاج Node >= 22 (عميل WebSocket مدمج). النسخة الحالية: ' + process.version);
+    process.exit(1);
+  }
+  const chrome = findChrome();
+  if (!chrome) { console.error('لم يتم العثور على Chromium. ثبّت chromium أو شغّل: npx playwright install chromium'); process.exit(1); }
+  const t = Number(tArg);
+  if (!out || isNaN(t)) { console.error('الاستخدام: heart still <project> <t> <out.png>'); process.exit(1); }
+  const projectDir = resolveProject(arg);
+  const { server, port } = await createHeartServer({ projectDir, uiDir: UI_DIR, port: 0 });
+  const dbgPort = 9300 + Math.floor(Math.random() * 500);
+  const pageUrl = 'http://127.0.0.1:' + port + '/project/__suite/cartoon.html?mode=render';
+  const proc = spawn(chrome, ['--headless=new', '--no-sandbox', '--no-proxy-server',
+    '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
+    '--ignore-gpu-blocklist', '--disable-dev-shm-usage',
+    '--remote-debugging-port=' + dbgPort, '--window-size=1080,1920', pageUrl],
+    { stdio: 'ignore' });
+  try {
+    // find the page target
+    let target = null;
+    for (let i = 0; i < 60 && !target; i++) {
+      try {
+        const list = await httpJson('http://127.0.0.1:' + dbgPort + '/json/list');
+        target = list.find(x => x.type === 'page' && x.url.includes('cartoon.html'));
+      } catch (e) { /* not up yet */ }
+      if (!target) await sleep(1000);
+    }
+    if (!target) throw new Error('صفحة العرض لم تظهر في Chromium');
+    const ws = new WebSocket(target.webSocketDebuggerUrl);
+    await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+    let nextId = 1; const pending = new Map();
+    ws.onmessage = ev => {
+      const m = JSON.parse(ev.data);
+      if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); }
+    };
+    const cdp = (method, params) => new Promise(res => {
+      const id = nextId++; pending.set(id, res);
+      ws.send(JSON.stringify({ id, method, params: params || {} }));
+    });
+    const evaluate = async (expression, awaitPromise) => {
+      const m = await cdp('Runtime.evaluate', { expression, awaitPromise: !!awaitPromise, returnByValue: true });
+      if (m.result && m.result.exceptionDetails) throw new Error('خطأ داخل الصفحة: ' + JSON.stringify(m.result.exceptionDetails).slice(0, 300));
+      return m.result && m.result.result ? m.result.result.value : undefined;
+    };
+    await cdp('Runtime.enable');
+    // wait for the engine boot (harness pattern)
+    const deadline = Date.now() + 240000;
+    for (;;) {
+      const st = await evaluate('({ ready: window.ready === true, err: window.bootError || null })').catch(() => ({ ready: false }));
+      if (st && st.ready) break;
+      if (st && st.err) throw new Error('خطأ إقلاع المحرك: ' + st.err);
+      if (Date.now() > deadline) throw new Error('انتهت مهلة إقلاع المحرك');
+      await sleep(1000);
+    }
+    // warm-up rule: first stills() call is throwaway, then settle
+    await evaluate('window.suite.stills([0.05], 1)', true);
+    await sleep(8000);
+    const urls = await evaluate('window.suite.stills([' + t + '], 1)', true);
+    if (!urls || !urls[0]) throw new Error('المحرك لم يُرجع لقطة');
+    fs.writeFileSync(out, Buffer.from(String(urls[0]).split(',')[1], 'base64'));
+    console.log('تم حفظ اللقطة: ' + out + ' (t=' + t + ')');
+    ws.close();
+  } finally {
+    proc.kill('SIGKILL');
+    server.close();
+  }
+}
+
+/* ---- APInex model API (bundled helper in mcp/) ----
+ * The program consults and reviews itself through the model API:
+ *   heart models [substr]             catalog summary / matching model ids
+ *   heart consult <model> <file>      send a prompt file, print the reply
+ *   heart critic <evidence-file>      GLM critic verdict on build evidence
+ * Key resolution lives in mcp/apinex_helper.py (desk vault flow, or
+ * APINEX_API_KEY env / .env on a fresh machine). No key is handled here. */
+const CRITIC_MODEL = 'free/glm-5.3';
+const CRITIC_FORM = [
+  'You are the independent critic for a Creatorize-heart film build.',
+  'Judge ONLY the evidence below against the bars stated inside it.',
+  'Do not invent evidence. If a stated bar has no evidence, say so and',
+  'count it as a gap.',
+  '',
+  'Reply in exactly this form:',
+  'VERDICT: YES',
+  'or',
+  'VERDICT: NO',
+  'Biggest gap: <the single most important failure or missing evidence>',
+  'Minor notes: <smaller issues, one per line; write "none" if there are none>',
+  '',
+  '--- EVIDENCE ---',
+  '',
+].join('\n');
+
+function runHelper(args) {
+  const helper = path.join(HEART_HOME, 'mcp', 'apinex_helper.py');
+  if (!fs.existsSync(helper)) throw new Error('مساعد APInex غير موجود: ' + helper);
+  const r = spawnSync('python3', [helper].concat(args), { encoding: 'utf8', timeout: 240000 });
+  if (r.error) throw r.error;
+  if (r.stderr) process.stderr.write(r.stderr);
+  const out = (r.stdout || '').trim();
+  let data = null;
+  for (const line of out.split('\n')) {
+    const s = line.trim();
+    if (s.startsWith('{')) { try { data = JSON.parse(s); } catch (e) { /* keep last good */ } }
+  }
+  return { code: r.status, data, raw: out };
+}
+
+function cmdModels(substr) {
+  const { code, data, raw } = runHelper(substr ? ['models', substr] : ['models']);
+  if (!data) { console.error('تعذّرت قراءة رد APInex (exit ' + code + '): ' + raw.slice(0, 300)); process.exit(1); }
+  if (data.status !== 200) { console.error('فشل نداء APInex (status ' + data.status + '): ' + JSON.stringify(data).slice(0, 300)); process.exit(1); }
+  if (Array.isArray(data.matching)) {
+    if (!data.matching.length) console.log('لا نماذج مطابقة لـ: ' + substr);
+    else data.matching.forEach(id => console.log(id));
+  } else {
+    console.log('عدد النماذج المتاحة: ' + data.model_count);
+    console.log('free/glm-5.3 متاح: ' + (data.has_glm_free ? 'نعم' : 'لا'));
+    console.log('free/gpt-6-luna متاح: ' + (data.has_luna_free ? 'نعم' : 'لا'));
+    console.log('لعرض النماذج المطابقة لبحث: heart models <substr>');
+  }
+}
+
+function cmdConsult(model, promptFile) {
+  if (!model || !promptFile) { console.error('الاستخدام: heart consult <model> <prompt-file>'); process.exit(1); }
+  if (!fs.existsSync(promptFile)) { console.error('ملف البرومبت غير موجود: ' + promptFile); process.exit(1); }
+  const { code, data, raw } = runHelper(['chat', model, promptFile]);
+  if (!data) { console.error('تعذّرت قراءة رد APInex (exit ' + code + '): ' + raw.slice(0, 300)); process.exit(1); }
+  if (data.status === 200 && typeof data.content === 'string') { console.log(data.content); return; }
+  console.error('فشل نداء APInex (status ' + data.status + '): ' + JSON.stringify(data.raw || data).slice(0, 500));
+  process.exit(1);
+}
+
+function cmdCritic(evidenceFile) {
+  if (!evidenceFile) { console.error('الاستخدام: heart critic <evidence-file>'); process.exit(1); }
+  if (!fs.existsSync(evidenceFile)) { console.error('ملف الأدلة غير موجود: ' + evidenceFile); process.exit(1); }
+  const evidence = fs.readFileSync(evidenceFile, 'utf8');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'heart-critic-'));
+  const promptFile = path.join(dir, 'critic_prompt.txt');
+  try {
+    fs.writeFileSync(promptFile, CRITIC_FORM + evidence);
+    const { code, data, raw } = runHelper(['chat', CRITIC_MODEL, promptFile]);
+    if (!data) { console.error('تعذّرت قراءة رد الناقد (exit ' + code + '): ' + raw.slice(0, 300)); process.exit(1); }
+    if (data.status === 200 && typeof data.content === 'string') { console.log(data.content); return; }
+    console.error('فشل نداء الناقد (status ' + data.status + '): ' + JSON.stringify(data.raw || data).slice(0, 500));
+    process.exit(1);
+  } finally {
+    try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { /* tmp cleanup best-effort */ }
+  }
+}
+
+(async () => {
+  const [cmd, a, b, c] = process.argv.slice(2);
+  if (cmd === 'new') cmdNew(a);
+  else if (cmd === 'serve') await cmdServe(a, b);
+  else if (cmd === 'still') await cmdStill(a, b, c);
+  else if (cmd === 'models') cmdModels(a);
+  else if (cmd === 'consult') cmdConsult(a, b);
+  else if (cmd === 'critic') cmdCritic(a);
+  else {
+    console.log('Heart Studio — أوامر:');
+    console.log('  heart new <name>                  إنشاء مشروع جديد');
+    console.log('  heart serve [project]             تشغيل صفحة التحكم والخادم');
+    console.log('  heart still <project> <t> <out>   التقاط لقطة واحدة عند الثانية t');
+    console.log('  heart models [substr]             نماذج APInex المتاحة');
+    console.log('  heart consult <model> <file>      استشارة نموذج بملف برومبت');
+    console.log('  heart critic <evidence-file>      حكم الناقد (GLM) على أدلة البناء');
+    process.exit(cmd ? 1 : 0);
+  }
+})().catch(e => { console.error('خطأ: ' + (e && e.message || e)); process.exit(1); });
