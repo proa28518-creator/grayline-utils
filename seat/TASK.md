@@ -1,5 +1,22 @@
 # TASK — Story 4 Build step + stills board (seat job 2)
 
+- Driver model: **Gemini 4 Neon (High)** — Argon is delisted from the
+  owner's accounts; Neon holds its seat by the owner's word (2026-11-19).
+- THE BAR — «شغل إبهار» (owner's word 2026-11-19 ~14:31): this film must
+  DAZZLE, not merely work. Before committing each board still, check it
+  against these spectacle tests and fix until it passes:
+  1. Frame 0: the clerk's face fills its measure and EXPLODES with the
+     «طفح الكيل!» expression — readable at board scale (360x640).
+  2. Frozen-vs-moving contrast reads instantly in every aisle shot: the
+     statues are statues, the clerk is the only life in the frame.
+  3. The slow-motion soup-can collapse (S09/S10) shows cans suspended
+     mid-air, readable one by one — no blur of clutter.
+  4. The snow-globe payoff (final shots) reads in ONE glance: glass curve,
+     desk, the market inside — no explanation needed.
+  5. The red cart is the visual anchor of every shot it appears in:
+     biggest saturated shape, never lost against the shelves.
+  A still that merely matches the shot list but fails its spectacle test
+  is NOT done — restage it and note the fix in the checkpoints.
 - Project folder: projects/story4-market/
 - Job: Build step ONLY — implement the film in the heart engine and produce
   the FULL STILLS BOARD. No render, no mix in this job.
