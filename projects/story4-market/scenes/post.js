@@ -20,6 +20,7 @@ export const makePost = () => ({
     { from: 15.80, zone: 'market', use: 'market_soup' },
     { from: 28.24, zone: 'market', use: 'market_hazard' },
     { from: 40.12, zone: 'market', use: 'market_thaw' },
+    { from: 50.52, zone: 'outer',  use: 'outer_globe' }, // S22 -> S23 cut only (Qwen); S22 untouched
   ],
   // Per-shot focus overrides so S09/S10 soup cans & S22-S24 snow globe stay tack-sharp!
   focus: [
@@ -118,6 +119,24 @@ export const makePost = () => ({
       ],
       gain: 1.06,
       grade: { gamma: 1.04, contrast: 1.06, saturation: 1.20, gr: 1.05, gg: 1.01, gb: 0.93, vignette: 0.30 },
+    },
+    // S23/S24 ONLY (Qwen): tame the halo over the globe interior so the mini red cart + mini
+    // clerk read at board scale. thr 0.88 above the lit mini-market albedo; gain 1.0 stops clipping.
+    outer_globe: {
+      rig: 'outer',
+      air: {
+        density: 0.008, start: [3.5, 12.0], far: 54,
+        color: [0.075, 0.052, 0.032],
+        lights: 0.18, g: 0.50,
+        noise: 0.10, noiseScale: 0.16, noiseSpeed: 0.08,
+      },
+      dof: { aperture: 10, nearK: 0.16, dead: 2.6 },
+      bloom: { k: 0.12, thr: 0.88 },
+      particles: [
+        { mode: 'box', count: 300, box: [12, 6, 12], vel: [0.08, -0.18, 0.06], velVar: [0.15, 0.08, 0.15], sway: 0.15, swaySpeed: 1.0, size: 0.016, color: [1.0, 0.99, 0.96], alpha: 0.50, lit: 1.1, ambient: 0.55 },
+      ],
+      gain: 1.00,
+      grade: { gamma: 1.00, contrast: 1.07, saturation: 1.18, gr: 1.04, gg: 1.00, gb: 0.94, vignette: 0.30 },
     },
   },
 });

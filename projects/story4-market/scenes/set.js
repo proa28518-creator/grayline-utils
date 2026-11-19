@@ -244,7 +244,7 @@ const PLACES = {
       // Brass tungsten desk lamp right above the snow globe & wooden counter!
       { id: 'desk_lamp', kind: 'point', pos: [OUTER_X + 1.65, 3.05, 0.55], color: [1.0, 0.80, 0.48], power: 4.8, fall: 0.08, range: 18, wrap: 0.3 },
       // Cold cyan counter-glow shining FROM inside the broken snow globe!
-      { id: 'globe_cyan', kind: 'point', pos: [OUTER_X, 2.45, 0.35], color: [0.42, 0.92, 1.0], power: 2.2, fall: 0.25, range: 8, wrap: 0.35 },
+      { id: 'globe_cyan', kind: 'point', pos: [OUTER_X, 2.45, 0.35], color: [0.42, 0.92, 1.0], power: 0.55, fall: 0.30, range: 5.5, wrap: 0.30 },
       // Warm high-bay lamps receding down the 38 D outer queue!
       { id: 'bay1', kind: 'point', pos: [OUTER_X, 8.2, -10], color: [1.0, 0.84, 0.54], power: 5.0, fall: 0.025, range: 32, wrap: 0.3 },
       { id: 'bay2', kind: 'point', pos: [OUTER_X, 8.2, -26], color: [1.0, 0.82, 0.50], power: 5.5, fall: 0.022, range: 36, wrap: 0.3 },
@@ -936,14 +936,13 @@ export async function buildSet(THREE, scene, opts, kit) {
   const miniG = new THREE.Group();
   miniG.position.set(0, 0.42, 0);
   globeGrp.add(miniG);
-
-  // Checkered mini supermarket floor disc + snowy rim
+  // Checkered mini supermarket floor disc + snowy rim (floor map unchanged)
   const miniFloor = new THREE.Mesh(new THREE.CylinderGeometry(0.88, 0.84, 0.06, 28),
     new THREE.MeshBasicMaterial({ map: texFloor }));
   miniFloor.position.y = 0.03;
   miniG.add(miniFloor);
-  // White snow drift ring around interior base
-  const snowMat = new THREE.MeshBasicMaterial({ color: 0xf4fbff });
+  // Snow drift ring: was 0xf4fbff (bloom blob). Now cool mid snow (Qwen round 3).
+  const snowMat = new THREE.MeshBasicMaterial({ color: 0xb6c7d4 });
   for (let i = 0; i < 14; i++) {
     const a = (i / 14) * Math.PI * 2;
     const puff = new THREE.Mesh(new THREE.SphereGeometry(0.11 + (i % 3) * 0.03, 10, 8), snowMat);
@@ -951,14 +950,14 @@ export async function buildSet(THREE, scene, opts, kit) {
     puff.position.set(Math.cos(a) * 0.72, 0.06, Math.sin(a) * 0.72);
     miniG.add(puff);
   }
-  // Glowing miniature cyan overhead supermarket fluorescent strips inside the dome!
-  const miniCyanGlow = new THREE.MeshBasicMaterial({ color: 0x9cf3ff });
+  // Fluorescent strips: was 0x9cf3ff (blob). Now a readable cyan tube (Qwen round 3).
+  const miniCyanGlow = new THREE.MeshBasicMaterial({ color: 0x57a8bd });
   for (const mz of [-0.42, -0.10, 0.22]) {
     const strip = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.04, 0.10), miniCyanGlow);
     strip.position.set(0, 1.24, mz);
     miniG.add(strip);
   }
-  // Miniature Supermarket Shelving Aisles inside the globe (left shelf visibly tilted in collapse!)
+  // Shelving aisles (already mid-tone — unchanged)
   const miniShelfMat = new THREE.MeshBasicMaterial({ color: 0x457d8f });
   const miniBoxColors = [0x6fa8be, 0xd9b85b, 0x6ba67c, 0x7e8fb0];
   for (const [sx, tilt] of [[-0.46, 0.28], [0.46, 0.0]]) {
@@ -975,7 +974,7 @@ export async function buildSet(THREE, scene, opts, kit) {
     }
     miniG.add(shG);
   }
-  // Tiny red soup cans spilled on the mini floor!
+  // Tiny red soup cans — saturated red kept (anchor)
   const miniCanMat = new THREE.MeshBasicMaterial({ color: 0xeb241c });
   for (const [cx, cz] of [[-0.22, -0.35], [-0.14, -0.18], [-0.28, -0.05], [-0.08, -0.44], [0.16, -0.32]]) {
     const mc = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.075, 8), miniCanMat);
@@ -983,24 +982,24 @@ export async function buildSet(THREE, scene, opts, kit) {
     mc.rotation.z = 0.8;
     miniG.add(mc);
   }
-  // Miniature Cartoon Clerk Figurine inside the snow globe (white round head + ink + vivid red vest!)
+  // Miniature clerk: head was 0xfffaf4 (blob). Now warm paper so the ink face reads (Qwen round 3).
   const miniClerk = new THREE.Group();
   miniClerk.position.set(-0.12, 0.06, 0.14);
+  miniClerk.scale.setScalar(1.12);
   const mcTorso = inkMesh(new THREE.CapsuleGeometry(0.085, 0.14, 6, 10), new THREE.MeshBasicMaterial({ color: 0xd92222 }), 0.012);
   mcTorso.position.y = 0.24;
   miniClerk.add(mcTorso);
-  const mcHead = inkMesh(new THREE.SphereGeometry(0.14, 14, 12), new THREE.MeshBasicMaterial({ color: 0xfffaf4 }), 0.016);
+  const mcHead = inkMesh(new THREE.SphereGeometry(0.14, 14, 12), new THREE.MeshBasicMaterial({ color: 0xdccfb8 }), 0.016);
   mcHead.position.y = 0.48;
   miniClerk.add(mcHead);
-  // Tiny wide shock eyes & O mouth on miniature clerk
   const inkB = new THREE.MeshBasicMaterial({ color: 0x1e151a });
   for (const ex of [-0.045, 0.045]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 8), inkB);
-    eye.position.set(ex, 0.49, 0.125);
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.034, 8, 8), inkB);
+    eye.position.set(ex, 0.49, 0.132);
     miniClerk.add(eye);
   }
-  const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), inkB);
-  mouth.position.set(0, 0.43, 0.128);
+  const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.033, 8, 8), inkB);
+  mouth.position.set(0, 0.43, 0.134);
   miniClerk.add(mouth);
   miniG.add(miniClerk);
 

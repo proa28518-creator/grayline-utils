@@ -20,8 +20,8 @@ function buildClerkLimbs() {
       // Epic mid-air superhero/cartoon leap! Arms flung wide & high, legs kicked back/bent!
       armR.push([t, [-0.56, 0.88, 0.34]]);
       armL.push([t, [ 0.56, 0.92, 0.28]]);
-      legR.push([t, [-0.24, 0.42, -0.32]]);
-      legL.push([t, [ 0.26, 0.26,  0.35]]);
+      legR.push([t, [-0.22, 1.02, 0.34]]);
+      legL.push([t, [ 0.24, 0.94, 0.22]]);
     } else if (t >= T_HOP_ON) {
       // Riding the rear step-bar (y = 0.34): both hands locked tightly onto the red cart push-handle!
       // During sharp right swerve (34..37s) wrench handle hard right!
@@ -121,13 +121,14 @@ function buildShots() {
     },
 
     // S02 (1.81 - 4.28): Depth two-shot — "أنا الوحيد اللي بيتحرك في الطابور الواقف ده!"
-    // Restaged wider left target so BOTH frozen shopper_milk (full head + glasses + floating milk!) AND clerk + red_cart sit cleanly inside frame!
+    // QWEN REVERSE ANGLE: from behind-right so the clerk's raised RIGHT hand lands ON her face in
+    // screen space while BOTH heads stay fully inside; red cart reads in the lower fifth. fov 33.
     {
       t0: 'line:1.word:4', t1: 'line:2.start',
       camera: {
         move: 'push',
-        from: { pos: [-0.95, 2.15, -10.20], target: [-1.05, 1.98, -22.90], fov: 29 },
-        to:   { pos: [-1.35, 2.20, -11.30], target: [-1.10, 2.02, -22.90], fov: 29 },
+        from: { pos: [-1.05, 2.16, -10.30], target: [-1.50, 2.00, -22.90], fov: 31 },
+        to:   { pos: [-1.30, 2.20, -11.00], target: [-1.55, 2.02, -22.90], fov: 31 },
         roll: [-1.8, -2.8],
       },
     },
@@ -480,11 +481,11 @@ function buildShots() {
           const c = cartState(t);
           const u = (t - 42.91) / 2.37;
           return {
-            pos: [1.85 - u * 0.35, 2.22, Math.min(30.8, c.z + 10.6)],
-            target: [-1.15, 1.92, c.z + 0.1],
-            fov: 32,
-            roll: 2.0 + u * 1.4,
-            shake: 1.4,
+            pos: [c.x - 2.0 + u * 0.25, 2.28, Math.min(31.4, c.z + 11.5)],
+            target: [c.x - 1.0, 1.98, c.z + 0.1],
+            fov: 35,
+            roll: 2.0 + u * 1.0,
+            shake: 1.2,
           };
         }),
       },
@@ -502,8 +503,8 @@ function buildShots() {
           const cl = clerkState(t);
           const u = (t - 45.28) / 3.21;
           return {
-            pos: [-5.60 + u * 0.35, 2.35, 31.3],
-            target: [0.45, 2.15 + cl.y * 0.45, 28.1],
+            pos: [-5.60 + u * 0.35, 1.62 + cl.y * 0.30, 31.3],
+            target: [0.45, 1.95 + cl.y * 0.75, 28.1],
             fov: 36,
             roll: -2.6 + u * 1.6,
             shake: 1.4,
@@ -532,8 +533,8 @@ function buildShots() {
       t0: 'line:12.word:5', t1: 'line:13.start', lowCam: true,
       camera: {
         move: 'push',
-        from: { pos: [OUTER_X + 0.30, 2.68, 7.60], target: [OUTER_X + 0.08, 2.30, 0.18], fov: 29 },
-        to:   { pos: [OUTER_X + 0.42, 2.78, 8.65], target: [OUTER_X + 0.08, 2.24, 0.10], fov: 29 },
+        from: { pos: [OUTER_X + 0.22, 2.50, 9.10], target: [OUTER_X + 0.05, 3.05, 0.20], fov: 34 },
+        to:   { pos: [OUTER_X + 0.28, 2.54, 8.45], target: [OUTER_X + 0.05, 3.10, 0.18], fov: 34 },
         roll: [1.0, 0.0],
       },
     },
@@ -544,8 +545,8 @@ function buildShots() {
       t0: 'line:13.start', t1: 59.0, lowCam: true,
       camera: {
         move: 'push',
-        from: { pos: [OUTER_X - 1.05, 2.58, 10.75], target: [OUTER_X - 0.98, 2.22, -0.45], fov: 31 },
-        to:   { pos: [OUTER_X - 1.18, 2.54, 10.05], target: [OUTER_X - 1.04, 2.26, -0.70], fov: 31 },
+        from: { pos: [OUTER_X - 0.95, 2.55, 11.00], target: [OUTER_X - 0.35, 3.66, -0.55], fov: 38 },
+        to:   { pos: [OUTER_X - 0.95, 2.58, 10.30], target: [OUTER_X - 0.35, 3.62, -0.50], fov: 38 },
         roll: [0.8, 1.4],
       },
     },
@@ -658,7 +659,7 @@ export default {
         // S01: Dramatic arms-thrown-up exasperation burst right at Frame 0!
         { clip: 'shock_pop', t0: 0.0, params: { hold: 0.9, out: 6 }, face: false },
         // S02: Waves right hand right in front of the frozen mom's unblinking face!
-        { clip: 'wave', at: 'line:1.word:5', params: { side: 'R', hold: 1.2, out: 6 }, face: false },
+        { clip: 'wave', at: 'line:1.word:5', params: { side: 'R', hold: 58 }, face: false },
         // S04: Shock jolt when broken wheel yanks him!
         { clip: 'shock_pop', at: 'line:2.word:8', params: { hold: 0.25, out: 6 }, face: false },
         // S08: Brace on soup pyramid impact!
@@ -667,6 +668,8 @@ export default {
         { clip: 'hand_to_temple', at: 'line:5.word:7', params: { side: 'L', hold: 1.4, out: 6 }, face: false },
         // S14: Recoil shock when guard crashes down!
         { clip: 'shock_pop', at: 'line:7.word:10', params: { hold: 0.35, out: 6 }, face: false },
+        // S21 (Qwen): arms thrown OUT for balance across the airborne window!
+        { clip: 'shock_pop', at: 'line:11.start', params: { hold: 2.2, out: 6 }, face: false },
       ],
       look: [
         { t: 0.00,             at: [0.6, 2.3, -14.0] },   // straight at camera on Frame 0!
@@ -680,6 +683,7 @@ export default {
         { t: 'line:8.start',   at: [0.2, 0.6, 5.2] },     // peers down at rolling officer cap!
         { t: 'line:8.word:7',  at: [-2.4, 1.8, 12.0] },   // looks hard right into swerve!
         { t: 'line:10.start',  at: [0.0, 2.4, 32.0] },    // locked onto glowing glass doors!
+        { t: 'line:11.start',  at: [0.45, 2.75, 32.4] },  // S21 (Qwen): gaze HIGH on door header, pitch forward over cart!
       ],
     },
 
@@ -691,7 +695,7 @@ export default {
         'armR.hand': [-0.52, 0.72, 0.42],
         'armL.hand': [ 0.54, 0.66, 0.36],
       },
-      face: [{ t: 0, eyes: 'wide', brow: 'up', mouth: 'o', react: false }],
+      face: [{ t: 0, eyes: 'stare', brow: 'on', mouth: 'flat', react: false }],
     },
     shopper_receipt: {
       blink: false, gaze: false, listen: [],
@@ -756,7 +760,7 @@ export default {
       blink: false, gaze: false, listen: [],
       face: [
         { t: 0,     eyes: 'stare', brow: 'on',      mouth: 'flat', react: false },
-        { t: 43.68, eyes: 'wide',  brow: 'worried', mouth: 'wide', react: 'recoil' },
+        { t: 43.68, eyes: 'wide',  brow: 'worried', mouth: 'o',    react: 'recoil' },
       ],
       clips: [{ clip: 'brace', t0: 43.72, params: { hold: 1.5, out: 6 }, face: false }],
     },

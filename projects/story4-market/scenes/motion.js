@@ -200,7 +200,7 @@ export function clerkState(t) {
     // Theatrical airborne arc peaking cleanly at y = 1.45 D around t = 47.72s (full body + face + cart all inside S21!)
     const y = 0.34 * (1 - u) + 1.38 * Math.sin(Math.PI * clamp(u * 1.08, 0, 1));
     const ry = lerp(0, -48, smooth(u));
-    return { x, y, z, ry, lean: -16 * Math.sin(Math.PI * u), bend: 20 * Math.sin(Math.PI * u), airborne: true };
+    return { x, y, z, ry, lean: -8 * Math.sin(Math.PI * u), bend: 48 * Math.sin(Math.PI * u), airborne: true };
   }
 
   const hopU = clamp((t - T_HOP_ON) / 0.34, 0, 1);
