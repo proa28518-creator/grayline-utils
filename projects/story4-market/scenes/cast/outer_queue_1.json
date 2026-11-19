@@ -1,0 +1,21 @@
+{
+  "_doc": "Outer queue shopper 1: warm mustard-amber sweater & scarf standing behind RealCustomer in the endless outer checkout line.",
+  "id": "outer_queue_1",
+  "name": "OuterQueue1",
+  "head": {},
+  "face": { "eyeSize": 0.98, "browThick": 1.2 },
+  "hair": { "style": "bun", "colour": "brown", "seed": 43 },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "slim", "W": 0.72, "H": 0.92 },
+    "outfit": {
+      "trousers": "#3f3229",
+      "layers": [
+        { "t": "shirt", "color": "#f2e2c4", "collar": "round" },
+        { "t": "coat", "color": "#b87f2c", "lapels": true, "buttons": 3, "tip": 0.55, "openW": 0.26 }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.32, "armLen": 0.92, "width": 0.056, "handR": 0.058 },
+  "hide": []
+}

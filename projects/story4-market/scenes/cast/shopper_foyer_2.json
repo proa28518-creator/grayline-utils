@@ -1,0 +1,21 @@
+{
+  "_doc": "Checkout foyer shopper 2: frozen ponytail shopper in cool muted denim-grey blouse & skirt who thaws at line 10 word 11.",
+  "id": "shopper_foyer_2",
+  "name": "ShopperFoyer2",
+  "head": {},
+  "face": { "eyeSize": 1.02, "browThick": 1.2 },
+  "hair": { "style": "ponytail", "colour": "grey", "seed": 32, "length": 0.65 },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "slim", "W": 0.66, "H": 0.92 },
+    "outfit": {
+      "layers": [
+        { "t": "blouse", "color": "#bcccd8", "collar": "round" },
+        { "t": "jacket", "color": "#566a78", "lapels": false, "buttons": 3, "tip": 0.3, "openW": 0.3 }
+      ],
+      "skirt": { "color": "#455460", "length": "knee", "shape": "aline", "flare": 1.2, "pleats": 0 }
+    }
+  },
+  "limbs": { "legLen": 1.36, "armLen": 0.92, "width": 0.056, "handR": 0.058 },
+  "hide": []
+}

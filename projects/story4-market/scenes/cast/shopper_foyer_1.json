@@ -1,0 +1,22 @@
+{
+  "_doc": "Checkout foyer shopper 1: frozen cool-slate coat until time thaws at line 10 word 11 (يرجع), then reacts with wide eyes and recoil.",
+  "id": "shopper_foyer_1",
+  "name": "ShopperFoyer1",
+  "head": {},
+  "face": { "eyeSize": 1.02, "browThick": 1.25 },
+  "hair": { "style": "side_part", "colour": "grey", "seed": 31 },
+  "glasses": { "kind": "oval" },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "medium", "W": 0.80, "H": 0.92, "band": 0.1 },
+    "outfit": {
+      "trousers": "#38414f",
+      "layers": [
+        { "t": "shirt", "color": "#c9d4dc", "collar": "point" },
+        { "t": "jacket", "color": "#586d80", "lapels": true, "buttons": 2, "buttonColor": "#3c4d5c", "tip": 0.35, "openW": 0.35 }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.3, "armLen": 0.94, "width": 0.058, "handR": 0.06 },
+  "hide": []
+}

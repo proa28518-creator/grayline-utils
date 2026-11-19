@@ -1,0 +1,23 @@
+{
+  "_doc": "Marwan (clerk — hero): exhausted supermarket clerk, medium build, messy dark-brown hair, crisp white shirt with pointed collar under a vivid crimson-red open supermarket vest with name-tag pocket, dark slate trousers, heavy expressive brows.",
+  "id": "clerk",
+  "name": "Marwan",
+  "head": {},
+  "face": { "eyeSize": 1.04, "browThick": 1.48, "mouthSize": 1.08, "mouthWidth": 1.04 },
+  "hair": { "style": "messy", "colour": "brown", "seed": 11 },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "medium", "W": 0.80, "H": 0.93, "band": 0.1 },
+    "outfit": {
+      "trousers": "#262b38",
+      "layers": [
+        { "t": "shirt", "color": "#f4f6fa", "collar": "point", "collarW": 0.56, "placket": true },
+        { "t": "jacket", "color": "#d92222", "lapels": true, "buttons": 0, "tip": 0.25, "openW": 0.44 },
+        { "t": "pocket", "x": 0.44, "y": 0.62, "w": 0.22, "h": 0.09, "color": "#f6f2e8" },
+        { "t": "belt", "y": 0.14, "h": 0.05, "color": "#1f222a", "buckle": "#c9ced6" }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.32, "armLen": 0.96, "width": 0.058, "handR": 0.06 },
+  "hide": []
+}

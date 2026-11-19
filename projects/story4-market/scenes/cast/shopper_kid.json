@@ -1,0 +1,21 @@
+{
+  "_doc": "Frozen mid-air kid reaching for cereal on the aisle shelf: kid build, spiky cool-grey hair, dusty slate-blue hoodie. Suspended 0.45 D above floor.",
+  "id": "shopper_kid",
+  "name": "ShopperKid",
+  "head": {},
+  "face": { "eyeSize": 1.04, "browThick": 1.15 },
+  "hair": { "style": "spiky", "colour": "grey", "seed": 14 },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "kid", "W": 0.62, "H": 0.78 },
+    "outfit": {
+      "trousers": "#485666",
+      "layers": [
+        { "t": "shirt", "color": "#7b93a8", "collar": "round" },
+        { "t": "pocket", "x": 0.0, "y": 0.25, "w": 0.36, "h": 0.14, "color": "#647c90" }
+      ]
+    }
+  },
+  "limbs": { "legLen": 0.72, "armLen": 0.62, "width": 0.052, "handR": 0.054 },
+  "hide": []
+}

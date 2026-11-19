@@ -1,0 +1,22 @@
+{
+  "_doc": "Frozen shopper mom beside the floating milk carton: slim build, cool muted blue-grey cardigan over pale cool blouse, slate knee skirt, bun hair, round glasses. Cool statue palette.",
+  "id": "shopper_milk",
+  "name": "ShopperMilk",
+  "head": {},
+  "face": { "eyeSize": 1.0, "browThick": 1.15 },
+  "hair": { "style": "bun", "colour": "grey", "seed": 5 },
+  "glasses": { "kind": "round" },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "slim", "W": 0.68, "H": 0.92 },
+    "outfit": {
+      "layers": [
+        { "t": "blouse", "color": "#c8d6df", "collar": "round" },
+        { "t": "jacket", "color": "#5d7788", "lapels": false, "buttons": 3, "buttonColor": "#3e5260", "tip": 0.35, "openW": 0.28 }
+      ],
+      "skirt": { "color": "#4b5d6c", "length": "knee", "shape": "aline", "flare": 1.25, "pleats": 0 }
+    }
+  },
+  "limbs": { "legLen": 1.34, "armLen": 0.92, "width": 0.056, "handR": 0.058 },
+  "hide": []
+}

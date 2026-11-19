@@ -1,0 +1,24 @@
+{
+  "_doc": "Real Customer in the warm outer store (S23-S24): warm camel-brown winter coat over cream sweater with golden-ochre scarf, brown side-part hair, stubble, exhausted deadpan eyes stuck in an even longer real-world queue.",
+  "id": "real_customer",
+  "name": "RealCustomer",
+  "head": {},
+  "face": { "eyeSize": 1.02, "browThick": 1.38, "mouthWidth": 0.96 },
+  "hair": { "style": "side_part", "colour": "brown", "seed": 41 },
+  "facialHair": { "kind": "stubble", "colour": "brown" },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "medium", "W": 0.84, "H": 0.94, "band": 0.1 },
+    "outfit": {
+      "trousers": "#3b2f28",
+      "layers": [
+        { "t": "shirt", "color": "#f3e6cf", "collar": "round" },
+        { "t": "coat", "color": "#a66c38", "lapels": true, "buttons": 4, "buttonColor": "#633d1d", "tip": 0.72, "openW": 0.32 },
+        { "t": "scarf", "color": "#d99b38" },
+        { "t": "pocket", "x": -0.46, "y": 0.34, "w": 0.24, "h": 0.08, "color": "#875428" }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.36, "armLen": 0.96, "width": 0.058, "handR": 0.06 },
+  "hide": []
+}

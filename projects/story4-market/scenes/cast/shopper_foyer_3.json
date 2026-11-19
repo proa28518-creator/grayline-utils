@@ -1,0 +1,21 @@
+{
+  "_doc": "Checkout foyer shopper 3: frozen stout shopper in muted cool slate sweater & beanie who thaws at line 10 word 11.",
+  "id": "shopper_foyer_3",
+  "name": "ShopperFoyer3",
+  "head": {},
+  "face": { "eyeSize": 0.98, "browThick": 1.25 },
+  "hair": { "style": "short", "colour": "grey", "seed": 33 },
+  "hat": { "kind": "beanie", "color": "#4c5c6b" },
+  "torso": {
+    "body": { "build": "stout", "W": 0.92, "H": 0.94, "band": 0.1 },
+    "outfit": {
+      "trousers": "#343d48",
+      "layers": [
+        { "t": "shirt", "color": "#718494", "collar": "none" },
+        { "t": "scarf", "color": "#556878" }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.26, "armLen": 0.94, "width": 0.06, "handR": 0.062 },
+  "hide": []
+}

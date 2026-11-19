@@ -1,0 +1,22 @@
+{
+  "_doc": "Outer queue shopper 2: warm olive-brown jacket & glasses further back in the 38 D outer checkout queue.",
+  "id": "outer_queue_2",
+  "name": "OuterQueue2",
+  "head": {},
+  "face": { "eyeSize": 0.98, "browThick": 1.25 },
+  "hair": { "style": "curly", "colour": "black", "seed": 44 },
+  "glasses": { "kind": "round" },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "stout", "W": 0.88, "H": 0.94, "band": 0.1 },
+    "outfit": {
+      "trousers": "#36312a",
+      "layers": [
+        { "t": "shirt", "color": "#eadbc0", "collar": "point" },
+        { "t": "jacket", "color": "#6e5a36", "lapels": true, "buttons": 3, "tip": 0.45, "openW": 0.3 }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.3, "armLen": 0.94, "width": 0.058, "handR": 0.06 },
+  "hide": []
+}

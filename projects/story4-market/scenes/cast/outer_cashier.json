@@ -1,0 +1,22 @@
+{
+  "_doc": "Outer Store Cashier (S24): warm forest-green supermarket vest over cream shirt, flatcap, bored tired eyes behind the outer checkout counter.",
+  "id": "outer_cashier",
+  "name": "OuterCashier",
+  "head": {},
+  "face": { "eyeSize": 1.0, "browThick": 1.25 },
+  "hair": { "style": "short", "colour": "black", "seed": 42 },
+  "hat": { "kind": "flatcap", "color": "#26543f" },
+  "torso": {
+    "body": { "build": "slim", "W": 0.74, "H": 0.92, "band": 0.1 },
+    "outfit": {
+      "trousers": "#2d332e",
+      "layers": [
+        { "t": "shirt", "color": "#f5ebd8", "collar": "point" },
+        { "t": "jacket", "color": "#2d6a4f", "lapels": true, "buttons": 3, "buttonColor": "#1b4332", "tip": 0.35, "openW": 0.36 },
+        { "t": "pocket", "x": 0.42, "y": 0.62, "w": 0.2, "h": 0.08, "color": "#f7f0dc" }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.32, "armLen": 0.94, "width": 0.056, "handR": 0.058 },
+  "hide": []
+}

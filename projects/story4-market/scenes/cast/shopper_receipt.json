@@ -1,0 +1,23 @@
+{
+  "_doc": "Frozen elderly shopper staring at the 3.2 D curling floating receipt: receding silver hair, square glasses, moustache, muted cool steel-blue sweater vest.",
+  "id": "shopper_receipt",
+  "name": "ShopperReceipt",
+  "head": {},
+  "face": { "eyeSize": 0.96, "browThick": 1.2 },
+  "hair": { "style": "receding", "colour": "grey", "seed": 9 },
+  "facialHair": { "kind": "moustache", "colour": "grey" },
+  "glasses": { "kind": "square" },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "medium", "W": 0.84, "H": 0.92, "band": 0.1 },
+    "outfit": {
+      "trousers": "#3c4654",
+      "layers": [
+        { "t": "shirt", "color": "#ced8e0", "collar": "point" },
+        { "t": "jacket", "color": "#647a8c", "lapels": false, "buttons": 4, "buttonColor": "#475a68", "tip": 0.4, "openW": 0.24 }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.22, "armLen": 0.92, "width": 0.058, "handR": 0.06 },
+  "hide": []
+}

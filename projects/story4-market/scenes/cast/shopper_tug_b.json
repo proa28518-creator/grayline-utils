@@ -1,0 +1,21 @@
+{
+  "_doc": "Frozen detergent-tugger B: cool muted sage-slate coat, bob hair, frozen pulling right.",
+  "id": "shopper_tug_b",
+  "name": "ShopperTugB",
+  "head": {},
+  "face": { "eyeSize": 1.0, "browThick": 1.2 },
+  "hair": { "style": "bob", "colour": "grey", "seed": 22 },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "slim", "W": 0.70, "H": 0.92 },
+    "outfit": {
+      "trousers": "#3e4a4c",
+      "layers": [
+        { "t": "shirt", "color": "#cfd8d8", "collar": "round" },
+        { "t": "coat", "color": "#647a7a", "lapels": false, "buttons": 4, "buttonColor": "#475959", "tip": 0.65, "openW": 0.2 }
+      ]
+    }
+  },
+  "limbs": { "legLen": 1.32, "armLen": 0.92, "width": 0.056, "handR": 0.058 },
+  "hide": []
+}
