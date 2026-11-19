@@ -31,7 +31,7 @@ const FRAMES_DIR = path.join(OUT_DIR, "frames");
 const FPS = 30;
 const BATCH = 10;
 const TRACK_CHUNK = 20; // frames per page.evaluate call in track mode
-const DEADLINE_MS = 10.5 * 60 * 1000; // job cap is 15 min incl. setup
+const DEADLINE_MS = 165 * 60 * 1000; // job cap is 180 min incl. setup (owner raised the limit 2026-11-19: fleet renders ~31-57s/frame, a 120-frame chunk needs ~2h)
 
 type Mode = "render" | "track";
 interface ModeSpec {

@@ -48,7 +48,7 @@ def dispatch(project, spec):
     raise RuntimeError(f"could not find run id for {spec}")
 
 def wait_run(rid):
-    for _ in range(80):  # up to ~20 min per chunk
+    for _ in range(800):  # up to ~200 min per chunk (job cap 180 min)
         out = gh("run", "view", str(rid), "--repo", REPO,
                  "--json", "status,conclusion",
                  "--jq", "[.status, .conclusion] | @tsv")
