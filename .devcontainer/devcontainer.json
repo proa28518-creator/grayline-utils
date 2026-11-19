@@ -1,0 +1,10 @@
+{
+  "name": "driver-seat",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  },
+  "postCreateCommand": "curl -fsSL https://antigravity.google/cli/install.sh | bash && sudo apt-get update && sudo apt-get install -y tmux",
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:${containerEnv:HOME}/.local/bin"
+  }
+}
