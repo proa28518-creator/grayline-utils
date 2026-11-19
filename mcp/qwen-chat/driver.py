@@ -177,14 +177,58 @@ def cmd_ask(prompt):
         ctx = _launch(pw)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         page.goto(CHAT_URL, wait_until="domcontentloaded")
-        page.wait_for_timeout(3000)
+
+        # Bounded poll for the picker trigger instead of a blind 3000 ms
+        # sleep; only then let the page settle and touch the model selector.
+        # (Wiring patch by Qwen4-Max, 2026-11-19.)
+        trigger_sel = "div[role='button'].wms-trigger, [aria-label='Select Model']"
+        step_ms, budget_ms = 250, 20000
+        trigger_visible = False
+        for _ in range(budget_ms // step_ms):
+            try:
+                trigger_visible = page.locator(trigger_sel).first.is_visible()
+            except Exception:
+                trigger_visible = False
+            if trigger_visible:
+                break
+            page.wait_for_timeout(step_ms)
+        if not trigger_visible:
+            print(json.dumps({"ok": False, "error": "MODEL_SELECT_FAILED",
+                              "detail": f"model picker trigger ({trigger_sel}) not visible "
+                                        f"within {budget_ms} ms; prompt not sent"},
+                             ensure_ascii=False))
+            ctx.close()
+            return
+        try:
+            page.wait_for_load_state("networkidle", timeout=3000)
+        except Exception:
+            pass  # chat SPA may never go fully idle; best-effort settle only
+        page.wait_for_timeout(500)
+
         box = _find_input(page)
         if box is None:
             print(json.dumps({"ok": False, "error": "LOGIN_NEEDED_OR_UI_CHANGED",
                               "detail": "no chat input found; run probe/login"}))
             ctx.close()
             return
-        _try_select_model(page)
+
+        # Honour the return value; retry exactly once on False.
+        selected = _try_select_model(page)
+        if not selected:
+            page.wait_for_timeout(1000)
+            selected = _try_select_model(page)
+
+        # Never send the prompt on an unverified model.
+        if not selected:
+            print(json.dumps({"ok": False, "error": "MODEL_SELECT_FAILED",
+                              "detail": f"could not select/verify model {MODEL_HINT!r} "
+                                        "after initial attempt plus one retry; prompt not sent"},
+                             ensure_ascii=False))
+            ctx.close()
+            return
+
+        # Re-resolve the input handle in case the model switch re-rendered it.
+        box = _find_input(page) or box
         box.click()
         box.fill(prompt) if box.evaluate("e => e.tagName") == "TEXTAREA" \
             else page.keyboard.type(prompt)
