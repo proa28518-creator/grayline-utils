@@ -295,18 +295,17 @@ function createSnowGlobeGlassMat(THREE) {
         vec3 n = normalize(vN);
         vec3 v = normalize(vV);
         float ndv = clamp(dot(n, v), 0.0, 1.0);
-        // Strong glassy Fresnel edge glow (crystal clear center so miniature market reads effortlessly!)
         float fres = pow(1.0 - ndv, 2.35);
-        // Crisp curved window reflection crescent on upper-left & warm tungsten glint on upper-right!
-        vec3 l1 = normalize(vec3(-0.55, 0.72, 0.58));
-        vec3 l2 = normalize(vec3(0.62, 0.55, 0.56));
-        float sp1 = pow(max(dot(n, normalize(l1 + v)), 0.0), 42.0);
-        float sp2 = pow(max(dot(n, normalize(l2 + v)), 0.0), 64.0);
-        // Subtle curved arc reflection stripe along upper-left contour
-        float arc = smoothstep(0.68, 0.88, -vLocal.x * 0.65 + vLocal.y * 0.76) * smoothstep(0.30, 0.60, 1.0 - ndv);
-        vec3 col = mix(vec3(0.72, 0.94, 1.0), vec3(1.0, 0.97, 0.88), sp2 * 0.8 + 0.25);
-        col += vec3(1.0, 0.99, 0.95) * (sp1 * 1.4 + sp2 * 1.1 + arc * 0.55);
-        float alpha = clamp(0.06 + fres * 0.78 + sp1 * 0.85 + sp2 * 0.70 + arc * 0.34, 0.0, 0.92);
+        vec3 l1 = normalize(vec3(-0.72, 0.80, -0.30));
+        vec3 l2 = normalize(vec3( 0.78, 0.62, -0.25));
+        float sp1 = pow(max(dot(n, normalize(l1 + v)), 0.0), 60.0);
+        float sp2 = pow(max(dot(n, normalize(l2 + v)), 0.0), 90.0);
+        float arc = smoothstep(0.70, 0.90, -vLocal.x * 0.65 + vLocal.y * 0.76) * smoothstep(0.34, 0.62, 1.0 - ndv);
+        vec3 col = mix(vec3(0.66, 0.88, 0.97), vec3(0.97, 0.94, 0.86), sp2 * 0.6 + 0.20);
+        col += vec3(0.98, 0.97, 0.93) * (sp1 * 0.26 + sp2 * 0.20 + arc * 0.14);
+        float mx = max(col.r, max(col.g, col.b));
+        col *= min(1.0, 0.84 / max(mx, 1e-4));
+        float alpha = clamp(0.05 + fres * 0.74 + sp1 * 0.20 + sp2 * 0.16 + arc * 0.10, 0.0, 0.82);
         gl_FragColor = vec4(col, alpha);
       }
     `,
