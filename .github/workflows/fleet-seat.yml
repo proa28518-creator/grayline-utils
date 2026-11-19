@@ -1,0 +1,38 @@
+name: Fleet Seat Consult
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "APInex model id"
+        required: true
+        default: "free/glm-5.3"
+        type: string
+      prompt:
+        description: "Prompt for the seat"
+        required: true
+        default: "Reply with exactly: SEAT OK"
+        type: string
+
+jobs:
+  seat:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Consult seat
+        env:
+          APINEX_API_KEY: ${{ secrets.APINEX_API_KEY }}
+          SEAT_MODEL: ${{ inputs.model }}
+          SEAT_PROMPT: ${{ inputs.prompt }}
+        run: python3 fleet/seat-consult.py
+
+      - name: Upload seat result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fleet-seat-${{ github.run_id }}
+          path: seat-result.json
+          retention-days: 30
