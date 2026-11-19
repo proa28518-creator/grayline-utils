@@ -37,3 +37,6 @@ to this repo — never held only in a live session.
   its own.
 - Outputs (frames, renders) never live in the seat — renders run on the
   fleet; masters land in Drive.
+
+## Protocol note (learned on job 1, 2026-11-19)
+- agy PRINT mode cannot prompt for command permission: its internal `git push` was auto-denied ("jetski: no output produced"). The writing and commit worked. Rule: the seat agent writes and commits; the PUSH is done by the supervising hand (browser agent or desk) from the seat terminal after the run.
