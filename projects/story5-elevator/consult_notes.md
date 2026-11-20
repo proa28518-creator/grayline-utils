@@ -294,3 +294,81 @@ currently available only with a subscription" (billing_error). No GLM notes.
   bag given real weight (pendulum / spring lag / released at the jump),
   layered star parallax, and expression switches landing exactly on line
   starts.
+
+---
+
+## GLM (free/glm-5.3-flashx via APInex — added 2026-11-20 ~03:10 at the owner's pointer; the base free/glm-5.3 id is subscription-gated, flashx answers at zero cost)
+
+Shot list, one move per line, reframing every 1.6–2.2 s:
+
+1 [0.22] Lobby wide, slow truck right past elevator doors  
+2 [2.03] Dolly in to Farida center frame  
+3 [4.97] Low angle on her heavy arm and leather bag  
+4 [7.59] Static close-up on yellow lamp, then quick whip pan to marble  
+5 [10.43] Over-the-shoulder as finger hits button  
+6 [11.35] Push in on parting elevator doors  
+7 [12.54] Static medium shot: identical lobby behind doors  
+8 [14.02] Slow zoom out as she stares  
+9 [16.25] Handheld jittery pan across all buttons  
+10 [18.30] Close-up on finger pressing, nothing happens  
+11 [19.21] Medium wide, elevator shakes slightly  
+12 [21.89] Dolly back as she steps away  
+13 [22.93] Tight on doors sliding shut  
+14 [23.90] Doors split open to rain street, static shock reveal  
+15 [26.41] Tracking shot along wet asphalt reflections  
+16 [27.76] Low angle: water spraying from under cars  
+17 [29.84] Over-the-shoulder as hand touches rain  
+18 [31.48] Push in on her face as she smiles  
+19 [33.62] Fast whip pan as doors slam shut  
+20 [35.30] Dutch angle, camera shakes as elevator moves sideways  
+21 [37.19] POV of floor numbers spinning like roulette  
+22 [39.17] Medium close-up, bag clutched to chest  
+23 [40.80] Extreme close-up on her hand against chest  
+24 [42.93] Static center shot as doors open third time  
+25 [44.48] Sudden pull-back into open space  
+26 [45.61] Wide static: stars everywhere, total silence  
+27 [47.82] Camera tilts down to show vanishing ground  
+28 [50.20] Over-the-shoulder: bag then stars  
+29 [52.53] Close-up on her face talking to herself  
+30 [53.78] Static medium shot  
+31 [55.29] Low angle as she jumps  
+32 [56.26] Follow cam as she flies among stars  
+33 [57.82] Push in on first light  
+34 [59.53] Fade to black on empty elevator
+
+Key frames for 360x640 boards:
+
+1. Frame at [23.90]: elevator doors split to rain-drowned street, light reflecting on asphalt, Farida framed in dark doorway.  
+2. Frame at [44.48]: doors open onto open space, stars everywhere, ground vanished beneath her.  
+3. Frame at [56.26]: Farida flying among stars, first light hitting her face, leather bag floating.
+
+Expression beats mapped to lines:
+
+- [4.97]: eyes sad, brow worried, mouth frown, pose lean_back  
+- [7.59]: eyes wide, brow up, mouth o  
+- [12.54]: eyes stare, brow down, mouth flat  
+- [19.21]: eyes wince, brow knit, mouth tight, pose brace  
+- [23.90]: eyes wide, brow up, mouth wide  
+- [29.84]: eyes half, brow on, mouth flat  
+- [31.48]: eyes wide, brow up, mouth wide  
+- [39.17]: eyes stare, brow worried, mouth flat, pose akimbo  
+- [40.80]: eyes wide, brow knit, mouth gulp, pose brace  
+- [53.78]: eyes sad, brow worried, mouth flat  
+- [55.29]: eyes wide, brow up, mouth wide, pose shock_pop  
+- [56.26]: eyes stare, brow up, mouth o
+
+Stage the three door reveals:
+
+Lobby -> same lobby [11.35-12.54]: doors open on a static, identical medium shot of the lobby. No camera move. Match the lighting and marble exactly so the loop feels like a glitch.
+
+Lobby -> rain street [22.93-23.90]: close-up on doors shutting, then a hard cut or fast whip to doors splitting open onto rain. Street is brighter and cooler toned. Water spraying from under cars adds particle movement.
+
+Street -> space [42.93-44.48]: static center shot of doors opening third time. Sudden pull-back camera move reveals open space and stars. Cut all interior lobby audio to total silence.
+
+Biggest static-feel risks and fixes:
+
+- Same lobby repeat [7.59-19.21]: kill it with handheld jitter on buttons, subtle elevator shake, and changing her expression from wide to stare to wince.  
+- Dialogue heavy section [29.84-53.78]: kill it with continuous camera moves—push in, tilt down, over-the-shoulder switches—never hold a static medium shot longer than 1.5 s.  
+- Zero gravity float [44.48-56.26]: kill static feel with floating bag, drifting particles, and follow camera rather than locking her in center.
+
+You're talking to GLM, created by Zhipu AI.
