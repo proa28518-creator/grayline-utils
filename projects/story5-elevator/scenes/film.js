@@ -296,15 +296,15 @@ function buildShots() {
     },
 
     // S15 (27.76 - 29.84): CAR WHOOSH & 3D WATER SPRAY — "والمية بتطير من تحت العربيات"
-    // Low kinetic sidewalk angle framing Farida (right) AND Car 1 blasting a glowing 3D cyan/white spray plume right beside her (left)!
+    // Low kinetic sidewalk angle framing Farida's FULL face (right third) AND Blender noir_sedan.glb + glowing 3D spray plume (left)!
     {
       t0: 'line:16.start', t1: 'line:17.start',
       camera: {
         move: 'path',
         keys: [
-          { t: 27.76, pos: [RAIN_X - 2.6, 1.72, 9.6], target: [RAIN_X - 0.5, 2.08, -1.2], fov: 28, roll: 2.8, shake: 0.5 },
-          { t: 28.60, pos: [RAIN_X - 2.2, 1.80, 9.0], target: [RAIN_X - 0.4, 2.14, -1.2], fov: 28, roll: 3.8, shake: 1.1 },
-          { t: 29.84, pos: [RAIN_X - 1.6, 1.92, 8.4], target: [RAIN_X + 0.1, 2.20, -1.0], fov: 28, roll: 4.2, shake: 0.4 },
+          { t: 27.76, pos: [RAIN_X - 2.2, 1.75, 11.0], target: [RAIN_X + 0.25, 2.08, -1.2], fov: 29, roll: 2.6, shake: 0.5 },
+          { t: 28.60, pos: [RAIN_X - 1.8, 1.82, 10.4], target: [RAIN_X + 0.35, 2.14, -1.2], fov: 29, roll: 3.4, shake: 1.0 },
+          { t: 29.84, pos: [RAIN_X - 1.3, 1.92,  9.6], target: [RAIN_X + 0.45, 2.20, -1.0], fov: 29, roll: 3.8, shake: 0.4 },
         ],
       },
     },

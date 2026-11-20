@@ -48,7 +48,9 @@ export const easeInOutCubic = u => {
   return c < 0.5 ? 4 * c * c * c : 1 - Math.pow(-2 * c + 2, 3) / 2;
 };
 
-// ---- 1. ELEVATOR DOOR METRONOME (0 = closed, 1 = fully open) ----
+// ---- 1. ELEVATOR DOOR METRONOME (0 = closed, 1 = fully open) — 5 distinct Qwen-calibrated signatures! ----
+const easeOutExpo  = u => (u >= 1 ? 1 : 1 - Math.pow(2, -9 * clamp(u, 0, 1)));
+const easeInQuart  = u => Math.pow(clamp(u, 0, 1), 4);
 export function doorOpen(t) {
   if (t < T_DOOR1_OPEN) {
     if (t >= 0.35 && t <= 1.85) {
@@ -57,16 +59,16 @@ export function doorOpen(t) {
     }
     return 0;
   }
-  if (t < T_DOOR1_CLOSE) return easeInOutCubic((t - T_DOOR1_OPEN) / 1.07);
-  if (t < T_RAIN_CUT)    return 1 - easeInOutCubic((t - T_DOOR1_CLOSE) / 0.91);
-  if (t < T_DOOR2_SLAM)  return easeOutCubic((t - T_RAIN_CUT) / 0.68);
+  if (t < T_DOOR1_CLOSE) return easeInOutCubic((t - T_DOOR1_OPEN) / 1.07);         // R1: slow eerie open (1.07 s)
+  if (t < T_RAIN_CUT)    return 1 - easeInOutCubic((t - T_DOOR1_CLOSE) / 0.91);     // R1 exit: steady mechanical close
+  if (t < T_DOOR2_SLAM)  return easeOutExpo((t - T_RAIN_CUT) / 0.58);               // R2: explosive snap open onto rain street!
   if (t < T_SHAFT_CUT) {
-    if (t < 33.98) return 1 - easeOutCubic((t - T_DOOR2_SLAM) / 0.36);
-    if (t < 34.18) return 0.04 * Math.sin(((t - 33.98) / 0.20) * Math.PI);
+    if (t < 33.92) return 1 - easeInQuart((t - T_DOOR2_SLAM) / 0.30);               // R2 slam: 9-frame violent slam (0.30 s)!
+    if (t < 34.12) return 0.04 * Math.sin(((t - 33.92) / 0.20) * Math.PI);
     return 0;
   }
   if (t < T_COSMOS_CUT) return 0;
-  return easeInOutCubic((t - T_COSMOS_CUT) / 1.55);
+  return easeInOutCubic((t - T_COSMOS_CUT) / 1.45);                                 // R3: serene majestic cosmic open!
 }
 
 // ---- 2. LOBBY FLICKERING YELLOW GLOBES DRIVER (pure in t) ----

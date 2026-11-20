@@ -1255,7 +1255,8 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
     cosmosCab.doorL.position.x = -slideX;
     cosmosCab.doorR.position.x =  slideX;
 
-    // 2. LOBBY FLICKERING YELLOW GLOBES, BUTTON PANEL & DIAL TWITCH
+    // 2. LOBBY FLICKERING YELLOW GLOBES, CHANDELIER PENDULUM, BUTTON PANEL & DIAL TWITCH
+    chandelierAnchor.rotation.z = Math.sin(t * 1.15) * 0.045;
     for (const gl of lobbyGlobes) {
       const f = lobbyFlicker(t, gl.phase);
       gl.mat.color.setRGB(clamp(0.96 * f, 0.24, 1.0), clamp(0.76 * f, 0.16, 0.86), clamp(0.32 * f, 0.06, 0.44));
