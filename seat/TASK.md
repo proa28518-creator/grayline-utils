@@ -1,43 +1,32 @@
-# TASK — Story 4 Build step + stills board (seat job 2)
+# TASK — Story 5 «المصعد المفتوح» (Build step)
 
-- Driver model: **Gemini 4 Neon (High)** — Argon is delisted from the
-  owner's accounts; Neon holds its seat by the owner's word (2026-11-19).
-- THE BAR — «شغل إبهار» (owner's word 2026-11-19 ~14:31): this film must
-  DAZZLE, not merely work. Before committing each board still, check it
-  against these spectacle tests and fix until it passes:
-  1. Frame 0: the clerk's face fills its measure and EXPLODES with the
-     «طفح الكيل!» expression — readable at board scale (360x640).
-  2. Frozen-vs-moving contrast reads instantly in every aisle shot: the
-     statues are statues, the clerk is the only life in the frame.
-  3. The slow-motion soup-can collapse (S09/S10) shows cans suspended
-     mid-air, readable one by one — no blur of clutter.
-  4. The snow-globe payoff (final shots) reads in ONE glance: glass curve,
-     desk, the market inside — no explanation needed.
-  5. The red cart is the visual anchor of every shot it appears in:
-     biggest saturated shape, never lost against the shelves.
-  A still that merely matches the shot list but fails its spectacle test
-  is NOT done — restage it and note the fix in the checkpoints.
-- Project folder: projects/story4-market/
-- Job: Build step ONLY — implement the film in the heart engine and produce
-  the FULL STILLS BOARD. No render, no mix in this job.
-- Inputs (all in projects/story4-market/):
-  - BIBLE.md — beats, hero prop red_cart with D-unit sizes, set, colour script.
-  - shots.md — the 24-shot camera list.
-  - script_ar.md — the written script (reference).
-  - voice_words.txt — the OWNER'S OWN word-timing file from his recorded
-    performance (58.64 s total). HIS PERFORMED WORDING AND TIMING GOVERN the
-    cut: where his performed lines differ from script_ar.md, the picture
-    follows the performed beats in voice_words.txt. Film length = 58.64 s
-    (1,759 frames at 30 fps) unless the timing file says otherwise.
-- Method: read skills/cartoon-shorts/SKILL.md and follow the Build step
-  exactly (project module under the engine, cast/kit characters only, sets
-  from the kit or primitives per the BIBLE). Prove Frame 0 first.
-- Products to commit:
-  1. The project build (code) under projects/story4-market/.
-  2. board/ — one still per shot (24 JPGs, shot-numbered), rendered through
-     the engine host page at full 1080x1920.
-  3. Append progress to seat/checkpoints.md at every step.
-- Gates: the complete board goes to the owner (via Layla) BEFORE any render.
-  No publishing, ever. The supervising hand does the git push (print mode
-  cannot push — see SEAT.md protocol note).
-- On 429/503: checkpoint and stop; never switch models on your own.
+- Project folder: projects/story5-elevator/
+- Job: Build step — BIBLE + shot list + scene build for the owner's RECORDED script.
+  The script already exists and the owner has already performed it; do NOT rewrite it.
+- Source of record (already in the project folder):
+  - script_performed_ar.md — the owner's performed wording (34 lines, governs)
+  - voice_owner.wav — his recording, 60.76 s
+  - words_owner.txt — his word-timing file (timing source of record)
+- Film parameters: 60.76 s → 1,823 frames @30fps, 1080×1920.
+- Concept (owner's pick from Luna's card): Farida, a woman with a heavy leather
+  bag, in an old hotel lobby; the elevator door opens onto the same lobby, then
+  a rain-drowned street, then open space — she jumps and flies among the stars.
+- Method: read skills/cartoon-shorts/SKILL.md and its references first; follow
+  the Build step exactly. Sets not in the kit are built as simple primitives
+  scenes (lobby / rain street / space); the heroine comes from the program's
+  cast/kit with the standard rig vocabularies (eyes/brow/mouth/clips as proven
+  on Story 4). MOVEMENT is the hero: door reveals, sideways elevator travel,
+  the final leap. Facial expressions act the spoken lines (owner's dazzle rule).
+- Fleet lineup (owner's word 2026-11-20: «معاكي اسطول نمازج لبناء اقوي شورتس»):
+  Neon plans, Hydrogen executes in tmux, Qwen 4.0 Max takes all code fixes,
+  GLM verifies, Luna is the second eye. Layla supervises and QC's with her own
+  eyes at board scale (360×640).
+- Products to commit into the project folder:
+  1. BIBLE.md — beats mapped to the performed lines + timings, props with
+     sizes in D units, sets, colour script
+  2. shots.md — shot list with camera moves (reframe/push every ~1.5–2.5 s)
+  3. scene code under the project folder, per the heart engine layout
+  4. seat/checkpoints.md — progress log, appended at every step
+- Gates: the COMPLETE stills board goes to the owner BEFORE any render.
+  No publishing. Render route: Colab L4 (proof running 2026-11-20) / fleet.
+- On 429: checkpoint and stop; never switch models unilaterally.
