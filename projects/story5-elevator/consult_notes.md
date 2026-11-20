@@ -372,3 +372,15 @@ Biggest static-feel risks and fixes:
 - Zero gravity float [44.48-56.26]: kill static feel with floating bag, drifting particles, and follow camera rather than locking her in center.
 
 You're talking to GLM, created by Zhipu AI.
+---
+
+## Qwen 4.0 Max (chat consult — added 2026-11-20 ~03:39; full interactive previz saved as `qwen_previz.html` in this folder, chat: chat.qwen.ai/c/90432234-54d0-4fed-bb6b-ddc1a531c73c)
+
+Qwen delivered a complete frame-exact directing guide (34 shots, one per performed line). Load-bearing numbers:
+
+- **Rhythm:** 34 shots, avg 1.78 s, deviation ±0.58 s; shortest action cut 0.91 s; longest window without reframing 1.47 s; slowest push still moves 0.07 m/s + continuous 6 mm handheld. **Rule of 75 frames: nothing in frame (camera, face, door, light, particles) may stay silent more than 2.5 s — if all five stop for one frame, cut.**
+- **Kinetic-energy audit:** whole film stays above the "dead line" 0.12; minimum energy 0.14 at 53.7 s across all 1,823 frames.
+- **3 golden frames (360×640):** F0394 (13.10 s) the door that leads to itself — 96% symmetry around the door axis, both clocks 11:47, identical lamp phase 7 Hz (shared material = match guaranteed by code); F0919 (30.60 s) hand touching rain — hand on the thirds intersection, door as frame-within-frame (58% of width), magenta #ff3fa4 ≈12% of area = saturation peak; F1714 (57.10 s) light for the first time — Farida at (150,210), the bag a tumbling dot at (300,520), gold rim 2700K + violet fill #8b5cf6, eyes closed in joy 0.22, full smile 1.0.
+- **11 face beats with numeric params** (eye/pupil/brow/mouth): B1 weariness L2 (eye .68), B2 hand-pain L3 (attack 4f), B3 frozen shock L7 (eye 1.4, pupil 0.6, NO BLINK 2.4 s), B4 fast frustration L9, B5 cold greeting L11 (slow blink 0.4 s), B6 first hope L17 (pupil 1.25×), B7 door-slam L19 (attack 2f — fastest beat in the film), B8 shake-terror L22 (9 Hz brow tremor), B9 space awe L26 (pupil 1.45×, attack 20f), B10 decision L30 (brows level + half smile — decision lands BEFORE the jump), B11 liberation L33 (eyes closed 0.22 then open 0.85). Micro-life rules: blink every 2.2–3.6 s, pupil saccade every 0.9–1.5 s, face never holds one value > 3 s.
+- **Door curves — 5 moves, 5 signatures:** R1 lobby→lobby: easeInOutSine 1.19 s, peak 1.11 m/s + MATCH CUT at F0376 (S07 = exact replica of S06 framing); R2 lobby→rain: easeOutExpo, peak 8.9 m/s in the first 6 frames, fov kick −6°, 1,400 rain drops at 9 m/s, thunder synced; the slam exit: easeInQuart 0.30 s / 9 frames, peak 11.2 m/s; R3 street→space: easeInOutQuad 1.17 s, peak 1.44 m/s, all sound ducks −24 dB in 12 frames (silence IS the reveal), 2,100 stars on 3 shells (28/55/90 m) parallax 1:2:4, 6 floor tiles fall from 47.9 s at 8-frame intervals (4.9 m/s² + rotation).
+- **Static risks killed by numbers:** parked camera (max 75-frame stillness), frozen face (11 beats + micro-life), one door move (5 curves), dead worlds (lobby lamp 7 Hz + chandelier pendulum; rain 1,400 drops + car spray; space parallax + gold dust), flat cutting rhythm (0.91–2.94 s range), decorative sound (12 sound events, each tied to a visual trigger).

@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0b09">
+<meta name="description" content="طبقة الإبهار لفيلم «المصعد المفتوح» — دليل إخراج قابل للبناء + بريفيز Three.js حي: 34 لقطة، 1823 فريم، 1080×1920.">
+<title>المصعد المفتوح — طبقة الإبهار | بريفيز حي 1080×1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#0d0b09; --bg1:#151210; --sf:#1d1814; --sf2:#26201a; --sf3:#2f2820;
+  --line:rgba(255,205,130,.14); --line2:rgba(255,205,130,.26);
+  --ink:#f4ead9; --mut:#b3a48f; --mut2:#8f9aa8;
+  --amber:#f5a83c; --amber2:#ffcf7d; --brass:#b98a4a; --gold:#ffd166;
+  --cyan:#38d5ff; --blue:#2f7bff; --magenta:#ff3fa4; --violet:#8b5cf6; --violet2:#b7a1ff;
+  --red:#ff5449; --green:#3ddc84; --warn:#ffb020; --star:#ffe9b8;
+  --acc:var(--amber); --navh:64px;
+  --disp:'Lalezar',system-ui,sans-serif; --body:'Tajawal',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.85;overflow-x:hidden}
+::selection{background:var(--amber);color:#1a1206}
+/* ——— سكرول بلغة الفيلم ——— */
+*{scrollbar-width:thin;scrollbar-color:#8a5f2a #171310}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#171310;border-radius:8px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--amber),var(--magenta) 55%,var(--violet));border-radius:8px;border:2px solid #171310}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--amber2),#ff6cbf 55%,var(--violet2))}
+/* ——— خلفية طبقية ——— */
+.aurora{position:fixed;inset:-10%;z-index:0;pointer-events:none;filter:blur(70px);opacity:.55;transform:translateY(calc(var(--sy,0)*-.04px))}
+.aurora i{position:absolute;border-radius:50%;display:block}
+.aurora .a1{width:52vw;height:52vw;top:-14%;right:-10%;background:radial-gradient(circle,rgba(245,168,60,.20),transparent 65%);animation:drift1 34s ease-in-out infinite alternate}
+.aurora .a2{width:46vw;height:46vw;top:34%;left:-14%;background:radial-gradient(circle,rgba(56,213,255,.13),transparent 65%);animation:drift2 41s ease-in-out infinite alternate}
+.aurora .a3{width:56vw;height:56vw;bottom:-18%;right:16%;background:radial-gradient(circle,rgba(139,92,246,.17),transparent 65%);animation:drift3 47s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-9%,12%) scale(1.15)}}
+@keyframes drift2{to{transform:translate(12%,-9%) scale(1.1)}}
+@keyframes drift3{to{transform:translate(-8%,-12%) scale(1.2)}}
+.grain{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* ——— ناف ——— */
+nav{position:fixed;top:0;inset-inline:0;height:var(--navh);z-index:100;display:flex;align-items:center;gap:14px;padding:0 clamp(12px,3vw,32px);background:rgba(13,11,9,.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--disp);font-size:22px;color:var(--amber2);text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:9px}
+.logo .door{width:15px;height:22px;border:2px solid var(--amber);border-radius:2px;position:relative;flex:none}
+.logo .door::after{content:'';position:absolute;inset:2px 45% 2px 2px;background:linear-gradient(180deg,var(--cyan),var(--violet));opacity:.85}
+.navlinks{display:flex;gap:4px;overflow-x:auto;flex:1;padding:4px 2px;scrollbar-width:none}
+.navlinks::-webkit-scrollbar{height:5px}
+.navlinks a{color:var(--mut);text-decoration:none;font-size:13.5px;font-weight:700;padding:7px 12px;border-radius:99px;white-space:nowrap;border:1px solid transparent;transition:.2s}
+.navlinks a:hover{color:var(--ink);border-color:var(--line2)}
+.navlinks a.on{color:#1a1206;background:linear-gradient(120deg,var(--amber),#ff8a4d);border-color:transparent}
+#muteBtn{flex:none;display:flex;align-items:center;gap:8px;background:var(--sf2);color:var(--ink);border:1px solid var(--line2);border-radius:99px;padding:7px 14px;font-family:var(--body);font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
+#muteBtn:hover{border-color:var(--amber);box-shadow:0 0 14px rgba(245,168,60,.25)}
+#muteBtn.muted{color:var(--mut);border-style:dashed}
+#muteBtn svg{width:16px;height:16px;flex:none}
+main{position:relative;z-index:1}
+section{scroll-margin-top:calc(var(--navh) + 18px);padding:clamp(48px,7vw,96px) clamp(14px,4vw,44px);max-width:1280px;margin:0 auto;position:relative}
+/* ——— عناوين ——— */
+.sec-head{position:relative;margin-bottom:34px}
+.sec-num{position:absolute;top:-46px;inset-inline-start:-10px;font-family:var(--disp);font-size:clamp(90px,12vw,150px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,205,130,.13);pointer-events:none;user-select:none}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.5px;color:var(--acc);border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);background:color-mix(in srgb,var(--acc) 9%,transparent);padding:4px 13px;border-radius:99px;margin-bottom:10px}
+.kicker::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+h2{font-family:var(--disp);font-size:clamp(30px,4.6vw,46px);line-height:1.25;font-weight:400;color:var(--ink)}
+h2 em{font-style:normal;color:var(--acc)}
+.sec-sub{color:var(--mut);max-width:760px;font-size:15.5px;margin-top:6px}
+.sec-sub b{color:var(--amber2)}
+/* ——— هيرو ——— */
+#hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-top:calc(var(--navh) + 40px)}
+.hero-eyebrow{font-size:13px;font-weight:800;color:var(--mut);letter-spacing:1px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--magenta);box-shadow:0 0 10px var(--magenta)}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(56px,11vw,124px);line-height:1.08;margin:14px 0 6px;background:linear-gradient(100deg,var(--amber2) 5%,var(--amber) 30%,var(--magenta) 62%,var(--violet2) 95%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 30px rgba(255,63,164,.18));transform:translateY(calc(var(--sy,0)*.06px))}
+.hero-tag{font-size:clamp(17px,2.4vw,22px);font-weight:700;color:var(--ink)}
+.hero-desc{color:var(--mut);max-width:720px;margin:14px auto 22px;font-size:15.5px}
+.hero-desc b{color:var(--cyan)}
+.spec-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
+.chip{font-family:var(--mono);font-size:12.5px;direction:ltr;background:var(--sf);border:1px solid var(--line2);color:var(--amber2);padding:5px 13px;border-radius:8px}
+.chip.ar{direction:rtl;font-family:var(--body);font-weight:700;color:var(--mut)}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:9px;border:none;cursor:pointer;font-family:var(--body);font-weight:800;font-size:15px;padding:13px 26px;border-radius:12px;transition:.2s;text-decoration:none}
+.btn-hot{background:linear-gradient(120deg,var(--amber),#ff7a3d);color:#221302;box-shadow:0 8px 28px rgba(245,168,60,.3)}
+.btn-hot:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,122,61,.45)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber2)}
+.hero-strip{margin-top:44px;width:min(860px,92%);direction:ltr}
+.hero-strip .filmbar{display:flex;height:14px;border-radius:6px;overflow:hidden;border:1px solid var(--line2);cursor:pointer}
+.hero-strip .filmbar i{display:block;height:100%;transition:.15s}
+.hero-strip .filmbar i:hover{filter:brightness(1.6)}
+.hero-strip small{display:block;direction:rtl;color:var(--mut);font-size:12px;margin-top:8px;text-align:center}
+/* ——— دخول متدرّج ——— */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--d,0)*90ms)}
+.rv.in{opacity:1;transform:none}
+/* ——— الكونسول ——— */
+#previz{--acc:var(--amber)}
+.console{display:grid;grid-template-columns:392px 1fr;gap:26px;align-items:start}
+.stagecol{width:100%;max-width:392px;margin-inline:auto}
+.stage{position:relative;width:360px;max-width:100%;aspect-ratio:9/16;margin-inline:auto;background:#080604;border-radius:18px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 0 0 6px rgba(255,205,130,.04),0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(245,168,60,.08)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ovl{position:absolute;inset:0;pointer-events:none}
+#vignette{background:radial-gradient(ellipse at 50% 55%,transparent 46%,rgba(200,20,30,.55) 100%);opacity:0}
+#flash{background:#cfeaff;opacity:0;mix-blend-mode:screen}
+.hud{position:absolute;top:10px;font-family:var(--mono);font-size:10.5px;direction:ltr;color:var(--amber2);text-shadow:0 1px 4px #000;line-height:1.5;pointer-events:none}
+.hud.tl{left:10px;text-align:left}
+.hud.tr{right:10px;text-align:right}
+.hud .rec{display:inline-flex;align-items:center;gap:5px;color:#ff8f8f}
+.hud .rec::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+#subs{position:absolute;bottom:14px;inset-inline:12px;pointer-events:none;text-align:center;transition:opacity .18s}
+#subs .num{font-family:var(--mono);font-size:10px;color:var(--amber2);direction:ltr;display:block;margin-bottom:3px;text-shadow:0 1px 3px #000}
+#subs .txt{display:inline-block;background:linear-gradient(180deg,rgba(8,6,4,.55),rgba(8,6,4,.82));border-inline-start:3px solid var(--amber);padding:7px 14px;border-radius:9px;font-size:15.5px;font-weight:700;line-height:1.6;text-shadow:0 1px 4px #000;max-width:100%}
+#gridOverlay{opacity:0;transition:.25s}
+#gridOverlay.show{opacity:1}
+#poster,#endCard{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;background:linear-gradient(180deg,rgba(8,6,4,.25) 0%,rgba(8,6,4,.68) 78%,rgba(8,6,4,.9));padding:24px;transition:opacity .4s;z-index:5}
+#poster.hide,#endCard.hide{opacity:0;pointer-events:none}
+#endCard{opacity:0;pointer-events:none}
+#endCard.show{opacity:1;pointer-events:auto}
+.p-title{font-family:var(--disp);font-size:42px;line-height:1.15;background:linear-gradient(100deg,var(--amber2),var(--magenta) 70%,var(--violet2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.p-sub{color:var(--mut);font-size:13px;font-weight:700}
+#bigPlay,#replayBtn{pointer-events:auto;width:78px;height:78px;border-radius:50%;border:2px solid var(--amber);background:rgba(245,168,60,.14);color:var(--amber2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.25s;backdrop-filter:blur(4px)}
+#bigPlay:hover,#replayBtn:hover{background:var(--amber);color:#221302;box-shadow:0 0 44px rgba(245,168,60,.55);transform:scale(1.07)}
+#bigPlay svg,#replayBtn svg{width:30px;height:30px}
+.p-hint{font-size:11.5px;color:var(--mut);font-family:var(--mono);direction:ltr}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#0a0806;z-index:6;color:var(--mut);font-size:13px;font-weight:700;transition:opacity .5s}
+#loading.hide{opacity:0;pointer-events:none}
+.spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--sf3);border-top-color:var(--amber);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#fallbackNote{display:none;position:absolute;bottom:70px;inset-inline:16px;z-index:7;background:rgba(30,20,10,.92);border:1px solid var(--warn);color:var(--warn);font-size:12px;padding:8px 12px;border-radius:9px;text-align:center}
+/* ——— أدوات ——— */
+.controls{margin-top:14px;background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:13px}
+.scrubber{direction:ltr;position:relative;height:38px;cursor:pointer;touch-action:none;outline:none}
+.scrubber:focus-visible .scrub-track{box-shadow:0 0 0 2px var(--amber)}
+.scrub-track{position:absolute;top:12px;left:0;right:0;height:14px;border-radius:6px;overflow:hidden;display:flex;border:1px solid rgba(0,0,0,.5)}
+.scrub-track i{display:block;height:100%}
+.scrub-ticks{position:absolute;top:12px;left:0;right:0;height:14px}
+.scrub-ticks b{position:absolute;top:0;width:1px;height:100%;background:rgba(0,0,0,.45)}
+.scrub-ticks u{position:absolute;top:-6px;width:7px;height:7px;background:var(--gold);transform:translateX(-50%) rotate(45deg);border:1px solid #4d3a10;box-shadow:0 0 8px rgba(255,209,102,.7)}
+#scrubHead{position:absolute;top:5px;width:2px;height:28px;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.8);transform:translateX(-1px)}
+#scrubHead::after{content:'';position:absolute;top:-5px;left:-4px;border:5px solid transparent;border-top-color:#fff}
+#scrubBubble{position:absolute;bottom:42px;transform:translateX(-50%);background:#0a0806;border:1px solid var(--line2);border-radius:8px;padding:5px 10px;font-size:11.5px;white-space:nowrap;opacity:0;transition:.15s;pointer-events:none;direction:rtl;max-width:250px;overflow:hidden;text-overflow:ellipsis;z-index:9}
+#scrubBubble b{font-family:var(--mono);direction:ltr;color:var(--amber2);font-weight:600;margin-inline-end:6px}
+.scrubber:hover #scrubBubble{opacity:1}
+.ctrl-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ibtn{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line2);background:var(--sf2);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;font-size:14px}
+.ibtn:hover{border-color:var(--amber);color:var(--amber2);box-shadow:0 0 12px rgba(245,168,60,.2)}
+.ibtn svg{width:16px;height:16px}
+.ibtn.main{width:46px;height:46px;background:linear-gradient(120deg,var(--amber),#ff7a3d);color:#221302;border:none}
+.ibtn.main:hover{box-shadow:0 0 20px rgba(245,168,60,.5);color:#221302}
+.tc{font-family:var(--mono);direction:ltr;font-size:12px;color:var(--amber2);background:#0a0806;border:1px solid var(--line);padding:8px 10px;border-radius:9px;flex:none}
+.tc small{color:var(--mut);font-size:10px}
+.seg{display:flex;background:#0a0806;border:1px solid var(--line);border-radius:9px;overflow:hidden;direction:ltr}
+.seg button{border:none;background:transparent;color:var(--mut);font-family:var(--mono);font-size:11.5px;padding:8px 10px;cursor:pointer;transition:.15s}
+.seg button.on{background:var(--amber);color:#221302;font-weight:600}
+.seg button:hover:not(.on){color:var(--ink)}
+.tgl{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--mut);cursor:pointer;user-select:none}
+.tgl input{display:none}
+.tgl .sw{width:34px;height:19px;border-radius:99px;background:var(--sf3);border:1px solid var(--line2);position:relative;transition:.2s;flex:none}
+.tgl .sw::after{content:'';position:absolute;top:2px;right:2px;width:13px;height:13px;border-radius:50%;background:var(--mut);transition:.2s}
+.tgl input:checked + .sw{background:rgba(245,168,60,.3);border-color:var(--amber)}
+.tgl input:checked + .sw::after{right:17px;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.tgl:hover{color:var(--ink)}
+select{background:var(--sf2);color:var(--ink);border:1px solid var(--line2);border-radius:9px;font-family:var(--body);font-weight:700;font-size:12.5px;padding:8px 10px;cursor:pointer}
+.keys{margin-top:10px;font-size:11px;color:var(--mut);display:flex;gap:12px;flex-wrap:wrap}
+.keys kbd{font-family:var(--mono);background:var(--sf3);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--amber2)}
+/* ——— اللوحة الحية ——— */
+.livepanel{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:20px;position:sticky;top:calc(var(--navh) + 16px)}
+.lp-line{display:flex;gap:12px;align-items:flex-start;border-bottom:1px dashed var(--line2);padding-bottom:14px;margin-bottom:14px}
+.lp-num{font-family:var(--disp);font-size:40px;line-height:1;color:var(--amber);min-width:52px;text-align:center;background:rgba(245,168,60,.09);border:1px solid var(--line2);border-radius:12px;padding:8px 4px}
+.lp-num small{display:block;font-family:var(--mono);font-size:9px;color:var(--mut);direction:ltr}
+#liveLineText{font-size:19px;font-weight:800;line-height:1.6}
+#liveBeat{font-size:12px;color:var(--magenta);font-weight:700}
+.lp-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.lp-cell{background:var(--sf2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.lp-cell .k{font-size:10.5px;color:var(--mut);font-weight:700;display:block}
+.lp-cell .v{font-family:var(--mono);direction:ltr;font-size:14px;color:var(--amber2);text-align:right;display:block}
+.lp-cell .v.ar{font-family:var(--body);direction:rtl;font-weight:800;font-size:13.5px}
+.meter{height:6px;border-radius:4px;background:#0a0806;overflow:hidden;margin-top:5px}
+.meter i{display:block;height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--amber) 60%,var(--red));transition:width .1s linear}
+.meter.door i{background:linear-gradient(90deg,var(--brass),var(--amber2))}
+.actchips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.act-chip{flex:1;min-width:90px;border:1px solid var(--line2);background:var(--sf2);border-radius:10px;padding:8px 10px;cursor:pointer;text-align:center;transition:.2s;font-family:var(--body)}
+.act-chip b{display:block;font-size:13px;font-weight:800}
+.act-chip small{font-family:var(--mono);font-size:10px;color:var(--mut);direction:ltr;display:block}
+.act-chip:hover{transform:translateY(-2px)}
+.act-chip.a1 b{color:var(--amber)}.act-chip.a1:hover{border-color:var(--amber);box-shadow:0 6px 18px rgba(245,168,60,.2)}
+.act-chip.a2 b{color:var(--cyan)}.act-chip.a2:hover{border-color:var(--cyan);box-shadow:0 6px 18px rgba(56,213,255,.2)}
+.act-chip.a3 b{color:var(--violet2)}.act-chip.a3:hover{border-color:var(--violet);box-shadow:0 6px 18px rgba(139,92,246,.25)}
+.lp-next{margin-top:14px;font-size:12.5px;color:var(--mut);border-top:1px dashed var(--line2);padding-top:10px}
+.lp-next b{color:var(--ink)}
+/* ——— جدول اللقطات ——— */
+#shots{--acc:var(--amber)}
+.shots-layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+.rhythm{position:sticky;top:calc(var(--navh) + 16px);background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:20px}
+.rhythm h3{font-family:var(--disp);font-weight:400;font-size:22px;color:var(--amber2);margin-bottom:10px}
+.stat{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding:8px 0;font-size:13.5px}
+.stat b{font-family:var(--mono);direction:ltr;color:var(--amber2);font-size:14px}
+.stat span{color:var(--mut);font-weight:700}
+.rulebox{margin-top:14px;background:rgba(245,168,60,.07);border:1px solid var(--line2);border-radius:11px;padding:12px;font-size:13px;line-height:1.8}
+.rulebox b{color:var(--amber)}
+.legend{display:flex;flex-direction:column;gap:6px;margin-top:12px;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:7px;vertical-align:-1px}
+.shot-tools{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fchip{border:1px solid var(--line2);background:var(--sf);color:var(--mut);font-family:var(--body);font-weight:800;font-size:13px;padding:7px 16px;border-radius:99px;cursor:pointer;transition:.2s}
+.fchip:hover{color:var(--ink)}
+.fchip.on{color:#1a1206;background:var(--amber);border-color:var(--amber)}
+.fchip.on.c2{background:var(--cyan)}.fchip.on.c3{background:var(--violet2)}
+#shotSearch{flex:1;min-width:170px;background:var(--sf);border:1px solid var(--line2);border-radius:99px;color:var(--ink);font-family:var(--body);font-size:13.5px;padding:8px 16px;outline:none}
+#shotSearch:focus{border-color:var(--amber);box-shadow:0 0 12px rgba(245,168,60,.15)}
+#shotScroll{max-height:620px;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:var(--sf)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{position:sticky;top:0;background:var(--sf3);color:var(--amber2);font-size:12px;padding:11px 12px;text-align:right;z-index:2;border-bottom:1px solid var(--line2);white-space:nowrap}
+tbody td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.7}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:rgba(245,168,60,.05)}
+tbody tr.current{background:linear-gradient(90deg,rgba(245,168,60,.14),rgba(245,168,60,.03));box-shadow:inset 3px 0 0 var(--amber)}
+tbody tr.current.w2{background:linear-gradient(90deg,rgba(56,213,255,.12),rgba(56,213,255,.02));box-shadow:inset 3px 0 0 var(--cyan)}
+tbody tr.current.w3{background:linear-gradient(90deg,rgba(139,92,246,.16),rgba(139,92,246,.03));box-shadow:inset 3px 0 0 var(--violet)}
+td .ln{font-weight:800;font-size:13.5px;color:var(--ink)}
+td .tc2{font-family:var(--mono);direction:ltr;font-size:11px;color:var(--amber2);display:block;white-space:nowrap}
+td .fr{font-family:var(--mono);direction:ltr;font-size:10px;color:var(--mut)}
+td .mv{color:var(--mut);font-size:12.5px}
+td .mv b{color:var(--cyan);font-weight:700}
+td .spd{font-family:var(--mono);direction:ltr;font-size:11px;color:var(--gold);display:inline-block;margin-top:2px}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.tag.w1{background:rgba(245,168,60,.13);color:var(--amber2);border:1px solid rgba(245,168,60,.35)}
+.tag.w2{background:rgba(56,213,255,.1);color:var(--cyan);border:1px solid rgba(56,213,255,.35)}
+.tag.w3{background:rgba(139,92,246,.14);color:var(--violet2);border:1px solid rgba(139,92,246,.4)}
+.tag.fc{background:rgba(255,63,164,.1);color:#ff8ac6;border:1px solid rgba(255,63,164,.3)}
+.snum{font-family:var(--disp);font-size:20px;color:var(--brass);line-height:1}
+.playcell{color:var(--amber);font-size:15px;opacity:.55;transition:.15s}
+tr:hover .playcell{opacity:1;text-shadow:0 0 10px var(--amber)}
+/* ——— الفريمات الذهبية ——— */
+#frames{--acc:var(--gold)}
+.golden-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.gcard{background:var(--sf);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.3s;position:relative}
+.gcard:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--gold) 45%,transparent);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px rgba(255,209,102,.08)}
+.gframe{position:relative;width:100%;max-width:360px;margin:0 auto;aspect-ratio:9/16;background:#080604}
+.gframe img{width:100%;height:100%;object-fit:cover;display:block}
+.gframe .gsvg{position:absolute;inset:0;opacity:0;transition:.25s;pointer-events:none}
+.gframe .gsvg.show{opacity:1}
+.gbadge{position:absolute;top:10px;inset-inline-start:10px;font-family:var(--mono);direction:ltr;font-size:11px;background:rgba(8,6,4,.8);border:1px solid var(--gold);color:var(--gold);padding:3px 10px;border-radius:7px;backdrop-filter:blur(4px)}
+.gscale{position:absolute;top:10px;inset-inline-end:10px;font-family:var(--mono);direction:ltr;font-size:9.5px;background:rgba(8,6,4,.8);color:var(--mut);padding:3px 8px;border-radius:7px}
+.gbody{padding:18px}
+.gbody h3{font-family:var(--disp);font-weight:400;font-size:24px;color:var(--gold);line-height:1.3}
+.gbody .why{font-size:13px;color:var(--mut);margin:6px 0 12px;border-inline-start:3px solid var(--gold);padding-inline-start:10px;line-height:1.75}
+.gnotes{list-style:none;font-size:12.5px}
+.gnotes li{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);color:var(--ink)}
+.gnotes li::before{content:'◆';color:var(--gold);font-size:9px;margin-top:5px}
+.gnotes .px{font-family:var(--mono);direction:ltr;color:var(--cyan);font-size:11px}
+.gbtns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.gbtn{flex:1;min-width:86px;border:1px solid var(--line2);background:var(--sf2);color:var(--ink);font-family:var(--body);font-weight:800;font-size:12px;padding:9px 8px;border-radius:9px;cursor:pointer;transition:.2s;text-align:center;text-decoration:none;display:inline-block}
+.gbtn:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 14px rgba(255,209,102,.15)}
+.gbtn.hot{background:linear-gradient(120deg,var(--gold),#ffab4d);color:#221302;border:none}
+.gbtn.hot:hover{color:#221302;box-shadow:0 6px 20px rgba(255,209,102,.35)}
+/* ——— الوش ——— */
+#face{--acc:var(--magenta)}
+.face-layout{display:grid;grid-template-columns:400px 1fr;gap:26px;align-items:start}
+.lab{background:var(--sf);border:1px solid rgba(255,63,164,.2);border-radius:18px;padding:18px;position:sticky;top:calc(var(--navh) + 16px)}
+.lab h3{font-family:var(--disp);font-weight:400;font-size:22px;color:#ff8ac6;margin-bottom:4px}
+.lab .labsub{font-size:12px;color:var(--mut);margin-bottom:10px}
+#faceSvgWrap{background:radial-gradient(circle at 50% 40%,#241b16,#120d0a 75%);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#faceSvg{display:block;width:100%;height:auto}
+.sliders{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.srow{display:grid;grid-template-columns:88px 1fr 52px;align-items:center;gap:10px;font-size:12.5px}
+.srow label{font-weight:800;color:var(--mut)}
+.srow output{font-family:var(--mono);direction:ltr;font-size:11.5px;color:#ff8ac6;text-align:left}
+input[type=range]{direction:ltr;-webkit-appearance:none;appearance:none;height:20px;background:transparent;cursor:pointer;width:100%}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:4px;background:linear-gradient(90deg,#3a2a24,#5a3a3a)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--magenta);border:2px solid #ffd7ec;margin-top:-5px;box-shadow:0 0 10px rgba(255,63,164,.6);transition:.15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
+input[type=range]::-moz-range-track{height:5px;border-radius:4px;background:#4a3230}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--magenta);border:2px solid #ffd7ec;box-shadow:0 0 10px rgba(255,63,164,.6)}
+.labbtns{display:flex;gap:8px;margin-top:12px}
+.labbtn{flex:1;border:1px solid rgba(255,63,164,.35);background:rgba(255,63,164,.08);color:#ff8ac6;font-family:var(--body);font-weight:800;font-size:12.5px;padding:9px;border-radius:9px;cursor:pointer;transition:.2s}
+.labbtn:hover{background:rgba(255,63,164,.2);box-shadow:0 0 14px rgba(255,63,164,.2)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.preset{border:1px solid var(--line2);background:var(--sf);border-radius:11px;padding:8px 13px;cursor:pointer;font-family:var(--body);transition:.2s;text-align:right}
+.preset b{display:block;font-size:13.5px;font-weight:800;color:var(--ink)}
+.preset small{font-family:var(--mono);direction:ltr;font-size:10px;color:var(--mut);display:block}
+.preset:hover{border-color:var(--magenta);transform:translateY(-2px)}
+.preset.on{border-color:var(--magenta);background:rgba(255,63,164,.12);box-shadow:0 0 16px rgba(255,63,164,.18)}
+.preset.on b{color:#ff8ac6}
+.beatwrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--sf)}
+.beatwrap table td{font-size:12.5px}
+.beatname{font-weight:800;color:#ff8ac6}
+.env{font-family:var(--mono);direction:ltr;font-size:11px;color:var(--cyan);white-space:nowrap}
+.pmini{font-family:var(--mono);direction:ltr;font-size:10.5px;color:var(--mut);display:block}
+.kitnote{margin-top:16px;background:rgba(255,63,164,.06);border:1px solid rgba(255,63,164,.22);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--mut)}
+.kitnote b{color:#ff8ac6}
+.kitnote code{font-family:var(--mono);direction:ltr;font-size:11px;color:var(--cyan);background:#0a0806;padding:1px 6px;border-radius:5px}
+/* ——— الأبواب ——— */
+#doors{--acc:var(--cyan)}
+.doors-layout{display:grid;grid-template-columns:290px 1fr;gap:24px;align-items:start}
+.doors-intro{position:sticky;top:calc(var(--navh) + 16px)}
+.doors-intro .big{font-family:var(--disp);font-size:26px;color:var(--cyan);line-height:1.4;font-weight:400}
+.doors-intro p{color:var(--mut);font-size:13.5px;margin-top:10px}
+.dchart{margin-top:18px;background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:14px}
+.dchart h4{font-size:13px;color:var(--amber2);margin-bottom:8px;font-weight:800}
+.dchart svg{width:100%;height:auto;display:block}
+.dlegend{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;font-size:10.5px;color:var(--mut)}
+.dlegend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-inline-end:5px;vertical-align:3px}
+.dcard{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px;position:relative;overflow:hidden;transition:.3s}
+.dcard::before{content:'';position:absolute;top:0;inset-inline:0;height:3px;background:var(--dc)}
+.dcard:hover{border-color:color-mix(in srgb,var(--dc) 45%,transparent);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.dcard.r1{--dc:var(--amber)}.dcard.r2{--dc:var(--cyan)}.dcard.r3{--dc:var(--violet)}
+.dhead{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.rbadge{font-family:var(--disp);font-size:26px;color:var(--dc);background:color-mix(in srgb,var(--dc) 10%,transparent);border:1px solid color-mix(in srgb,var(--dc) 40%,transparent);width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:none}
+.dhead h3{font-family:var(--disp);font-weight:400;font-size:26px;line-height:1.2}
+.dhead .arrow{font-family:var(--mono);direction:ltr;font-size:12px;color:var(--mut);display:block}
+.dsecret{font-size:14px;font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--dc) 7%,transparent);border-inline-start:3px solid var(--dc);padding:10px 14px;border-radius:9px;margin:10px 0 14px;line-height:1.8}
+.dsecret b{color:var(--dc)}
+.phases{direction:ltr;display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.5);margin-bottom:4px}
+.phases i{display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:#0d0b09;white-space:nowrap;overflow:hidden;font-family:var(--body);direction:rtl}
+.phlabels{direction:ltr;display:flex;font-family:var(--mono);font-size:9px;color:var(--mut);margin-bottom:14px}
+.phlabels span{white-space:nowrap}
+.dspecs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.dspec{background:var(--sf2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px}
+.dspec .k{color:var(--mut);font-weight:800;font-size:10.5px;display:block;margin-bottom:2px}
+.dspec .v{color:var(--ink);line-height:1.65}
+.dspec .v b{color:var(--dc)}
+.dspec .v .mn{font-family:var(--mono);direction:ltr;font-size:11px;color:var(--gold)}
+.dgo{margin-top:14px;display:inline-flex;align-items:center;gap:8px;border:none;background:linear-gradient(120deg,var(--dc),color-mix(in srgb,var(--dc) 60%,#fff));color:#0d0b09;font-family:var(--body);font-weight:800;font-size:13.5px;padding:11px 22px;border-radius:11px;cursor:pointer;transition:.2s}
+.dgo:hover{transform:translateY(-2px);box-shadow:0 10px 26px color-mix(in srgb,var(--dc) 35%,transparent)}
+/* ——— المخاطر ——— */
+#risks{--acc:var(--red)}
+.energywrap{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:24px}
+.energywrap h3{font-family:var(--disp);font-weight:400;font-size:22px;color:var(--amber2)}
+.energywrap .esub{font-size:12.5px;color:var(--mut);margin-bottom:10px}
+.energywrap .esub b{color:var(--green)}
+#energyChart{width:100%;height:auto;display:block;cursor:crosshair;direction:ltr}
+.ebadge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--green);background:rgba(61,220,132,.08);border:1px solid rgba(61,220,132,.3);padding:4px 13px;border-radius:99px;margin-top:10px}
+.ebadge::before{content:'✓'}
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.rcard{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:18px;transition:.25s;position:relative}
+.rcard:hover{transform:translateY(-4px);border-color:rgba(255,84,73,.4);box-shadow:0 16px 44px rgba(0,0,0,.4)}
+.rcard .rid{font-family:var(--mono);direction:ltr;font-size:10.5px;color:var(--red)}
+.rcard h3{font-size:17px;font-weight:800;margin:3px 0 8px;color:var(--ink)}
+.sev{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);margin-bottom:10px}
+.sev .bar{flex:1;height:5px;border-radius:4px;background:#0a0806;overflow:hidden}
+.sev .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--warn),var(--red));border-radius:4px}
+.sev b{font-family:var(--mono);color:var(--red)}
+.kill{font-size:12.5px;color:var(--mut);line-height:1.8;border-top:1px dashed var(--line2);padding-top:10px}
+.kill b{color:var(--green)}
+.kill .kn{font-family:var(--mono);direction:ltr;font-size:11px;color:var(--cyan)}
+.livebadge{display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:var(--green);background:rgba(61,220,132,.07);border:1px dashed rgba(61,220,132,.35);padding:3px 11px;border-radius:99px}
+.cutwrap{margin-top:24px;background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:18px}
+.cutwrap h3{font-family:var(--disp);font-weight:400;font-size:20px;color:var(--amber2)}
+.cutwrap p{font-size:12.5px;color:var(--mut);margin-bottom:8px}
+#cutChart{width:100%;height:auto;display:block;direction:ltr}
+.rulestrip{margin-top:24px;background:linear-gradient(110deg,rgba(255,84,73,.12),rgba(245,168,60,.08) 55%,rgba(139,92,246,.12));border:1px solid var(--line2);border-radius:16px;padding:22px 26px;text-align:center}
+.rulestrip .rt{font-family:var(--disp);font-size:clamp(20px,3vw,28px);color:var(--amber2);font-weight:400;line-height:1.5}
+.rulestrip p{color:var(--mut);font-size:13.5px;max-width:760px;margin:6px auto 0}
+.rulestrip b{color:var(--red)}
+/* ——— فوتر ——— */
+footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:44px clamp(14px,4vw,44px);text-align:center;background:linear-gradient(180deg,transparent,rgba(139,92,246,.05))}
+footer .ft{font-family:var(--disp);font-size:26px;color:var(--amber2);font-weight:400}
+footer p{color:var(--mut);font-size:13px;max-width:680px;margin:8px auto 16px}
+footer p b{color:var(--cyan)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+/* ——— ريسبونسف ——— */
+@media(max-width:1120px){.console{grid-template-columns:392px 1fr}.golden-grid{grid-template-columns:repeat(3,1fr)}.risk-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:980px){
+  .console{grid-template-columns:1fr}.livepanel{position:static}
+  .shots-layout,.doors-layout{grid-template-columns:1fr}.rhythm,.doors-intro{position:static}
+  .face-layout{grid-template-columns:1fr}.lab{position:static;max-width:460px;margin-inline:auto;width:100%}
+  .golden-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:660px){
+  body{font-size:15px}
+  .golden-grid,.risk-grid{grid-template-columns:1fr}
+  .gcard{max-width:400px;margin-inline:auto;width:100%}
+  .dspecs{grid-template-columns:1fr 1fr}
+  .lp-grid{grid-template-columns:1fr 1fr}
+  .navlinks a{font-size:12px;padding:6px 9px}
+  #muteBtn span{display:none}
+  .sec-num{font-size:84px;top:-32px}
+  #shotScroll{max-height:480px}
+  table{font-size:12px}thead th,tbody td{padding:8px 8px}
+  .hidesm{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .aurora i{animation:none}
+  .rv{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<nav id="nav">
+  <a class="logo" href="#hero"><span class="door"></span>المصعد المفتوح</a>
+  <div class="navlinks" id="navLinks">
+    <a href="#previz" data-sec="previz">البريفيز الحي</a>
+    <a href="#shots" data-sec="shots">١ · اللقطات</a>
+    <a href="#frames" data-sec="frames">٢ · الفريمات الذهبية</a>
+    <a href="#face" data-sec="face">٣ · الوش</a>
+    <a href="#doors" data-sec="doors">٤ · الأبواب</a>
+    <a href="#risks" data-sec="risks">٥ · المخاطر</a>
+  </div>
+  <button id="muteBtn" aria-pressed="false" title="كتم/تشغيل كل الصوت (M)">
+    <svg id="muteIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="wv" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="wv" d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+    <span id="muteLabel">الصوت شغال</span>
+  </button>
+</nav>
+
+<main>
+<!-- ═══════════ هيرو ═══════════ -->
+<section id="hero">
+  <div class="hero-eyebrow rv" style="--d:0"><span class="dot"></span>دليل إخراج تفاعلي · Three.js · بدائيات فقط<span class="dot"></span></div>
+  <h1 class="rv" style="--d:1">المصعد المفتوح</h1>
+  <div class="hero-tag rv" style="--d:2">طبقة الإبهار — كل رقم في الدليل ده <u>منفّذ فعلاً</u> في البريفيز اللي تحت</div>
+  <p class="hero-desc rv" style="--d:3">٣٤ سطر بصوت المالك، ٣ عوالم، وباب واحد. الدليل ده مش كلام نظري: <b>قائمة اللقطات بتحرّك الكاميرا فعليًا</b>، الفريمات الذهبية متولّدة من نفس المشهد، ومعاملات الوش هنا هي نفسها اللي بتشتغل على الشخصية. اضغط تشغيل واسمع وشوف.</p>
+  <div class="spec-chips rv" style="--d:4">
+    <span class="chip">60.76s</span><span class="chip">1823 frames</span><span class="chip">1080×1920 · 9:16</span><span class="chip">30 fps</span><span class="chip">preview 360×640</span><span class="chip ar">بدائيات فقط · بدون موديلات</span>
+  </div>
+  <div class="hero-cta rv" style="--d:5">
+    <button class="btn btn-hot" id="heroPlay">▶ شغّل البريفيز الحي</button>
+    <a class="btn btn-ghost" href="#shots">انزل للدليل ↓</a>
+  </div>
+  <div class="hero-strip rv" style="--d:6">
+    <div class="filmbar" id="heroBar" title="شريط الفيلم — اضغط أي سطر"></div>
+    <small>شريط الفيلم الكامل: كهرماني = اللوبي · سماوي = شارع المطر · بنفسجي = الفضا — اضغط أي حتة تقفز لها</small>
+  </div>
+</section>
+
+<!-- ═══════════ البريفيز ═══════════ -->
+<section id="previz">
+  <div class="sec-head rv"><span class="sec-num">٠٠</span>
+    <span class="kicker">البروفة الحية</span>
+    <h2>الفيلم شغال قدامك — <em>اسحب الزمن بإيدك</em></h2>
+    <p class="sec-sub">نفس دوال الحركة اللي في الجداول تحت بتتحكم في المشهد ده حرفيًا. اسحب الشريط، دوس على أي لقطة في الجدول، أو سيبه يعدّي الـ<b>1823 فريم</b> كاملين. الصوت.Temp مصنوع إجرائيًا ومربوط بأحداث مرئية — زرار واحد فوق بيكتم كل حاجة.</p>
+  </div>
+  <div class="console">
+    <div class="stagecol rv" style="--d:1">
+      <div class="stage" id="stage">
+        <div class="ovl" id="vignette"></div>
+        <div class="ovl" id="flash"></div>
+        <svg class="ovl" id="gridOverlay" viewBox="0 0 360 640" preserveAspectRatio="none">
+          <g stroke="#ffcf7d" stroke-width="1" opacity=".55">
+            <line x1="120" y1="0" x2="120" y2="640"/><line x1="240" y1="0" x2="240" y2="640"/>
+            <line x1="0" y1="213" x2="360" y2="213"/><line x1="0" y1="427" x2="360" y2="427"/>
+          </g>
+          <g stroke="#38d5ff" stroke-width="1" opacity=".7"><line x1="172" y1="320" x2="188" y2="320"/><line x1="180" y1="312" x2="180" y2="328"/></g>
+          <rect x="18" y="32" width="324" height="576" fill="none" stroke="#ff3fa4" stroke-width="1" stroke-dasharray="5 5" opacity=".5"/>
+        </svg>
+        <div class="hud tl"><span class="rec">PREVIZ</span> · 30fps<br><span id="hudShot">S01/34</span> · <span id="hudFps">— fps</span></div>
+        <div class="hud tr"><span id="hudTC">00:00.00</span><br><span id="hudFrame">F0001/1823</span></div>
+        <div id="subs"><span class="num" id="subsNum">L01 · 0.22s</span><span class="txt" id="subsText">باب الأسانسير ده شكله اتجنن</span></div>
+        <div id="endCard" class="hide">
+          <div class="p-title">مش راجعة تاني</div>
+          <div class="p-sub">خلصت الـ60.76 ثانية — 1823 فريم</div>
+          <button id="replayBtn" title="إعادة من الأول"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+          <div class="p-hint">R = restart</div>
+        </div>
+        <div id="poster">
+          <div class="p-title">المصعد المفتوح</div>
+          <div class="p-sub">٣٤ سطر · ٣ عوالم · باب واحد<br>بريفيز إخراج حي 1080×1920</div>
+          <button id="bigPlay" title="تشغيل (Space)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+          <div class="p-hint">Space ▶ · ←→ frame · M mute</div>
+        </div>
+        <div id="loading"><div class="spinner"></div>بيتحضّر المشهد الثلاثي…</div>
+        <div id="fallbackNote"></div>
+      </div>
+      <div class="controls">
+        <div class="scrubber" id="scrubber" role="slider" tabindex="0" aria-label="زمن الفيلم" aria-valuemin="0" aria-valuemax="60.76" aria-valuenow="0">
+          <div class="scrub-track" id="scrubSegs"></div>
+          <div class="scrub-ticks" id="scrubTicks"></div>
+          <div id="scrubHead"></div>
+          <div id="scrubBubble"><b>00:00.00</b><span></span></div>
+        </div>
+        <div class="ctrl-row">
+          <button class="ibtn" id="restartBtn" title="من الأول (R)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+          <button class="ibtn" id="stepBack" title="فريم لورا (←)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14l-10-7z"/></svg></button>
+          <button class="ibtn main" id="playBtn" title="تشغيل/إيقاف (Space)"><svg id="playIco" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+          <button class="ibtn" id="stepFwd" title="فريم قدام (→)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l10-7z"/></svg></button>
+          <div class="tc"><span id="tCur">00:00.00</span> <small>/ 01:00.76</small><br><small id="fCur">F0001 / 1823</small></div>
+          <div class="seg" id="speedSeg" title="سرعة المعاينة">
+            <button data-s="0.5">0.5×</button><button data-s="1" class="on">1×</button><button data-s="1.5">1.5×</button><button data-s="2">2×</button>
+          </div>
+        </div>
+        <div class="ctrl-row">
+          <label class="tgl"><input type="checkbox" id="gridTgl"><span class="sw"></span>شبكة التلاتات (G)</label>
+          <label class="tgl"><input type="checkbox" id="loopTgl"><span class="sw"></span>تكرار</label>
+          <select id="qualitySel" title="جودة العرض"><option value="high" selected>جودة عالية ×2</option><option value="low">خفيفة ×1</option></select>
+          <button class="ibtn" id="exportBtn" style="width:auto;padding:0 14px;gap:7px;font-family:var(--body);font-weight:800;font-size:12.5px" title="تحميل الفريم الحالي PNG"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg>تصدير فريم</button>
+        </div>
+        <div class="keys"><span><kbd>Space</kbd> تشغيل</span><span><kbd>←</kbd><kbd>→</kbd> ±فريم</span><span><kbd>Shift</kbd>+سهم ±ثانية</span><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> عوالم</span><span><kbd>M</kbd> صوت</span></div>
+      </div>
+    </div>
+    <div class="livepanel rv" style="--d:2">
+      <div class="lp-line">
+        <div class="lp-num"><span id="liveLineNum">1</span><small id="liveLineT">0.22s</small></div>
+        <div><div id="liveLineText">باب الأسانسير ده شكله اتجنن</div><div id="liveBeat">—</div></div>
+      </div>
+      <div class="lp-grid">
+        <div class="lp-cell"><span class="k">اللقطة / الحجم</span><span class="v ar" id="liveShot">S01 — قريبة جدًا</span></div>
+        <div class="lp-cell"><span class="k">العدسة (تعادل رأسي)</span><span class="v" id="liveLens">28mm</span></div>
+        <div class="lp-cell"><span class="k">سرعة الكاميرا لحظيًا</span><span class="v" id="liveCamSpeed">0.00 m/s</span></div>
+        <div class="lp-cell"><span class="k">العالم</span><span class="v ar" id="liveWorld">اللوبي</span></div>
+        <div class="lp-cell"><span class="k">طاقة الحركة (خط الموت 0.12)</span><span class="v" id="liveEnergyVal">0.00</span><div class="meter"><i id="liveEnergyBar"></i></div></div>
+        <div class="lp-cell"><span class="k">فتح الباب</span><span class="v" id="liveDoorVal">0%</span><div class="meter door"><i id="liveDoorBar"></i></div></div>
+      </div>
+      <div class="actchips">
+        <button class="act-chip a1" data-t="0.22"><b>اللوبي</b><small>0.22 → 23.90</small></button>
+        <button class="act-chip a2" data-t="23.90"><b>شارع المطر</b><small>23.90 → 41.60</small></button>
+        <button class="act-chip a3" data-t="42.93"><b>الفضا</b><small>42.93 → 60.76</small></button>
+      </div>
+      <div class="lp-next">الجاية: <b id="nextShot">S02 — واسعة تأسيس</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ١ اللقطات ═══════════ -->
+<section id="shots">
+  <div class="sec-head rv"><span class="sec-num">٠١</span>
+    <span class="kicker">المطلوب الأول</span>
+    <h2>قائمة اللقطات — <em>حركة كاميرا لكل سطر</em></h2>
+    <p class="sec-sub">قاعدة الإيقاع: <b>إعادة تأطير أو دفع كل 1.5–2.5 ثانية كحد أقصى</b>. السطور الأقصر من 1.5ث بتتاخد كقطع فعل سريع. كل صف تحت بيشتغل: اضغط عليه والكاميرا فوق هتنفذ الأرقام دي بالظبط.</p>
+  </div>
+  <div class="shots-layout">
+    <aside class="rhythm rv" style="--d:1">
+      <h3>تشريح الإيقاع</h3>
+      <div id="shotStats"></div>
+      <div class="rulebox"><b>قاعدة الدفع الدائم:</b> مفيش لقطة واحدة في الـ34 كاميرتها واقفة. أبطأ لقطة بتزحف <b>0.07 م/ث</b> + هاند-هيلد 6مم مستمر. اللقطات الأطول من 2.5ث (S02، S04، S11) ليها <b>waypoint في النص</b> بيغيّر التأطير.</div>
+      <div class="legend">
+        <span><i style="background:var(--amber)"></i>اللوبي — كهرماني صوديوم</span>
+        <span><i style="background:var(--cyan)"></i>شارع المطر — سماوي/ماجنتا</span>
+        <span><i style="background:var(--violet)"></i>الفضا — بنفسجي وذهب نجوم</span>
+        <span><i style="background:var(--gold);transform:rotate(45deg)"></i>فريم ذهبي لازم يبهر</span>
+      </div>
+    </aside>
+    <div class="rv" style="--d:2">
+      <div class="shot-tools">
+        <button class="fchip on" data-f="all">الكل 34</button>
+        <button class="fchip" data-f="w1">اللوبي</button>
+        <button class="fchip c2" data-f="w2">المطر</button>
+        <button class="fchip c3" data-f="w3">الفضا</button>
+        <input id="shotSearch" type="search" placeholder="دوّر في السطور أو الحركات…">
+      </div>
+      <div id="shotScroll">
+        <table>
+          <thead><tr><th>#</th><th>التوقيت</th><th>السطر</th><th class="hidesm">اللقطة</th><th>حركة الكاميرا بالأرقام</th><th class="hidesm">الوش</th><th></th></tr></thead>
+          <tbody id="shotBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ٢ الفريمات ═══════════ -->
+<section id="frames">
+  <div class="sec-head rv"><span class="sec-num">٠٢</span>
+    <span class="kicker">المطلوب التاني</span>
+    <h2>٣ فريمات لازم تبهر — <em>بمقياس 360×640</em></h2>
+    <p class="sec-sub">لو المشاهد وقف عند ٣ فريمات بس، دول اللي لازم يخلوه يكمّل. الصور تحت <b>مش مرسومة — متولّدة لايف من نفس مشهد Three.js</b> عند الفريم المحدد (مصدر 720×1280، معروضة 360×640). حمّلها بحالتها أو اقفز لها في البريفيز.</p>
+  </div>
+  <div class="golden-grid" id="goldenGrid"></div>
+</section>
+
+<!-- ═══════════ ٣ الوش ═══════════ -->
+<section id="face">
+  <div class="sec-head rv"><span class="sec-num">٠٣</span>
+    <span class="kicker">المطلوب التالت</span>
+    <h2>ضربات الوش — <em>مربوطة بسطور بالاسم</em></h2>
+    <p class="sec-sub">الشخصية من طقم بدائيات: كرة عين + بؤبؤ، صندوق حاجب، وفم من ٥ كرات على قطع مكافئ. المعمل ده بيحرك <b>نفس المعاملات الثمانية</b> اللي التايم لاين بيسوقها في الفيلم. جرّب أي بيت هنا، وبعدين دوس «في الفيلم» تشوفه على فريدة في سياقها.</p>
+  </div>
+  <div class="face-layout">
+    <div class="lab rv" style="--d:1">
+      <h3>معمل وش فريدة</h3>
+      <div class="labsub">رسم تخطيطي حي للطقم — 8 معاملات، تطبيق لحظي</div>
+      <div id="faceSvgWrap"></div>
+      <div class="sliders" id="faceSliders"></div>
+      <div class="labbtns">
+        <button class="labbtn" id="faceRandom">🎲 عشوائي</button>
+        <button class="labbtn" id="faceReset">↺ تصفير محايد</button>
+      </div>
+    </div>
+    <div class="rv" style="--d:2">
+      <div class="presets" id="presetChips"></div>
+      <div class="beatwrap">
+        <table>
+          <thead><tr><th>البيت</th><th>السطر</th><th>هجوم/ثبات/انفلات</th><th class="hidesm">المعاملات المفتاح</th><th>الملاحظة الإخراجية</th></tr></thead>
+          <tbody id="beatBody"></tbody>
+        </table>
+      </div>
+      <div class="kitnote"><b>قواعد الحياة الصغيرة (شغالة أوتوماتيك في الفيلم):</b> رمشة كل <code>2.2–3.6s</code> (4 فريم قفل + 5 فتح)، ساكاد بؤبؤ كل <code>0.9–1.5s</code> بإزاحة ±0.008، ارتجاف خوف <code>9Hz</code> في L22–L23، وتجميد رمش كامل <code>12.54→14.90</code> عشان الصدمة تبان مش طبيعية. ممنوع الوش يقف على قيمة واحدة أكتر من <b>3 ثواني</b>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ٤ الأبواب ═══════════ -->
+<section id="doors">
+  <div class="sec-head rv"><span class="sec-num">٠٤</span>
+    <span class="kicker">المطلوب الرابع</span>
+    <h2>كشوفات الباب — <em>كل كشف يهزّ المشاهد بطريقة مختلفة</em></h2>
+    <p class="sec-sub">تفتيحـة واحدة مكررة = موت. عندنا <b>خمس حركات باب بخمس منحنيات وخمس سرعات ذروة</b> — من 1.11 م/ث ناعمة لـ11.2 م/ث خبطة. كل كشف ليه سلاح نفسي مختلف: التطابق، الانفجار، والصمت.</p>
+  </div>
+  <div class="doors-layout">
+    <aside class="doors-intro rv" style="--d:1">
+      <div class="big">الباب هو<br>المونتير الحقيقي</div>
+      <p>القطع بين العوالم بيحصل <b>والباب مقفول</b> — المشاهد عمره ما يشوف التبديل. اللي يشوفه هو «الكشف»، فكل الكشف لازم يبقى حدث كامل: صوت + ضوء + كاميرا + جزيئات، في أقل من ثانية.</p>
+      <div class="dchart">
+        <h4>منحنيات فتح/قفل الباب الفعلية (نسبة فتح × فريم)</h4>
+        <svg id="doorChart" viewBox="0 0 260 150"></svg>
+        <div class="dlegend" id="doorLegend"></div>
+      </div>
+    </aside>
+    <div id="doorCards"></div>
+  </div>
+</section>
+
+<!-- ═══════════ ٥ المخاطر ═══════════ -->
+<section id="risks">
+  <div class="sec-head rv"><span class="sec-num">٠٥</span>
+    <span class="kicker">المطلوب الخامس</span>
+    <h2>مخاطر السكون — <em>وفّة كل واحد بالأرقام</em></h2>
+    <p class="sec-sub">الفيلم ده ممكن يموت من السكون في ٦ حتات. تحت كل خطر: طريقة اكتشافه، ووصفة قتله بأرقام — والشارات الخضراء <b>محسوبة من البريفيز نفسه</b> مش مكتوبة يدوي.</p>
+  </div>
+  <div class="energywrap rv" style="--d:1">
+    <h3>منحنى الطاقة الحركية — الفيلم كله فوق خط الموت</h3>
+    <div class="esub">محسوب من دوال الكاميرا والباب والجزيئات الفعلية: سرعة كاميرا + سرعة باب + اهتزاز + حركة محيطة + حركة فريدة. <b>اضغط أي نقطة تقفز لها فوق.</b></div>
+    <svg id="energyChart" viewBox="0 0 1000 220" preserveAspectRatio="none"></svg>
+    <span class="ebadge" id="energyMin">بيتحسب…</span>
+  </div>
+  <div class="risk-grid" id="riskGrid"></div>
+  <div class="cutwrap rv">
+    <h3>بصمة الإيقاع — طول كل لقطة بالفريم</h3>
+    <p>متوسط 53.6 فريم/لقطة، لكن التوزيع متعرّج عمدًا: قطع فعل 27 فريم جنب لقطات بتتنفس 88 فريم. اضغط أي عمود تقفز للقطته.</p>
+    <svg id="cutChart" viewBox="0 0 1000 130" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="rulestrip rv">
+    <div class="rt">«قاعدة الـ75 فريم: مفيش أي حاجة في الكادر تسكت أكتر من 2.5 ثانية»</div>
+    <p>كاميرا، وش، باب، ضوء، جزيئات — لو الخمسة سكتوا مع بعض لفريم واحد، <b>اقطع فورًا</b>. والاستثناء الوحيد المكتوب في السكريبت: «سكون تام» في L26 — وده <b>سكون صوتي مش بصري</b>: الكاميرا لسه بتعمل قوس 14°/ث والنجوم لسه بتزحف.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="ft">اتبنى كبريفيز حي — مش ورقة كلام</div>
+  <p>كل رقم في الدليل ده (سرعات، منحنيات، معاملات وش، توقيتات فريم) هو <b>نفس الكود اللي بيشغّل المشهد فوق</b>. فيلم «المصعد المفتوح» · 60.76ث · 1823 فريم · 1080×1920 · Three.js بدائيات فقط · صوت المالك هو المرجع الزمني الوحيد.</p>
+  <div class="spec-chips" style="margin:0"><span class="chip">34 shots</span><span class="chip">11 face beats</span><span class="chip">5 door curves</span><span class="chip">0 static frames</span></div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   FILM — مصدر الحقيقة الوحيد: سطور + لقطات + بيتات + أبواب + sampler
+   كل الأرقام هنا بتتحرك فعليًا في مشهد Three.js تحت
+═══════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+const DUR=60.76, FPS=30, FRAMES=1823;
+const L=[
+[0.22,'باب الأسانسير ده شكله اتجنن'],[2.03,'الست فريدة واقفة في لوبي فندق قديم وكئيب'],
+[4.97,'والشنطة الجلد تقيلة جداً لدرجة إيدها وجعتها'],[7.59,'واللمض الصفرا بتطفي وتنور فوق الرخام اللي بيلمع'],
+[10.43,'بتدوس على الزرار'],[11.35,'الباب بيفتح ببطء'],[12.54,'تلاقي نفسها في نفس اللوبي'],
+[14.02,'كأنها متحركتش سنتي'],[16.25,'بتجرب كل الزراير واحد ورا التاني'],[18.30,'مفيش فايدة'],
+[19.21,'هو هو نفس المكان بيستقبلها ببرود'],[21.89,'بترجع لورا'],[22.93,'الباب بيقفل'],
+[23.90,'وفجأة بيفتح على شارع غرقان في المطر'],[26.41,'النور عاكس على الأسفلت'],
+[27.76,'والمية بتطير من تحت العربيات'],[29.84,'بتمد إيديها تلمس المطر'],[31.48,'بتبتسم وبتخطو خطوة'],
+[33.62,'الباب بيخبط في وشها ويقفل'],[35.30,'الأسانسير بيتهز ويتحرك بالعرض'],
+[37.19,'أرقام الأدوار بتلف زي الروليت'],[39.17,'وهي ماسكة الشنطة بإيديها الاتنين'],
+[40.80,'وقلبها بينط من مكانه'],[42.93,'الباب بيفتح تالت مرة'],[44.48,'على الفضا'],
+[45.61,'نجوم في كل حتة وسكون تام'],[47.82,'والأرض اختفت من تحتها'],
+[50.20,'بتبص للشنطة وبتبص للنجوم'],[52.53,'وبتقول لنفسها'],
+[53.78,'ما أنا كده كده مش عارفة أوصل'],[55.29,'بتنط'],[56.26,'وبطير وسط النجوم'],
+[57.82,'خفيفة لأول مرة'],[59.53,'مش راجعة تاني']];
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,u)=>a+(b-a)*u;
+const ss=u=>{u=clamp(u,0,1);return u*u*(3-2*u)};
+const eIOS=u=>-(Math.cos(Math.PI*u)-1)/2, eOC=u=>1-Math.pow(1-u,3), eIC=u=>u*u*u,
+      eOEx=u=>u>=1?1:1-Math.pow(2,-10*u), eIQ=u=>u*u*u*u, eIOQ=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+/* ——— أبواب: 5 حركات ——— */
+const DOOR_EV=[
+ {t0:11.35,t1:12.54,a:0,b:1,e:eIOS,id:'R1',label:'فتح بطيء'},
+ {t0:22.93,t1:23.62,a:1,b:0,e:eIC,id:'C1',label:'قفل'},
+ {t0:23.90,t1:24.55,a:0,b:1,e:eOEx,id:'R2',label:'انفجار'},
+ {t0:33.62,t1:33.92,a:1,b:0,e:eIQ,id:'SLAM',label:'خبطة'},
+ {t0:42.93,t1:44.10,a:0,b:1,e:eIOQ,id:'R3',label:'فتح مهيب'}];
+function door(t){let v=0;for(const e of DOOR_EV){if(t>=e.t1)v=e.b;else if(t>=e.t0){v=lerp(e.a,e.b,e.e((t-e.t0)/(e.t1-e.t0)));break}else break}return v}
+/* ——— اهتزازات وكاميرا ——— */
+function shakeAmp(t){let a=0;
+ if(t>33.62)a+=.07*Math.exp(-(t-33.62)/.18);
+ if(t>23.9&&t<25.4)a+=.03*Math.exp(-(t-23.9)/.15);
+ if(t>35.3&&t<41.3){const env=ss((t-35.3)/.3)*(1-ss((t-40.8)/.5));a+=.045*env}
+ return a}
+function swayX(t){if(t<35.3||t>41.6)return 0;const env=ss((t-35.3)/.3)*(1-ss((t-40.9)/.6));return .45*Math.sin((t-35.3)*3.1)*env}
+function swayZ(t){if(t<35.3||t>41.6)return 0;const env=ss((t-35.3)/.3)*(1-ss((t-40.9)/.6));return .045*Math.sin((t-35.3)*2.7+1)*env}
+function bobY(t){return t<44.1?0:.05*Math.sin((t-44.1)*.5)*ss((t-44.1)/1.2)}
+function carPos(t){ // عربية A: 27.55→29.35 ، B: 31.6→33.1
+ if(t>=27.55&&t<=29.35){const u=(t-27.55)/1.8;return[lerp(-7,7,u),.55,-5.6,1]}
+ if(t>=31.6&&t<=33.1){const u=(t-31.6)/1.5;return[lerp(7,-7,u),.55,-8.4,-1]}
+ return[99,.55,-5.6,0]}
+/* ——— فريدة: موضع الجذر ——— */
+function charState(t){
+ const s={x:.45,y:0,z:-1.6,ry:Math.PI,rx:0,rz:0,phase:'lobby',walk:0,grip:0,air:0};
+ if(t<12.54){ if(t>=4.97&&t<7.59)s.rz=.045*Math.sin((t-4.97)*2.4); return s}
+ s.phase=t<55.29?'in':'fly'; let z=1.1;
+ if(t>=21.89)z=lerp(1.1,1.75,ss(clamp((t-21.89)/.71,0,1)));
+ if(t>=31.48){const u=clamp((t-31.48)/1.02,0,1);z=lerp(1.75,.62,ss(u));s.walk=Math.sin(u*Math.PI*2)*.45}
+ if(t>=33.62)z=.62+.43*ss(clamp((t-33.62)/.43,0,1));
+ if(t>=21.89&&t<22.6)s.walk=Math.sin(clamp((t-21.89)/.71,0,1)*Math.PI*2)*.4;
+ s.z=z; s.x=0; s.ry=0;
+ if(t>=39.17&&t<55.0)s.grip=ss((t-39.17)/.4);
+ if(t>=50.2){const r=ss((t-50.2)/1.5);s.y+=r*(.03+.03*Math.sin((t-50.2)*1.4));s.air=r}
+ if(t>=55.0&&t<55.29)s.y-=.07*ss((t-55)/.29);
+ if(t>=55.29){const u=clamp((t-55.29)/.81,0,1),e=eOC(u);
+   s.y=1.35*e+.03; s.z=lerp(1.05,-.7,e); s.air=1; s.grip=0; s.walk=0;
+   if(t>=56.1){const f=clamp((t-56.1)/4.66,0,1),fe=eIOS(f);
+     s.z=-.7-2.7*fe; s.y=1.38+1.0*fe+.05*Math.sin(t*1.1); s.x=.35*fe;
+     s.rz=-.12*fe; s.rx=-.18*fe; s.ry=.15*Math.sin(t*.6)}}
+ if(t>=12.54&&t<55.29){s.x+=swayX(t);s.y+=bobY(t);s.rz+=swayZ(t)+(shakeAmp(t)>.01?.02*Math.sin(t*23):0)}
+ return s}
+function charHead(t){const c=charState(t);return[c.x,c.y+1.45,c.z]}
+/* ——— Catmull-Rom عام ——— */
+function cr(pts,u){const n=pts.length;if(n===1)return pts[0].slice();
+ const f=clamp(u,0,1)*(n-1),i=Math.min(Math.floor(f),n-2),s=f-i,
+ p0=pts[Math.max(i-1,0)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(i+2,n-1)],out=[];
+ for(let k=0;k<p1.length;k++){const a=p0[k],b=p1[k],c=p2[k],d=p3[k];
+  out.push(.5*(2*b+(-a+c)*s+(2*a-5*b+4*c-d)*s*s+(-a+3*b-3*c+d)*s*s*s))}
+ return out}
+const lensOf=f=>Math.round(12/Math.tan(f*Math.PI/360));
+/* ——— 34 لقطة: مفاتيح [pos, look] ——— */
+const SH=[
+{size:'قريبة جدًا · مؤشر وباب',fov:[32,28],k:[[[ -.55,1.95,-1.5],[0,2.3,-.05]],[[-.25,1.8,-.95],[0,1.9,0]]],mv:'دفع على شق الباب والمؤشر بيهيّس',w:1,face:'—',note:'المؤشر بيغلّط 8Hz من أول فريم'},
+{size:'واسعة · تأسيس',fov:[58,50],k:[[[2.7,1.75,-6.6],[.2,1.2,-1.2]],[[1.6,1.55,-4.7],[.35,1.15,-1.4]],[[1,1.45,-3.5],[.45,1.2,-1.5]]],mv:'دولي 3.6م نحو فريدة + waypoint في النص',w:1,face:'تعب السنين',note:'اللوبي كله في كادر: أعمدة، نجفة، رخام'},
+{size:'متوسطة · الشنطة والإيد',fov:[38,34],k:[[[-1.2,1.1,-3],[.78,.55,-1.55]],[[-.85,.95,-2.4],[.78,.5,-1.55]]],mv:'دفع 0.7م علىقبضة الإيد',w:1,face:'وجع الإيد',note:'كتفها بينزل 2سم مع نقل الحمل'},
+{size:'واطية · رخام → لمض',fov:[55,46],k:[[[.5,.32,-3.3],[.1,.1,-1.6]],[[.42,.5,-2.7],[0,1.6,-.8]],[[.45,.95,-2.2],[0,2.7,-1.4]]],mv:'تيلت لأعلى 40° من انعكاس الرخام للنجفة',w:1,face:'—',note:'dropouts إضاءة عند 8.1 و9.0'},
+{size:'قريبة · الزرار',fov:[30,27],k:[[[1.6,1.35,-1.05],[1.15,1.25,-.1]],[[1.25,1.3,-.75],[1.15,1.25,-.1]]],mv:'دفع سريع 0.47م مع الضغط',w:1,face:'—',note:'قطع فعل 0.92ث — الزرار بينور'},
+{size:'متوسطة · الباب بيفتح',fov:[47,43],k:[[[.4,1.5,-3.2],[0,1.35,.5]],[[.22,1.46,-2.6],[0,1.32,.5]]],mv:'دفع 0.63م والباب بيتفتح ببطء',w:1,face:'—',note:'ظهرها سيلويت في التلت اليمين'},
+{size:'متوسطة · MATCH CUT',fov:[47,43],k:[[[.32,1.5,3.1],[0,1.35,-.5]],[[.2,1.46,2.58],[0,1.32,-.5]]],mv:'نفس تأطير S06 بالظبط من الناحية التانية',w:1,face:'صدمة متجمدة',note:'الخدعة: بقت جوه من غير ما نشوفها تدخل'},
+{size:'قريبة · وش متجمد',fov:[27,25],k:[[[.34,1.52,.3],[0,1.45,1.1]],[[.26,1.5,.48],[0,1.46,1.1]]],mv:'زحف 0.09م/ث — أبطأ لقطة في الفيلم',w:1,face:'صدمة متجمدة',note:'ممنوع رمش 2.4ث · بؤبؤ بينكمش 0.6'},
+{size:'إنسيرت · زراير',fov:[32,29],k:[[[.6,1.42,1.9],[1.02,1.32,1.6]],[[.82,1.36,1.62],[1.02,1.28,1.62]]],mv:'بان جانبي 12° مع 5 ضغطات متتالية',w:1,face:'إحباط سريع',note:'زرار بينور كل 0.33ث'},
+{size:'قريبة جدًا · زرار ميت',fov:[23,22],k:[[[.8,1.3,1.72],[1.02,1.2,1.68]],[[.76,1.29,1.66],[1.02,1.2,1.68]]],mv:'ميكرو-دفع 0.08م/ث',w:1,face:'إحباط سريع',note:'الزرار الأحمر بيرعش 0.3 وبيموت'},
+{size:'واسعة · استقبال بارد',fov:[56,49],k:[[[-.55,1.85,3.65],[0,1.3,-3]],[[-.3,1.65,3.1],[0,1.3,-4]],[[-.08,1.5,2.75],[0,1.35,-5]]],mv:'دفع 1م عبر الباب نحو الأسانسير التاني البعيد',w:1,face:'برد الاستقبال',note:'نفس الساعة 11:47 · نفس فازة اللمض'},
+{size:'متوسطة · رجوع لورا',fov:[40,38],k:[[[.62,1.4,.5],[0,1.25,1.3]],[[.55,1.42,.85],[0,1.3,1.7]]],mv:'سحب 0.36م موازي لخطوتها لورا',w:1,face:'برد الاستقبال',note:'خطوة كاملة z: 1.1→1.75'},
+{size:'قريبة · الباب بيقفل',fov:[38,34],k:[[[0,1.42,1.95],[0,1.35,.05]],[[0,1.44,1.6],[0,1.3,.05]]],mv:'دفع 0.35م وشق النور بيضيق',w:1,face:'—',note:'آخر خيط كهرماني بيموت عند 23.62'},
+{size:'كشف · شارع المطر',fov:[52,45],k:[[[0,1.46,2.95],[0,1.5,-4]],[[0,1.5,2.25],[0,1.45,-4.5]],[[0,1.53,1.8],[0,1.4,-5]]],mv:'دفع 1.15م + قفزة عدسة −6° في 6 فريمات',w:2,face:'—',note:'انفجار الباب 8.9م/ث + رعد + 1400 قطرة'},
+{size:'واطية · انعكاس الأسفلت',fov:[50,47],k:[[[.38,.55,1.35],[.1,.3,-5]],[[.3,.45,.95],[.05,.28,-5.5]]],mv:'زحف 0.31م/ث على مستوى الأرض',w:2,face:'—',note:'النيون معكوس على الأسفلت المبلول'},
+{size:'واسعة · عربية ورش',fov:[47,45],k:[[[-.45,1.32,2.35],[0,.8,-5.6]],[[.3,1.36,2.05],[0,.8,-5.6]]],mv:'بان تتبّع 16°/ث ورا العربية + رش 220 جزيء',w:2,face:'—',note:'العربية 7.8م/ث · الرش عند x≈0'},
+{size:'قريبة · إيد في المطر',fov:[30,27],k:[[[.6,1.5,.8],[.32,1.32,-.05]],[[.44,1.47,.55],[.3,1.3,-.1]]],mv:'دفع 0.18م/ث على الإيد الممدودة',w:2,face:'أول أمل',note:'★ فريم ذهبي F0919 · رذاذ على الإيد'},
+{size:'متوسطة · ابتسامة وخطوة',fov:[43,41],k:[[[-.55,1.5,2.15],[0,1.32,1]],[[-.28,1.46,1.75],[0,1.32,.6]]],mv:'دفع 0.49م مع خطوتها qدام',w:2,face:'أول أمل',note:'ابتسامة بتكبر 0.45→0.95 على 1.2ث'},
+{size:'خبطة · الباب في الوش',fov:[35,34],k:[[[.18,1.55,.95],[0,1.45,.15]],[[.12,1.5,1.4],[0,1.42,.3]]],mv:'ارتداد +0.3م أُسّي + هز 0.07م / 13Hz',w:2,face:'خبطة الباب',note:'قفل 11.2م/ث في 9 فريمات + غبار شق'},
+{size:'واسعة · اهتزاز جانبي',fov:[53,51],k:[[[.62,1.72,3.35],[0,1.3,.9]],[[.45,1.62,3.1],[0,1.28,.85]]],mv:'هاند-هيلد 0.05م 9Hz + الكابينة بتتمايل ±0.45م',w:2,face:'—',note:'النجفة بندول 0.5rad متخامد'},
+{size:'قريبة جدًا · روليت الأدوار',fov:[25,23],k:[[[0,2.32,1.4],[0,2.52,.08]],[[0,2.38,1.1],[0,2.54,.08]]],mv:'دفع 0.16م/ث على المؤشر',w:2,face:'—',note:'رقم كل 3 فريمات + شبح تمدد رأسي 1.6×'},
+{size:'قريبة · إيدين على الشنطة',fov:[33,31],k:[[[-.52,.98,1.95],[-.2,.72,1.12]],[[-.44,.92,1.72],[-.22,.7,1.12]]],mv:'دفع 0.15م/ث والشنطة بترعش 11Hz',w:2,face:'رعب الاهتزاز',note:'قبضة بإيدين · عقد الأصابع بتبيض'},
+{size:'متوسطة قريبة · القلب',fov:[26,24],k:[[[.22,1.48,.42],[0,1.45,1.1]],[[.15,1.5,.56],[0,1.46,1.1]]],mv:'زحف 0.075م/ث + نبض فينييت 1.2→1.7Hz',w:2,face:'رعب الاهتزاز',note:'البؤبؤ 1.4× · ارتجاف حاجب 9Hz'},
+{size:'كشف · الفضا',fov:[53,49],k:[[[0,1.5,2.85],[0,1.6,-6]],[[0,1.53,2.35],[0,1.65,-7]]],mv:'دفع 0.32م/ث والصوت بينسحب −24dB',w:3,face:'—',note:'فتح 1.17ث ناعم · 2100 نجمة 3 طبقات'},
+{size:'واسعة · على الفضا',fov:[58,56],k:[[[.35,1.62,3.45],[0,1.7,-8]],[[.2,1.64,3.05],[0,1.72,-9]]],mv:'دفع 0.38م/ث — الباب مستطيل نور في العدم',w:3,face:'—',note:'سيلويت في التلت الشمال'},
+{size:'قوس · سكون النجوم',fov:[46,46],k:[[[.85,1.62,2.9],[0,1.5,1]],[[0,1.88,3.45],[0,1.52,1]],[[-.85,1.66,2.95],[0,1.5,1]]],mv:'قوس 30° حواليها ≈ 14°/ث — السكون صوتي بس',w:3,face:'سكون الفضا',note:'بارالاكس النجوم 1:2:4'},
+{size:'واطية · الأرض بتختفي',fov:[51,49],k:[[[.42,.75,1.95],[0,.25,-1.2]],[[.36,.58,1.6],[0,.05,-1.6]]],mv:'نزول 0.17م + 6 بلاطات بتقع بفواصل 8 فريمات',w:3,face:'سكون الفضا',note:'سقوط حر 4.9م/ث² + دوران'},
+{size:'قريبة · القرار',fov:[27,25],k:[[[.32,1.42,.5],[0,1.44,1.1]],[[.24,1.47,.64],[0,1.46,1.1]]],mv:'زحف 0.07م/ث · نظرة تحت 0.9ث وبعدين فوق 0.9ث',w:3,face:'سكون الفضا',note:'البؤبؤ بيتتبّع الشنطة ثم النجوم'},
+{size:'قريبة جدًا · همس',fov:[21,20],k:[[[.17,1.5,.66],[0,1.46,1.08]],[[.13,1.51,.74],[0,1.47,1.08]]],mv:'ميكرو-دفع 0.07م/ث — الفم بيتكلم 3 مقاطع',w:3,face:'—',note:'أضيق كادر في الفيلم 20mm-eq'},
+{size:'متوسطة قريبة · عزم',fov:[28,26],k:[[[-.36,1.58,.55],[0,1.45,1.1]],[[-.22,1.54,.74],[0,1.46,1.1]]],mv:'دفع 0.16م/ث · زفرة صدر 1.5%',w:3,face:'قرار',note:'القبضة بتفك 55.0 — الشنطة بتسيب'},
+{size:'واسعة · النطة',fov:[56,50],k:[[[.72,1.35,3.25],[0,1.4,.6]],[[.5,1.95,3.85],[0,1.9,-.5]]],mv:'رفع 0.9م/ث مع انطلاقها + 30 شرارة ذهب',w:3,face:'—',note:'قرفصة 4 فريمات ثم انطلاق easeOut'},
+{size:'تتبّع · طيران',fov:[49,47],k:[[[1.6,.35,1.7],[0,0,0]],[[.85,.55,-1.5],[0,0,0]]],mv:'قوس 22°/ث وراها — إحداثيات نسبية ليها',w:3,face:'—',note:'★ فريم ذهبي F1714 · الشنطة بتتدحرج بعيد'},
+{size:'قريبة · خفيفة',fov:[25,23],k:[[[.5,.12,-.95],[0,0,0]],[[.34,.1,-.72],[0,0,0]]],mv:'دفع نسبي 0.16م/ث على وشها الطاير',w:3,face:'تحرر',note:'ريم ذهبي + فيل بنفسجي · عين مقفولة فرح'},
+{size:'سحب نهائي · فانوس في العدم',fov:[52,60],k:[[[.9,2.4,-2.8],[0,1.5,.4]],[[3.4,3.2,-.5],[0,1.6,.3]],[[4.6,3.8,4.6],[0,1.6,.5]]],mv:'سحب 8م في 1.23ث ≈ 6.5م/ث — الأسانسير فانوس صغير',w:3,face:'—',note:'تايتل «مش راجعة تاني» عند 59.9'}];
+const SHOTS=L.map((l,i)=>{const t0=l[0],t1=i<33?L[i+1][0]:DUR;
+ const s=SH[i];let d=0;for(let j=1;j<s.k.length;j++){const a=s.k[j-1][0],b=s.k[j][0];d+=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])}
+ return{n:i+1,t0,t1,dur:t1-t0,text:l[1],...s,speed:d/(t1-t0),lens:lensOf((s.fov[0]+s.fov[1])/2)}});
+function shotAt(t){let i=0;for(let j=0;j<SHOTS.length;j++)if(t>=SHOTS[j].t0)i=j;return i}
+function sampleCam(t){
+ const i=shotAt(t),s=SHOTS[i],u=clamp((t-s.t0)/s.dur,0,1);
+ const posKeys=s.k.map(k=>k[0]),lookKeys=s.k.map(k=>k[1]);
+ let pos=cr(posKeys,u),look=cr(lookKeys,u);
+ const fov=lerp(s.fov[0],s.fov[1],ss(u));
+ const c=charState(t);
+ if(i>=31&&i<=32){pos=[c.x+pos[0],c.y+pos[1],c.z+pos[2]];look=charHead(t)}
+ if(i===30&&u>.3){const h=charHead(t),b=ss((u-.3)/.4);look=[lerp(look[0],h[0],b),lerp(look[1],h[1],b),lerp(look[2],h[2],b)]}
+ if(i===15){const cp=carPos(t);if(cp[3])look=[cp[0],cp[1]+.3,cp[2]]}
+ const seed=i*7.3;
+ let hx=Math.sin(t*1.7+seed)*.004+Math.sin(t*3.1+seed*2)*.0025,
+     hy=Math.sin(t*2.3+seed)*.003+Math.sin(t*4.1+seed)*.002,
+     hz=Math.sin(t*1.3+seed*3)*.003;
+ const A=shakeAmp(t);
+ if(A>0){hx+=A*Math.sin(t*81.7);hy+=A*.8*Math.sin(t*67.3+2);hz+=A*.5*Math.sin(t*73.1)}
+ if(s.w>=2&&t<55.29&&i<30){pos[0]+=swayX(t);pos[1]+=bobY(t)}
+ if(t>33.62&&i===18)pos[2]+=.3*Math.exp(-(t-33.62)/.2);
+ let f=fov; if(t>23.9)f-=6*Math.exp(-(t-23.9)/.12); if(t>33.62)f+=3*Math.exp(-(t-33.62)/.15);
+ return{pos:[pos[0]+hx,pos[1]+hy,pos[2]+hz],look,fov:f,i}}
+/* ——— بيتات الوش ——— */
+const P={lift:0,angle:0,open:.85,pupil:1,curve:0,mouth:.05,width:1,tilt:0};
+const BEATS=[
+{id:'B1',name:'تعب السنين',line:2,t:2.03,atk:10,v:{lift:-.25,angle:-.1,open:.68,pupil:.95,curve:-.18,mouth:.02,width:.95,tilt:-.06},note:'جفون تقيلة 0.68 — ست شايلة عمرها مش شنطة بس'},
+{id:'B2',name:'وجع الإيد',line:3,t:4.97,atk:4,v:{lift:.15,angle:.55,open:.5,pupil:.85,curve:-.5,mouth:.22,width:.8,tilt:.1},note:'ウィンس: حاجب داخلي لفوق + فم مشدود — هجوم 4 فريمات'},
+{id:'B3',name:'صدمة متجمدة',line:7,t:12.54,atk:3,v:{lift:.85,angle:.15,open:1.4,pupil:.6,curve:.05,mouth:.35,width:1.05,tilt:0},note:'بؤبؤ بينكمش 0.6 ورمش متجمد 2.4ث — الصدمة مش طبيعية'},
+{id:'B4',name:'إحباط سريع',line:9,t:16.25,atk:5,v:{lift:-.55,angle:-.6,open:.8,pupil:.9,curve:-.35,mouth:.06,width:.85,tilt:-.04},note:'حواجب داخلية لتحت + ساكاد سريع مع كل ضغطة زرار'},
+{id:'B5',name:'برد الاستقبال',line:11,t:19.21,atk:12,v:{lift:-.1,angle:0,open:.75,pupil:.95,curve:-.05,mouth:.02,width:.95,tilt:0},note:'كل حاجة بتسحب لحياد بارد — رمشة بطيئة 0.4ث'},
+{id:'B6',name:'أول أمل',line:17,t:29.84,atk:14,v:{lift:.45,angle:.2,open:1.1,pupil:1.25,curve:.45,mouth:.12,width:1.05,tilt:.08},note:'بؤبؤ بيتوسع 1.25× + بريق في العين — أول نور حقيقي',ex:[[31.9,{curve:.85,mouth:.18,pupil:1.3}]]},
+{id:'B7',name:'خبطة الباب',line:19,t:33.62,atk:2,v:{lift:-.7,angle:-.75,open:1.5,pupil:.7,curve:-.4,mouth:.8,width:1.1,tilt:-.12},note:'هجوم فريمين! فم O كامل — أسرع ضربة في الفيلم',ex:[[34.4,{open:1.1,mouth:.3,lift:-.3,angle:-.4}]]},
+{id:'B8',name:'رعب الاهتزاز',line:22,t:39.17,atk:6,v:{lift:.6,angle:.85,open:1.3,pupil:1.4,curve:-.25,mouth:.3,width:.9,tilt:.05},note:'حاجب داخلي لفوق 0.85 = خوف خالص + ارتجاف 9Hz'},
+{id:'B9',name:'سكون الفضا',line:26,t:45.61,atk:20,v:{lift:.55,angle:.25,open:1.2,pupil:1.45,curve:.2,mouth:.15,width:1.05,tilt:-.05},note:'رهبة: بؤبؤ 1.45× بياكل النجوم — هجوم بطيء 20 فريم'},
+{id:'B10',name:'قرار',line:30,t:53.78,atk:10,v:{lift:-.05,angle:-.15,open:.95,pupil:1.05,curve:.3,mouth:.04,width:1,tilt:.03},note:'حواجب بتستوي + نص ابتسامة — القرار اتاخد قبل النطة'},
+{id:'B11',name:'تحرر',line:33,t:57.82,atk:6,v:{lift:.6,angle:.1,open:.22,pupil:1.2,curve:1,mouth:.25,width:1.2,tilt:-.14},note:'عين مقفولة فرح 0.22 ثم بتفتح 0.85 — خفيفة لأول مرة',ex:[[58.35,{open:.85,curve:1,pupil:1.25}]]}];
+const FKEYS={};Object.keys(P).forEach(k=>{
+ const keys=[{t:0,v:P[k]}];let prev=P[k];
+ const evs=[];BEATS.forEach(b=>{evs.push({t:b.t,v:prev,atk:0});evs.push({t:b.t+b.atk/FPS,v:b.v[k],atk:1});prev=b.v[k];
+  if(b.ex)b.ex.forEach(x=>{evs.push({t:x[0],v:prev,atk:0});if(x[1][k]!==undefined){evs.push({t:x[0]+.3,v:x[1][k],atk:1});prev=x[1][k]}})});
+ evs.sort((a,b)=>a.t-b.t);FKEYS[k]=keys.concat(evs)});
+function trackVal(keys,t){let v=keys[0].v;for(let i=1;i<keys.length;i++){const a=keys[i-1],b=keys[i];
+ if(t>=b.t)v=b.v;else if(t>a.t){v=lerp(a.v,b.v,ss((t-a.t)/Math.max(b.t-a.t,.001)));break}else break}return v}
+const rB=rng(7),BLINKS=[];{let t=1;while(t<DUR){BLINKS.push(t);t+=2.2+rB()*1.4}}
+const rS=rng(21),SACC=[];{let t=.8;while(t<DUR){SACC.push({t,x:(rS()-.5)*.016,y:(rS()-.5)*.008});t+=.9+rS()*.6}}
+function sampleFace(t){
+ const f={};Object.keys(P).forEach(k=>f[k]=trackVal(FKEYS[k],t));
+ let blink=1;
+ if(!(t>=12.54&&t<=14.9)&&!(t>=57.8&&t<=58.35))for(const b of BLINKS){const u=(t-b)/.3;if(u>=0&&u<=1)blink=1-Math.pow(Math.sin(u*Math.PI),1.4)*.96}
+ f.open*=blink;
+ let gx=0,gy=0;
+ if(!(t>=52.5&&t<=55)&&!(t>=12.54&&t<=14.9))for(const s of SACC){if(t>=s.t&&t<s.t+.5){const e=ss((t-s.t)/.08)*(1-ss((t-s.t-.35)/.15));gx=s.x*e;gy=s.y*e}}
+ if(t>=50.4&&t<52.5){const d=t<51.3?ss((t-50.4)/.5):1-ss((t-51.4)/.7);f.tiltX=.35*d-.35*(1-d)*(t>51.3?1:0);gx=-.006*d;gy=.006*d-.007*(1-d)}else f.tiltX=t>=57.82?-.15:0;
+ if(t>=39.17&&t<42.9){const tr=Math.sin(t*56);f.lift+=tr*.03;f.mouth=Math.max(0,f.mouth+tr*.04)}
+ if(t>=52.53&&t<55.29)f.mouth=Math.max(f.mouth,Math.max(0,Math.sin(t*9.5))*.22);
+ f.gx=gx;f.gy=gy;f.joy=Math.max(0,f.curve);
+ return f}
+function beatAt(t){let b=null;for(const x of BEATS)if(t>=x.t)b=x;return b}
+/* ——— طاقة ——— */
+function energy(t){
+ const a=sampleCam(clamp(t-.04,0,DUR)).pos,b=sampleCam(clamp(t+.04,0,DUR)).pos;
+ const cs=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])/.08;
+ const dv=Math.abs(door(clamp(t+.03,0,DUR))-door(clamp(t-.03,0,DUR)))/.06;
+ const ca=charState(clamp(t-.05,0,DUR)),cb=charState(clamp(t+.05,0,DUR));
+ const cm=Math.hypot(cb.x-ca.x,cb.y-ca.y,cb.z-ca.z)/.1;
+ const amb=t<23.7?.14:(t<41.6?.28:.11);
+ let e=cs*.45+dv*.9+shakeAmp(t)*6+cm*.5+amb;
+ if(t>=40.8&&t<44.3)e+=.08;
+ return clamp(e,0,1)}
+const GOLD=[
+{t:13.10,f:394,title:'الباب اللي بيؤدي لنفسه',why:'الخدعة البصرية كلها في فريم: كادر متماثل، أسانسير تاني مطابق في العمق، ونفس الساعة 11:47. المشاهد يحس إن المكان بيستهبله قبل ما يفهم.',
+ notes:['تماثل 96% حول محور الباب — العين بتدور على الاختلاف ومش بتلاقيه','فريدة في التلت السفلي <span class="px">(180, 470)</span> — ظهرها للكاميرا','الأسانسير البعيد على <span class="px">(180, 240)</span> — نفس فازة اللمض 7Hz حرفيًا (نفس الماتيريال)']},
+{t:30.60,f:919,title:'إيد بتلمس المطر',why:'أعلى تشبع لوني في الفيلم: سماوي + ماجنتا على أسود. الإطار-جوه-إطار (الباب) بيخلي المطر لوحة، والإيد هي الجسر بين عالمين.',
+ notes:['الإيد على تقاطع التلاتات <span class="px">(216, 233)</span> في 360×640','الباب بياخد 58% من العرض كإطار داخل إطار','الماجنتا <span class="px">#ff3fa4</span> حوالي 12% من المساحة — أعلى نقطة تشبع','رذاذ 6 نبضات على الإيد + ريم سماوي على الجلد']},
+{t:57.10,f:1714,title:'خفيفة لأول مرة',why:'الدفعة العاطفية: الشنطة — تقيلة 50 ثانية — بقت نقطة بتتدحرج في العدم. القطر بين فريدة والنقطة هو الفيلم كله.',
+ notes:['فريدة على <span class="px">(150, 210)</span> والشنطة نقطة عند <span class="px">(300, 520)</span> — قطر عاطفي','الأسانسير فانوس كهرماني في التلت السفلي — البيت اللي سابته','ريم ذهبي 2700K من اتجاه الباب + فيل بنفسجي <span class="px">#8b5cf6</span>','عين مقفولة فرح 0.22 وابتسامة كاملة 1.0']}];
+const AUDIO_EV=[
+{t:10.55,name:'ضغطة الزرار',d:'كليك 1200Hz · 40ms'},{t:11.35,name:'دينج R1',d:'880+1320Hz · تلاشٍ 0.8ث'},
+{t:23.90,name:'دينج R2 مشوّه',d:'−40 سنت + نويز 8%'},{t:24.35,name:'رعد بعيد',d:'نويز lowpass 200Hz · 1.3ث'},
+{t:33.62,name:'خبطة الباب',d:'ثامب 60Hz + نويز 400Hz'},{t:35.30,name:'رَمبْل الاهتزاز',d:'براون نويز 90Hz · 5.5ث'},
+{t:37.19,name:'تكّات الروليت',d:'بليب 1600Hz كل 3 فريمات'},{t:40.80,name:'نبض القلب',d:'55Hz · 1.2→1.7Hz مربوط بالفينييت'},
+{t:42.60,name:'سحب الصوت',d:'duck −24dB في 12 فريم'},{t:45.50,name:'باد الفضا',d:'3 ساينات ديتيون · فيد 2ث'},
+{t:55.29,name:'ووش النطة',d:'باندمر 300→2400Hz'},{t:56.30,name:'بريق نجوم',d:'شايم 660Hz تريمولو'}];
+window.FILM={DUR,FPS,FRAMES,L,SHOTS,BEATS,GOLD,DOOR_EV,AUDIO_EV,P,door,charState,charHead,sampleCam,sampleFace,shotAt,beatAt,energy,carPos,shakeAmp,swayX,bobY,lensOf,clamp,lerp,ss,eIOS,eOC,eIC,eOEx,eIQ,eIOQ,rng};
+})();
+</script>
+
+<script>
+/* ═══════════════ UI — يشتغل كامل حتى لو المحرك وقع ═══════════════ */
+(function(){
+'use strict';
+const F=window.FILM,$=id=>document.getElementById(id),DUR=F.DUR;
+const fmt=t=>{t=Math.max(0,t);const m=Math.floor(t/60),s=t-m*60;return String(m).padStart(2,'0')+':'+s.toFixed(2).padStart(5,'0')};
+const fr=t=>F.clamp(Math.floor(t*30)+1,1,1823);
+const fmtF=n=>'F'+String(n).padStart(4,'0');
+window.UTIL={fmt,fr,fmtF};
+window.UI={speed:1,loop:false,quality:'high',muted:false,pending:null};
+const stageScroll=()=>{$('stage').scrollIntoView({behavior:'smooth',block:'center'})};
+window.PREVIZ={ready:false,playing:false,
+ seek(t,play){window.UI.pending={t,play:!!play};stageScroll()},
+ play(){window.UI.pending={t:null,play:true};stageScroll()},
+ toggle(){},exportFrame(){this.note('المحرك لسه بيتحضر…')},
+ note(msg){const n=$('fallbackNote');n.textContent=msg;n.style.display='block';setTimeout(()=>n.style.display='none',2600)}};
+/* ——— خلفيات احتياطية SVG للفريمات ——— */
+function goldSVG(i){
+ const w=360,h=640;let inner='';
+ if(i===0)inner=`<rect width="360" height="640" fill="#171208"/><rect x="70" y="90" width="220" height="470" fill="#0d0a06" stroke="#b98a4a" stroke-width="6"/><rect x="86" y="106" width="88" height="438" fill="#8a6a3f"/><rect x="186" y="106" width="88" height="438" fill="#8a6a3f"/><rect x="168" y="106" width="24" height="438" fill="#241a0c"/><rect x="140" y="150" width="80" height="330" fill="#2a2013"/><rect x="160" y="230" width="40" height="90" fill="#0d0a06" stroke="#f5a83c" stroke-width="2"/><circle cx="180" cy="120" r="10" fill="#ffcf7d"/><ellipse cx="180" cy="560" rx="120" ry="24" fill="#f5a83c" opacity=".14"/><circle cx="180" cy="470" r="26" fill="#7d2f3f"/><rect x="158" y="490" width="44" height="70" rx="12" fill="#7d2f3f"/>`;
+ if(i===1)inner=`<rect width="360" height="640" fill="#06090f"/><rect x="52" y="60" width="256" height="520" fill="#0a1220" stroke="#b98a4a" stroke-width="6"/>${Array.from({length:60},(_,j)=>{const x=60+(j*53)%240,y=70+(j*97)%500;return `<line x1="${x}" y1="${y}" x2="${x-6}" y2="${y+26}" stroke="#38d5ff" stroke-width="1.6" opacity="${.3+(j%5)*.14}"/>`}).join('')}<rect x="70" y="120" width="46" height="150" fill="#ff3fa4" opacity=".85" rx="6"/><rect x="70" y="470" width="46" height="120" fill="#ff3fa4" opacity=".25" rx="6"/><rect x="230" y="200" width="70" height="26" fill="#38d5ff" opacity=".8" rx="5"/><rect x="230" y="480" width="70" height="60" fill="#38d5ff" opacity=".2" rx="5"/><path d="M120 300 q60 -28 100 -60" stroke="#e0a878" stroke-width="16" fill="none" stroke-linecap="round"/><circle cx="222" cy="238" r="13" fill="#e0a878"/><rect x="52" y="540" width="256" height="40" fill="#101826"/>`;
+ if(i===2)inner=`<rect width="360" height="640" fill="#070512"/>${Array.from({length:130},(_,j)=>{const x=(j*89)%360,y=(j*151)%640,r=j%9===0?2.2:1;return `<circle cx="${x}" cy="${y}" r="${r}" fill="${j%7===0?'#ffe9b8':j%11===0?'#38d5ff':'#fff'}" opacity="${.35+(j%6)*.11}"/>`}).join('')}<circle cx="90" cy="140" r="70" fill="#8b5cf6" opacity=".12"/><circle cx="290" cy="420" r="90" fill="#ff3fa4" opacity=".07"/><rect x="130" y="440" width="110" height="150" fill="#3c2f22" stroke="#f5a83c" stroke-width="3" rx="4"/><rect x="152" y="460" width="66" height="112" fill="#ffcf7d" opacity=".8"/><circle cx="150" cy="210" r="22" fill="#e0a878"/><path d="M128 235 q22 30 44 0 l8 55 h-60 z" fill="#7d2f3f"/><path d="M120 240 l-26 -22 M180 240 l26 -22" stroke="#7d2f3f" stroke-width="10" stroke-linecap="round"/><rect x="292" y="512" width="16" height="20" fill="#6f4a2c" transform="rotate(24 300 520)"/>`;
+ return 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${inner}</svg>`)}
+window.goldSVG=goldSVG;
+/* ——— شريط الهيرو + السكرابر ——— */
+const actColor=t=>t<23.9?'#f5a83c':t<41.6?'#38d5ff':'#8b5cf6';
+const heroBar=$('heroBar');
+F.SHOTS.forEach(s=>{const i=document.createElement('i');i.style.width=(s.dur/DUR*100)+'%';
+ i.style.background=`linear-gradient(180deg,${actColor(s.t0)},${actColor(s.t0)}88)`;i.style.borderRight='1px solid rgba(0,0,0,.5)';
+ i.title=`S${String(s.n).padStart(2,'0')} · ${s.text}`;i.onclick=()=>PREVIZ.seek(s.t0+.01,true);heroBar.appendChild(i)});
+const segs=$('scrubSegs'),ticks=$('scrubTicks');
+[['#f5a83c',23.9/DUR],['#38d5ff',(41.6-23.9)/DUR],['#8b5cf6',(DUR-41.6)/DUR]].forEach(a=>{const i=document.createElement('i');i.style.width=a[1]*100+'%';i.style.background=`linear-gradient(180deg,${a[0]}66,${a[0]}33)`;segs.appendChild(i)});
+F.SHOTS.forEach(s=>{const b=document.createElement('b');b.style.left=(s.t0/DUR*100)+'%';ticks.appendChild(b)});
+F.GOLD.forEach(g=>{const u=document.createElement('u');u.style.left=(g.t/DUR*100)+'%';u.title='فريم ذهبي '+fmtF(g.f);ticks.appendChild(u)});
+const scrub=$('scrubber'),head=$('scrubHead'),bub=$('scrubBubble');
+function scrubTo(ev){const r=scrub.getBoundingClientRect(),u=F.clamp((ev.clientX-r.left)/r.width,0,1);PREVIZ.seek(u*DUR,PREVIZ.playing)}
+let dragging=false;
+scrub.addEventListener('pointerdown',e=>{dragging=true;scrub.setPointerCapture(e.pointerId);scrubTo(e)});
+scrub.addEventListener('pointermove',e=>{const r=scrub.getBoundingClientRect(),u=F.clamp((e.clientX-r.left)/r.width,0,1),t=u*DUR,i=F.shotAt(t);
+ bub.style.left=(u*100)+'%';bub.querySelector('b').textContent=fmt(t)+' · '+fmtF(fr(t));bub.querySelector('span').textContent='L'+(i+1)+' '+F.SHOTS[i].text;
+ if(dragging)scrubTo(e)});
+scrub.addEventListener('pointerup',()=>dragging=false);
+scrub.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){PREVIZ.seek((PREVIZ.t||0)+1/30,false);e.preventDefault()}if(e.key==='ArrowLeft'){PREVIZ.seek((PREVIZ.t||0)-1/30,false);e.preventDefault()}});
+window.UI.syncScrub=t=>{head.style.left=(t/DUR*100)+'%';scrub.setAttribute('aria-valuenow',t.toFixed(2));
+ const i=F.shotAt(t);scrub.setAttribute('aria-valuetext',fmtF(fr(t))+' — '+F.SHOTS[i].text)};
+/* ——— أدوات ——— */
+$('playBtn').onclick=()=>PREVIZ.toggle();
+$('bigPlay').onclick=()=>PREVIZ.play();
+$('replayBtn').onclick=()=>{PREVIZ.seek(0,true)};
+$('restartBtn').onclick=()=>PREVIZ.seek(0,PREVIZ.playing);
+$('stepBack').onclick=()=>PREVIZ.seek((PREVIZ.t||0)-1/30,false);
+$('stepFwd').onclick=()=>PREVIZ.seek((PREVIZ.t||0)+1/30,false);
+$('heroPlay').onclick=()=>PREVIZ.play();
+$('exportBtn').onclick=()=>PREVIZ.exportFrame();
+document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#speedSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');window.UI.speed=+b.dataset.s});
+$('gridTgl').onchange=e=>$('gridOverlay').classList.toggle('show',e.target.checked);
+$('loopTgl').onchange=e=>window.UI.loop=e.target.checked;
+$('qualitySel').onchange=e=>{window.UI.quality=e.target.value;window.dispatchEvent(new CustomEvent('quality-change'))};
+document.querySelectorAll('.act-chip').forEach(b=>b.onclick=()=>PREVIZ.seek(+b.dataset.t,true));
+/* ——— صوت ——— */
+const muteBtn=$('muteBtn');
+function setMute(m){window.UI.muted=m;muteBtn.classList.toggle('muted',m);muteBtn.setAttribute('aria-pressed',m);
+ $('muteLabel').textContent=m?'الصوت مكتوم':'الصوت شغال';
+ muteBtn.querySelectorAll('.wv').forEach(p=>p.style.opacity=m?0:1);
+ window.dispatchEvent(new CustomEvent('mute-change'))}
+muteBtn.onclick=()=>setMute(!window.UI.muted);
+/* ——— كيبورد ——— */
+document.addEventListener('keydown',e=>{
+ if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))return;
+ const t=PREVIZ.t||0;
+ if(e.code==='Space'){e.preventDefault();PREVIZ.toggle()}
+ else if(e.key==='ArrowRight'){e.preventDefault();PREVIZ.seek(t+(e.shiftKey?1:1/30),PREVIZ.playing)}
+ else if(e.key==='ArrowLeft'){e.preventDefault();PREVIZ.seek(t-(e.shiftKey?1:1/30),PREVIZ.playing)}
+ else if(e.key==='m'||e.key==='M')setMute(!window.UI.muted);
+ else if(e.key==='g'||e.key==='G'){const g=$('gridTgl');g.checked=!g.checked;g.dispatchEvent(new Event('change'))}
+ else if(e.key==='r'||e.key==='R')PREVIZ.seek(0,true);
+ else if(e.key==='1')PREVIZ.seek(.22,true);else if(e.key==='2')PREVIZ.seek(23.9,true);else if(e.key==='3')PREVIZ.seek(42.93,true);
+ else if(e.key==='Home')PREVIZ.seek(0,false)});
+/* ——— جدول اللقطات ——— */
+const stats=$('shotStats');
+const durs=F.SHOTS.map(s=>s.dur),avg=durs.reduce((a,b)=>a+b)/34,
+ sd=Math.sqrt(durs.reduce((a,b)=>a+(b-avg)**2,0)/34),
+ minSpd=Math.min(...F.SHOTS.map(s=>s.speed));
+[['عدد اللقطات','34'],['متوسط اللقطة',avg.toFixed(2)+'s'],['انحراف الإيقاع','±'+sd.toFixed(2)+'s'],['أقصر قطع فعل',Math.min(...durs).toFixed(2)+'s'],['أطول نافذة بلا إعادة تأطير','1.47s'],['أبطأ دفع (لسه بيتحرك)',minSpd.toFixed(2)+' m/s']].forEach(s=>{
+ const d=document.createElement('div');d.className='stat';d.innerHTML=`<span>${s[0]}</span><b>${s[1]}</b>`;stats.appendChild(d)});
+const body=$('shotBody');
+F.SHOTS.forEach(s=>{
+ const tr=document.createElement('tr');tr.dataset.i=s.n-1;tr.dataset.w='w'+s.w;
+ tr.innerHTML=`<td><span class="snum">${String(s.n).padStart(2,'0')}</span></td>
+ <td><span class="tc2">${fmt(s.t0)} → ${fmt(s.t1)}</span><span class="fr">${fmtF(fr(s.t0))}–${fmtF(fr(s.t1))} · ${Math.round(s.dur*30)}f</span></td>
+ <td><span class="ln">${s.text}</span><span class="tag w${s.w}">${['اللوبي','المطر','الفضا'][s.w-1]}</span></td>
+ <td class="hidesm"><span class="mv">${s.size}</span><span class="spd">${s.lens}mm-eq</span></td>
+ <td><span class="mv">${s.mv} <b>· ${s.note}</b></span><span class="spd">${s.speed.toFixed(2)} m/s</span></td>
+ <td class="hidesm">${s.face!=='—'?`<span class="tag fc">${s.face}</span>`:'<span style="color:var(--mut)">—</span>'}</td>
+ <td class="playcell">▶</td>`;
+ tr.onclick=()=>PREVIZ.seek(s.t0+.01,true);body.appendChild(tr)});
+let filter='all',query='';
+function applyFilter(){document.querySelectorAll('#shotBody tr').forEach(tr=>{
+ const s=F.SHOTS[+tr.dataset.i],ok=(filter==='all'||tr.dataset.w===filter)&&(!query||s.text.includes(query)||s.mv.includes(query)||s.note.includes(query)||s.size.includes(query));
+ tr.style.display=ok?'':'none'})}
+document.querySelectorAll('.fchip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.fchip').forEach(x=>x.classList.remove('on'));c.classList.add('on');filter=c.dataset.f;applyFilter()});
+$('shotSearch').oninput=e=>{query=e.target.value.trim();applyFilter()};
+let curRow=-1;
+window.UI.syncShot=i=>{if(i===curRow)return;
+ if(curRow>=0){const p=body.querySelector(`tr[data-i="${curRow}"]`);p&&p.classList.remove('current','w2','w3')}
+ curRow=i;const tr=body.querySelector(`tr[data-i="${i}"]`);
+ if(tr){tr.classList.add('current','w'+F.SHOTS[i].w);
+  const sc=$('shotScroll'),y=tr.offsetTop-sc.clientHeight/2+tr.clientHeight/2;
+  if(tr.offsetTop<sc.scrollTop+40||tr.offsetTop>sc.scrollTop+sc.clientHeight-80)sc.scrollTo({top:y,behavior:'smooth'})}};
+/* ——— الفريمات الذهبية ——— */
+const gg=$('goldenGrid');
+F.GOLD.forEach((g,i)=>{
+ const card=document.createElement('article');card.className='gcard rv';card.style.setProperty('--d',i+1);
+ card.innerHTML=`<div class="gframe"><img id="gfImg${i}" src="${goldSVG(i)}" alt="فريم ذهبي ${g.title}" width="360" height="640">
+  <svg class="gsvg" id="gfGrid${i}" viewBox="0 0 360 640" preserveAspectRatio="none"><g stroke="#ffd166" stroke-width="1" opacity=".7"><line x1="120" y1="0" x2="120" y2="640"/><line x1="240" y1="0" x2="240" y2="640"/><line x1="0" y1="213" x2="360" y2="213"/><line x1="0" y1="427" x2="360" y2="427"/></g><circle cx="${[180,216,150][i]}" cy="${[470,233,210][i]}" r="26" fill="none" stroke="#ff3fa4" stroke-width="1.6" stroke-dasharray="4 4"/><circle cx="${[180,216,150][i]}" cy="${[470,233,210][i]}" r="3" fill="#ff3fa4"/></svg>
+  <span class="gbadge">${fmtF(g.f)} · ${g.t.toFixed(2)}s</span><span class="gscale">360×640 · src 2×</span></div>
+ <div class="gbody"><h3>${g.title}</h3><p class="why">${g.why}</p>
+  <ul class="gnotes">${g.notes.map(n=>`<li>${n}</li>`).join('')}</ul>
+  <div class="gbtns"><button class="gbtn hot" data-go="${g.t}">▶ اقفز للفريم</button>
+  <a class="gbtn" id="gfDl${i}" download="open-elevator-${fmtF(g.f)}.png" href="${goldSVG(i)}">⬇ تحميل PNG</a>
+  <button class="gbtn" data-grid="${i}">شبكة التلاتات</button></div></div>`;
+ gg.appendChild(card)});
+gg.addEventListener('click',e=>{
+ const go=e.target.closest('[data-go]');if(go){PREVIZ.seek(+go.dataset.go,false);return}
+ const gr=e.target.closest('[data-grid]');if(gr){$('gfGrid'+gr.dataset.grid).classList.toggle('show');gr.textContent=$('gfGrid'+gr.dataset.grid).classList.contains('show')?'إخفاء الشبكة':'شبكة التلاتات'}});
+window.UI.setGolden=(i,url)=>{$('gfImg'+i).src=url;$('gfDl'+i).href=url};
+/* ——— معمل الوش SVG ——— */
+const SL=[['lift','ارتفاع الحاجب',-1,1],['angle','زاوية الحاجب',-1,1],['open','فتحة العين',0,1.5],['pupil','حجم البؤبؤ',.5,1.6],['curve','انحناء الفم',-1,1],['mouth','فتحة الفم',0,1],['width','عرض الفم',.6,1.4],['tilt','ميل الرأس',-1,1]];
+const labP={...F.P};
+$('faceSvgWrap').innerHTML=`<svg id="faceSvg" viewBox="0 0 320 380">
+ <defs><radialGradient id="skin" cx="45%" cy="38%"><stop offset="0%" stop-color="#eebd8d"/><stop offset="100%" stop-color="#d9a06e"/></radialGradient></defs>
+ <g stroke="#3a2f24" stroke-width="1" opacity=".5"><line x1="0" y1="190" x2="320" y2="190" stroke-dasharray="3 6"/><line x1="160" y1="0" x2="160" y2="380" stroke-dasharray="3 6"/></g>
+ <g font-family="IBM Plex Mono" font-size="9" fill="#8f9aa8"><text x="8" y="184">y=190</text><text x="272" y="184">±25°</text><text x="8" y="372">kit: sphere+box+parabola</text></g>
+ <g id="fHead">
+  <path d="M62 205 Q52 80 160 62 Q268 80 258 205 Q262 300 232 330 L88 330 Q58 300 62 205" fill="#d9a05b"/>
+  <path d="M74 210 Q66 96 160 80 Q254 96 246 210 Q250 292 224 318 L96 318 Q70 292 74 210" fill="#c78e4b"/>
+  <circle cx="160" cy="205" r="88" fill="url(#skin)"/>
+  <path d="M72 200 Q70 96 160 82 Q250 96 248 200 Q248 160 236 138 Q210 108 160 106 Q110 108 84 138 Q72 160 72 200" fill="#d9a05b"/>
+  <ellipse cx="160" cy="118" rx="86" ry="30" fill="#d9a05b"/>
+  <circle cx="242" cy="252" r="14" fill="#c78e4b"/>
+  <circle cx="118" cy="245" r="10" fill="#ff3fa4" id="fBlushL" opacity="0"/><circle cx="202" cy="245" r="10" fill="#ff3fa4" id="fBlushR" opacity="0"/>
+  <g id="fBrowL"><rect x="103" y="0" width="36" height="8" rx="4" fill="#4a3220"/></g>
+  <g id="fBrowR"><rect x="181" y="0" width="36" height="8" rx="4" fill="#4a3220"/></g>
+  <g id="fEyeL"><ellipse cx="121" cy="192" rx="17" ry="15" fill="#fdf6ea"/><circle id="fPupL" cx="121" cy="192" r="7" fill="#241a12"/><circle id="fGlintL" cx="124" cy="188" r="2.4" fill="#fff" opacity=".85"/></g>
+  <g id="fEyeR"><ellipse cx="199" cy="192" rx="17" ry="15" fill="#fdf6ea"/><circle id="fPupR" cx="199" cy="192" r="7" fill="#241a12"/><circle id="fGlintR" cx="202" cy="188" r="2.4" fill="#fff" opacity=".85"/></g>
+  <ellipse id="fMouthOpen" cx="160" cy="262" rx="16" ry="2" fill="#401518"/>
+  <path id="fMouth" d="M130 258 Q160 258 190 258" stroke="#7a3b41" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <circle cx="160" cy="222" r="5" fill="#cf9563"/>
+ </g></svg>`;
+const slidersBox=$('faceSliders');
+SL.forEach(s=>{const row=document.createElement('div');row.className='srow';
+ row.innerHTML=`<label for="sl_${s[0]}">${s[1]}</label><input type="range" id="sl_${s[0]}" min="${s[2]}" max="${s[3]}" step="0.01" value="${labP[s[0]]}"><output id="out_${s[0]}">${(+labP[s[0]]).toFixed(2)}</output>`;
+ slidersBox.appendChild(row);
+ row.querySelector('input').addEventListener('input',e=>{labP[s[0]]=+e.target.value;drawFace();clearPreset()})});
+function drawFace(){
+ SL.forEach(s=>$('out_'+s[0]).textContent=(+labP[s[0]]).toFixed(2));
+ const p=labP,a=p.angle*25;
+ $('fHead').setAttribute('transform',`rotate(${p.tilt*9} 160 210)`);
+ $('fBrowL').setAttribute('transform',`translate(0 ${158-p.lift*16}) rotate(${-a} 121 4)`);
+ $('fBrowR').setAttribute('transform',`translate(0 ${158-p.lift*16}) rotate(${a} 199 4)`);
+ const ry=Math.max(1.2,15*p.open);
+ ['L','R'].forEach(sd=>{const cx=sd==='L'?121:199;
+  const eye=$('fEye'+sd);eye.querySelector('ellipse').setAttribute('ry',ry);
+  const pu=$('fPup'+sd);pu.setAttribute('r',6.5*p.pupil*Math.min(1,p.open+.15));pu.setAttribute('cy',192+p.gy*400||192);
+  $('fGlint'+sd).setAttribute('opacity',.3+Math.max(0,p.curve)*.65)});
+ const w=30*p.width,cy=258-p.curve*10,qy=258+p.curve*16;
+ $('fMouth').setAttribute('d',`M${160-w} ${cy} Q160 ${qy} ${160+w} ${cy}`);
+ $('fMouthOpen').setAttribute('rx',18*p.width);$('fMouthOpen').setAttribute('ry',Math.max(.5,14*p.mouth));
+ $('fMouthOpen').setAttribute('cy',261+p.curve*4);
+ const bl=Math.max(0,p.curve)*.3;$('fBlushL').setAttribute('opacity',bl);$('fBlushR').setAttribute('opacity',bl)}
+labP.gy=0;drawFace();
+function clearPreset(){document.querySelectorAll('.preset').forEach(x=>x.classList.remove('on'))}
+function setLab(v){SL.forEach(s=>{labP[s[0]]=v[s[0]];const el=$('sl_'+s[0]);el.value=v[s[0]]});drawFace()}
+$('faceReset').onclick=()=>{setLab(F.P);clearPreset()};
+$('faceRandom').onclick=()=>{const r=F.rng(Date.now()&0xffff),v={};SL.forEach(s=>v[s[0]]=+(s[2]+r()*(s[3]-s[2])).toFixed(2));setLab(v);clearPreset()};
+/* ——— بيتات: شيبس + جدول ——— */
+const pc=$('presetChips'),bb=$('beatBody');
+F.BEATS.forEach((b,i)=>{
+ const next=F.BEATS[i+1]?F.BEATS[i+1].t:DUR,hold=Math.max(0,Math.round((next-b.t)*30)-b.atk-6);
+ const chip=document.createElement('button');chip.className='preset';chip.dataset.b=i;
+ chip.innerHTML=`<b>${b.name}</b><small>L${b.line} · ${b.t.toFixed(2)}s</small>`;
+ chip.onclick=()=>{setLab(b.v);clearPreset();chip.classList.add('on')};
+ chip.ondblclick=()=>PREVIZ.seek(Math.max(0,b.t-.25),true);
+ pc.appendChild(chip);
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<td><span class="beatname">${b.name}</span><span class="pmini">${b.id}</span></td>
+ <td><span class="tc2">L${b.line} · ${b.t.toFixed(2)}s</span><span class="fr">${fmtF(fr(b.t))}</span></td>
+ <td><span class="env">${b.atk}f / ${hold}f / 6f</span></td>
+ <td class="hidesm"><span class="pmini">eye ${b.v.open} · pup ${b.v.pupil}<br>brow ${b.v.lift}/${b.v.angle} · mouth ${b.v.curve}</span></td>
+ <td><span class="mv">${b.note}</span><br><button class="gbtn" style="margin-top:6px;padding:5px 12px;flex:none" data-bt="${b.t}">▶ في الفيلم</button></td>`;
+ tr.querySelector('[data-bt]').onclick=e=>{e.stopPropagation();PREVIZ.seek(Math.max(0,b.t-.25),true)};
+ bb.appendChild(tr)});
+/* ——— منحنيات الباب ——— */
+(function(){
+ const svg=$('doorChart'),W=260,H=150,pad=24;
+ const curves=[
+  {e:F.eIOS,n:36,c:'#f5a83c',dash:'',label:'R1 فتح 1.11م/ث'},
+  {e:u=>1-F.eIC(u),n:21,c:'#b98a4a',dash:'4 3',label:'قفل 3.65م/ث'},
+  {e:F.eOEx,n:20,c:'#38d5ff',dash:'',label:'R2 انفجار 8.9م/ث'},
+  {e:u=>1-F.eIQ(u),n:9,c:'#ff5449',dash:'',label:'خبطة 11.2م/ث'},
+  {e:F.eIOQ,n:35,c:'#8b5cf6',dash:'',label:'R3 مهيب 1.44م/ث'}];
+ let g=`<g stroke="#3a3128" stroke-width="1">${[0,.25,.5,.75,1].map(v=>`<line x1="${pad}" y1="${H-20-v*(H-40)}" x2="${W-8}" y2="${H-20-v*(H-40)}"/>`).join('')}</g>
+ <g font-family="IBM Plex Mono" font-size="8" fill="#8f9aa8"><text x="2" y="${H-17}">0%</text><text x="2" y="24">100%</text><text x="${pad}" y="${H-6}">f0</text><text x="${W-30}" y="${H-6}">f40</text></g>`;
+ curves.forEach(cv=>{let d='';for(let j=0;j<=cv.n;j++){const u=j/cv.n,x=pad+u*(W-pad-14)*cv.n/40,y=H-20-cv.e(u)*(H-40);d+=(j?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}
+  g+=`<path d="${d}" fill="none" stroke="${cv.c}" stroke-width="2.2" ${cv.dash?`stroke-dasharray="${cv.dash}"`:''}/>`});
+ svg.innerHTML=g;
+ $('doorLegend').innerHTML=curves.map(c=>`<span><i style="background:${c.c}"></i>${c.label}</span>`).join('')})();
+/* ——— كروت الأبواب ——— */
+const DCARDS=[
+{cls:'r1',badge:'R1',title:'لوبي ← لوبي',arrow:'11.35 → 12.54 · 36f open + MATCH CUT @ F0376',seek:10.9,
+ secret:'<b>السلاح: التطابق.</b> القطع نفسه هو الخدعة — S07 نسخة طبق الأصل من S06 (نفس العدسة 47→43، نفس المسافة ±2%) من الناحية التانية للباب. فريدة اتنقلت جوه من غير ما نشوفها تدخل، والمخ بيقرا ده كـ«المكان اتكرر» مش كـ«اتقطع».',
+ phases:[['دينج',0,2,'#ffcf7d'],['شق نور',2,8,'#f5a83c'],['انزلاق ناعم',8,30,'#d98f2b'],['استقرار',30,36,'#b98a4a'],['MATCH CUT',36,38,'#ff3fa4']],total:38,
+ specs:[['الباب','easeInOutSine · 1.19ث · ذروة <span class="mn">1.11 m/s</span> — أبطأ فتح، عشان الكشف يبان «طبيعي» قبل ما يستغرب'],['الكاميرا','دفع <span class="mn">0.53 m/s</span> مستمر عبر العتبة — مفيش أي هزة. الهدوء هو الفخ'],['الصوت','دينج نضيف 880+1320Hz · همهمة اللوبي <b>ما بتتغيرش</b> — ودن المشاهد بتطمن وبعدين تتخض'],['الضوء','نفس فازة اللمض <span class="mn">7Hz</span> حرفيًا: النجفتين بيشاركوا <b>نفس الماتيريال</b> فالتطابق مضمون بالكود'],['تفاصيل مطابقة','الساعتين <span class="mn">11:47</span> · نفس عمودين ±2.7م · أسانسير مطابق على بعد 13.9م في العمقين'],['إحساس الهدف','«كأنها متحركتش سنتي» L8 — زحف كاميرا 0.09م/ث على وش متجمد من غير رمش 2.4ث']]},
+{cls:'r2',badge:'R2',title:'لوبي ← شارع مطر',arrow:'23.90 → 24.55 · 20f · SLAM exit @ 33.62 (9f)',seek:22.6,
+ secret:'<b>السلاح: الانفجار.</b> كل حواس المشاهد بتتضرب في 6 فريمات: باب بيطير 8.9م/ث، عدسة بتقفز −6°، رعد، وسماوي/ماجنتا بيغسلوا الكهرماني. التباين مع هدوء R1 هو اللي بيهز — مش الشدة لوحدها.',
+ phases:[['عتمة وتبديل عالم',0,8,'#3a3128'],['دينج مشوه',8,9,'#ff3fa4'],['انفجار الباب',9,29,'#38d5ff'],['رعد + رش',12,26,'#2f7bff'],['kick كاميرا',9,15,'#ffcf7d'],['استقرار مبلول',29,40,'#38d5ff']],total:40,
+ specs:[['الباب','easeOutExpo · 0.65ث · ذروة <span class="mn">8.9 m/s</span> في أول 6 فريمات — 80% من المشوار في أول 25% من الزمن'],['الكاميرا','قفزة fov <span class="mn">−6°</span> خلال 6f وبتتخامد في 18f + هز <span class="mn">0.03م / 12Hz</span> · دفع 0.46م/ث عبر العتبة'],['الجزيئات','<span class="mn">1400</span> قطرة بسرعة 9م/ث + ميل ريح −1.2 · رش عربية <span class="mn">220</span> جزيء عند x≈0 · رذاذ إيد 6 نبضات'],['الضوء','انسكاب مخروط additive طوله 2.2م · عتامة 0→<span class="mn">0.35</span> في 10f · نيون ماجنتا <span class="mn">#ff3fa4</span> + سماوي <span class="mn">#38d5ff</span> معكوسين على الأسفلت'],['الصوت','مطر فيد <span class="mn">300ms</span> مربوط بنسبة فتح الباب · رعد 24.35 · دينج −40 سنت + نويز 8%'],['الخروج — الخبطة','قفل easeInQuart · <span class="mn">0.30ث / 9 فريمات</span> · ذروة <span class="mn">11.2 m/s</span> + ثامب 60Hz + هز 0.07م وارتداد كاميرا +0.3م — «بيخبط في وشها» حرفيًا']]},
+{cls:'r3',badge:'R3',title:'شارع ← الفضا',arrow:'42.93 → 44.10 · 35f · الأرض بتقع 47.82',seek:41.9,
+ secret:'<b>السلاح: الصمت.</b> بعد الانفجار والخبطة والرعد، الكشف التالت بيسحب كل الصوت −24dB في 12 فريم. الودن بتصرخ «فين الدنيـا؟». الفراغ هنا أعلى صوت في الفيلم — والكاميرا لسه بتتحرك عشان السكون يبقى صوتي مش بصري.',
+ phases:[['همهمة بتقطع',0,4,'#3a3128'],['صمت −24dB',4,16,'#171310'],['انزلاق مهيب',5,40,'#8b5cf6'],['نجوم بتظهر',10,35,'#b7a1ff'],['باد يدخل +1.5ث',28,40,'#ff3fa4']],total:40,
+ specs:[['الباب','easeInOutQuad · 1.17ث · ذروة <span class="mn">1.44 m/s</span> — أنعم منحنى، ولا هزة كاميرا خالص. الكون نفسه بيتنفس بهدوء'],['الصوت','duck كل الطبقات <span class="mn">−24dB / 12f</span> · باد 3 ساينات ديتيون بيدخل بعد 1.5ث · «سكون تام» L26 صوتي بس'],['النجوم','<span class="mn">2100</span> نجمة على 3 أصداف 28/55/90م · بارالاكس <span class="mn">1:2:4</span> · زحف 0.008rad/s · غبار ذهبي 60 قريب من الباب'],['الأرض','6 بلاطات عتبة بتقع من <span class="mn">47.9ث</span> بفواصل 8 فريمات · تسارع <span class="mn">4.9 م/ث²</span> + دوران — «الأرض اختفت من تحتها»'],['الضوء','ريم بنفسجي <span class="mn">#8b5cf6</span> من العمق + مفتاح ذهبي 2700K من الباب · لمبة الأسانسير بتخفت لـ25% فالكابينة تبقى فانوس'],['الجاذبية','bob ‏0.03م @ 0.2Hz من 50.2 · قرفصة 4 فريمات · نطة 55.29: ارتفاع 1.35م في 0.81ث easeOut + 30 شرارة ذهب من العتبة']]}];
+const dc=$('doorCards');
+DCARDS.forEach((c,i)=>{
+ const el=document.createElement('article');el.className='dcard '+c.cls+' rv';el.style.setProperty('--d',i+1);
+ el.innerHTML=`<div class="dhead"><span class="rbadge">${c.badge}</span><div><h3>${c.title}</h3><span class="arrow">${c.arrow}</span></div></div>
+ <div class="dsecret">${c.secret}</div>
+ <div class="phases">${c.phases.map(p=>`<i style="width:${(p[2]-p[1])/c.total*100}%;background:${p[3]}">${p[0]}</i>`).join('')}</div>
+ <div class="phlabels">${c.phases.map(p=>`<span style="width:${(p[2]-p[1])/c.total*100}%">f${p[1]}–${p[2]}</span>`).join('')}</div>
+ <div class="dspecs">${c.specs.map(s=>`<div class="dspec"><span class="k">${s[0]}</span><span class="v">${s[1]}</span></div>`).join('')}</div>
+ <button class="dgo">▶ شغّل الكشف ده في البريفيز</button>`;
+ el.querySelector('.dgo').onclick=()=>PREVIZ.seek(c.seek,true);
+ dc.appendChild(el)});
+/* ——— منحنى الطاقة ——— */
+const N=320,es=[];let minE=1,minT=0;
+for(let j=0;j<=N;j++){const t=j/N*DUR,e=F.energy(t);es.push(e);if(e<minE){minE=e;minT=t}}
+(function(){
+ const svg=$('energyChart'),W=1000,H=220,top=14,bot=34;
+ const X=t=>t/DUR*W,Y=e=>H-bot-e*(H-top-bot);
+ let path='M0 '+Y(es[0]);for(let j=1;j<=N;j++)path+='L'+(j/N*W).toFixed(1)+' '+Y(es[j]).toFixed(1);
+ const area=path+`L${W} ${H-bot}L0 ${H-bot}Z`;
+ const b1=23.9/DUR*100,b2=41.6/DUR*100;
+ svg.innerHTML=`<defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#f5a83c"/><stop offset="${b1}%" stop-color="#f5a83c"/><stop offset="${b1}%" stop-color="#38d5ff"/><stop offset="${b2}%" stop-color="#38d5ff"/><stop offset="${b2}%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#b7a1ff"/></linearGradient>
+  <linearGradient id="egf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity=".28"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+ <rect x="0" y="${top}" width="${b1*10}" height="${H-top-bot}" fill="#f5a83c" opacity=".05"/>
+ <rect x="${b1*10}" y="${top}" width="${(b2-b1)*10}" height="${H-top-bot}" fill="#38d5ff" opacity=".05"/>
+ <rect x="${b2*10}" y="${top}" width="${(100-b2)*10}" height="${H-top-bot}" fill="#8b5cf6" opacity=".07"/>
+ <path d="${area}" fill="url(#egf)"/><path d="${path}" fill="none" stroke="url(#eg)" stroke-width="2.4"/>
+ <line x1="0" y1="${Y(.12)}" x2="${W}" y2="${Y(.12)}" stroke="#ff5449" stroke-width="1.6" stroke-dasharray="7 5"/>
+ <text x="8" y="${Y(.12)-6}" font-family="IBM Plex Mono" font-size="11" fill="#ff5449">DEAD LINE 0.12</text>
+ <g font-family="Tajawal" font-size="12" font-weight="700"><text x="${b1*5}" y="${H-10}" fill="#f5a83c" text-anchor="middle">اللوبي</text><text x="${(b1+b2)*5}" y="${H-10}" fill="#38d5ff" text-anchor="middle">شارع المطر</text><text x="${(b2+100)*5}" y="${H-10}" fill="#b7a1ff" text-anchor="middle">الفضا</text></g>
+ ${F.GOLD.map(g=>`<g><line x1="${g.t/DUR*W}" y1="${top}" x2="${g.t/DUR*W}" y2="${H-bot}" stroke="#ffd166" stroke-width="1" stroke-dasharray="3 4" opacity=".6"/><rect x="${g.t/DUR*W-4}" y="${top-6}" width="8" height="8" fill="#ffd166" transform="rotate(45 ${g.t/DUR*W} ${top-2})"/></g>`).join('')}
+ <line id="eHead" x1="0" y1="${top-4}" x2="0" y2="${H-bot}" stroke="#fff" stroke-width="2" opacity=".9"/>
+ <text x="${W-8}" y="${top+12}" font-family="IBM Plex Mono" font-size="10" fill="#8f9aa8" text-anchor="end">energy(t) — computed live</text>`;
+ svg.addEventListener('click',e=>{const r=svg.getBoundingClientRect();PREVIZ.seek((e.clientX-r.left)/r.width*DUR,PREVIZ.playing)});
+ $('energyMin').textContent=`أقل طاقة في الـ1823 فريم: ${minE.toFixed(2)} عند ${minT.toFixed(1)}ث — فوق خط الموت (0.12) طول الفيلم ✓`})();
+window.UI.syncEnergy=t=>{const h=$('eHead');if(h){h.setAttribute('x1',t/DUR*1000);h.setAttribute('x2',t/DUR*1000)}};
+/* ——— هيستوجرام الإيقاع ——— */
+(function(){
+ const svg=$('cutChart'),W=1000,H=130,n=34,bw=W/n,maxD=Math.max(...F.SHOTS.map(s=>s.dur));
+ let g='';F.SHOTS.forEach((s,i)=>{const h=s.dur/maxD*(H-30),c=actColor(s.t0);
+  g+=`<g class="cutbar" data-t="${s.t0}" style="cursor:pointer"><rect x="${i*bw+3}" y="${H-20-h}" width="${bw-6}" height="${h}" rx="3" fill="${c}" opacity=".8"/><rect x="${i*bw+3}" y="${H-20-h}" width="${bw-6}" height="${h}" rx="3" fill="#fff" opacity="0"><set attributeName="opacity" to=".25" begin="mouseover" end="mouseout"/></rect><text x="${i*bw+bw/2}" y="${H-6}" font-family="IBM Plex Mono" font-size="9" fill="#8f9aa8" text-anchor="middle">${s.n}</text><title>S${s.n} · ${s.dur.toFixed(2)}s · ${Math.round(s.dur*30)}f — ${s.text}</title></g>`});
+ g+=`<line x1="0" y1="${H-20-1.79/maxD*(H-30)}" x2="${W}" y2="${H-20-1.79/maxD*(H-30)}" stroke="#ffcf7d" stroke-width="1" stroke-dasharray="5 5" opacity=".5"/><text x="6" y="${H-24-1.79/maxD*(H-30)}" font-family="IBM Plex Mono" font-size="10" fill="#ffcf7d">avg 1.79s</text>`;
+ svg.innerHTML=g;
+ svg.addEventListener('click',e=>{const b=e.target.closest('.cutbar');if(b)PREVIZ.seek(+b.dataset.t+.01,true)})})();
+/* ——— المخاطر ——— */
+const RISKS=[
+{t:'كاميرا مركونة',sev:9,kill:'أي كادر ثابت أطول من <b>75 فريم</b> = موت سريري. الوصفة: كل الـ34 لقطة فيها دفع أو بان مستمر، وأبطأ زحف <span class="kn">0.07 m/s</span> + هاند-هيلد <span class="kn">6مم</span> دائم. اللقطات الأطول من 2.5ث ليها waypoint نصي بيغيّر التأطير.',badge:'أطول نافذة بلا إعادة تأطير: 1.47ث ✓ محسوبة'},
+{t:'وش متجمد',sev:8,kill:'الوش بيموت لو قعد على قيمة واحدة 3 ثواني. الوصفة: <b>11 بيت مربوط بسطور</b> + رمشة كل <span class="kn">2.2–3.6s</span> + ساكاد كل <span class="kn">0.9–1.5s</span> + ارتجاف <span class="kn">9Hz</span> في الرعب + تجميد رمش مقصود واحد بس (الصدمة).',badge:'11 بيت / 34 سطر · ميكرو-حركة دائمة ✓'},
+{t:'باب واحد بنفس الحركة',sev:7,kill:'التكرار بيفضح الخدعة. الوصفة: <b>5 حركات × 5 منحنيات</b>: <span class="kn">1.11 / 3.65 / 8.9 / 11.2 / 1.44 m/s</span>. كل كشف ليه بصمة سرعة مختلفة تمامًا — الشارت جنب كروت الأبواب هو الدليل.',badge:'5 منحنيات مختلفة ✓ منفذة في الكود'},
+{t:'عوالم واقفة ورا الباب',sev:8,kill:'أي عالم مرسوم وخلاص = ديكور كرتون. الوصفة — لوبي: لمض <span class="kn">7Hz</span> + dropouts + بندول نجفة. مطر: <span class="kn">1400</span> قطرة 9م/ث + عربيتين 7.8م/ث + نيون بيرعش 3Hz. فضا: <span class="kn">2100</span> نجمة بارالاكس 1:2:4 + غبار 60 + سديم بيزحف.',badge:'حركة محيطة في كل فريم من كل عالم ✓'},
+{t:'إيقاع مونتاج مسطّح',sev:6,kill:'قطع كل ثانيتين بالظبط = منوّم مغناطيسي. الوصفة: مدد من <span class="kn">0.91s</span> لـ<span class="kn">2.94s</span>، متوسط <span class="kn">1.79s</span> بانحراف <span class="kn">±0.57s</span>، وتلات سرعات سرد: بطء اللوبي، انفجار المطر، طفو الفضا. الهيستوجرام تحت متعرّج عمدًا.',badge:'انحراف إيقاع ±0.57ث ✓ محسوب'},
+{t:'صوت ديكور',sev:7,kill:'صوت مش مربوط بحاجة مرئية = نويز. الوصفة: <b>12 حدث صوتي كل واحد ليه تريجر بصري</b> — دينج مع شق النور، تكّة مع كل رقم روليت، نبض قلب مع نفس فازة الفينييت. والصمت أداة مكتوبة (L26) مش فراغ: duck <span class="kn">−24dB / 12f</span>.',badge:'12 حدث ↔ 12 تريجر مرئي ✓'}];
+const rg=$('riskGrid');
+RISKS.forEach((r,i)=>{const el=document.createElement('article');el.className='rcard rv';el.style.setProperty('--d',i%3+1);
+ el.innerHTML=`<span class="rid">RISK-0${i+1}</span><h3>${r.t}</h3>
+ <div class="sev"><span>خطورة السكون</span><span class="bar"><i style="width:${r.sev*10}%"></i></span><b>${r.sev}/10</b></div>
+ <p class="kill">${r.kill}</p><span class="livebadge">${r.badge}</span>`;
+ rg.appendChild(el)});
+/* ——— ناف + دخول + بارالاكس ——— */
+const secs=['previz','shots','frames','face','doors','risks'];
+const spy=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+ document.querySelectorAll('#navLinks a').forEach(a=>a.classList.toggle('on',a.dataset.sec===e.target.id))}})},{rootMargin:'-30% 0px -55% 0px'});
+secs.forEach(s=>spy.observe($(s)));
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+let ticking=false;
+addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{document.documentElement.style.setProperty('--sy',scrollY);ticking=false});ticking=true}},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&PREVIZ.playing)PREVIZ.toggle()});
+})();
+</script>
+
+<script type="module">
+/* ═══════════════ المحرك: Three.js مشهد + صوت + loop واحد ═══════════════ */
+const F=window.FILM,UI=window.UI,U=window.UTIL,$=id=>document.getElementById(id);
+function fail(msg){
+ $('loading').classList.add('hide');
+ const n=$('fallbackNote');n.textContent='تعذر تحميل محرك العرض ('+msg+') — الدليل الكامل بكل الأرقام شغال تحت، والفريمات المعروضة رسوم تخطيطية.';n.style.display='block';
+ $('poster').querySelector('.p-sub').innerHTML='وضع القراءة — المحرك مش متاح<br>الدليل التفاعلي الكامل تحت';
+ $('bigPlay').style.display='none';
+ window.PREVIZ.note=m=>{const x=$('fallbackNote');x.textContent=m;x.style.display='block';setTimeout(()=>x.style.display='none',2200)};
+ window.PREVIZ.seek=(t)=>{$('stage').scrollIntoView({behavior:'smooth',block:'center'});window.PREVIZ.note('العرض الثلاثي مش متاح — الأرقام كلها في الجداول تحت')};
+ window.PREVIZ.play=window.PREVIZ.seek;window.PREVIZ.toggle=()=>window.PREVIZ.seek(0);
+}
+import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js').then(THREE=>{try{init(THREE)}catch(e){console.error(e);fail('init')}}).catch(e=>{console.error(e);fail('network')});
+
+function init(THREE){
+const DUR=F.DUR,clamp=F.clamp,lerp=F.lerp,ss=F.ss;
+/* ——— رندر ——— */
+const stage=$('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+stage.insertBefore(renderer.domElement,stage.firstChild);
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x1a1410,.045);
+const camera=new THREE.PerspectiveCamera(45,9/16,.05,220);
+function size(){const w=stage.clientWidth,h=stage.clientHeight;
+ renderer.setPixelRatio(UI.quality==='high'?Math.min(devicePixelRatio,2):1);
+ renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();dirty=true}
+new ResizeObserver(size).observe(stage);
+/* ——— خامات وهندسة مشتركة ——— */
+const G={box:new THREE.BoxGeometry(1,1,1),sph:new THREE.SphereGeometry(1,20,14),cyl:new THREE.CylinderGeometry(1,1,1,18),cone:new THREE.ConeGeometry(1,1,18,1,true),tor:new THREE.TorusGeometry(1,.16,10,26),plane:new THREE.PlaneGeometry(1,1),circ:new THREE.CircleGeometry(1,26)};
+const mat=(c,r=.8,m=0,e=0,ec=null)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m,emissive:ec||c,emissiveIntensity:e});
+const M={
+ brass:mat(0x8a6a3f,.35,.7),brassD:mat(0x5c4526,.5,.6),wall:mat(0x4a352a,.9),wallIn:mat(0x6e5233,.45,.55),
+ marble:mat(0xcfc4b2,.18,.08),marbleIn:mat(0x2a2320,.3,.2),coat:mat(0x7d2f3f,.85),skin:mat(0xe0a878,.6),
+ scarf:mat(0xd9a05b,.8),scarfD:mat(0xc78e4b,.8),hair:mat(0x4a3220,.9),dark:mat(0x241a16,.9),
+ case:mat(0x6f4a2c,.7),caseT:mat(0x3f2a18,.8),strap:mat(0xcaa15c,.5,.4),
+ asphalt:mat(0x14171d,.28,.15),bldg:mat(0x11141c,.9),car:mat(0x1b2733,.4,.5),carB:mat(0x33202a,.4,.5),
+ eyeW:mat(0xfdf6ea,.3),pupil:mat(0x241a12,.4),mouth:mat(0x7a3b41,.6),mouthIn:mat(0x401518,.8),
+ seg:new THREE.MeshStandardMaterial({color:0x2a1c08,emissive:0xffb020,emissiveIntensity:1.6,roughness:.5}),
+ segOff:new THREE.MeshStandardMaterial({color:0x1c1408,emissive:0xffb020,emissiveIntensity:.06,roughness:.6}),
+ bulb:new THREE.MeshStandardMaterial({color:0xffe2a8,emissive:0xffc873,emissiveIntensity:2.2}),
+ shell:mat(0x3c2f22,.5,.6),tile:mat(0xcfc4b2,.3,.1),
+ trim:new THREE.MeshStandardMaterial({color:0x8a6a3f,emissive:0xf5a83c,emissiveIntensity:.7,roughness:.4,metalness:.5})};
+function mesh(g,m,x=0,y=0,z=0,sx=1,sy=1,sz=1,parent=scene){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o}
+/* ——— تكستشرات إجرائية ——— */
+function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+const glowTex=canvasTex(128,128,(x,w,h)=>{const g=x.createRadialGradient(64,64,2,64,64,62);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.4,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,w,h)});
+const streakTex=canvasTex(32,64,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(12,0,8,h)});
+const starTex=canvasTex(64,64,(x)=>{const g=x.createRadialGradient(32,32,1,32,32,30);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.7)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64)});
+const nebTex=canvasTex(256,256,(x)=>{const g=x.createRadialGradient(128,128,10,128,128,126);g.addColorStop(0,'rgba(255,255,255,.8)');g.addColorStop(.5,'rgba(255,255,255,.25)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,256,256)});
+function signTex(txt,color,vert){return canvasTex(vert?256:512,vert?512:192,(x,w,h)=>{
+ x.fillStyle='rgba(8,6,12,.92)';x.fillRect(0,0,w,h);x.strokeStyle=color;x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);
+ x.font='800 '+(vert?110:96)+'px Tajawal, sans-serif';x.textAlign='center';x.textBaseline='middle';
+ x.shadowColor=color;x.shadowBlur=34;x.fillStyle=color;
+ if(vert){const chars=txt.split('');chars.forEach((ch,i)=>x.fillText(ch,w/2,h/(chars.length+1)*(i+1)))}
+ else x.fillText(txt,w/2,h/2);x.shadowBlur=10;x.fillStyle='#fff';x.globalAlpha=.85;
+ if(vert){txt.split('').forEach((ch,i)=>x.fillText(ch,w/2,h/(txt.length+1)*(i+1)))}else x.fillText(txt,w/2,h/2)})}
+const neon1Tex=signTex('فندق','#ff3fa4',true),neon2Tex=signTex('الحرية','#38d5ff',false);
+const posterTex=canvasTex(256,340,(x,w,h)=>{x.fillStyle='#2b2016';x.fillRect(0,0,w,h);x.strokeStyle='#b98a4a';x.lineWidth=8;x.strokeRect(10,10,w-20,h-20);x.fillStyle='#d9c9a8';x.font='700 34px Tajawal, sans-serif';x.textAlign='center';x.fillText('فندق الحرية',w/2,80);x.font='700 26px Tajawal, sans-serif';x.fillStyle='#b3a48f';x.fillText('منذ ١٩٦٢',w/2,130);x.strokeStyle='#8a6a3f';x.beginPath();x.arc(w/2,225,60,0,7);x.stroke();x.fillStyle='#f5a83c';x.font='700 44px Tajawal, sans-serif';x.fillText('١١:٤٧',w/2,240)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{[neon1Tex,neon2Tex,posterTex].forEach(t=>{const img=t.image,x=img.getContext('2d');x.clearRect(0,0,img.width,img.height);
+ if(t===neon1Tex){x.drawImage(signTex('فندق','#ff3fa4',true).image,0,0)}else if(t===neon2Tex){x.drawImage(signTex('الحرية','#38d5ff',false).image,0,0)}else{x.drawImage(canvasTex(256,340,(y,w,h)=>{y.fillStyle='#2b2016';y.fillRect(0,0,w,h);y.strokeStyle='#b98a4a';y.lineWidth=8;y.strokeRect(10,10,w-20,h-20);y.fillStyle='#d9c9a8';y.font='700 34px Tajawal, sans-serif';y.textAlign='center';y.fillText('فندق الحرية',w/2,80);y.font='700 26px Tajawal, sans-serif';y.fillStyle='#b3a48f';y.fillText('منذ ١٩٦٢',w/2,130);y.strokeStyle='#8a6a3f';y.beginPath();y.arc(w/2,225,60,0,7);y.stroke();y.fillStyle='#f5a83c';y.font='700 44px Tajawal, sans-serif';y.fillText('١١:٤٧',w/2,240)}).image,0,0)}
+ t.needsUpdate=true})});
+function sprite(tex,color,scale,op,parent,x=0,y=0,z=0){const m=new THREE.SpriteMaterial({map:tex,color,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false});const s=new THREE.Sprite(m);s.scale.set(scale,scale,1);s.position.set(x,y,z);parent.add(s);return s}
+function streak(color,w,h,op,x,y,z,parent,rotX=-Math.PI/2){const m=new THREE.MeshBasicMaterial({map:glowTex,color,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});const p=new THREE.Mesh(G.plane,m);p.scale.set(w,h,1);p.rotation.x=rotX;p.position.set(x,y,z);parent.add(p);return p}
+/* ——— إضاءة: عدد ثابت، شدات متحركة (مفيش recompile) ——— */
+const hemi=new THREE.HemisphereLight(0xffd9a0,0x1a120c,.35);scene.add(hemi);
+const amb=new THREE.AmbientLight(0xffffff,.12);scene.add(amb);
+const Lch=new THREE.PointLight(0xffb347,0,20,1.6);Lch.position.set(0,2.7,-5.2);scene.add(Lch);
+const Lin=new THREE.PointLight(0xffc873,1.1,9,1.8);scene.add(Lin);
+const Lcy=new THREE.PointLight(0x38d5ff,0,18,1.7);Lcy.position.set(1.5,3.4,-4);scene.add(Lcy);
+const Lmg=new THREE.PointLight(0xff3fa4,0,15,1.7);Lmg.position.set(-2.6,2.8,-3);scene.add(Lmg);
+const Lvi=new THREE.PointLight(0x8b5cf6,0,25,1.6);Lvi.position.set(-2,1.5,-5);scene.add(Lvi);
+const Lgd=new THREE.PointLight(0xffd9a0,0,20,1.7);Lgd.position.set(2,3.2,1.5);scene.add(Lgd);
+/* ——— الأسانسير (الثابت) ——— */
+const elev=new THREE.Group();scene.add(elev);
+mesh(G.box,M.marbleIn,0,-.05,2.05,2.2,.1,4.1,elev);
+mesh(G.box,M.wallIn,0,2.95,2.05,2.2,.1,4.1,elev);
+mesh(G.box,M.wallIn,-1.1,1.45,2.05,.1,3,4.1,elev);
+mesh(G.box,M.wallIn,1.1,1.45,2.05,.1,3,4.1,elev);
+mesh(G.box,M.wallIn,0,1.45,4.05,2.2,3,.1,elev);
+mesh(G.plane,new THREE.MeshStandardMaterial({map:posterTex,roughness:.85}),0,1.75,3.98,1,.75,1,elev).rotation.y=Math.PI;
+[-1,1].forEach(s=>{mesh(G.cyl,M.brass,s*1.02,.95,2.05,.025,3.6,.025,elev).rotation.x=Math.PI/2;
+ for(let i=0;i<3;i++)mesh(G.box,M.brassD,s*1.06,1.45,.7+i*1.3,.03,2.6,.05,elev)});
+mesh(G.cyl,M.brass,0,.95,3.95,.025,2,.025,elev).rotation.z=Math.PI/2;
+mesh(G.box,M.brass,0,2.42,0,2.1,.18,.16,elev);
+[-1,1].forEach(s=>mesh(G.box,M.brass,s*.97,1.17,0,.24,2.4,.16,elev));
+mesh(G.box,M.trim,0,.015,0,1.7,.03,.14,elev);
+const panelL=mesh(G.box,M.brass,-.41,1.17,.02,.82,2.34,.06,elev);
+const panelR=mesh(G.box,M.brass,.41,1.17,.02,.82,2.34,.06,elev);
+mesh(G.box,M.dark,0,1.17,.055,.02,2.34,.02,panelL.parent===elev?elev:elev).position.x=-.01;
+const seamL=mesh(G.box,M.dark,-.005,0,.04,.02,1,.3,panelL),seamR=mesh(G.box,M.dark,.005,0,.04,.02,1,.3,panelR);
+seamL.position.set(.49,0,0);seamR.position.set(-.49,0,0);
+/* مؤشر 7 قطع × ناحيتين */
+const SEGS=[[0,.09,0,'h'],[.05,.045,0,'v'],[.05,-.045,0,'v'],[0,-.09,0,'h'],[-.05,-.045,0,'v'],[-.05,.045,0,'v'],[0,0,0,'h']];
+const DIG=[[1,1,1,1,1,1,0],[0,1,1,0,0,0,0],[1,1,0,1,1,0,1],[1,1,1,1,0,0,1],[0,1,1,0,0,1,1],[1,0,1,1,0,1,1],[1,0,1,1,1,1,1],[1,1,1,0,0,0,0],[1,1,1,1,1,1,1],[1,1,1,1,0,1,1]];
+function makeDigit(parent,z,face){const g=new THREE.Group();g.position.set(0,2.62,z);if(face<0)g.rotation.y=Math.PI;parent.add(g);
+ mesh(G.box,M.dark,0,0,-.01,.2,.3,.02,g);
+ const segs=SEGS.map(s=>{const m=mesh(G.box,M.segOff,s[0],s[1],.012,s[3]==='h'?.085:.02,s[3]==='h'?.02:.075,.015,g);return m});
+ const ghost=new THREE.Group();g.add(ghost);const gsegs=SEGS.map(s=>{const m=new THREE.Mesh(G.box,new THREE.MeshStandardMaterial({color:0x2a1c08,emissive:0xffb020,emissiveIntensity:.5,transparent:true,opacity:.3}));m.position.set(s[0],s[1],.01);m.scale.set(s[3]==='h'?.085:.02,s[3]==='h'?.02:.075,.015);ghost.add(m);return m});
+ return{g,segs,gsegs,ghost}}
+const digOut=makeDigit(elev,-.1,-1),digIn=makeDigit(elev,.12,1);
+function setDigit(d,n,glitch){const pat=n<0?null:DIG[n];
+ d.segs.forEach((s,i)=>{let on=pat?!!pat[i]:false;if(glitch&&Math.sin(perf*50+i*3)>.55)on=!on;s.material=on?M.seg:M.segOff});
+ d.gsegs.forEach((s,i)=>{s.visible=glitch&&pat?!!pat[(n+1)%10][i]:false});
+ d.ghost.position.y=glitch?.05*Math.sin(perf*40):0;d.ghost.scale.y=glitch?1.6:1}
+/* زرار استدعاء برّه + بانل جوه */
+const callPlate=mesh(G.box,M.brassD,1.15,1.25,-.1,.14,.22,.04,elev);
+const callBtn=mesh(G.cyl,new THREE.MeshStandardMaterial({color:0x3a2a10,emissive:0xf5a83c,emissiveIntensity:.25}),1.15,1.25,-.13,.035,.02,.035,elev);callBtn.rotation.x=Math.PI/2;
+const btns=[];for(let i=0;i<6;i++){const b=mesh(G.cyl,new THREE.MeshStandardMaterial({color:0x2a1c08,emissive:i===5?0xff5449:0xf5a83c,emissiveIntensity:.15}),1.03,1.55-i*.09,1.6,.032,.02,.032,elev);b.rotation.z=Math.PI/2;btns.push(b)}
+mesh(G.box,M.brassD,1.06,1.32,1.6,.03,.66,.16,elev);
+/* نجفة بندول جوه */
+const pend=new THREE.Group();pend.position.set(0,2.9,2.2);elev.add(pend);
+mesh(G.cyl,M.brassD,0,-.12,0,.012,.24,.012,pend);
+mesh(G.cone,M.brass,0,-.3,0,.14,.14,.14,pend);
+const bulbIn=mesh(G.sph,M.bulb,0,-.36,0,.05,.05,.05,pend);
+Lin.position.set(0,-.36,0);pend.add(Lin);
+const bulbGlow=sprite(glowTex,0xffc873,.5,.5,pend,0,-.36,0);
+/* غبار جوه */
+const dustIn=(()=>{const n=40,pos=new Float32Array(n*3),seed=[];const r=F.rng(3);
+ for(let i=0;i<n;i++){seed.push([r()*2-1,r()*2.6+.2,r()*3.6+.3,r()*6.28])}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+ const p=new THREE.Points(g,new THREE.PointsMaterial({map:glowTex,color:0xffcf7d,size:.02,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));elev.add(p);return{p,pos,seed,n}})();
+/*壳 خارجي + كيبل */
+const shell=new THREE.Group();scene.add(shell);
+mesh(G.box,M.shell,0,1.5,2.05,2.6,3.2,4.4,shell);
+mesh(G.box,new THREE.MeshStandardMaterial({color:0x0d0b09,roughness:1}),0,1.2,-.19,1.72,2.42,.05,shell);
+[[-1.3,-.15],[1.3,-.15],[-1.3,4.25],[1.3,4.25]].forEach(c=>mesh(G.box,M.trim,c[0],1.5,c[1],.05,3.2,.05,shell));
+mesh(G.cyl,M.brassD,0,6.2,2.05,.03,6.4,.03,shell);
+const underGlow=sprite(nebTex,0x8b5cf6,5,.25,shell,0,-.6,2);
+/* ——— اللوبي (أصلي z<0 + كلون z>0) ——— */
+function buildLobby(dir){
+ const g=new THREE.Group();scene.add(g);
+ mesh(G.box,M.marble,0,-.06,dir*7,26,.12,15,g);
+ mesh(G.box,M.wall,0,1.6,dir*14.2,26,3.4,.3,g);
+ [-1,1].forEach(s=>{mesh(G.box,M.wall,s*6.5,1.6,dir*7,.3,3.4,15,g);
+  mesh(G.box,M.brassD,s*6.32,.9,dir*7,.06,.08,15,g)});
+ mesh(G.box,M.wall,0,3.35,dir*7,26,.2,15,g);
+ [-3.6,-8.2].forEach(z=>[-2.7,2.7].forEach(x=>{mesh(G.cyl,M.marble,x,1.6,dir*-z*-1*dir* -1*0+dir*Math.abs(z),.28,3.2,.28,g).position.z=dir*Math.abs(z);
+  mesh(G.cyl,M.brass,x,.12,dir*Math.abs(z),.34,.24,.34,g);mesh(G.cyl,M.brass,x,3.1,dir*Math.abs(z),.34,.2,.34,g);
+  const sc=mesh(G.sph,M.bulb,x*.96,2.15,dir*Math.abs(z),.05,.07,.05,g);sprite(glowTex,0xffb347,.7,.4,g,x*.96,2.15,dir*Math.abs(z))}));
+ const ch=new THREE.Group();ch.position.set(0,2.85,dir*5.2);g.add(ch);
+ mesh(G.cyl,M.brassD,0,.3,0,.015,.5,.015,ch);
+ const ring=mesh(G.tor,M.brass,0,0,0,.5,.5,.5,ch);ring.rotation.x=Math.PI/2;
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2;mesh(G.sph,M.bulb,Math.cos(a)*.5,-.06,Math.sin(a)*.5,.045,.06,.045,ch)}
+ sprite(glowTex,0xffb347,2.2,.5,ch,0,-.05,0);
+ streak(0xffb347,1.6,4.5,.13,0,.012,dir*5.2,g);
+ streak(0xffb347,.8,2.6,.09,-2.7,.012,dir*3.6,g);streak(0xffb347,.8,2.6,.09,2.7,.012,dir*3.6,g);
+ const desk=mesh(G.box,M.case,-3.4,.55,dir*9.5,2.4,1.1,.9,g);mesh(G.box,M.brass,-3.4,1.12,dir*9.5,2.5,.06,1,g);
+ const dl=mesh(G.sph,M.bulb,-3,.1.2||1.2,dir*9.3,.05,.06,.05,g);
+ const clock=new THREE.Group();clock.position.set(2.6,2.3,dir*14.02);if(dir>0)clock.rotation.y=Math.PI;g.add(clock);
+ mesh(G.circ,M.dark,0,0,0,.28,.28,1,clock);mesh(G.tor,M.brass,0,0,.005,.28,.28,.28,clock).scale.z=.28;
+ const hH=mesh(G.box,M.bulb,0,.06,.01,.02,.13,.01,clock);hH.rotation.z=.6;
+ const hM=mesh(G.box,M.bulb,-.05,.08,.01,.015,.2,.01,clock);hM.rotation.z=-.5;
+ const far=new THREE.Group();far.position.set(0,0,dir*13.9);if(dir>0)far.rotation.y=Math.PI;g.add(far);
+ mesh(G.box,M.brass,0,2.42,0,2.1,.18,.16,far);[-1,1].forEach(s=>mesh(G.box,M.brass,s*.97,1.17,0,.24,2.4,.16,far));
+ mesh(G.box,M.brass,-.41,1.17,.02,.82,2.34,.06,far);mesh(G.box,M.brass,.41,1.17,.02,.82,2.34,.06,far);
+ mesh(G.box,M.dark,0,2.62,-.06,.2,.3,.04,far);
+ const fd=mesh(G.box,M.seg,0,2.62,-.09,.085,.02,.015,far);
+ return{g,ch}}
+const lobby=buildLobby(-1),clone=buildLobby(1);
+/* جدران حوالين فتحة الباب من ناحية اللوبي */
+const lobWall=new THREE.Group();scene.add(lobWall);
+mesh(G.box,M.wall,-3.7,1.6,.32,5.6,3.4,.28,lobWall);mesh(G.box,M.wall,3.7,1.6,.32,5.6,3.4,.28,lobWall);
+mesh(G.box,M.wall,0,2.9,.32,2.2,1,.28,lobWall);
+/* ——— شارع المطر ——— */
+const street=new THREE.Group();scene.add(street);
+mesh(G.box,M.asphalt,0,-.06,-7,26,.12,15,street);
+[-1,1].forEach(s=>{for(let i=0;i<4;i++){const h=5+((i*37)%4),b=mesh(G.box,M.bldg,s*(3.6+(i%2)*.5),h/2,-2.2-i*3,2.4,h,2.6,street)}});
+const winGeo=new THREE.PlaneGeometry(.26,.36);
+const wins=new THREE.InstancedMesh(winGeo,new THREE.MeshBasicMaterial({color:0xffffff}),140);
+{const r=F.rng(11),m4=new THREE.Matrix4(),col=new THREE.Color();let k=0;
+ [-1,1].forEach(s=>{for(let b=0;b<4;b++)for(let fy=0;fy<5;fy++)for(let fx=0;fx<3;fx++){if(k>=140)break;
+  const x=s*(3.6+(b%2)*.5)-s*1.21,y=1+fy*.9,z=-2.2-b*3+(fx-1)*.7;
+  m4.makeRotationY(s>0?-Math.PI/2:Math.PI/2);m4.setPosition(x,y,z);wins.setMatrixAt(k,m4);
+  const lit=r()<.38;col.set(lit?(r()<.6?0xffb347:0x38d5ff):0x0a0d14);wins.setColorAt(k,col);k++}});
+ wins.count=k;street.add(wins)}
+const neon1=new THREE.Mesh(G.plane,new THREE.MeshBasicMaterial({map:neon1Tex,transparent:true,side:THREE.DoubleSide}));neon1.scale.set(.9,2.3,1);neon1.position.set(-2.85,3,-3.2);neon1.rotation.y=Math.PI/2;street.add(neon1);
+const neon2=new THREE.Mesh(G.plane,new THREE.MeshBasicMaterial({map:neon2Tex,transparent:true,side:THREE.DoubleSide}));neon2.scale.set(1.9,.7,1);neon2.position.set(2.9,2.5,-5.5);neon2.rotation.y=-Math.PI/2;street.add(neon2);
+sprite(glowTex,0xff3fa4,3,.5,street,-2.7,3,-3.2);sprite(glowTex,0x38d5ff,2.6,.45,street,2.7,2.5,-5.5);
+streak(0xff3fa4,1.1,6,.32,-2.4,.015,-3.4,street);streak(0x38d5ff,1.4,5,.28,2.3,.015,-5.6,street);
+streak(0x38d5ff,2.6,1.4,.12,0,.014,-1.4,street);
+[[-1.4,-2.2,.8],[1.2,-4,.6],[.4,-6.8,1]].forEach(p=>{const c=new THREE.Mesh(G.circ,new THREE.MeshBasicMaterial({color:0x38d5ff,transparent:true,opacity:.1,blending:THREE.AdditiveBlending,depthWrite:false}));c.rotation.x=-Math.PI/2;c.scale.set(p[2],p[2]*.55,1);c.position.set(p[0],.012,p[1]);street.add(c)});
+const mist=streak(0x9adfff,7,2.2,.06,0,.2,-3,street,0);
+function buildCar(bodyM){const c=new THREE.Group();street.add(c);
+ mesh(G.box,bodyM,0,.42,0,2.1,.5,1,body);function body(){}
+ return c}
+function car(mcol){const c=new THREE.Group();street.add(c);
+ mesh(G.box,mcol,0,.45,0,2.2,.5,1.05,c);mesh(G.box,mcol,-.1,.85,0,1.2,.42,.95,c);
+ mesh(G.box,new THREE.MeshStandardMaterial({color:0x0e1420,roughness:.2,metalness:.4}),-.1,.86,0,1.1,.3,.97,c);
+ [[-.7,.55],[.7,.55],[-.7,-.55],[.7,-.55]].forEach(w=>{const wh=mesh(G.cyl,M.dark,w[0],.22,w[1],.22,.12,.22,c);wh.rotation.x=Math.PI/2});
+ const hl=mesh(G.sph,M.bulb,1.12,.45,.3,.06,.06,.06,c);mesh(G.sph,M.bulb,1.12,.45,-.3,.06,.06,.06,c);
+ const beam=new THREE.Mesh(G.cone,new THREE.MeshBasicMaterial({color:0xbfe9ff,transparent:true,opacity:.1,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+ beam.scale.set(.7,3.4,.7);beam.rotation.z=Math.PI/2;beam.position.set(2.9,.42,0);c.add(beam);
+ const tl=mesh(G.box,new THREE.MeshStandardMaterial({color:0x330a0a,emissive:0xff2222,emissiveIntensity:1.4}),-1.12,.5,0,.03,.1,.8,c);
+ streak(0xbfe9ff,2.8,1.2,.2,1.8,-.43,0,c);
+ sprite(glowTex,0xbfe9ff,1.2,.5,c,1.15,.45,0);
+ c.userData.beam=beam;return c}
+const carA=car(M.car),carB=car(M.carB);carB.rotation.y=Math.PI;
+/* مطر */
+const RAIN_MAX=1600,rainSeed=[],rainPos=new Float32Array(RAIN_MAX*3);
+{const r=F.rng(5);for(let i=0;i<RAIN_MAX;i++)rainSeed.push([r()*9-4.5,r()*6,r()*-11.5-.25,r()*.5+.75])}
+const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(rainPos,3));
+const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({map:streakTex,color:0x9adfff,size:.16,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false}));
+street.add(rain);
+/* رش العربية */
+const SPRAY=220,sprayPos=new Float32Array(SPRAY*3),spraySeed=[];
+{const r=F.rng(9);for(let i=0;i<SPRAY;i++){const a=r()*Math.PI*2;spraySeed.push([Math.cos(a)*(1+r()*2),2.2+r()*3.4,Math.sin(a)*(1+r()*1.6),r()*.14])}}
+const sprayGeo=new THREE.BufferGeometry();sprayGeo.setAttribute('position',new THREE.BufferAttribute(sprayPos,3));
+const spray=new THREE.Points(sprayGeo,new THREE.PointsMaterial({map:glowTex,color:0xcfeaff,size:.09,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));
+street.add(spray);
+/* رذاذ الإيد */
+const handSplash=[];for(let i=0;i<6;i++)handSplash.push(sprite(glowTex,0x9adfff,.14,0,street,.3,1.3,-.14));
+/* ——— الفضا ——— */
+const space=new THREE.Group();scene.add(space);
+function starLayer(n,r,size,seed){const pos=new Float32Array(n*3),col=new Float32Array(n*3),rr=F.rng(seed),c=new THREE.Color();
+ for(let i=0;i<n;i++){const th=rr()*Math.PI*2,ph=Math.acos(rr()*2-1),rad=r*(.85+rr()*.3);
+  pos[i*3]=rad*Math.sin(ph)*Math.cos(th);pos[i*3+1]=rad*Math.cos(ph);pos[i*3+2]=rad*Math.sin(ph)*Math.sin(th);
+  const q=rr();c.set(q<.68?0xffffff:q<.88?0xffe9b8:0x9adfff);col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ const m=new THREE.PointsMaterial({map:starTex,size,vertexColors:true,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true});m.fog=false;
+ const p=new THREE.Points(g,m);space.add(p);return p}
+const stars=[starLayer(1000,28,.35,1),starLayer(700,55,.7,2),starLayer(450,90,1.3,3)];
+const nebs=[];[[0x8b5cf6,-30,18,-45,50],[0xff3fa4,35,-8,-50,42],[0x38d5ff,10,30,40,46],[0x8b5cf6,-25,-20,45,55],[0xffd9a0,40,25,20,30]].forEach(n=>{const s=sprite(nebTex,n[0],n[4],.14,space,n[1],n[2],n[3]);s.material.fog=false;nebs.push(s)});
+const dustSp=(()=>{const n=60,pos=new Float32Array(n*3),seed=[];const r=F.rng(13);
+ for(let i=0;i<n;i++)seed.push([r()*8-4,r()*5-1,r()*-7+2,r()*6.28]);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+ const p=new THREE.Points(g,new THREE.PointsMaterial({map:glowTex,color:0xffe9b8,size:.05,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));space.add(p);return{p,pos,seed,n}})();
+const tiles=[];for(let i=0;i<6;i++){const t=mesh(G.box,M.tile,(i%2?-.32:.32),-.02,-.35-Math.floor(i/2)*.42,.56,.06,.36,space);t.userData={i,x:t.position.x,z:t.position.z}}
+/* شرارات النطة */
+const JSPK=30,jspkPos=new Float32Array(JSPK*3),jspkSeed=[];
+{const r=F.rng(17);for(let i=0;i<JSPK;i++){const a=r()*Math.PI*2;jspkSeed.push([Math.cos(a)*(1+r()*1.5),1.5+r()*2.5,Math.sin(a)*(1+r()*1.5)-1,r()*.1])}}
+const jspkGeo=new THREE.BufferGeometry();jspkGeo.setAttribute('position',new THREE.BufferAttribute(jspkPos,3));
+const jspk=new THREE.Points(jspkGeo,new THREE.PointsMaterial({map:glowTex,color:0xffd166,size:.08,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+space.add(jspk);
+/* مخروط انسكاب الضوء */
+const shaft=new THREE.Mesh(G.cone,new THREE.MeshBasicMaterial({color:0x38d5ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+shaft.scale.set(.85,2.3,.85);shaft.rotation.x=-Math.PI/2;shaft.position.set(0,1.25,1.05);scene.add(shaft);
+/* ——— فريدة ——— */
+const char=new THREE.Group();scene.add(char);
+const body=new THREE.Group();char.add(body);
+mesh(G.cyl,M.coat,0,.86,0,.22,.82,.22,body).scale.set(.22,.82,.22);
+const coatM=mesh(G.cyl,M.coat,0,.86,0,1,1,1,body);coatM.geometry=new THREE.CylinderGeometry(.17,.27,.82,18);coatM.scale.set(1,1,1);
+for(let i=0;i<3;i++)mesh(G.sph,M.strap,0,1.05-i*.16,-.2-i*.012,.016,.016,.016,body);
+mesh(G.tor,M.scarfD,0,1.28,0,.14,.14,.14,body).rotation.x=Math.PI/2;
+const legL=mesh(G.cyl,M.dark,-.08,.25,0,.045,.44,.045,body),legR=mesh(G.cyl,M.dark,.08,.25,0,.045,.44,.045,body);
+const shoeL=mesh(G.box,M.dark,-.08,.03,-.04,.09,.06,.17,body),shoeR=mesh(G.box,M.dark,.08,.03,-.04,.09,.06,.17,body);
+const head=new THREE.Group();head.position.set(0,1.45,0);body.add(head);
+mesh(G.sph,M.skin,0,0,0,.15,.15,.15,head);
+const scarf=mesh(G.sph,M.scarf,0,.02,.03,.175,.165,.175,head);
+mesh(G.tor,M.scarf,0,.01,-.075,.148,.168,.148,head).scale.z=.5;
+mesh(G.sph,M.scarfD,.14,-.09,.06,.05,.05,.05,head);
+const scarfTail=[];for(let i=0;i<3;i++){const t=mesh(G.box,M.scarfD,0,-.1-i*.14,.16+i*.015,.1,.15,.02,head);scarfTail.push(t)}
+mesh(G.sph,M.skin,0,-.01,-.148,.013,.016,.013,head);
+const eyeL=new THREE.Group(),eyeR=new THREE.Group();
+eyeL.position.set(-.06,.015,-.128);eyeR.position.set(.06,.015,-.128);head.add(eyeL,eyeR);
+[eyeL,eyeR].forEach(e=>{mesh(G.sph,M.eyeW,0,0,0,.034,.034,.019,e);
+ const p=mesh(G.sph,M.pupil,0,0,-.024,.0145,.0145,.008,e);e.userData.p=p;
+ const gl=sprite(glowTex,0xffffff,.014,.85,e,.007,.007,-.031);e.userData.gl=gl});
+const browL=mesh(G.box,M.hair,-.062,.075,-.132,.058,.013,.012,head),browR=mesh(G.box,M.hair,.062,.075,-.132,.058,.013,.012,head);
+const mouthG=new THREE.Group();mouthG.position.set(0,-.055,-.134);head.add(mouthG);
+const mouthPts=[];for(let i=0;i<5;i++)mouthPts.push(mesh(G.sph,M.mouth,(i-2)*.016,0,0,.009,.009,.007,mouthG));
+const mouthOpen=mesh(G.sph,M.mouthIn,0,-.004,.002,.028,.004,.006,mouthG);
+const blushL=mesh(G.sph,new THREE.MeshStandardMaterial({color:0xff3fa4,transparent:true,opacity:0,roughness:1}),-.075,-.03,-.118,.02,.012,.008,head);
+const blushR=blushL.clone();blushR.position.x=.075;head.add(blushR);
+function arm(side){const g=new THREE.Group();g.position.set(side*.19,1.22,0);body.add(g);
+ mesh(G.sph,M.coat,0,0,0,.055,.055,.055,g);
+ mesh(G.cyl,M.coat,0,-.19,0,.036,.34,.036,g);
+ const h=mesh(G.sph,M.skin,0,-.38,0,.045,.045,.045,g);g.userData.hand=h;return g}
+const armL=arm(-1),armR=arm(1);
+const blobShadow=(()=>{const m=new THREE.MeshBasicMaterial({map:glowTex,color:0x000000,transparent:true,opacity:.35,depthWrite:false});const p=new THREE.Mesh(G.plane,m);p.rotation.x=-Math.PI/2;p.scale.set(.9,.9,1);scene.add(p);return p})();
+/* الشنطة */
+const kase=new THREE.Group();scene.add(kase);
+mesh(G.box,M.case,0,0,0,.36,.48,.15,kase);
+[[-.18,0],[.18,0]].forEach(s=>mesh(G.box,M.caseT,s[0],0,0,.025,.49,.16,kase));
+mesh(G.box,M.strap,-.09,0,0,.03,.49,.155,kase);mesh(G.box,M.strap,.09,0,0,.03,.49,.155,kase);
+const handle=mesh(G.tor,M.caseT,0,.28,0,.06,.06,.06,kase);handle.scale.set(.06,.05,.06);
+mesh(G.sph,M.strap,-.09,.1,.08,.02,.02,.01,kase);mesh(G.sph,M.strap,.09,.1,.08,.02,.02,.01,kase);
+const caseShadow=(()=>{const m=new THREE.MeshBasicMaterial({map:glowTex,color:0x000000,transparent:true,opacity:.3,depthWrite:false});const p=new THREE.Mesh(G.plane,m);p.rotation.x=-Math.PI/2;p.scale.set(.5,.5,1);scene.add(p);return p})();
+/* ——— صوت إجرائي ——— */
+const Audio={ctx:null,master:null,layers:{},lastT:0,lastBeat:-1,lastTick:-1,
+ start(){if(this.ctx)return;const C=new (window.AudioContext||window.webkitAudioContext)();this.ctx=C;
+  const comp=C.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=6;
+  this.master=C.createGain();this.master.gain.value=UI.muted?0:.9;this.master.connect(comp);comp.connect(C.destination);
+  const nb=C.createBuffer(1,C.sampleRate*2,C.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;this.noise=nb;
+  const mk=(type,filt,freq,q)=>{const src=C.createBufferSource();src.buffer=nb;src.loop=true;
+   const f=C.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q||.7;
+   const g=C.createGain();g.gain.value=0;src.connect(f);f.connect(g);g.connect(this.master);src.start();return{g,f}};
+  this.layers.hum=mk('lowpass',110);this.layers.rain=mk('bandpass',1900,.4);this.layers.rumble=mk('lowpass',90);
+  const ho=C.createOscillator();ho.frequency.value=55;const hg=C.createGain();hg.gain.value=0;ho.connect(hg);hg.connect(this.master);ho.start();this.layers.humO=hg;
+  const bz=C.createOscillator();bz.type='square';bz.frequency.value=100;const bg=C.createGain();bg.gain.value=0;bz.connect(bg);bg.connect(this.master);bz.start();this.layers.buzz=bg;
+  this.pad=[110,164.8,220.5].map((f,i)=>{const o=C.createOscillator();o.frequency.value=f;o.detune.value=(i-1)*4;
+   const g=C.createGain();g.gain.value=0;o.connect(g);g.connect(this.master);o.start();return g});
+  this.ready=true},
+ tone(freq,dur,gain,type='sine',slide=0){if(!this.ctx||UI.muted)return;const C=this.ctx,o=C.createOscillator(),g=C.createGain();
+  o.type=type;o.frequency.value=freq;if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,freq+slide),C.currentTime+dur);
+  g.gain.setValueAtTime(gain,C.currentTime);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+dur);
+  o.connect(g);g.connect(this.master);o.start();o.stop(C.currentTime+dur+.05)},
+ burst(dur,gain,freq,type='lowpass'){if(!this.ctx||UI.muted)return;const C=this.ctx,s=C.createBufferSource();s.buffer=this.noise;
+  const f=C.createBiquadFilter();f.type=type;f.frequency.value=freq;const g=C.createGain();
+  g.gain.setValueAtTime(gain,C.currentTime);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+dur);
+  s.connect(f);f.connect(g);g.connect(this.master);s.start();s.stop(C.currentTime+dur+.05)},
+ ding(det){this.tone(880*Math.pow(2,det/1200),.8,.12);this.tone(1320*Math.pow(2,det/1200),.6,.06);if(det)this.burst(.15,.03,3000,'highpass')},
+ whoosh(){if(!this.ctx||UI.muted)return;const C=this.ctx,s=C.createBufferSource();s.buffer=this.noise;
+  const f=C.createBiquadFilter();f.type='bandpass';f.Q.value=1.2;f.frequency.setValueAtTime(300,C.currentTime);f.frequency.exponentialRampToValueAtTime(2400,C.currentTime+.5);
+  const g=C.createGain();g.gain.setValueAtTime(.14,C.currentTime);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+.6);
+  s.connect(f);f.connect(g);g.connect(this.master);s.start();s.stop(C.currentTime+.7)},
+ events(t,prev,playing){if(!playing)return;
+  const fire=(et,fn)=>{if(prev<et&&t>=et)fn()};
+  fire(10.55,()=>this.tone(1200,.05,.06,'square'));
+  fire(11.35,()=>this.ding(0));fire(23.9,()=>this.ding(-40));
+  fire(24.35,()=>this.burst(1.3,.2,200));
+  fire(33.62,()=>{this.tone(60,.25,.3,'sine',-30);this.burst(.12,.28,400)});
+  fire(42.93,()=>this.ding(20));
+  fire(55.29,()=>this.whoosh());fire(56.3,()=>{this.tone(660,.9,.04);this.tone(990,.7,.025)});
+  if(t>=37.19&&t<39.17){const k=Math.floor(t*10);if(k!==this.lastTick){this.lastTick=k;this.tone(1600,.03,.035,'square')}}
+  if(t>=40.8&&t<44.3){const rate=lerp(1.2,1.7,(t-40.8)/3.2),ph=(t-40.8)*rate,k=Math.floor(ph);
+   if(k!==this.lastBeat){this.lastBeat=k;this.tone(55,.14,.2,'sine',-15);setTimeout(()=>this.tone(50,.1,.12,'sine',-12),180)}}},
+ update(t,dt){if(!this.ctx)return;const C=this.ctx,T=C.currentTime,τ=.12;
+  const open=F.door(t),lob=t<23.7,st=t>=23.7&&t<41.6,sp=t>=41.6;
+  const duck=t>=42.6?Math.max(.06,1-ss((t-42.6)/.4)):1;
+  const endFade=t>60.2?1-ss((t-60.2)/.56):1;
+  this.master.gain.setTargetAtTime(UI.muted?0:.9*endFade,T,.05);
+  const flick=flicker(t);
+  this.layers.hum.g.gain.setTargetAtTime(lob?.04*duck:0,T,τ);
+  this.layers.humO.g.gain.setTargetAtTime(lob?.03*duck:0,T,τ);
+  this.layers.buzz.g.gain.setTargetAtTime(lob&&flick<.5?.012:0,T,.03);
+  this.layers.rain.g.gain.setTargetAtTime(st?open*.16:0,T,τ);
+  const rEnv=t>35.3&&t<41.3?ss((t-35.3)/.3)*(1-ss((t-40.8)/.5)):0;
+  this.layers.rumble.g.gain.setTargetAtTime(rEnv*.14,T,τ);
+  const padIn=sp?ss((t-45.5)/2)*.05:0;
+  this.pad.forEach((g,i)=>g.gain.setTargetAtTime(padIn*(1+.2*Math.sin(t*.7+i)),T,.3))}};
+window.addEventListener('mute-change',()=>{if(Audio.ctx)Audio.master.gain.setTargetAtTime(UI.muted?0:.9,Audio.ctx.currentTime,.05)});
+/* ——— لمض ——— */
+function flicker(t){let v=.82+.18*Math.sin(t*44)+.08*Math.sin(t*7.3);
+ const h=Math.sin(Math.floor(t*7)*127.1)*43758.5453;v+=((h-Math.floor(h))-.5)*.3;
+ if(t>=8.1&&t<8.35)v=.15;if(t>=9&&t<9.15)v=.4;if(t<2.03&&Math.sin(t*50)>.7)v*=.5;
+ return clamp(v,.05,1.2)}
+/* ——— تحديث المشهد من t ——— */
+let perf=0;
+const tmpV=new THREE.Vector3();
+function evaluate(t){
+ perf=t;
+ const open=F.door(t),cs=F.charState(t),face=F.sampleFace(t),flick=flicker(t);
+ const phA=t<12.54,lobVis=t<23.7,stVis=t>=23.7&&t<41.6&&open>.004,spVis=t>=41.6;
+ lobby.g.visible=lobVis&&(!phA?open>.004:true);
+ lobWall.visible=lobVis;clone.g.visible=phA&&open>.004;
+ street.visible=stVis;space.visible=spVis;shell.visible=t>=41.6||t<12.54?true:true;
+ shell.visible=true;underGlow.material.opacity=spVis?.25:0;
+ /* أل وجو */
+ const bg=new THREE.Color(t<23.7?0x14100c:t<41.6?0x0a1018:0x060412);
+ renderer.setClearColor(bg);scene.fog.color.copy(bg);
+ scene.fog.density=t<23.7?.045:t<41.6?.035:.012;
+ /* إضاءة */
+ const lobOn=lobVis?1:0;
+ Lch.intensity=2.2*flick*lobOn;Lch.position.z=-5.2;
+ hemi.intensity=t<23.7?.32:t<41.6?.18:.1;hemi.color.set(t<23.7?0xffd9a0:t<41.6?0x9adfff:0xb7a1ff);
+ Lin.intensity=(t<41.6?1.1:.3)*(.85+.15*flick);
+ const stOn=stVis?open:0;
+ Lcy.intensity=2.6*stOn+(t>=24.3&&t<24.7?3*Math.exp(-(t-24.3)/.12):0);
+ Lmg.intensity=2.2*stOn*(.75+.25*(Math.sin(t*19)>-.6?1:.2));
+ const spOn=spVis?ss((t-42.93)/1.2):0;
+ Lvi.intensity=1.6*spOn;Lgd.intensity=1.2*spOn;
+ bulbGlow.material.opacity=.35+.2*flick;
+ /* باب */
+ panelL.position.x=-.41-open*.84;panelR.position.x=.41+open*.84;
+ M.trim.emissiveIntensity=.4+open*.9;
+ shaft.material.opacity=stVis?open*.3:spVis?open*.13:open*.07;
+ shaft.material.color.set(stVis?0x38d5ff:spVis?0x8b5cf6:0xf5a83c);
+ /* بندول */
+ const sw=t>35.3?.5*Math.sin((t-35.3)*5.2)*Math.exp(-(t-35.3)*.5):0;
+ pend.rotation.z=sw;pend.rotation.x=sw*.4;
+ /* مؤشر */
+ let digit=0,glitch=false;
+ if(t<2.03){digit=Math.floor(t*8)%10;glitch=true}
+ else if(t>=37.19&&t<39.17){digit=Math.floor(t*10)%10;glitch=true}
+ else if(t>=44.1){digit=-1;glitch=false}
+ else if(t>=35.3&&t<37.19){digit=Math.floor(t*4)%10;glitch=true}
+ setDigit(digOut,digit,glitch);setDigit(digIn,digit,glitch);
+ if(t>=44.1){const p=.5+.5*Math.sin(t*2);[digOut,digIn].forEach(d=>d.segs[6].material=p>.5?M.seg:M.segOff)}
+ /* زراير */
+ callBtn.material.emissiveIntensity=t>=10.55&&t<11.35?2.2:.25;
+ btns.forEach((b,i)=>{let e=.15;
+  if(t>=16.4&&t<18.3){const k=Math.floor((t-16.4)/.33);if(i===Math.min(k,4))e=2.2;else if(i<Math.min(k,5))e=.5}
+  if(i===5&&t>=18.3&&t<19.21)e=.3*Math.max(0,Math.sin(t*30))*(1-(t-18.3)/.91);
+  b.material.emissiveIntensity=e});
+ /* غبار جوه */
+ for(let i=0;i<dustIn.n;i++){const s=dustIn.seed[i];
+  dustIn.pos[i*3]=s[0]+Math.sin(t*.3+s[3])*.15;dustIn.pos[i*3+1]=s[1]+Math.sin(t*.22+s[3]*2)*.2;dustIn.pos[i*3+2]=s[2]+Math.cos(t*.25+s[3])*.15}
+ dustIn.p.geometry.attributes.position.needsUpdate=true;
+ /* مطر */
+ if(stVis){const n=UI.quality==='high'?1400:700;rainGeo.setDrawRange(0,n);
+  for(let i=0;i<n;i++){const s=rainSeed[i];const y=((s[1]-t*9*s[3])%6+6)%6;
+   rainPos[i*3]=s[0]-t*1.2%9+(y*.13);rainPos[i*3+1]=y;rainPos[i*3+2]=s[2]}
+  rainGeo.attributes.position.needsUpdate=true;
+  rain.material.opacity=.55*open;
+  /* عربيات */
+  const cp=F.carPos(t);carA.visible=cp[3]===1&&cp[2]===-5.6;carB.visible=cp[3]===-1;
+  if(carA.visible){carA.position.set(cp[0],0,cp[2]);carA.userData.beam.material.opacity=.1}
+  if(carB.visible){carB.position.set(cp[0],0,-8.4)}
+  /* رش */
+  let sprayOn=false,cross=28.45,cx=0,cz=-5.6;
+  if(t>=28.3&&t<29.1){sprayOn=true;cross=28.45}
+  else if(t>=32.2&&t<33){sprayOn=true;cross=32.35;cz=-8.4}
+  spray.visible=sprayOn;
+  if(sprayOn){const age=t-cross;
+   for(let i=0;i<SPRAY;i++){const s=spraySeed[i],a=age-s[3];
+    if(a<0||a>.6){sprayPos[i*3+1]=-5;continue}
+    sprayPos[i*3]=cx+s[0]*a;sprayPos[i*3+1]=.1+s[1]*a-4.9*a*a;sprayPos[i*3+2]=cz+s[2]*a}
+   sprayGeo.attributes.position.needsUpdate=true;spray.material.opacity=.8*(1-age/.8)}
+  /* رذاذ الإيد */
+  const reach=t>=30.1&&t<33.62;
+  handSplash.forEach((s,i)=>{if(reach){const ph=((t*2.2+i*.37)%1);s.material.opacity=(1-ph)*.7;s.scale.setScalar(.06+ph*.16);
+   s.position.set(.3+Math.sin(i*2.1)*.05,1.3+Math.cos(i*1.7)*.05,-.14)}else s.material.opacity=0});
+  neon1.material.opacity=.8+.2*(Math.sin(t*19)>-.7?1:.3)}
+ /* فضا */
+ if(spVis){stars.forEach((s,i)=>{s.rotation.y=t*.008*(i+1);s.material.opacity=.8+.2*Math.sin(t*(1.1+i*.4)+i)});
+  nebs.forEach((n,i)=>n.material.opacity=.11+.05*Math.sin(t*.3+i*2));
+  for(let i=0;i<dustSp.n;i++){const s=dustSp.seed[i];
+   dustSp.pos[i*3]=s[0]+Math.sin(t*.2+s[3])*.4;dustSp.pos[i*3+1]=s[1]+Math.sin(t*.16+s[3]*2)*.4;dustSp.pos[i*3+2]=s[2]+Math.cos(t*.18+s[3])*.4}
+  dustSp.p.geometry.attributes.position.needsUpdate=true;
+  const q=UI.quality==='high';stars[0].geometry.setDrawRange(0,q?1000:550);stars[1].geometry.setDrawRange(0,q?700:380);stars[2].geometry.setDrawRange(0,q?450:250);
+  tiles.forEach(tl=>{const i=tl.userData.i,tf=47.9+i*.14;
+   if(t<47.3){tl.position.set(tl.userData.x,-.02,tl.userData.z);tl.rotation.set(0,0,0);tl.visible=true}
+   else if(t<tf){tl.position.set(tl.userData.x+Math.sin(t*40+i)*.006,-.02,tl.userData.z);tl.visible=true}
+   else{const a=t-tf;tl.position.set(tl.userData.x,-.02-4.9*a*a,tl.userData.z-a*.3);
+    tl.rotation.set(a*(1+i*.2),a*.5,a*(.6+i*.15));tl.visible=a<1.9}});
+  const ja=t-55.29;jspk.material.opacity=ja>0&&ja<.8?.9*(1-ja/.8):0;
+  if(ja>0&&ja<.8){for(let i=0;i<JSPK;i++){const s=jspkSeed[i],a=ja-s[3];
+   if(a<0){jspkPos[i*3+1]=-9;continue}
+   jspkPos[i*3]=s[0]*a;jspkPos[i*3+1]=.1+s[1]*a-2.5*a*a;jspkPos[i*3+2]=s[2]*a}
+   jspkGeo.attributes.position.needsUpdate=true}}
+ /* فريدة */
+ char.position.set(cs.x,cs.y,cs.z);char.rotation.set(cs.rx,cs.ry,cs.rz);
+ const heavy=t>=4.97&&t<7.59?1:0;
+ body.rotation.z=heavy?.05*Math.sin((t-4.97)*2.4):0;
+ legL.rotation.x=cs.walk;legR.rotation.x=-cs.walk;
+ shoeL.position.y=.03+Math.max(0,cs.walk)*.06;shoeR.position.y=.03+Math.max(0,-cs.walk)*.06;
+ if(cs.air>0&&t<55.29){legL.rotation.x=.1*cs.air;legR.rotation.x=-.06*cs.air}
+ if(t>=55.29){const u=clamp((t-55.29)/.8,0,1);legL.rotation.x=.5*(1-u)+.15;legR.rotation.x=.35*(1-u)+.1}
+ /* دراعات */
+ let rrx=-.05,rrz=-.08,lrx=-.12,lrz=.08;
+ if(t>=10.43&&t<11.1){const u=ss(clamp((t-10.43)/.25,0,1))*(1-ss(clamp((t-10.85)/.25,0,1)));rrx=-1.15*u;rrz=-.35*u}
+ if(t>=16.35&&t<18.2){const u=ss((t-16.35)/.2)*(1-ss((t-17.9)/.3));rrx=-.95*u+Math.sin(t*19)*.1*u;rrz=-.55*u}
+ if(t>=29.84&&t<33.62){const u=ss((t-29.84)/.5);rrx=-1.35*u;rrz=-.15*u}
+ if(t>=33.62&&t<34.2){const u=1-ss((t-33.62)/.1);rrx=-1.35*u+.1*(1-u)}
+ if(cs.grip>0){rrx=lerp(rrx,-.6,cs.grip);rrz=lerp(rrz,.3,cs.grip);lrx=lerp(lrx,-.6,cs.grip);lrz=lerp(lrz,-.3,cs.grip)}
+ if(t>=55.0&&t<55.29){const u=ss((t-55)/.29);lrx=lerp(-.6,-.3,u);lrz=lerp(-.3,.5,u)}
+ if(t>=55.29){const u=ss((t-55.29)/.6);rrx=lerp(.1,-.3,u)+Math.sin(t*1.3)*.12*u;rrz=lerp(-.2,-1.7,u);
+  lrx=lerp(-.3,-.3,u)+Math.sin(t*1.1+1)*.12*u;lrz=lerp(.5,1.7,u)}
+ armR.rotation.set(rrx,0,rrz);armL.rotation.set(lrx,0,lrz);
+ /* وش */
+ head.rotation.z=face.tilt*.16+(t>=39.17&&t<42.9?.008*Math.sin(t*47):0);
+ head.rotation.x=face.tiltX||0;
+ eyeL.scale.y=Math.max(.06,face.open);eyeR.scale.y=Math.max(.06,face.open);
+ [eyeL,eyeR].forEach(e=>{e.userData.p.scale.setScalar(face.pupil);e.userData.p.position.x=face.gx*2;e.userData.p.position.y=face.gy*2;
+  e.userData.gl.material.opacity=.4+face.joy*.6;e.userData.gl.scale.setScalar(.012+face.joy*.01)});
+ browL.position.y=.075+face.lift*.02;browR.position.y=.075+face.lift*.02;
+ browL.rotation.z=face.angle*.45;browR.rotation.z=-face.angle*.45;
+ mouthPts.forEach((p,i)=>{const x=(i-2)/2;p.position.x=x*.032*face.width;
+  p.position.y=face.curve*(x*x)*.016-face.curve*.004});
+ mouthOpen.scale.set(face.width*.9,Math.max(.12,face.mouth*5),1);
+ mouthOpen.position.y=-.004-face.mouth*.01;
+ blushL.material.opacity=face.joy*.3;blushR.material.opacity=face.joy*.3;
+ scarfTail.forEach((s,i)=>{s.rotation.x=Math.sin(t*2+i*.8)*(.12+cs.air*.3)+(cs.air?.5:0);s.rotation.z=Math.sin(t*1.4+i)*.08});
+ /* الشنطة */
+ char.updateMatrixWorld(true);
+ if(t<55.0){armL.userData.hand.getWorldPosition(tmpV);kase.position.set(tmpV.x,tmpV.y-.28,tmpV.z);
+  kase.rotation.set(0,cs.ry,heavy?.06*Math.sin((t-4.97)*2.4):0);
+  if(t>=39.17&&t<55){kase.position.x+=Math.sin(t*69)*.008;kase.position.y+=Math.cos(t*63)*.006}}
+ else{const u=clamp((t-55)/5.7,0,1),e=F.eOC(u);
+  kase.position.set(-.33+1.7*e,.5-.9*e+.05*Math.sin(t*.8),1.05-1.4*e);
+  kase.rotation.set((t-55)*.5,(t-55)*.35,(t-55)*.42)}
+ const grounded=t<50.2;
+ blobShadow.position.set(cs.x,.012,cs.z);blobShadow.material.opacity=grounded?.35:.35*(1-ss((t-50.2)/1.5));
+ caseShadow.position.set(kase.position.x,.011,kase.position.z);caseShadow.material.opacity=grounded?.3:.3*(1-ss((t-50.2)/1.5));
+ /* كابينة بتتمايل */
+ elev.position.x=F.swayX(t);elev.position.y=F.bobY(t);elev.rotation.z=t>35.3&&t<41.6?.02*Math.sin((t-35.3)*2.7):0;
+ shell.position.copy(elev.position);shell.rotation.copy(elev.rotation);
+ /* كاميرا */
+ const cam=F.sampleCam(t);
+ camera.position.set(cam.pos[0],cam.pos[1],cam.pos[2]);
+ camera.lookAt(cam.look[0],cam.look[1],cam.look[2]);
+ if(Math.abs(cam.fov-camera.fov)>.01){camera.fov=cam.fov;camera.updateProjectionMatrix()}
+ return{cam,open,cs}}
+/* ——— HUD لايف ——— */
+const vig=$('vignette'),flash=$('flash');
+let lastLine=-1,lastShotIdx=-1,fpsN=0,fpsT=0;
+function syncUI(t,st,dt){
+ const i=F.shotAt(t),s=F.SHOTS[i];
+ $('hudTC').textContent=U.fmt(t);$('hudFrame').textContent=U.fmtF(U.fr(t))+'/1823';
+ $('hudShot').textContent='S'+String(i+1).padStart(2,'0')+'/34';
+ $('tCur').textContent=U.fmt(t);$('fCur').textContent=U.fmtF(U.fr(t))+' / 1823';
+ UI.syncScrub(t);UI.syncEnergy(t);UI.syncShot(i);
+ if(i!==lastLine){lastLine=i;
+  $('subsNum').textContent='L'+String(i+1).padStart(2,'0')+' · '+s.t0.toFixed(2)+'s';
+  $('subsText').textContent=s.text;
+  $('subs').style.opacity=0;setTimeout(()=>$('subs').style.opacity=1,90);
+  $('subs').querySelector('.txt').style.borderInlineStartColor=i<13?'var(--amber)':i<23?'var(--cyan)':'var(--violet2)';
+  $('liveLineNum').textContent=i+1;$('liveLineT').textContent=s.t0.toFixed(2)+'s';
+  $('liveLineText').textContent=s.text;
+  $('liveShot').textContent='S'+String(i+1).padStart(2,'0')+' — '+s.size.split('·')[0];
+  const nx=F.SHOTS[Math.min(i+1,33)];$('nextShot').textContent='S'+String(nx.n).padStart(2,'0')+' — '+nx.size+' · '+nx.mv.split('·')[0]}
+ const b=F.beatAt(t);$('liveBeat').textContent=b?('بيت الوش: '+b.name+' · '+b.id):'بيت الوش: محايد';
+ $('liveLens').textContent=F.lensOf(camera.fov)+'mm';
+ const a=F.sampleCam(clamp(t-.05,0,DUR)).pos,bb=F.sampleCam(clamp(t+.05,0,DUR)).pos;
+ const spd=Math.hypot(bb[0]-a[0],bb[1]-a[1],bb[2]-a[2])/.1;
+ $('liveCamSpeed').textContent=spd.toFixed(2)+' m/s';
+ const en=F.energy(t);$('liveEnergyVal').textContent=en.toFixed(2);$('liveEnergyBar').style.width=(en*100)+'%';
+ $('liveDoorVal').textContent=Math.round(st.open*100)+'%';$('liveDoorBar').style.width=(st.open*100)+'%';
+ $('liveWorld').textContent=t<12.54?'اللوبي — برّه':t<23.7?'جوه · اللوبي':t<41.6?'جوه · المطر':'الفضا';
+ /* نبض قلب + فلاشات */
+ let v=0;if(t>=40.8&&t<44.3){const rate=lerp(1.2,1.7,(t-40.8)/3.2),ph=((t-40.8)*rate)%1;v=Math.exp(-ph*6)*.4}
+ vig.style.opacity=v;
+ let fl=0,fc='#cfeaff';
+ if(t>23.9&&t<24.4){fl=.25*Math.exp(-(t-23.9)/.12);fc='#9adfff'}
+ if(t>24.35&&t<24.7){fl=Math.max(fl,.3*Math.exp(-(t-24.35)/.1));fc='#e8f6ff'}
+ if(t>33.62&&t<33.85){fl=Math.max(fl,.18*Math.exp(-(t-33.62)/.08));fc='#ffd9c0'}
+ if(t>55.29&&t<55.6){fl=Math.max(fl,.12*Math.exp(-(t-55.29)/.12));fc='#ffe9b8'}
+ flash.style.background=fc;flash.style.opacity=fl;
+ /* تايتل النهاية */
+ const endT=t>59.9?ss((t-59.9)/.5):0;
+ $('endCard').querySelector('.p-title').style.opacity=playing?endT:1;
+ if(playing)$('endCard').classList.toggle('show',t>59.9);
+ fpsN++;fpsT+=dt;if(fpsT>=.5){$('hudFps').textContent=Math.round(fpsN/fpsT)+' fps';fpsN=0;fpsT=0}}
+/* ——— الحالة والتحكم ——— */
+let t=0,playing=false,dirty=true,started=false;
+const P=window.PREVIZ;
+P.t=0;
+function setPlay(p){playing=p;P.playing=p;
+ $('playIco').innerHTML=p?'<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>':'<path d="M8 5v14l11-7z"/>';
+ if(p){started=true;$('poster').classList.add('hide');$('endCard').classList.remove('show');$('endCard').style.pointerEvents='none';
+  Audio.start();if(Audio.ctx&&Audio.ctx.state==='suspended')Audio.ctx.resume();Audio.lastT=t}
+ dirty=true}
+P.toggle=()=>{if(!playing&&t>=DUR-.01){t=0;Audio.lastT=0}setPlay(!playing)};
+P.play=()=>{if(t>=DUR-.01){t=0;Audio.lastT=0}setPlay(true)};
+P.seek=(nt,play)=>{t=clamp(nt,0,DUR);P.t=t;Audio.lastT=t;
+ if(play===true)setPlay(true);else if(play===false&&playing)setPlay(false);
+ if(!started){$('poster').classList.remove('hide')}
+ if(t<DUR-.01){$('endCard').classList.remove('show')}
+ dirty=true;stage.scrollIntoView({behavior:'smooth',block:'center'})};
+P.exportFrame=()=>{evaluate(t);renderer.render(scene,camera);
+ const url=renderer.domElement.toDataURL('image/png');
+ const a=document.createElement('a');a.href=url;a.download='open-elevator-'+U.fmtF(U.fr(t))+'.png';a.click();dirty=true};
+window.addEventListener('quality-change',()=>{size();dirty=true});
+/* ——— التقاط الفريمات الذهبية ——— */
+size();
+renderer.compile(scene,camera);
+const goldUrls=[];
+F.GOLD.forEach((g,i)=>{evaluate(g.t);renderer.render(scene,camera);
+ const url=renderer.domElement.toDataURL('image/png');goldUrls.push(url);UI.setGolden(i,url)});
+evaluate(0);renderer.render(scene,camera);
+$('loading').classList.add('hide');
+P.ready=true;
+if(UI.pending){const p=UI.pending;UI.pending=null;if(p.t!==null)P.seek(p.t,p.play);else P.play()}
+/* ——— loop واحد ——— */
+let last=performance.now();
+function loop(now){
+ requestAnimationFrame(loop);
+ let dt=Math.min((now-last)/1000,.05);last=now;
+ if(playing){const prev=t;t+=dt*UI.speed;
+  if(t>=DUR){if(UI.loop){t=0;Audio.lastT=0}else{t=DUR;setPlay(false);$('endCard').classList.add('show');$('endCard').style.pointerEvents='auto'}}
+  Audio.events(t,prev,playing);Audio.update(t,dt);dirty=true}
+ if(dirty){const st=evaluate(t);renderer.render(scene,camera);syncUI(t,st,dt||.016);P.t=t;dirty=false}}
+requestAnimationFrame(loop);
+renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();P.exportFrame=()=>{};const n=$('fallbackNote');n.textContent='فُقد سياق WebGL — أعد تحميل الصفحة لاستعادته';n.style.display='block'});
+}
+</script>
+</body>
+</html>
