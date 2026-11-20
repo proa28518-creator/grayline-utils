@@ -1,0 +1,46 @@
+{
+  "_doc": "Farida (heroine — Story 5 'المصعد المفتوح'): Egyptian woman in her early 30s, graceful slim build, dark auburn-chestnut high ponytail with gold tie, vibrant coral-crimson Art-Deco travel coat over crisp ivory blouse, warm golden-mustard striped neck scarf, espresso leather waist belt with brass buckle, tailored midnight-navy knee A-line skirt. Big expressive eyes and bold brows for crystal-clear emotional acting on 9:16 mobile.",
+  "id": "farida",
+  "name": "Farida",
+  "head": {},
+  "face": {
+    "eyeSize": 1.04,
+    "browThick": 1.42,
+    "mouthSize": 1.06,
+    "mouthWidth": 1.02
+  },
+  "hair": {
+    "style": "ponytail",
+    "colour": "#3b1a14",
+    "seed": 23,
+    "length": 0.68,
+    "tieColour": "#ebbc4a"
+  },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "slim", "W": 0.68, "H": 0.94, "band": 0.08 },
+    "outfit": {
+      "trousers": "#1f2940",
+      "skirt": {
+        "color": "#222e4a",
+        "length": "knee",
+        "shape": "aline",
+        "flare": 1.24,
+        "pleats": 10
+      },
+      "layers": [
+        { "t": "blouse", "color": "#f8f2e6", "collar": "round", "collarW": 0.50 },
+        { "t": "coat", "color": "#d63e3e", "lapels": true, "buttons": 4, "buttonColor": "#f0c859", "buttonGap": 0.11, "tip": 0.64, "openW": 0.34 },
+        { "t": "scarf", "color": "#eab93b", "tail": 0.38, "stripes": "#c77d1c" },
+        { "t": "belt", "y": 0.22, "h": 0.042, "color": "#3b2013", "buckle": "#e8c055" }
+      ]
+    }
+  },
+  "limbs": {
+    "legLen": 1.32,
+    "armLen": 0.94,
+    "width": 0.054,
+    "handR": 0.058
+  },
+  "hide": []
+}

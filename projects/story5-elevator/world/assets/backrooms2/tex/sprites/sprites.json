@@ -1,0 +1,230 @@
+{
+ "note": "Flat cut-out billboards. height = D from anchor edge to the other end (a character is about 3.2 D). width = height * aspect. anchor bottom: stands on the bottom edge of the image. anchor top: hangs from the top edge at the ceiling.",
+ "sprites": [
+  {
+   "name": "office_chair",
+   "file": "office_chair.png",
+   "height": 2.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.6352,
+   "sheet": "sheet_furniture"
+  },
+  {
+   "name": "filing_cabinet",
+   "file": "filing_cabinet.png",
+   "height": 2.6,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.6505,
+   "sheet": "sheet_furniture"
+  },
+  {
+   "name": "box_stack",
+   "file": "box_stack.png",
+   "height": 2.1,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.5826,
+   "sheet": "sheet_furniture"
+  },
+  {
+   "name": "water_cooler",
+   "file": "water_cooler.png",
+   "height": 2.5,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.3623,
+   "sheet": "sheet_furniture"
+  },
+  {
+   "name": "tipped_chair",
+   "file": "tipped_chair.png",
+   "height": 1.2,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.7241,
+   "sheet": "sheet_furniture"
+  },
+  {
+   "name": "coat_stand",
+   "file": "coat_stand.png",
+   "height": 3.2,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.3189,
+   "sheet": "sheet_furniture"
+  },
+  {
+   "name": "dead_plant",
+   "file": "dead_plant.png",
+   "height": 1.7,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.8075,
+   "sheet": "sheet_clutter"
+  },
+  {
+   "name": "mop_bucket",
+   "file": "mop_bucket.png",
+   "height": 2.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.6233,
+   "sheet": "sheet_clutter"
+  },
+  {
+   "name": "trash_bags",
+   "file": "trash_bags.png",
+   "height": 1.3,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.1711,
+   "sheet": "sheet_clutter"
+  },
+  {
+   "name": "paper_pile",
+   "file": "paper_pile.png",
+   "height": 0.6,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.3147,
+   "sheet": "sheet_clutter"
+  },
+  {
+   "name": "open_box",
+   "file": "open_box.png",
+   "height": 1.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.1849,
+   "sheet": "sheet_clutter"
+  },
+  {
+   "name": "waste_bin",
+   "file": "waste_bin.png",
+   "height": 0.9,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.7451,
+   "sheet": "sheet_clutter"
+  },
+  {
+   "name": "mould_clump",
+   "file": "mould_clump.png",
+   "height": 0.5,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 2.8097,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "mushrooms_pale",
+   "file": "mushrooms_pale.png",
+   "height": 0.7,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 0.9701,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "shelf_fungus",
+   "file": "shelf_fungus.png",
+   "height": 0.6,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 1.8681,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "fungus_shelves",
+   "file": "fungus_shelves.png",
+   "height": 0.6,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 2.2337,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "moss_tuft",
+   "file": "moss_tuft.png",
+   "height": 0.4,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 1.7306,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "mushrooms_tall",
+   "file": "mushrooms_tall.png",
+   "height": 0.9,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 0.5322,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "fungus_mound",
+   "file": "fungus_mound.png",
+   "height": 0.6,
+   "kind": "wall-foot",
+   "anchor": "bottom",
+   "aspect": 2.0115,
+   "sheet": "sheet_growth"
+  },
+  {
+   "name": "wire_bundle",
+   "file": "wire_bundle.png",
+   "height": 0.7,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.2109,
+   "sheet": "sheet_hanging"
+  },
+  {
+   "name": "cable_plug",
+   "file": "cable_plug.png",
+   "height": 0.7,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.0996,
+   "sheet": "sheet_hanging"
+  },
+  {
+   "name": "insulation_flap",
+   "file": "insulation_flap.png",
+   "height": 0.6,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.1992,
+   "sheet": "sheet_hanging"
+  },
+  {
+   "name": "wire_loop",
+   "file": "wire_loop.png",
+   "height": 0.5,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.208,
+   "sheet": "sheet_hanging"
+  },
+  {
+   "name": "rusty_chain",
+   "file": "rusty_chain.png",
+   "height": 0.7,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.1113,
+   "sheet": "sheet_hanging"
+  },
+  {
+   "name": "tape_strip",
+   "file": "tape_strip.png",
+   "height": 0.5,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.1514,
+   "sheet": "sheet_hanging"
+  }
+ ]
+}
