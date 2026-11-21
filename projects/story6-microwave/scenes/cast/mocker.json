@@ -1,0 +1,37 @@
+{
+  "_doc": "Mocker (colleague — Story 6 'الشوكولاتة اللي ساحت'): 1945 radar lab colleague, smug wide grin energy, dark hair, darker grey-green lab coat, skeptical playful attitude. Big expressive eyes for clear emotional acting on 9:16 mobile.",
+  "id": "mocker",
+  "name": "Mocker",
+  "head": {},
+  "face": {
+    "eyeSize": 1.08,
+    "browThick": 1.32,
+    "mouthSize": 1.12,
+    "mouthWidth": 1.08
+  },
+  "hair": {
+    "style": "short",
+    "colour": "#1f1812",
+    "seed": 31,
+    "length": 0.28
+  },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "regular", "W": 0.82, "H": 1.02, "band": 0.08 },
+    "outfit": {
+      "trousers": "#3a3e44",
+      "layers": [
+        { "t": "shirt", "color": "#dce4dc", "collar": "pointed", "collarW": 0.46 },
+        { "t": "tie", "color": "#2a3a2e", "width": 0.12, "length": 0.56 },
+        { "t": "coat", "color": "#4a554e", "lapels": true, "buttons": 5, "buttonColor": "#5a625c", "buttonGap": 0.10, "tip": 0.70, "openW": 0.30 }
+      ]
+    }
+  },
+  "limbs": {
+    "legLen": 1.26,
+    "armLen": 1.00,
+    "width": 0.062,
+    "handR": 0.064
+  },
+  "hide": []
+}

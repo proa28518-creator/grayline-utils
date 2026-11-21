@@ -1,0 +1,37 @@
+{
+  "_doc": "Engineer (protagonist — Story 6 'الشوكولاتة اللي ساحت'): 1945 radar engineer, calm focused demeanor, brown hair neatly combed, white lab coat over crisp shirt and tie, professional mid-30s appearance. Big expressive eyes for clear emotional acting on 9:16 mobile.",
+  "id": "engineer",
+  "name": "Engineer",
+  "head": {},
+  "face": {
+    "eyeSize": 1.02,
+    "browThick": 1.18,
+    "mouthSize": 1.00,
+    "mouthWidth": 1.00
+  },
+  "hair": {
+    "style": "short",
+    "colour": "#4a3528",
+    "seed": 17,
+    "length": 0.24
+  },
+  "hat": { "kind": "none" },
+  "torso": {
+    "body": { "build": "regular", "W": 0.78, "H": 1.00, "band": 0.08 },
+    "outfit": {
+      "trousers": "#2d3a4a",
+      "layers": [
+        { "t": "shirt", "color": "#e8f0f4", "collar": "pointed", "collarW": 0.48 },
+        { "t": "tie", "color": "#1e3a52", "width": 0.12, "length": 0.58 },
+        { "t": "coat", "color": "#f4f6f8", "lapels": true, "buttons": 5, "buttonColor": "#e0e4e8", "buttonGap": 0.10, "tip": 0.72, "openW": 0.28 }
+      ]
+    }
+  },
+  "limbs": {
+    "legLen": 1.28,
+    "armLen": 0.98,
+    "width": 0.060,
+    "handR": 0.062
+  },
+  "hide": []
+}

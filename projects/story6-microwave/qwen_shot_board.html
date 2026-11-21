@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MELTED IN HIS POCKET — Shot Board v2 · Microwave Origin Film</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{
+  --booth:#0B0E13; --panel:#131822; --panel2:#1A2130; --line:#2A3346; --line2:#3A4560;
+  --amber:#FFA028; --amber2:#FF7A1A; --amberSoft:#FFD9A0; --phos:#2EE87E; --phosDim:#19C96F;
+  --red:#FF3B4D; --blue:#3D9BFF; --magenta:#FF4FA3;
+  --paper:#F4E9D4; --paper2:#EADDBF; --ink:#26201A; --ink2:#5C5142;
+  --txt:#E8E2D6; --mut:#8B94A8; --mut2:#5E6880;
+  --mono:'IBM Plex Mono',monospace; --disp:'Bebas Neue',sans-serif; --body:'Archivo',sans-serif;
+  --hdrH:64px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body); background:var(--booth); color:var(--txt);
+  overflow-x:hidden; min-height:100vh;
+  background-image:
+    radial-gradient(900px 600px at 8% -5%, rgba(255,122,26,.09), transparent 60%),
+    radial-gradient(800px 700px at 100% 30%, rgba(46,232,126,.05), transparent 60%),
+    radial-gradient(700px 500px at 30% 110%, rgba(61,155,255,.06), transparent 60%);
+  background-attachment:fixed;
+}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:2000;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#0B0E13;border-left:1px solid #1A2130}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#FFA028,#7A4A12);border-radius:6px;border:2px solid #0B0E13}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#FFC46B,#FFA028)}
+*{scrollbar-width:thin;scrollbar-color:#FFA028 #0B0E13}
+::selection{background:rgba(255,160,40,.35)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+section{scroll-margin-top:calc(var(--hdrH) + 22px)}
+
+/* ---------- HEADER ---------- */
+header{position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:1000;
+  display:flex;align-items:center;gap:18px;padding:0 20px;
+  background:rgba(11,14,19,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);}
+header::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,var(--amber),var(--red) 30%,transparent 55%,var(--phos) 85%,transparent);}
+.slate{display:flex;align-items:center;gap:12px;min-width:0}
+.clap{width:36px;height:36px;flex:0 0 auto;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#FFA028,#FF3B4D);box-shadow:0 0 18px rgba(255,140,40,.35)}
+.clap svg{width:22px;height:22px}
+.titleWrap{min-width:0}
+.filmTitle{font-family:var(--disp);font-size:24px;letter-spacing:.06em;line-height:1;white-space:nowrap;
+  background:linear-gradient(90deg,#FFD9A0,#FFA028 60%,#FF7A1A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.filmSub{font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav{display:flex;gap:4px;margin-left:auto}
+nav a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:8px 13px;border-radius:8px;color:var(--mut);
+  border:1px solid transparent;transition:.2s}
+nav a:hover{color:var(--amberSoft);background:rgba(255,160,40,.07)}
+nav a.on{color:var(--amber);border-color:rgba(255,160,40,.4);background:rgba(255,160,40,.09)}
+.v2chip{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--phos);
+  border:1px solid rgba(46,232,126,.45);background:rgba(46,232,126,.08);padding:6px 10px;border-radius:99px;white-space:nowrap}
+.v2chip b{color:#B9FFD6}
+#sndBtn{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  padding:8px 14px;border-radius:99px;border:1px solid var(--line2);background:var(--panel2);color:var(--txt);transition:.2s;white-space:nowrap}
+#sndBtn .dot{width:8px;height:8px;border-radius:50%;background:var(--phos);box-shadow:0 0 8px var(--phos);animation:pulse 1.6s infinite}
+#sndBtn.off{color:var(--mut)} #sndBtn.off .dot{background:var(--red);box-shadow:0 0 8px var(--red);animation:none}
+#sndBtn:hover{border-color:var(--amber)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---------- FIX STRIP ---------- */
+.fixStrip{margin-top:var(--hdrH);display:flex;align-items:center;gap:8px;padding:10px 20px;overflow-x:auto;
+  background:linear-gradient(90deg,rgba(255,59,77,.07),rgba(46,232,126,.05));border-bottom:1px solid var(--line)}
+.fixStrip .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--red);white-space:nowrap;flex:0 0 auto}
+.fixStrip .lbl b{color:var(--phos)}
+.fixChip{flex:0 0 auto;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--txt);
+  padding:6px 11px;border-radius:99px;border:1px solid var(--line2);background:var(--panel);transition:.2s}
+.fixChip .n{font-family:var(--mono);font-size:10px;color:var(--phos)}
+.fixChip .s{font-family:var(--mono);font-size:10px;color:var(--amber)}
+.fixChip:hover{border-color:var(--phos);background:rgba(46,232,126,.08);transform:translateY(-1px)}
+.fixChip::before{content:'✓';color:var(--phos);font-weight:800}
+
+/* ---------- PREVIZ LAYOUT ---------- */
+.previz{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:18px;padding:18px 20px 26px;max-width:1720px;margin:0 auto}
+.stageCol{min-width:0;display:flex;flex-direction:column;gap:12px}
+.stageFrame{position:relative;margin:0 auto;width:min(100%,calc((100vh - 268px) * .5625));min-width:280px}
+.viewport{position:relative;width:100%;aspect-ratio:9/16;border-radius:16px;overflow:hidden;
+  background:#05070B;border:1px solid var(--line2);
+  box-shadow:0 0 0 1px rgba(255,160,40,.12),0 0 46px rgba(255,122,26,.12),0 24px 60px rgba(0,0,0,.6);}
+.viewport::before{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:16px;
+  background:radial-gradient(130% 100% at 50% 45%,transparent 55%,rgba(0,0,0,.42) 100%)}
+.viewport::after{content:'';position:absolute;inset:0;z-index:6;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23g)'/%3E%3C/svg%3E");
+  animation:grain .45s steps(2) infinite}
+@keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(-6px,4px)}100%{transform:translate(4px,-6px)}}
+#gl{position:absolute;inset:0;touch-action:none;cursor:grab}
+#gl:active{cursor:grabbing}
+#gl canvas{display:block;width:100%!important;height:100%!important}
+#fallback{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:24px;z-index:3;background:#0A0F14}
+#fallback .fbInner{max-width:300px}
+#fallback svg{width:100%;border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
+#fallback p{font-family:var(--mono);font-size:11px;color:var(--mut);line-height:1.6}
+.ov{position:absolute;z-index:8;pointer-events:none;font-family:var(--mono)}
+#ovRec{top:12px;left:12px;display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.14em;color:#FFB9C0;
+  background:rgba(10,8,10,.55);padding:5px 9px;border-radius:6px;border:1px solid rgba(255,59,77,.35)}
+#ovRec i{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:pulse 1.1s infinite}
+#ovMeta{top:12px;right:12px;font-size:9px;letter-spacing:.08em;color:var(--mut);text-align:right;line-height:1.7;
+  background:rgba(10,12,16,.5);padding:5px 9px;border-radius:6px}
+#ovBadge{left:12px;bottom:44px;display:flex;flex-direction:column;gap:3px}
+#ovBadge .sid{font-family:var(--disp);font-size:34px;line-height:.9;color:var(--amber);text-shadow:0 0 18px rgba(255,160,40,.5);letter-spacing:.05em}
+#ovBadge .stt{font-size:10px;letter-spacing:.14em;color:var(--txt)}
+#ovBadge .stc{font-size:9px;color:var(--phos);letter-spacing:.06em}
+#ovFit{right:12px;bottom:44px;font-size:10px;letter-spacing:.08em;padding:5px 10px;border-radius:6px;
+  color:#B9FFD6;background:rgba(10,26,16,.6);border:1px solid rgba(46,232,126,.5)}
+#ovFit.warn{color:#FFD9A0;background:rgba(30,18,6,.65);border-color:rgba(255,160,40,.6)}
+#ovCam{left:12px;right:12px;bottom:12px;font-size:8.5px;color:var(--mut);letter-spacing:.03em;
+  background:rgba(8,10,14,.55);padding:5px 8px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ovCam b{color:var(--amberSoft);font-weight:500}
+#ovCounter{left:0;right:0;top:34%;text-align:center;display:none}
+#ovCounter .big{font-family:var(--disp);font-size:clamp(30px,4.6vw,52px);letter-spacing:.05em;
+  background:linear-gradient(90deg,#FFD9A0,#FFA028,#FF4FA3);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 30px rgba(255,160,40,.25)}
+#ovCounter .sub{font-size:10px;letter-spacing:.3em;color:var(--amberSoft);margin-top:2px}
+#guidesSvg{position:absolute;inset:0;z-index:7;pointer-events:none;width:100%;height:100%}
+#ovSlate{position:absolute;inset:0;z-index:9;display:grid;place-items:center;pointer-events:none;opacity:0}
+#ovSlate .card{text-align:center;background:rgba(8,10,14,.78);border:1px solid rgba(255,160,40,.5);border-radius:12px;
+  padding:18px 30px;box-shadow:0 0 40px rgba(255,140,40,.25)}
+#ovSlate .s1{font-family:var(--disp);font-size:52px;color:var(--amber);line-height:.9;letter-spacing:.06em}
+#ovSlate .s2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--txt);margin-top:6px}
+#ovSlate .s3{font-family:var(--mono);font-size:9px;color:var(--phos);margin-top:5px;letter-spacing:.1em}
+#ovSlate.show{animation:slate .9s ease forwards}
+@keyframes slate{0%{opacity:0;transform:scale(1.06)}12%{opacity:1;transform:scale(1)}70%{opacity:1}100%{opacity:0}}
+.roamTag{position:absolute;z-index:8;top:46px;left:12px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+  color:#CFE4FF;background:rgba(10,18,32,.7);border:1px solid rgba(61,155,255,.5);padding:5px 9px;border-radius:6px;display:none}
+
+/* transport */
+.transport{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.tRow{display:flex;align-items:center;gap:10px}
+.tBtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);color:var(--txt);
+  display:grid;place-items:center;font-size:15px;transition:.15s}
+.tBtn:hover{border-color:var(--amber);color:var(--amber);transform:translateY(-1px)}
+.tBtn.main{width:52px;height:40px;background:linear-gradient(135deg,#FFA028,#FF7A1A);border:none;color:#1A0E00;font-size:16px;
+  box-shadow:0 4px 16px rgba(255,130,30,.35)}
+.tBtn.main:hover{filter:brightness(1.1);color:#1A0E00}
+#timeLbl{font-family:var(--mono);font-size:11px;color:var(--amberSoft);letter-spacing:.04em;min-width:150px}
+#timeLbl span{color:var(--mut)}
+.tSel{font-family:var(--mono);font-size:11px;background:var(--panel2);color:var(--txt);border:1px solid var(--line2);
+  border-radius:8px;padding:8px 8px;outline:none}
+.tSel:hover{border-color:var(--amber)}
+.loopWrap{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:.06em;margin-left:auto}
+.tl{position:relative;height:38px;border-radius:9px;background:#0D1119;border:1px solid var(--line);overflow:hidden;cursor:pointer;touch-action:none}
+.tlSegs{position:absolute;inset:0;display:flex}
+.tlSeg{position:relative;height:100%;border-right:1px solid #202A3C;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--mut2);transition:.2s;overflow:hidden}
+.tlSeg:last-child{border-right:none}
+.tlSeg.cur{color:#1A0E00;font-weight:600;background:linear-gradient(180deg,rgba(255,160,40,.92),rgba(255,122,26,.85))}
+.tlSeg:not(.cur):hover{background:rgba(255,160,40,.08);color:var(--amberSoft)}
+#tlHead{position:absolute;top:0;bottom:0;width:2px;background:#FFF;box-shadow:0 0 10px rgba(255,255,255,.9);pointer-events:none}
+#tlHead::before{content:'';position:absolute;top:-1px;left:-4px;border:5px solid transparent;border-top-color:#FFF}
+.tl.roam{opacity:.45}
+
+/* ---------- SIDE: DECK + DOSSIER ---------- */
+.sideCol{display:flex;flex-direction:column;gap:14px;min-width:0;max-height:calc(100vh - var(--hdrH) - 76px);overflow-y:auto;padding-right:4px;position:sticky;top:calc(var(--hdrH) + 58px)}
+.deck{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.deckHead{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.deckHead .t{font-family:var(--disp);font-size:19px;letter-spacing:.1em;color:var(--txt)}
+.deckHead .live{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--phos);letter-spacing:.1em;display:flex;align-items:center;gap:6px}
+.deckHead .live i{width:6px;height:6px;border-radius:50%;background:var(--phos);box-shadow:0 0 6px var(--phos);animation:pulse 1.4s infinite}
+.grp{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px;background:rgba(10,13,19,.5)}
+.grp .gt{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--mut);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.grp .gt::after{content:'';flex:1;height:1px;background:var(--line)}
+.ctl{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.ctl:last-child{margin-bottom:0}
+.ctl label{font-size:11px;font-weight:600;color:var(--txt);width:86px;flex:0 0 auto;display:flex;align-items:center;gap:5px}
+.ctl .val{font-family:var(--mono);font-size:10px;color:var(--amberSoft);width:52px;text-align:right;flex:0 0 auto}
+.specDot{width:6px;height:6px;border-radius:50%;background:var(--phos);flex:0 0 auto}
+.specDot.mod{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;background:linear-gradient(90deg,#3A2A12,#6B4A16);outline:none;min-width:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#FFD9A0,#FFA028 60%,#C86A00);border:1px solid #FFC46B;box-shadow:0 0 8px rgba(255,160,40,.6);cursor:pointer;transition:.15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#FFA028;border:1px solid #FFC46B;cursor:pointer}
+input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:#5A3E14}
+.tgl{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;flex:1;min-width:0}
+.tgl input{display:none}
+.tgl .pill{width:32px;height:18px;border-radius:99px;background:#252E42;border:1px solid var(--line2);position:relative;transition:.2s;flex:0 0 auto}
+.tgl .pill::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#8B94A8;transition:.2s}
+.tgl input:checked + .pill{background:rgba(255,160,40,.3);border-color:var(--amber)}
+.tgl input:checked + .pill::after{left:16px;background:var(--amber);box-shadow:0 0 8px rgba(255,160,40,.8)}
+.tgl .tl2{font-size:11px;font-weight:600;color:var(--txt)}
+.tglGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.zoneRow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.zoneBtn{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;padding:8px 4px;border-radius:8px;border:1px solid var(--line2);
+  background:var(--panel2);color:var(--mut);transition:.15s;text-align:center;line-height:1.5}
+.zoneBtn b{display:block;color:var(--txt);font-size:10px}
+.zoneBtn:hover{border-color:var(--blue);color:#CFE4FF;transform:translateY(-1px)}
+.zoneBtn.on{border-color:var(--amber);background:rgba(255,160,40,.1)} .zoneBtn.on b{color:var(--amber)}
+.actRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.aBtn{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:10px 8px;border-radius:9px;border:1px solid var(--line2);
+  background:var(--panel2);color:var(--txt);transition:.15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.aBtn:hover{border-color:var(--amber);color:var(--amberSoft);transform:translateY(-1px)}
+.aBtn.pri{background:linear-gradient(135deg,#FFA028,#FF7A1A);color:#1A0E00;border:none;font-weight:600;box-shadow:0 3px 14px rgba(255,130,30,.3)}
+.aBtn.pri:hover{filter:brightness(1.12);color:#1A0E00}
+.aBtn.grn{border-color:rgba(46,232,126,.5);color:#B9FFD6}
+.aBtn.grn:hover{border-color:var(--phos);background:rgba(46,232,126,.08);color:#B9FFD6}
+.dice{width:34px;height:30px;flex:0 0 auto;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);font-size:14px;transition:.2s}
+.dice:hover{border-color:var(--magenta);transform:rotate(20deg)}
+/* dossier */
+.dossier{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.dossier::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--red),var(--phos))}
+.dsTop{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#dsId{font-family:var(--disp);font-size:40px;color:var(--amber);line-height:.9;letter-spacing:.04em}
+#dsTitle{font-family:var(--disp);font-size:21px;letter-spacing:.08em;color:var(--txt)}
+#dsTC{font-family:var(--mono);font-size:10px;color:var(--phos);width:100%;letter-spacing:.06em;margin-top:2px}
+.dsFix{margin:11px 0;padding:10px 12px;border-radius:9px;font-size:11.5px;line-height:1.55;
+  background:rgba(46,232,126,.06);border:1px solid rgba(46,232,126,.3);color:#D9F5E4}
+.dsFix b{color:var(--phos);font-family:var(--mono);font-size:10px;letter-spacing:.08em;display:block;margin-bottom:3px}
+.camTbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10.5px;margin-bottom:11px}
+.camTbl td{padding:5px 6px;border-bottom:1px solid #1E2636;vertical-align:top}
+.camTbl td:first-child{color:var(--mut);letter-spacing:.08em;font-size:9px;width:74px;padding-top:7px}
+.camTbl td:last-child{color:var(--amberSoft)}
+.dsH{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--mut);margin:12px 0 7px;display:flex;align-items:center;gap:8px}
+.dsH::after{content:'';flex:1;height:1px;background:var(--line)}
+#dsStage{list-style:none}
+#dsStage li{font-size:11.5px;line-height:1.55;color:#C9CFDC;padding:4px 0 4px 16px;position:relative}
+#dsStage li::before{content:'▸';position:absolute;left:0;color:var(--amber);font-size:10px;top:6px}
+#dsStage li b{color:var(--amberSoft);font-weight:600}
+#dsAssets{display:flex;flex-wrap:wrap;gap:6px}
+.aChip{font-family:var(--mono);font-size:9.5px;padding:5px 9px;border-radius:6px;border:1px solid var(--line2);
+  background:var(--panel2);color:var(--amberSoft);transition:.15s;cursor:pointer}
+.aChip:hover{border-color:var(--amber);background:rgba(255,160,40,.12);transform:translateY(-1px)}
+#dsLink{display:inline-flex;align-items:center;gap:6px;margin-top:13px;font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:.06em}
+#dsLink:hover{color:#8FC4FF;text-decoration:underline}
+
+/* ---------- SHOT BOARD ---------- */
+.boardSec{padding:44px 20px 60px;max-width:1720px;margin:0 auto;border-top:1px solid var(--line);position:relative;
+  background:linear-gradient(180deg,rgba(255,160,40,.03),transparent 300px)}
+.secHead{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:8px}
+.secHead h2{font-family:var(--disp);font-size:clamp(34px,4.5vw,54px);letter-spacing:.05em;line-height:.95;
+  background:linear-gradient(90deg,#FFD9A0,#FFA028 55%,#FF4FA3);-webkit-background-clip:text;background-clip:text;color:transparent}
+.secHead .kick{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--phos);width:100%;margin-bottom:6px}
+.secHead p{font-size:13px;color:var(--mut);max-width:640px;line-height:1.6}
+.constraint{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 24px}
+.cChip{font-family:var(--mono);font-size:10px;color:var(--amberSoft);border:1px dashed rgba(255,160,40,.4);
+  padding:6px 11px;border-radius:99px;background:rgba(255,160,40,.05)}
+.worldMap{display:flex;align-items:center;gap:0;margin:0 0 28px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;overflow-x:auto}
+.wmNode{flex:0 0 auto;text-align:center;min-width:120px}
+.wmNode .x{font-family:var(--mono);font-size:10px;color:var(--blue)}
+.wmNode .n{font-family:var(--disp);font-size:17px;letter-spacing:.08em;color:var(--txt)}
+.wmNode .d{font-size:10px;color:var(--mut)}
+.wmLine{flex:1;min-width:40px;height:2px;background:linear-gradient(90deg,var(--amber),var(--blue));position:relative;margin:0 6px}
+.wmLine::after{content:attr(data-d);position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8.5px;color:var(--mut2);white-space:nowrap}
+.boardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:20px}
+.card{background:linear-gradient(160deg,var(--paper),var(--paper2));color:var(--ink);border-radius:14px;overflow:hidden;
+  box-shadow:0 14px 40px rgba(0,0,0,.5),0 0 0 1px rgba(255,160,40,.15);position:relative;transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-4px);box-shadow:0 22px 54px rgba(0,0,0,.6),0 0 0 1px rgba(255,160,40,.4)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:repeating-linear-gradient(90deg,#26201A 0 26px,#F4E9D4 26px 34px);opacity:.85;z-index:2}
+.cardHead{display:flex;align-items:center;gap:11px;padding:18px 18px 12px;flex-wrap:wrap}
+.cardHead .cid{font-family:var(--disp);font-size:38px;line-height:.85;color:#B3541E}
+.cardHead .ct{font-family:var(--disp);font-size:19px;letter-spacing:.07em;color:var(--ink)}
+.cardHead .tc{font-family:var(--mono);font-size:9px;color:#7A5A2E;width:100%;letter-spacing:.05em}
+.fixStamp{margin-left:auto;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;color:#0E6B3A;
+  border:2px solid #0E6B3A;border-radius:6px;padding:4px 8px;transform:rotate(3deg);background:rgba(14,107,58,.07)}
+.diags{display:grid;grid-template-columns:1.25fr 1fr;gap:10px;padding:0 18px}
+.diagBox{background:#171310;border-radius:10px;padding:9px;position:relative}
+.diagBox .dl{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:#B99A6B;margin-bottom:6px;display:flex;justify-content:space-between}
+.diagBox .dl .pass{color:var(--phos)} .diagBox .dl .fail{color:var(--red)}
+.diagBox svg{width:100%;display:block;border-radius:6px}
+.cardBody{padding:14px 18px 18px}
+.cbH{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:#8A6A3A;margin:12px 0 6px;display:flex;align-items:center;gap:8px}
+.cbH::after{content:'';flex:1;height:1px;background:#D8C8A4}
+.cbH:first-child{margin-top:0}
+.cbTbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px}
+.cbTbl td{padding:4px 5px;border-bottom:1px solid #E2D4B2;vertical-align:top;color:#3A3025}
+.cbTbl td:first-child{color:#8A6A3A;font-size:8.5px;letter-spacing:.08em;width:72px;padding-top:6px}
+.cbTbl td b{color:#B3541E;font-weight:600}
+.cbList{list-style:none}
+.cbList li{font-size:11.5px;line-height:1.55;color:#3A3025;padding:3px 0 3px 15px;position:relative}
+.cbList li::before{content:'▸';position:absolute;left:0;color:#B3541E;font-size:10px;top:5px}
+.cbList li b{color:#7A3A10}
+.cbAssets{display:flex;flex-wrap:wrap;gap:5px}
+.cbA{font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:5px;background:#26201A;color:#FFD9A0;cursor:pointer;transition:.15s;border:1px solid #26201A}
+.cbA:hover{background:#B3541E;transform:translateY(-1px)}
+.cbA .sz{color:#B99A6B;margin-left:5px}
+.cardPlay{position:absolute;top:14px;right:14px;z-index:3;width:32px;height:32px;border-radius:50%;border:none;
+  background:#26201A;color:#FFA028;font-size:12px;display:grid;place-items:center;transition:.2s;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.cardPlay:hover{background:#B3541E;color:#FFF;transform:scale(1.12)}
+
+/* ---------- MANIFEST ---------- */
+.mfSec{padding:44px 20px 70px;max-width:1720px;margin:0 auto;border-top:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(46,232,126,.03),transparent 300px)}
+.mfTools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0}
+#mfSearch{font-family:var(--mono);font-size:12px;background:var(--panel);border:1px solid var(--line2);color:var(--txt);
+  border-radius:10px;padding:11px 14px;width:min(320px,100%);outline:none;transition:.2s}
+#mfSearch:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,160,40,.15)}
+#mfSearch::placeholder{color:var(--mut2)}
+.mfChip{font-family:var(--mono);font-size:10px;padding:8px 12px;border-radius:99px;border:1px solid var(--line2);background:var(--panel);color:var(--mut);transition:.15s}
+.mfChip:hover{color:var(--amberSoft);border-color:var(--amber)}
+.mfChip.on{color:#1A0E00;background:linear-gradient(135deg,#FFA028,#FF7A1A);border-color:transparent;font-weight:600}
+#mfCount{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--phos)}
+.mfGroup{margin-bottom:22px}
+.mfGHead{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-size:20px;letter-spacing:.1em;color:var(--txt);margin-bottom:9px}
+.mfGHead .gc{font-family:var(--mono);font-size:9px;color:var(--booth);background:var(--amber);border-radius:99px;padding:3px 8px;font-weight:600}
+.mfGHead::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.mfRows{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:8px}
+.mfRow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;background:var(--panel);
+  border:1px solid var(--line);border-radius:10px;padding:10px 13px;cursor:pointer;transition:.15s}
+.mfRow:hover{border-color:var(--amber);background:var(--panel2);transform:translateX(3px)}
+.mfRow .an{font-family:var(--mono);font-size:11px;color:var(--amberSoft);font-weight:600;grid-column:1}
+.mfRow .asz{font-family:var(--mono);font-size:9px;color:var(--blue);grid-column:3;text-align:right;white-space:nowrap}
+.mfRow .ad{font-size:11px;color:var(--mut);grid-column:1/3;line-height:1.45}
+.mfRow .ash{grid-column:3;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.shTag{font-family:var(--mono);font-size:8.5px;padding:2px 6px;border-radius:4px;background:rgba(46,232,126,.1);color:var(--phos);border:1px solid rgba(46,232,126,.25)}
+.shTag.off{background:rgba(139,148,168,.08);color:var(--mut2);border-color:var(--line)}
+.reuse{font-family:var(--mono);font-size:8.5px;color:var(--magenta);border:1px solid rgba(255,79,163,.35);border-radius:4px;padding:2px 6px;background:rgba(255,79,163,.07)}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:26px 20px 34px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  background:linear-gradient(180deg,transparent,rgba(255,122,26,.05))}
+footer .fs{font-family:var(--disp);font-size:22px;letter-spacing:.08em;color:var(--amber)}
+footer .fm{font-family:var(--mono);font-size:10px;color:var(--mut);line-height:1.8}
+footer .fm b{color:var(--phos)}
+footer .right{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--mut2);text-align:right;line-height:1.8}
+
+/* toasts */
+#toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:3000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--txt);background:rgba(15,20,30,.94);
+  border:1px solid rgba(46,232,126,.55);border-left:4px solid var(--phos);border-radius:10px;padding:11px 18px;
+  box-shadow:0 10px 34px rgba(0,0,0,.6);animation:toastIn 3s ease forwards;max-width:min(560px,90vw);text-align:center;line-height:1.5}
+.toast b{color:var(--phos)} .toast.amber{border-color:rgba(255,160,40,.55);border-left-color:var(--amber)} .toast.amber b{color:var(--amber)}
+@keyframes toastIn{0%{opacity:0;transform:translateY(16px)}8%{opacity:1;transform:translateY(0)}82%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+
+/* entrances */
+.in1{animation:rise .7s .05s cubic-bezier(.2,.8,.2,1) both}
+.in2{animation:rise .7s .18s cubic-bezier(.2,.8,.2,1) both}
+.in3{animation:rise .7s .3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+@media (max-width:1180px){
+  .previz{grid-template-columns:1fr}
+  .sideCol{position:static;max-height:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  .stageFrame{width:min(100%,calc(72vh * .5625))}
+}
+@media (max-width:860px){
+  .sideCol{grid-template-columns:1fr}
+  nav a{padding:7px 8px;font-size:10px}
+  .filmSub{display:none}
+  .v2chip{display:none}
+  .boardGrid{grid-template-columns:1fr}
+  .mfRows{grid-template-columns:1fr}
+  .stageFrame{width:min(100%,calc(66vh * .5625));min-width:0}
+}
+@media (max-width:560px){
+  header{padding:0 12px;gap:10px}
+  .filmTitle{font-size:19px}
+  #sndBtn{padding:7px 10px;font-size:10px}
+  .previz{padding:14px 12px 20px}
+  .diags{grid-template-columns:1fr}
+  #timeLbl{min-width:0;font-size:10px}
+  .loopWrap span{display:none}
+  .boardSec,.mfSec{padding-left:12px;padding-right:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .viewport::after,#ovRec i,.deckHead .live i,#sndBtn .dot{animation:none}
+  .in1,.in2,.in3{animation:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="slate">
+    <div class="clap"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" fill="#1A0E00"/><path d="M3 4.5 21 3l.6 4L3.6 8.5 3 4.5z" fill="#1A0E00"/><path d="m6 4.3 2.6 3.5M11 3.8l2.6 3.5M16 3.3l2.6 3.5" stroke="#FFA028" stroke-width="1.6"/></svg></div>
+    <div class="titleWrap">
+      <div class="filmTitle">MELTED IN HIS POCKET</div>
+      <div class="filmSub">the microwave's true origin · 56.2 s · 1080×1920 · 30 fps · Percy Spencer, Raytheon 1945</div>
+    </div>
+  </div>
+  <nav id="nav">
+    <a href="#previz" data-sec="previz" class="on">PREVIZ</a>
+    <a href="#board" data-sec="board">SHOT BOARD</a>
+    <a href="#manifest" data-sec="manifest">BUILD MANIFEST</a>
+  </nav>
+  <div class="v2chip">BOARD <b>v2</b> · <b>6/6</b> OWNER FIXES</div>
+  <button id="sndBtn" title="Mute / unmute all previz sound"><span class="dot"></span><span id="sndLbl">SOUND ON</span></button>
+</header>
+
+<div class="fixStrip" id="fixStrip">
+  <span class="lbl">OWNER NOTES v1 → <b>ALL RESOLVED</b></span>
+</div>
+
+<section class="previz" id="previz">
+  <div class="stageCol in1">
+    <div class="stageFrame">
+      <div class="viewport" id="viewport">
+        <div id="gl"></div>
+        <div id="fallback"><div class="fbInner"><div id="fbSvg"></div><p>3D previz unavailable in this browser.<br>The locked board below is fully intact — every camera, staging note and asset ships in the JSON export.</p></div></div>
+        <svg id="guidesSvg" viewBox="0 0 90 160" preserveAspectRatio="none">
+          <g stroke="#FFA028" stroke-opacity=".28" stroke-width=".3">
+            <line x1="30" y1="0" x2="30" y2="160"/><line x1="60" y1="0" x2="60" y2="160"/>
+            <line x1="0" y1="53.3" x2="90" y2="53.3"/><line x1="0" y1="106.6" x2="90" y2="106.6"/>
+          </g>
+          <rect x="4.5" y="8" width="81" height="144" fill="none" stroke="#2EE87E" stroke-opacity=".3" stroke-width=".35" stroke-dasharray="2 1.4"/>
+          <g stroke="#FFA028" stroke-opacity=".55" stroke-width=".4">
+            <line x1="43" y1="80" x2="47" y2="80"/><line x1="45" y1="78" x2="45" y2="82"/>
+          </g>
+        </svg>
+        <div class="ov" id="ovRec"><i></i>PREVIZ · TAKE 2</div>
+        <div class="ov" id="ovMeta">1080 × 1920 · 30 fps<br>9:16 · ENGINE H-FOV</div>
+        <div class="ov roamTag" id="roamTag">FREE ROAM</div>
+        <div class="ov" id="ovBadge"><span class="sid" id="ovSid">S01</span><span class="stt" id="ovStt">THE MELTED POCKET</span><span class="stc" id="ovStc"></span></div>
+        <div class="ov" id="ovFit">END-KEY FIT ✓</div>
+        <div class="ov" id="ovCounter"><div class="big" id="cntBig">1,945</div><div class="sub">HOMES AND COUNTING</div></div>
+        <div class="ov" id="ovCam"></div>
+        <div id="ovSlate"><div class="card"><div class="s1" id="sl1">S01</div><div class="s2" id="sl2">THE MELTED POCKET</div><div class="s3" id="sl3">FOV 33h · BOARD v2</div></div></div>
+      </div>
+    </div>
+    <div class="transport in2">
+      <div class="tRow">
+        <button class="tBtn" id="btnPrev" title="Previous shot">⏮</button>
+        <button class="tBtn main" id="btnPlay" title="Play / pause (Space)">⏸</button>
+        <button class="tBtn" id="btnNext" title="Next shot">⏭</button>
+        <div id="timeLbl">00:00.0 <span>/ 00:19.1 · F000</span></div>
+        <select class="tSel" id="spdSel" title="Playback speed">
+          <option value="0.5">0.5×</option><option value="1" selected>1×</option>
+          <option value="1.5">1.5×</option><option value="2">2×</option>
+        </select>
+        <label class="loopWrap"><span>LOOP SHOT</span><span class="tgl" style="flex:0"><input type="checkbox" id="loopChk"><span class="pill"></span></span></label>
+      </div>
+      <div class="tl" id="tl"><div class="tlSegs" id="tlSegs"></div><div id="tlHead"></div></div>
+    </div>
+  </div>
+
+  <div class="sideCol in3">
+    <div class="deck">
+      <div class="deckHead"><span class="t">DIRECTOR'S CONTROL DECK</span><span class="live"><i></i>LIVE</span></div>
+
+      <div class="grp">
+        <div class="gt">CAMERA · LOCKED SPEC + OVERRIDES</div>
+        <div class="ctl"><label><span class="specDot" id="lensDot"></span>Lens h-fov</label><input type="range" id="lensR" min="26" max="40" step="0.5" value="33"><span class="val" id="lensV">33.0°</span></div>
+        <div class="ctl"><label><span class="specDot" id="dollyDot"></span>Dolly offset</label><input type="range" id="dollyR" min="-2" max="6" step="0.1" value="0"><span class="val" id="dollyV">+0.0u</span></div>
+        <div class="tglGrid">
+          <label class="tgl"><input type="checkbox" id="orbitChk"><span class="pill"></span><span class="tl2">Free look</span></label>
+          <label class="tgl"><input type="checkbox" id="guidesChk" checked><span class="pill"></span><span class="tl2">Frame guides</span></label>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gt">RENDER · LIGHT &amp; DISPLAY</div>
+        <div class="ctl"><label>Key light</label><input type="range" id="keyR" min="0" max="200" step="5" value="100"><span class="val" id="keyV">100%</span><button class="dice" id="diceBtn" title="Shuffle lighting mood (cameras stay locked)">🎲</button></div>
+        <div class="ctl"><label>Glow / emit</label><input type="range" id="glowR" min="0" max="200" step="5" value="100"><span class="val" id="glowV">100%</span></div>
+        <div class="ctl"><label>Quality</label>
+          <select class="tSel" id="qualSel" style="flex:1">
+            <option value="cine" selected>CINE · dpr ≤ 2</option>
+            <option value="bal">BALANCED · dpr ≤ 1.5</option>
+            <option value="draft">DRAFT · dpr 1</option>
+          </select>
+        </div>
+        <div class="tglGrid">
+          <label class="tgl"><input type="checkbox" id="wireChk"><span class="pill"></span><span class="tl2">Wireframe</span></label>
+          <label class="tgl"><input type="checkbox" id="gridChk"><span class="pill"></span><span class="tl2">Floor grid</span></label>
+          <label class="tgl"><input type="checkbox" id="labelsChk"><span class="pill"></span><span class="tl2">Asset labels</span></label>
+          <label class="tgl"><input type="checkbox" id="dustChk" checked><span class="pill"></span><span class="tl2">Atmosphere</span></label>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gt">WORLD · FREE-ROAM VISTAS (X-AXIS ZONES)</div>
+        <div class="zoneRow">
+          <button class="zoneBtn" data-zone="lab"><b>LAB</b>x = 0</button>
+          <button class="zoneBtn" data-zone="molecule"><b>H₂O</b>x = 400</button>
+          <button class="zoneBtn" data-zone="showroom"><b>1947</b>x = 800</button>
+          <button class="zoneBtn" data-zone="kitchens"><b>HOMES</b>x = 1200</button>
+        </div>
+      </div>
+
+      <div class="grp" style="margin-bottom:0">
+        <div class="gt">ACTIONS</div>
+        <div class="actRow">
+          <button class="aBtn" id="resetBtn">⟲ RESET SPEC</button>
+          <button class="aBtn grn" id="expJson">⇩ BOARD JSON</button>
+          <button class="aBtn grn" id="expPng">⇩ FRAME PNG</button>
+          <button class="aBtn" id="playAllBtn">▶ REPLAY REEL</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dossier">
+      <div class="dsTop"><span id="dsId">S01</span><span id="dsTitle">THE MELTED POCKET</span><span id="dsTC"></span></div>
+      <div class="dsFix" id="dsFix"></div>
+      <div class="dsH">CAMERA · (a)</div>
+      <table class="camTbl"><tbody id="dsCam"></tbody></table>
+      <div class="dsH">STAGING · (b)</div>
+      <ul id="dsStage"></ul>
+      <div class="dsH">BLENDER ASSETS · (c) — click to locate</div>
+      <div id="dsAssets"></div>
+      <a id="dsLink" href="#card-S01">FULL SHOT CARD + FIT DIAGRAMS ↓</a>
+    </div>
+  </div>
+</section>
+
+<section class="boardSec" id="board">
+  <div class="secHead">
+    <span class="kick">REDESIGN · CAMERAS + STAGING · TIMINGS &amp; STORY UNTOUCHED</span>
+    <h2>THE LOCKED SHOT BOARD</h2>
+    <p>Eight rebuilt shots answering every owner note. Each card carries the exact camera keys, world staging and the Blender GLB list — plus a top-down plan and a projected 9:16 fit check computed from the same numbers the previz engine runs.</p>
+  </div>
+  <div class="constraint">
+    <span class="cChip">9:16 PORTRAIT · h-half ≈ 0.56 × v-half</span>
+    <span class="cChip">ENGINE FOV = HORIZONTAL · 32–34°h ⇒ 54–57°v</span>
+    <span class="cChip">5u X-PAIR ⇒ 11–13u BACK @ 32–34</span>
+    <span class="cChip">CHARACTERS 2.9u · PROPS = GLB</span>
+    <span class="cChip">FIT CHECKS PROJECTED AT START + END KEYS</span>
+  </div>
+  <div class="worldMap">
+    <div class="wmNode"><div class="x">x = 0</div><div class="n">1945 LAB</div><div class="d">cabinet · horn · kettle · box</div></div>
+    <div class="wmLine" data-d="+400u"></div>
+    <div class="wmNode"><div class="x">x = 400</div><div class="n">MOLECULE</div><div class="d">one giant H₂O</div></div>
+    <div class="wmLine" data-d="+400u"></div>
+    <div class="wmNode"><div class="x">x = 800</div><div class="n">SHOWROOM</div><div class="d">Radarange · curtains</div></div>
+    <div class="wmLine" data-d="+400u"></div>
+    <div class="wmNode"><div class="x">x = 1200</div><div class="n">KITCHENS</div><div class="d">4 × 9 home grid</div></div>
+  </div>
+  <div class="boardGrid" id="boardGrid"></div>
+</section>
+
+<section class="mfSec" id="manifest">
+  <div class="secHead">
+    <span class="kick">ONE CONSOLIDATED BUILD · REUSE EVERYWHERE</span>
+    <h2>BLENDER BUILD MANIFEST</h2>
+    <p>Every GLB the film needs, sized in world units. The lab is dressed like a Ricks Clips set — benches, instruments, cables, tools, papers, lamps. Click any row to locate the asset in the previz (or jump to its first shot).</p>
+  </div>
+  <div class="mfTools">
+    <input id="mfSearch" type="text" placeholder="search assets… e.g. rivet, kettle, cable">
+    <div id="mfChips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <span id="mfCount"></span>
+  </div>
+  <div id="mfBody"></div>
+</section>
+
+<footer>
+  <div>
+    <div class="fs">END OF BOARD v2</div>
+    <div class="fm">56.2 s · 1080×1920 @ 30 fps · narration &amp; shot timings <b>FIXED</b> · cameras + staging redesigned<br>
+    6/6 owner notes resolved · <b>61 GLB assets</b> · lab / molecule / showroom / kitchens on the x-axis</div>
+  </div>
+  <div class="right">SHOT DESIGN + LIVE PREVIZ<br>drag viewport to orbit · wheel to zoom · space to play<br>export JSON feeds the engine directly</div>
+</footer>
+
+<div id="toasts"></div>
+
+<script>
+(function(){'use strict';
+/* ============================================================ DATA */
+const FILM={title:"MELTED IN HIS POCKET",dur:56.2,w:1080,h:1920,fps:30,board:"v2",
+  fovConvention:"engine fov = horizontal degrees; vertical = 2*atan(tan(h/2)*16/9); h-half ≈ 0.56 × v-half",
+  zones:{lab:0,molecule:400,showroom:800,kitchens:1200}};
+const V=(x,y,z)=>[x,y,z];
+const SHOTS=[
+{id:'S01',title:'THE MELTED POCKET',tc:'FILM TC 00:00.2 – 00:01.4',dur:1.2,zone:'lab',fix:1,
+ fixText:'The bar is SMALL (0.34u = 12% of Percy\u2019s height) and visibly INSIDE the chest pocket, sagging over the lip. The camera opens tight on the pocket and DOLLYS OUT 8u to reveal him + the machine. It pulls back — it never pushes in.',
+ cam:{move:'PULL — dolly out + 0.63u rise',from:V(-4.62,1.97,-0.05),to:V(-4.90,2.60,8.00),tFrom:V(-4.72,1.94,-1.20),tTo:V(-4.90,2.50,-4.50),fov:33,ease:'easeOutCubic',
+ note:'Start 1.16u from the pocket (frame ≈ 0.69u wide). End 9.6u back — Percy and the full 4.6u cabinet both fit at fov 33.'},
+ staging:[
+  'Percy at home <b>(-5, 0, -1.55)</b>, 2.9u, facing +z. Pocket socket on his left chest at world <b>(-4.74, 1.95, -1.18)</b>; bar parented INSIDE it — only the top 0.09u protrudes, sagged 15°, one 0.12u melt drip on the pocket lip, foil tip catching the horn glow.',
+  'Open frame: pocket + shirt buttons + lower chin only (eyes stay above frame line y≈2.55). The bar reads small because the pull-out re-scales it against his whole body.',
+  'Radar cabinet <b>x -7.3..-2.7, z -8..-6.6, h 3.4</b> behind him; horn at <b>(-5, 4.0, -7.0)</b> flaring toward his chest, beam cone + 3 expanding wave rings washing over the pocket — the invisible cause, made visible.',
+  'End frame at 9.6u: half-width 2.83u covers x -7.73..-2.07 → hero (±0.55) and cabinet (±2.3) both inside with margin. Floor lane z -0.05..8 kept clear for the dolly.',
+  'Ease-out pull: fast first 0.4s, settles by 1.2s. Percy\u2019s head tilts down at the pocket, then lifts as the machine is revealed.'],
+ assets:['hero_percy','percys_choc_bar','radar_cabinet','magnetron_horn','horn_beam','wave_rings'],
+ subjects:[
+  {n:'pocket + bar',c:V(-4.74,1.95,-1.18),h:V(0.22,0.30,0.14),at:'start'},
+  {n:'Percy 2.9u',c:V(-5,1.45,-1.55),h:V(0.55,1.45,0.40),at:'end'},
+  {n:'radar cabinet',c:V(-5,1.7,-7.3),h:V(2.3,1.7,0.7),at:'end'},
+  {n:'horn',c:V(-5,4.0,-7.0),h:V(0.65,0.7,0.6),at:'end'}]},
+{id:'S05',title:'THE REALIZATION',tc:'FILM TC 00:09.8 – 00:11.7',dur:1.9,zone:'lab',fix:2,
+ fixText:'No floating head. The frame is a waist-up medium close-up: torso spans -66%..+73% of frame height, shoulders fully inside. The workbench was moved to the x 3.5..6.5 side of the lab — nothing sits between lens and Percy.',
+ cam:{move:'PUSH — slow 0.5u creep-in',from:V(-4.45,2.25,1.05),to:V(-4.58,2.14,0.58),tFrom:V(-4.95,2.10,-1.50),tTo:V(-4.95,2.10,-1.50),fov:33,ease:'easeInOutSine',
+ note:'End distance 2.11u → half-height 1.11u: frame y 0.98..3.22 = upper thigh to headroom. Head top lands at +73%, waist at -66%.'},
+ staging:[
+  'Percy at <b>(-5, 0, -1.55)</b>. Shock morph: brows +0.06u, pupils shrink 30%, jaw drops to a 0.16u O. Right hand rises to the pocket edge (world y≈2.0) inside the lower-left frame.',
+  'Camera lane <b>z 0.58..1.05, x -4.6..-4.4, y 2.1..2.3</b> is permanently clear floor — main workbench lives at x 3.5..6.5 (the S16 side), so no bench can ever crop his body.',
+  'Background: radar cabinet front face (z -6.6) fills the frame behind his shoulders with dials, gauges and vent slats at depth ≈7u — rich, defocused-feeling bokeh mass, horn glow rimming his left shoulder.',
+  'A 0.4u push over 1.9s tightens shoulders from ±71% to ±86% of half-width — intensity without decapitation.'],
+ assets:['hero_percy','percys_choc_bar','radar_cabinet','magnetron_horn'],
+ subjects:[
+  {n:'Percy torso CU',c:V(-5,2.10,-1.55),h:V(0.55,0.88,0.35),at:'both'}]},
+{id:'S09',title:'POPCORN ERUPTION',tc:'popcorn beat · TC locked in film',dur:2.6,zone:'lab',fix:6,
+ fixText:'Popcorn is unmistakable: 80 instanced cream kernels erupt from a 0.7u bowl ON the cabinet top beside the horn, fountaining 2.5u into the upper third against the dark wall. Percy\u2019s upturned face anchors the lower third — a vertical story only portrait can tell.',
+ cam:{move:'STATIC + 0.3u rise (breathing)',from:V(-4.95,2.50,1.60),to:V(-5.00,2.80,1.45),tFrom:V(-4.00,4.20,-6.90),tTo:V(-4.00,4.20,-6.90),fov:31,ease:'easeInOutSine',
+ note:'Tilt-up composition: face at -34% (depth 3.1u), horn at -42% x (depth 8.7u), kernel column top at +39% y. Everything fits at fov 31.'},
+ staging:[
+  'Bowl at <b>(-3.6, 3.42, -6.9)</b> on the cabinet top, 0.35u right of the horn base. Kernel pile of 12 static puffs inside; eruption spawns from <b>(-3.6, 3.75, -6.9)</b>.',
+  '80 instanced kernels, staggered spawns t 0.10–1.60s, v₀ up 2.4–3.8 u/s, lateral ±0.9, gravity -4.5, bounce on cabinet top (y 3.42) then floor; column reaches <b>y 5.9</b>, spread x -4.5..-2.55 — all inside frame (max sx 0.66).',
+  'Percy at home, head tilted up 0.5 rad, mouth open in delight, right arm raised pointing — his head occupies the lower third at depth 3.1u.',
+  'Horn keeps pulsing amber left-of-bowl; 3 kernels carom off the horn flare. Pop SFX fire per visible spawn (throttled to 10).',
+  '8 settled kernels remain on the cabinet top through S16/S17 for continuity.'],
+ assets:['popcorn_bowl','popcorn_kernel','magnetron_horn','radar_cabinet','hero_percy','glow_halo'],
+ subjects:[
+  {n:'Percy head',c:V(-5,2.60,-1.55),h:V(0.40,0.36,0.38),at:'start'},
+  {n:'horn',c:V(-5,4.0,-7.0),h:V(0.65,0.7,0.6),at:'both'},
+  {n:'kernel column',c:V(-3.6,4.65,-6.9),h:V(1.05,1.25,0.75),at:'both'},
+  {n:'bowl',c:V(-3.6,3.60,-6.9),h:V(0.38,0.20,0.38),at:'both'}]},
+{id:'S10',title:'THE EGG LEAN-IN',tc:'egg beat A · TC locked in film',dur:2.4,zone:'lab',fix:4,
+ fixText:'Both subjects hold the narrow frame by DEPTH STACKING, not a wider fov (34 max). The mocker\u2019s lean is re-blocked so kettle (depth 3.1u) sits in the lower third and his peering face (depth 4.1u) sits directly above it — screen-x of both within ±12% of center.',
+ cam:{move:'PUSH — 0.65u along the stack axis',from:V(-5.90,3.10,-6.20),to:V(-5.40,2.95,-5.80),tFrom:V(-1.30,2.10,-2.50),tTo:V(-1.20,2.05,-2.40),fov:34,ease:'easeInOutSine',
+ note:'Camera parks just left-front of the cabinet (clear of its footprint), looking diagonally down the kettle→face axis. Kettle rim lands at -20% y, his chin at -20% y: he peers over it.'},
+ staging:[
+  'Kettle stays at <b>(-3, 1.6, -4)</b> on the 1.2×1.0 table (top y 1.54). Egg cup added at <b>(-3.35, 1.55, -3.75)</b>, egg top y 1.87 — lower-right of the kettle in frame (sx +0.35, sy -0.42).',
+  'Mocker blocking: home <b>(2, -0.8)</b> → steps to <b>(-1.55, 0, -2.85)</b> for the egg beats, hips pitched 0.62 rad toward the table, head counter-tilted up — face lands at world ≈<b>(-2.2, 2.25, -3.35)</b>, 33% of frame height. Full body reads: feet at -65% y.',
+  'Depth stack: kettle 3.1u / egg 3.2u / face 4.1u / feet 5.5u — one subject higher AND deeper, exactly the owner\u2019s fix. Cabinet\u2019s left corner masses the near-left frame edge; horn glow rims from off-screen left.',
+  'Fallback B if blocking must stay 5u apart: park 12.5u back on the pair axis at <b>(-9.2, 2.6, -7.6)</b> → target <b>(0.8, 2.0, -1.6)</b>, fov 34 — kettle depth 6.4 / mocker 11.0, both center-stacked per the 11–13u rule. Preferred fix is the re-block above.',
+  'Percy watches from home (off-frame right); steam wisp curls from the kettle spout.'],
+ assets:['enamel_kettle','kettle_table','egg_cup_egg','colleague_mocker','steam_sprite','radar_cabinet'],
+ subjects:[
+  {n:'kettle',c:V(-3,1.85,-4),h:V(0.36,0.32,0.36),at:'both'},
+  {n:'egg + cup',c:V(-3.35,1.72,-3.75),h:V(0.15,0.20,0.15),at:'both'},
+  {n:'mocker torso',c:V(-2.05,1.85,-3.2),h:V(0.55,0.75,0.55),at:'both'},
+  {n:'mocker legs',c:V(-1.6,0.55,-2.9),h:V(0.35,0.58,0.35),at:'both'}]},
+{id:'S12',title:'EGG TO THE FACE',tc:'egg beat B · TC locked in film',dur:2.2,zone:'lab',fix:4,
+ fixText:'Same stacked axis, snapped closer and level with the face. The explosion travels egg → glasses inside one continuous frame: egg lower-right (sx +0.54, sy -0.62), face centered (±24% y), kettle low-left foreground. Nothing leaves the 9:16.',
+ cam:{move:'PUSH + impact shake @ t 0.45',from:V(-5.40,2.95,-5.80),to:V(-4.60,2.60,-5.10),tFrom:V(-1.20,2.05,-2.40),tTo:V(-2.00,2.15,-3.10),fov:33,ease:'easeOutQuad',
+ note:'Starts exactly on S10\u2019s end key (invisible cut). End: face center-frame at depth 3.0u, feet at -97% y — the whole colleague still reads.'},
+ staging:[
+  'At <b>t 0.45 (≈1.0s)</b>: egg bursts — 24 yolk droplets + 8 shell shards fan from <b>(-3.35, 1.72, -3.75)</b> toward the face along (1.15, 0.48, 0.65); splat decal blooms on his round glasses + cheek, glasses knock askew 12°, a 0.25u yolk drip runs down.',
+  'Camera shake: 0.12s, amplitude 0.06u, decaying — felt, not nauseating. Splat SFX (low thump + wet blip) fires on the visible burst.',
+  'Recoil pose: hips pitch back -0.35 rad, both arms flail up, jaw O, brows max. Kettle stays steaming, oblivious, in the low-left foreground (sx -0.17, sy -0.45).',
+  'Face occupies the center 48% of frame height; torso and feet complete the character below — no floating-head repeat of v1.'],
+ assets:['egg_cup_egg','yolk_burst','mocker_egg_splat','colleague_mocker','enamel_kettle','kettle_table'],
+ subjects:[
+  {n:'mocker torso',c:V(-2.05,1.85,-3.2),h:V(0.55,0.75,0.55),at:'end'},
+  {n:'mocker legs',c:V(-1.6,0.55,-2.9),h:V(0.35,0.58,0.35),at:'end'},
+  {n:'kettle',c:V(-3,1.85,-4),h:V(0.36,0.32,0.36),at:'end'},
+  {n:'egg',c:V(-3.35,1.72,-3.75),h:V(0.15,0.20,0.15),at:'end'}]},
+{id:'S16',title:'THE WAVE TRAP',tc:'metal-box beat A · TC locked in film',dur:2.8,zone:'lab',fix:3,
+ fixText:'The box reads instantly as a hand-built riveted appliance: 1.56 × 1.14 × 1.24u (39% of Percy\u2019s height) on a 1.25u bench, rivet pitch 0.14u, piano hinge, bakelite latch, finned magnetron tube bolted on top, and a 0.52 × 0.40u wire-mesh window glowing amber with trapped wave rings.',
+ cam:{move:'PATH — 28° arc around the box, breathing in',from:V(7.60,2.50,-1.60),to:V(5.60,2.15,-1.10),tFrom:V(5.00,1.90,-5.00),tTo:V(5.00,1.90,-5.00),fov:32,ease:'easeInOutSine',
+ note:'Target pinned to box center (5, 1.82, -5). Depth 4.31 → 3.96u: box grows 69% of frame width, dead-center both keys. Bench edges bleed off-frame — correct scale read.'},
+ staging:[
+  'Wave box at <b>(5, 1.3, -5)</b> (base on bench top y 1.25, center y 1.82). Window on the front face z -4.38 glows amber, 3 torus wave-rings bounce inside behind the mesh grid — the waves are TRAPPED, shown not told.',
+  'Scale cues flanking it: coffee mug 0.26u at <b>(4.35, 1.42, -4.45)</b> (sx -0.72) and a 13mm wrench 0.5u at <b>(5.75, 1.31, -4.5)</b> (sx +0.69) — both inside frame at the end key. Hand-scratched plate: WAVE TRAP · MK I.',
+  'Magnetron tube (0.32 × 0.5u, copper fins, glowing filament) bolted on top at <b>(5, 2.6, -5.05)</b>; its cable sags off the bench and runs toward the radar cabinet — the invention is literally wired to the radar.',
+  'The 28° arc rakes the key light across rivet heads and brushed steel; corner brackets and hinge catch glints. Blueprint of the box lies flat on the bench, vise at the far edge.'],
+ assets:['wave_box_mk1','magnetron_tube','workbench_main','coffee_mug','wrench_13mm','blueprint_sheet','bench_vise','cable_bundle','wave_rings'],
+ subjects:[
+  {n:'wave box',c:V(5,1.82,-5),h:V(0.80,0.59,0.64),at:'both'},
+  {n:'magnetron tube',c:V(5,2.60,-5.05),h:V(0.20,0.28,0.20),at:'both'},
+  {n:'mug',c:V(4.35,1.42,-4.45),h:V(0.14,0.15,0.14),at:'end'},
+  {n:'wrench',c:V(5.75,1.31,-4.5),h:V(0.28,0.05,0.10),at:'end'}]},
+{id:'S17',title:'IT WORKS',tc:'metal-box beat B · TC locked in film',dur:2.6,zone:'lab',fix:3,
+ fixText:'Bookended with S01\u2019s grammar: open tight on the glowing window (57% of frame width), then PULL BACK to a two-shot — proud Percy right (+44% x), his riveted box left (-34% x), both fully inside at fov 33. The ding + window flash land at t 0.85.',
+ cam:{move:'PULL — window CU → two-shot, 0.5u rise',from:V(5.35,2.00,-2.90),to:V(6.30,2.50,3.60),tFrom:V(5.00,1.88,-4.40),tTo:V(5.90,2.00,-4.40),fov:33,ease:'easeOutCubic',
+ note:'End depths: Percy 7.5u (sx +0.44 ± 0.25), box 8.7u (sx -0.34 ± 0.30), bench inside. Full 2.9u body from -51% to +22% y.'},
+ staging:[
+  'Percy steps to <b>(6.9, 0, -3.9)</b>, facing camera, left hand resting on the box corner (reach 0.6u, 10° lean), chest out, brows up, small proud smile.',
+  'Window CU start: 1.52u from the glass, rings bouncing behind the mesh; at <b>t 0.85</b> the window flashes bright and the first-ever oven DING rings (1318 Hz triangle, 1.4s decay) — sound tied to a visible event.',
+  'The pull reveals the whole bench vignette: toolbox, solder station, blueprint, mug — and the cable still running back to the radar cabinet in the deep background. 8 popcorn kernels from S09 still sit on the cabinet top.',
+  'Mocker returns to home (2, -0.8), arms crossed, eyebrows raised — visible deep-left in the widest moment, egg stain still on his glasses.'],
+ assets:['wave_box_mk1','hero_percy','colleague_mocker','workbench_main','toolbox_open','solder_station','blueprint_sheet','magnetron_tube'],
+ subjects:[
+  {n:'glowing window',c:V(5,1.90,-4.38),h:V(0.28,0.22,0.05),at:'start'},
+  {n:'Percy 2.9u',c:V(6.9,1.45,-3.9),h:V(0.55,1.45,0.40),at:'end'},
+  {n:'wave box',c:V(5,1.82,-5),h:V(0.80,0.59,0.64),at:'end'},
+  {n:'bench',c:V(5,0.65,-5),h:V(1.5,0.65,0.75),at:'end'}]},
+{id:'S20',title:'200 MILLION KITCHENS',tc:'finale · TC locked in film',dur:3.4,zone:'kitchens',fix:5,
+ fixText:'No dark blocks. A dollhouse wall of 36 warm-lit kitchen vignettes (4 × 9), each with counters, cabinets, a fridge or night window, a pendant lamp — and a glowing microwave in EVERY tile. The crane-up suits portrait natively; the counter ticks 1,945 → 200,000,000+.',
+ cam:{move:'PATH — crane up 13.9u + pull back 26.2u',from:V(1200,3.60,6.80),to:V(1200,17.50,33.00),tFrom:V(1200,3.80,-6.00),tTo:V(1200,16.20,-6.00),fov:33,ease:'easeInOutSine',
+ note:'Start: 2 columns × 3 rows readable, each tile 45% of frame width, microwave door ≈ 86px at 1080. End: depth 39u → half-width 11.6u covers the full ±6.8u wall, all 9 rows inside (±0.80 y).'},
+ staging:[
+  'Grid wall at z -6: tiles 3.4 × 3.6u, columns x <b>1194.9 / 1198.3 / 1201.7 / 1205.1</b>, rows y 1.9 + j·3.6 (j 0..8). Three set variants (fridge / shelf / night window) rotate so no two neighbors match.',
+  'microwave_modern (0.62 × 0.40 × 0.45u) on every counter at tile-local (+0.55, -0.55), amber door glow + green 12:00 clock — all 36 pulse gently in sync: one heartbeat, 200 million homes.',
+  'Warm interiors (2700K pendants) against cool night exteriors; steam wisps in 8 tiles, plants in 6, star windows in 9. Dark falloff panels beyond the wall imply the grid continues forever.',
+  'Counter overlay counts log-scale 1,945 → 210,000,000 across the crane, landing on <b>200,000,000+</b> as the full wall settles. A soft filtered-noise whoosh rides the visible crane.'],
+ assets:['kitchen_tile_A','kitchen_tile_B','kitchen_tile_C','microwave_modern','window_night','pendant_lamp','mug_steam_set','plant_pot','grid_backdrop'],
+ subjects:[
+  {n:'kitchen tile',c:V(1198.3,1.9,-5.7),h:V(1.6,1.7,0.6),at:'start'},
+  {n:'microwave',c:V(1198.85,1.35,-5.5),h:V(0.31,0.20,0.23),at:'start'},
+  {n:'full wall 4×9',c:V(1200,16.3,-5.7),h:V(6.8,16.2,0.7),at:'end'}]}
+];
+const TOTAL=SHOTS.reduce((a,s)=>a+s.dur,0);
+const FIXES=[
+ {n:1,s:'S01',t:'small bar INSIDE pocket · dolly OUT'},
+ {n:2,s:'S05',t:'face CU keeps torso'},
+ {n:3,s:'S16',t:'riveted box + glowing window'},
+ {n:4,s:'S10',t:'stacked two-shots hold frame'},
+ {n:5,s:'S20',t:'real kitchens, not blocks'},
+ {n:6,s:'S09',t:'popcorn erupts visibly'}];
+const MANIFEST=[
+ {g:'CHARACTERS & WEARABLES',items:[
+  {n:'hero_percy',d:'Percy Spencer, cartoon engineer — white shirt, rolled sleeves, navy tie; chest-pocket socket; shock/joy morphs; 3 hand poses.',s:'2.9u tall',sh:['S01','S05','S09','S17']},
+  {n:'colleague_mocker',d:'Bald colleague, side tufts, round glasses, mustache, brown vest; lean + recoil poses; splat slot on face.',s:'2.9u tall',sh:['S10','S12','S17']},
+  {n:'percys_choc_bar',d:'Small chocolate bar with foil tip, sagged melt top and one drip — parents INSIDE the chest pocket socket.',s:'0.34×0.15×0.05u',sh:['S01','S05']},
+  {n:'mocker_egg_splat',d:'Yolk splat decal cluster + 0.25u drip for glasses/cheek; toggled at S12 t 0.45.',s:'0.5×0.6u',sh:['S12','S17']}]},
+ {g:'LAB · HERO PROPS',items:[
+  {n:'radar_cabinet',d:'Big radar cabinet — 3 door panels, 6 dials, 2 gauges, vent slats, toggle row, MAGNETRON plate.',s:'4.6×3.4×1.4u',sh:['S01','S05','S09','S10']},
+  {n:'magnetron_horn',d:'Pyramidal horn on cabinet top, flared mouth with emissive core, tilted 15° down toward Percy.',s:'0.9×1.1×1.0u',sh:['S01','S05','S09']},
+  {n:'radar_screen',d:'Wall-mounted green phosphor plane with rotating sweep, rings and blips (animated texture).',s:'3.4×2.2u',sh:['S01']},
+  {n:'kettle_table',d:'Small four-leg side table for the kettle + egg experiments.',s:'1.2×1.55×1.0u',sh:['S10','S12']},
+  {n:'enamel_kettle',d:'Cream enamel kettle, red lid, bent spout, half-torus handle; steam socket.',s:'0.62×0.55×0.45u',sh:['S10','S12']},
+  {n:'egg_cup_egg',d:'White egg cup + cream egg; explode-hidden variant swaps to shards at S12.',s:'0.24×0.32u',sh:['S10','S12']},
+  {n:'popcorn_bowl',d:'Ceramic bowl on the cabinet top beside the horn, static kernel pile inside.',s:'0.7×0.38u',sh:['S09']},
+  {n:'popcorn_kernel',d:'One irregular cream puff — instanced ×80 for the eruption, ×8 settled for continuity.',s:'0.16–0.22u',sh:['S09','S16','S17']},
+  {n:'wave_box_mk1',d:'Hand-built riveted steel box: 40 rivets @0.14u pitch, piano hinge, latch, corner brackets, 0.52×0.40u mesh window with amber glow, MK I plate.',s:'1.56×1.14×1.24u',sh:['S16','S17']},
+  {n:'magnetron_tube',d:'Copper tube with 4 cooling fins + glowing filament, bolts onto the box top, cable gland.',s:'0.32×0.5u',sh:['S16','S17']},
+  {n:'workbench_main',d:'Wood-top steel-leg bench with lower shelf — the invention station on the lab\u2019s right side.',s:'3.0×1.25×1.5u',sh:['S16','S17']},
+  {n:'bench_vise',d:'Small cast bench vise at the bench edge, half-open jaw.',s:'0.35×0.3u',sh:['S16']}]},
+ {g:'LAB · SET DRESSING (RICKS-CLIPS RICHNESS)',items:[
+  {n:'oscilloscope_cart',d:'Rolling cart + scope with round green mini-screen and knob cluster.',s:'0.9×1.6×0.7u',sh:['S05','S17']},
+  {n:'tube_shelf',d:'Back-wall shelf with books, radio and component jars.',s:'3.6×0.5u',sh:['S16','S17']},
+  {n:'jar_vacuum_tubes',d:'Glass jar of vacuum tubes, faint amber filaments — placed ×5.',s:'0.3×0.45u',sh:['S16']},
+  {n:'pegboard_tools',d:'Wall pegboard with wrenches, pliers, hammer, saw silhouettes.',s:'2.4×1.6u',sh:['S16','S17']},
+  {n:'cable_bundle',d:'Three catenary cable runs: cabinet→floor→bench, cabinet→wall, tube→box.',s:'3–7u runs, r 0.035',sh:['S01','S16','S17']},
+  {n:'solder_station',d:'Soldering iron in coil stand + solder spool + sponge tray.',s:'0.4×0.25u',sh:['S17']},
+  {n:'toolbox_open',d:'Red metal toolbox, lid open, screwdrivers + spanners inside.',s:'0.7×0.3u',sh:['S17']},
+  {n:'blueprint_sheet',d:'Flat blueprint of the wave box (white line sketch on blue) + rolled spare.',s:'0.9×0.6u',sh:['S16','S17']},
+  {n:'clipboard_notes',d:'Clipboard with pencil scribble notes clipped to the cabinet side.',s:'0.3×0.42u',sh:['S05']},
+  {n:'desk_lamp',d:'Articulated 3-arm bench lamp, warm cone shade + real point light.',s:'0.5×0.75u',sh:['S16','S17']},
+  {n:'cage_lamp',d:'Hanging caged bulb on a cord — placed ×2 over the lab.',s:'0.3×0.55u',sh:['S01','S09']},
+  {n:'wall_clock',d:'Round 1945 wall clock reading 10:10.',s:'0.8u dia',sh:['S10']},
+  {n:'safety_poster',d:'Cream/red LOOSE WAVES — KEEP CLEAR poster with wave icon.',s:'1.1×1.5u',sh:['S10','S17']},
+  {n:'window_blinds',d:'Left-wall window, 9 slats, cool night light + 2 additive god-ray shafts.',s:'1.8×2.2u',sh:['S05','S10']},
+  {n:'stool',d:'Round wooden shop stool near Percy\u2019s home mark.',s:'0.45×0.75u',sh:['S01']},
+  {n:'lunchbox_open',d:'Open metal lunchbox on the stool — where the bar came from; foil wrapper beside.',s:'0.5×0.3u',sh:['S01']},
+  {n:'coffee_mug',d:'Chipped enamel mug, half full — the box\u2019s scale witness.',s:'0.22×0.26u',sh:['S16','S17']},
+  {n:'wrench_13mm',d:'13mm open-end wrench lying by the box — second scale witness.',s:'0.5u',sh:['S16']},
+  {n:'screws_jar',d:'Small glass jar of screws and rivets on the bench shelf.',s:'0.2×0.28u',sh:['S16']}]},
+ {g:'FX & ATMOSPHERE',items:[
+  {n:'wave_rings',d:'Expanding emissive tori — horn beam wash (S01) and trapped bounce inside the box window (S16/17).',s:'r 0.3→1.2u',sh:['S01','S16','S17']},
+  {n:'horn_beam',d:'Additive gradient cone from horn mouth to Percy\u2019s chest — the invisible cause.',s:'5.5u long',sh:['S01','S09']},
+  {n:'steam_sprite',d:'Looping additive steam wisp for kettle spout and kitchen mugs.',s:'0.3×0.9u',sh:['S10','S20']},
+  {n:'dust_motes',d:'300 drifting additive points in the lab volume (+120 in showroom cones).',s:'0.02u points',sh:['S01','S05','S09']},
+  {n:'yolk_burst',d:'24 yolk droplets + 8 shell shards, one-shot fan with gravity, synced to the splat.',s:'0.06–0.09u',sh:['S12']},
+  {n:'godray_slats',d:'Two additive blue shaft planes angled through the blinds.',s:'2.5×4u',sh:['S05']},
+  {n:'glow_halo',d:'Radial-gradient billboard halo reused on horn, tube filament, box window, microwaves, lamps.',s:'1.2u sprite',sh:['S01','S09','S16','S20']}]},
+ {g:'MOLECULE WORLD · x = 400',items:[
+  {n:'water_molecule',d:'One giant H₂O — red oxygen sphere + 2 white hydrogens at 104.5°, gray bonds, slow spin.',s:'O r0.85 · H r0.5 · span 3.4u',sh:['S06–08']},
+  {n:'dipole_arrow',d:'+/− dipole arrow that flips with the field — why water heats.',s:'1.6u',sh:['S06–08']},
+  {n:'orbit_wave_rings',d:'Three expanding field rings sweeping through the molecule.',s:'r 1.8→3.2u',sh:['S06–08']}]},
+ {g:'SHOWROOM · x = 800',items:[
+  {n:'radarange_oven',d:'The 1947 first oven — man-height steel giant, round glowing door, dial panel, water-cooling pipes, RADARANGE plate.',s:'1.7×2.95×1.5u',sh:['S18–19']},
+  {n:'plinth_marble',d:'Marble display plinth with brass edge trim.',s:'2.6×0.5×2.2u',sh:['S18–19']},
+  {n:'curtain_red',d:'Pleated red velvet curtain (8 half-cylinder pleats) — placed ×2.',s:'1.4×4.2u',sh:['S18–19']},
+  {n:'valance',d:'Scalloped curtain valance across the stage top.',s:'4.6×0.8u',sh:['S18–19']},
+  {n:'price_placard',d:'Museum stand placard: $5,000 · 340 kg · 1.8 m TALL.',s:'0.9×1.3u',sh:['S18–19']},
+  {n:'spec_plate',d:'Brass spec plate riveted to the oven flank.',s:'0.6×0.4u',sh:['S18–19']},
+  {n:'spot_cone',d:'Additive spotlight volumetric cone — placed ×2 crossing on the oven.',s:'2.2×5u',sh:['S18–19']},
+  {n:'velvet_rope',d:'Three brass posts + sagging red rope across the front.',s:'posts 0.9u · rope 2.4u',sh:['S18–19']}]},
+ {g:'KITCHENS · x = 1200',items:[
+  {n:'kitchen_tile_A',d:'Dollhouse kitchen variant A — counter, 2 upper cabinets, tall fridge.',s:'3.4×3.6×1.2u',sh:['S20']},
+  {n:'kitchen_tile_B',d:'Variant B — open shelves with jars instead of upper cabinets.',s:'3.4×3.6×1.2u',sh:['S20']},
+  {n:'kitchen_tile_C',d:'Variant C — night window with stars + moon over the counter.',s:'3.4×3.6×1.2u',sh:['S20']},
+  {n:'microwave_modern',d:'Modern countertop microwave — amber door glow, green 12:00 clock, handle; one per tile ×36, all pulsing in sync.',s:'0.62×0.40×0.45u',sh:['S20']},
+  {n:'window_night',d:'Star-field night window insert (shared animated-free texture).',s:'0.9×1.1u',sh:['S20']},
+  {n:'pendant_lamp',d:'Warm 2700K pendant with cone shade — every third tile.',s:'0.25×0.5u',sh:['S20']},
+  {n:'mug_steam_set',d:'Counter mug + looping steam wisp — 8 tiles.',s:'0.18u + wisp',sh:['S20']},
+  {n:'plant_pot',d:'Small potted plant, 3-leaf cartoon — 6 tiles.',s:'0.22×0.4u',sh:['S20']}]}
+];
+const MF_FLAT={};MANIFEST.forEach(g=>g.items.forEach(it=>{it.group=g.g;MF_FLAT[it.n]=it;}));
+
+/* ============================================================ MATH */
+const D2R=Math.PI/180;
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{const l=Math.hypot(a[0],a[1],a[2])||1;return[a[0]/l,a[1]/l,a[2]/l];};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const lerp3=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
+const vfov=h=>2*Math.atan(Math.tan(h*D2R/2)*16/9)/D2R;
+const EASE={linear:t=>t,easeOutCubic:t=>1-Math.pow(1-t,3),easeInOutSine:t=>-(Math.cos(Math.PI*t)-1)/2,easeOutQuad:t=>1-(1-t)*(1-t)};
+function basis(pos,tgt){const f=norm(sub(tgt,pos));const r=norm(cross(f,[0,1,0]));const u=cross(r,f);return{f,r,u};}
+function proj(p,pos,tgt,fovH,B){const v=sub(p,pos);const d=dot(v,B.f);if(d<=0.05)return null;
+  const hw=d*Math.tan(fovH*D2R/2),hh=hw*16/9;return{x:dot(v,B.r)/hw,y:dot(v,B.u)/hh,d};}
+function boxRect(c,h,pos,tgt,fovH){const B=basis(pos,tgt);let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9,ok=true;
+  for(let i=0;i<8;i++){const p=[c[0]+((i&1)?h[0]:-h[0]),c[1]+((i&2)?h[1]:-h[1]),c[2]+((i&4)?h[2]:-h[2])];
+    const q=proj(p,pos,tgt,fovH,B);if(!q){ok=false;break;}
+    x0=Math.min(x0,q.x);x1=Math.max(x1,q.x);y0=Math.min(y0,q.y);y1=Math.max(y1,q.y);}
+  return ok?{x0,x1,y0,y1}:null;}
+function shotKeys(s,t){const e=EASE[s.cam.ease](t);return{pos:lerp3(s.cam.from,s.cam.to,e),tgt:lerp3(s.cam.tFrom,s.cam.tTo,e),fov:s.cam.fov};}
+function fitCheck(s,pos,tgt,fov,key){let pass=true;
+  s.subjects.forEach(su=>{if(su.at!=='both'&&su.at!==key)return;
+    const r=boxRect(su.c,su.h,pos,tgt,fov);if(!r||r.x0<-1.02||r.x1>1.02||r.y0<-1.02||r.y1>1.02)pass=false;});
+  return pass;}
+
+/* ============================================================ DIAGRAMS */
+const FOOT={lab:[
+  {x:-7.3,z:-8,w:4.6,d:1.4,l:'CABINET'},{x:-3.6,z:-4.5,w:1.2,d:1.0,l:'TABLE'},
+  {x:3.5,z:-5.75,w:3.0,d:1.5,l:'BENCH'},{x:-5.6,z:-2.1,w:1.2,d:1.2,r:1,l:'PERCY'},
+  {x:1.4,z:-1.4,w:1.2,d:1.2,r:1,l:'MOCKER'},{x:0.75,z:-5.95,w:0.9,d:0.7,l:'SCOPE'}],
+ kitchens:[{x:1193.3,z:-6.4,w:13.4,d:1.4,l:'KITCHEN WALL 4×9'}]};
+function planSVG(s){
+  const pts=[s.cam.from,s.cam.to,s.cam.tFrom,s.cam.tTo,...s.subjects.map(x=>x.c)];
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+  pts.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[2]);z1=Math.max(z1,p[2]);});
+  const pad=2.2;x0-=pad;x1+=pad;z0-=pad;z1+=pad;
+  const W=200,H=170,sc=Math.min(W/(x1-x0),H/(z1-z0));
+  const ox=(W-(x1-x0)*sc)/2,oz=(H-(z1-z0)*sc)/2;
+  const X=x=>ox+(x-x0)*sc,Z=z=>oz+(z-z0)*sc;
+  let g='<svg viewBox="0 0 '+W+' '+H+'" style="background:#0F0C09">';
+  g+='<defs><marker id="ar'+s.id+'" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#FFA028"/></marker></defs>';
+  for(let gx=Math.ceil(x0/2)*2;gx<x1;gx+=2)g+='<line x1="'+X(gx)+'" y1="0" x2="'+X(gx)+'" y2="'+H+'" stroke="#221B12" stroke-width="0.5"/>';
+  for(let gz=Math.ceil(z0/2)*2;gz<z1;gz+=2)g+='<line x1="0" y1="'+Z(gz)+'" x2="'+W+'" y2="'+Z(gz)+'" stroke="#221B12" stroke-width="0.5"/>';
+  (FOOT[s.zone]||[]).forEach(f=>{
+    if(f.r){g+='<circle cx="'+X(f.x+f.w/2)+'" cy="'+Z(f.z+f.d/2)+'" r="'+(f.w/2*sc)+'" fill="#3A2E1C" stroke="#6B5636" stroke-width="0.7"/>';}
+    else g+='<rect x="'+X(f.x)+'" y="'+Z(f.z)+'" width="'+(f.w*sc)+'" height="'+(f.d*sc)+'" fill="#2A2118" stroke="#6B5636" stroke-width="0.7" rx="1.5"/>';
+    g+='<text x="'+X(f.x+f.w/2)+'" y="'+Z(f.z+f.d/2)+2.5+'" fill="#8A7452" font-size="5.5" text-anchor="middle" font-family="IBM Plex Mono">'+f.l+'</text>';});
+  const c1=[X(s.cam.from[0]),Z(s.cam.from[2])],c2=[X(s.cam.to[0]),Z(s.cam.to[2])],tg=[X(s.cam.tTo[0]),Z(s.cam.tTo[2])];
+  const ang=Math.atan2(s.cam.tTo[0]-s.cam.to[0],s.cam.tTo[2]-s.cam.to[2]),half=s.cam.fov/2*D2R;
+  const L=Math.hypot(s.cam.tTo[0]-s.cam.to[0],s.cam.tTo[2]-s.cam.to[2])+2.5;
+  const w1=[c2[0]+Math.sin(ang-half)*L*sc,c2[1]+Math.cos(ang-half)*L*sc],w2=[c2[0]+Math.sin(ang+half)*L*sc,c2[1]+Math.cos(ang+half)*L*sc];
+  g+='<polygon points="'+c2[0]+','+c2[1]+' '+w1[0]+','+w1[1]+' '+w2[0]+','+w2[1]+'" fill="rgba(255,160,40,.13)" stroke="rgba(255,160,40,.45)" stroke-width="0.6"/>';
+  s.subjects.forEach(su=>{g+='<circle cx="'+X(su.c[0])+'" cy="'+Z(su.c[2])+'" r="3" fill="#2EE87E" fill-opacity=".85"/><text x="'+X(su.c[0])+5+'" y="'+Z(su.c[2])+2+'" fill="#7FDCA8" font-size="5.5" font-family="IBM Plex Mono">'+su.n+'</text>';});
+  g+='<line x1="'+c1[0]+'" y1="'+c1[1]+'" x2="'+c2[0]+'" y2="'+c2[1]+'" stroke="#FFA028" stroke-width="1.4" stroke-dasharray="4 2.5" marker-end="url(#ar'+s.id+')"/>';
+  g+='<circle cx="'+c1[0]+'" cy="'+c1[1]+'" r="4.5" fill="none" stroke="#FFD9A0" stroke-width="1.3"/>';
+  g+='<circle cx="'+c2[0]+'" cy="'+c2[1]+'" r="4.5" fill="#FFA028"/>';
+  g+='<line x1="'+(tg[0]-4)+'" y1="'+tg[1]+'" x2="'+(tg[0]+4)+'" y2="'+tg[1]+'" stroke="#FF3B4D" stroke-width="1.2"/><line x1="'+tg[0]+'" y1="'+(tg[1]-4)+'" x2="'+tg[0]+'" y2="'+(tg[1]+4)+'" stroke="#FF3B4D" stroke-width="1.2"/>';
+  g+='<text x="6" y="'+(H-6)+'" fill="#8A7452" font-size="6" font-family="IBM Plex Mono">○ start ● end ✚ target · top-down x/z</text>';
+  return g+'</svg>';}
+function frameSVG(s){
+  const W=90,H=160;const MX=x=>(x+1)/2*W,MY=y=>(1-y)/2*H;
+  let g='<svg viewBox="0 0 '+W+' '+H+'" style="background:#0F0C09">';
+  g+='<rect x="0.5" y="0.5" width="'+(W-1)+'" height="'+(H-1)+'" fill="none" stroke="#3A2E1C" stroke-width="1"/>';
+  g+='<g stroke="#2A2118" stroke-width="0.5"><line x1="30" y1="0" x2="30" y2="160"/><line x1="60" y1="0" x2="60" y2="160"/><line x1="0" y1="53.3" x2="90" y2="53.3"/><line x1="0" y1="106.6" x2="90" y2="106.6"/></g>';
+  let all=true;
+  s.subjects.forEach(su=>{
+    ['start','end'].forEach(key=>{
+      if(su.at!=='both'&&su.at!==key)return;
+      const k=key==='start'?{pos:s.cam.from,tgt:s.cam.tFrom}:{pos:s.cam.to,tgt:s.cam.tTo};
+      const r=boxRect(su.c,su.h,k.pos,k.tgt,s.cam.fov);if(!r){all=false;return;}
+      const inb=r.x0>=-1.02&&r.x1<=1.02&&r.y0>=-1.02&&r.y1<=1.02;if(!inb)all=false;
+      const rx=Math.max(0,MX(r.x0)),ry=Math.max(0,MY(r.y1)),rw=Math.min(W,MX(r.x1))-rx,rh=Math.min(H,MY(r.y0))-ry;
+      if(key==='end'){g+='<rect x="'+rx+'" y="'+ry+'" width="'+Math.max(1,rw)+'" height="'+Math.max(1,rh)+'" fill="rgba(255,160,40,.14)" stroke="'+(inb?'#FFA028':'#FF3B4D')+'" stroke-width="1" rx="1"/>';
+        g+='<text x="'+(rx+2)+'" y="'+(ry+6)+'" fill="#FFD9A0" font-size="4.6" font-family="IBM Plex Mono">'+su.n+'</text>';}
+      else{g+='<rect x="'+rx+'" y="'+ry+'" width="'+Math.max(1,rw)+'" height="'+Math.max(1,rh)+'" fill="none" stroke="#2EE87E" stroke-opacity=".65" stroke-width="0.7" stroke-dasharray="2.5 1.8" rx="1"/>';}});});
+  g+='<text x="4" y="'+(H-5)+'" fill="#8A7452" font-size="4.8" font-family="IBM Plex Mono">— end key ┅ start key</text>';
+  return{svg:g+'</svg>',pass:all};}
+
+/* ============================================================ UI BUILD */
+const $=id=>document.getElementById(id);
+function toast(html,amber){const t=document.createElement('div');t.className='toast'+(amber?' amber':'');t.innerHTML=html;
+  $('toasts').appendChild(t);setTimeout(()=>t.remove(),3100);}
+function fmtT(s){const m=Math.floor(s/60),ss=(s%60);return String(m).padStart(2,'0')+':'+(ss<10?'0':'')+ss.toFixed(1);}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+// fix strip
+FIXES.forEach(f=>{const b=document.createElement('button');b.className='fixChip';
+  b.innerHTML='<span class="n">#'+f.n+'</span>'+f.t+'<span class="s">→'+f.s+'</span>';
+  b.onclick=()=>{const i=SHOTS.findIndex(s=>s.id===f.s);selectShot(i,true);document.getElementById('previz').scrollIntoView({behavior:'smooth'});};
+  $('fixStrip').appendChild(b);});
+// timeline
+SHOTS.forEach((s,i)=>{const d=document.createElement('div');d.className='tlSeg';d.style.width=(s.dur/TOTAL*100)+'%';
+  d.textContent=s.id;d.title=s.title;$('tlSegs').appendChild(d);});
+const segEls=[...document.querySelectorAll('.tlSeg')];
+// board cards
+SHOTS.forEach((s,i)=>{
+  const fr=frameSVG(s);const card=document.createElement('article');card.className='card';card.id='card-'+s.id;
+  const camRows=[['MOVE',s.cam.move],['FROM','['+s.cam.from.map(n=>n.toFixed(2)).join(', ')+']'],
+    ['TO','['+s.cam.to.map(n=>n.toFixed(2)).join(', ')+']'],
+    ['TARGET','['+s.cam.tFrom.map(n=>n.toFixed(2)).join(', ')+'] → ['+s.cam.tTo.map(n=>n.toFixed(2)).join(', ')+']'],
+    ['FOV','<b>'+s.cam.fov+'°h</b> ≈ '+vfov(s.cam.fov).toFixed(1)+'°v (engine h-fov)'],['EASE',s.cam.ease],['NOTE',s.cam.note]];
+  card.innerHTML='<button class="cardPlay" title="Play this shot in the previz">▶</button>'
+   +'<div class="cardHead"><span class="cid">'+s.id+'</span><span class="ct">'+s.title+'</span>'
+   +'<span class="fixStamp">FIX #'+s.fix+' ✓</span><span class="tc">'+s.tc+' · preview hold '+s.dur.toFixed(1)+'s</span></div>'
+   +'<div class="diags"><div class="diagBox"><div class="dl"><span>PLAN · X/Z</span><span>'+s.cam.fov+'° WEDGE</span></div>'+planSVG(s)+'</div>'
+   +'<div class="diagBox"><div class="dl"><span>9:16 FIT CHECK</span><span class="'+(fr.pass?'pass':'fail')+'">'+(fr.pass?'PASS ✓':'CROP ✗')+'</span></div>'+fr.svg+'</div></div>'
+   +'<div class="cardBody"><div class="cbH">(a) CAMERA</div><table class="cbTbl"><tbody>'
+   +camRows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</tbody></table>'
+   +'<div class="cbH">(b) STAGING</div><ul class="cbList">'+s.staging.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+   +'<div class="cbH">(c) BLENDER ASSETS</div><div class="cbAssets">'
+   +s.assets.map(a=>{const it=MF_FLAT[a];return '<button class="cbA" data-a="'+a+'">'+a+'<span class="sz">'+(it?it.s:'')+'</span></button>';}).join('')
+   +'</div></div>';
+  card.querySelector('.cardPlay').onclick=()=>{selectShot(i,true);loopChk.checked=true;document.getElementById('previz').scrollIntoView({behavior:'smooth'});};
+  card.querySelectorAll('.cbA').forEach(b=>b.onclick=()=>locateAsset(b.dataset.a));
+  $('boardGrid').appendChild(card);});
+// manifest
+const groups=MANIFEST.map(g=>g.g);let mfFilter='ALL',mfQuery='';
+function buildMfChips(){const c=$('mfChips');c.innerHTML='';
+  ['ALL',...groups].forEach(g=>{const b=document.createElement('button');b.className='mfChip'+(g===mfFilter?' on':'');
+    b.textContent=g==='ALL'?'ALL':g.split('·')[0].trim();b.onclick=()=>{mfFilter=g;buildMfChips();renderMf();};c.appendChild(b);});}
+function renderMf(){const body=$('mfBody');body.innerHTML='';let count=0;
+  MANIFEST.forEach(gr=>{if(mfFilter!=='ALL'&&mfFilter!==gr.g)return;
+    const items=gr.items.filter(it=>!mfQuery||(it.n+' '+it.d+' '+it.s).toLowerCase().includes(mfQuery));
+    if(!items.length)return;count+=items.length;
+    const sec=document.createElement('div');sec.className='mfGroup';
+    sec.innerHTML='<div class="mfGHead">'+gr.g+'<span class="gc">'+items.length+'</span></div>';
+    const rows=document.createElement('div');rows.className='mfRows';
+    items.forEach(it=>{const r=document.createElement('div');r.className='mfRow';
+      const uses=it.sh.length;
+      r.innerHTML='<span class="an">'+it.n+'.glb</span><span class="asz">'+it.s+'</span>'
+        +'<span class="ad">'+esc(it.d)+'</span><span class="ash">'
+        +(uses>2?'<span class="reuse">×'+uses+' shots</span>':'')
+        +it.sh.map(sh=>'<span class="shTag'+(SHOTS.some(x=>x.id===sh)?'':' off')+'">'+sh+'</span>').join('')+'</span>';
+      r.onclick=()=>locateAsset(it.n);rows.appendChild(r);});
+    sec.appendChild(rows);body.appendChild(sec);});
+  $('mfCount').textContent=count+' / 61 GLB'+(mfQuery?' · "'+mfQuery+'"':'');}
+buildMfChips();renderMf();
+$('mfSearch').addEventListener('input',e=>{mfQuery=e.target.value.trim().toLowerCase();renderMf();});
+
+/* ============================================================ AUDIO */
+const AU={ctx:null,master:null,on:true,hum:null,humG:null,unlocked:false};
+function auInit(){if(AU.ctx)return;try{
+  AU.ctx=new (window.AudioContext||window.webkitAudioContext)();
+  AU.master=AU.ctx.createGain();AU.master.gain.value=AU.on?0.6:0;AU.master.connect(AU.ctx.destination);
+  const o1=AU.ctx.createOscillator(),o2=AU.ctx.createOscillator(),f=AU.ctx.createBiquadFilter(),g=AU.ctx.createGain();
+  o1.type='sawtooth';o1.frequency.value=55;o2.type='sine';o2.frequency.value=110.3;
+  f.type='lowpass';f.frequency.value=240;g.gain.value=0;
+  o1.connect(f);o2.connect(f);f.connect(g);g.connect(AU.master);o1.start();o2.start();
+  AU.hum=g;AU.unlocked=true;}catch(e){}}
+function auResume(){if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();}
+function setHum(v){if(!AU.hum)return;AU.hum.gain.setTargetAtTime(v,AU.ctx.currentTime,0.4);}
+function blip(type,freq,dur,vol,slide){if(!AU.ctx||!AU.on)return;const t=AU.ctx.currentTime;
+  const o=AU.ctx.createOscillator(),g=AU.ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(AU.master);o.start(t);o.stop(t+dur+0.05);}
+function noiseBurst(freq,q,dur,vol,type){if(!AU.ctx||!AU.on)return;const t=AU.ctx.currentTime;
+  const len=Math.max(1,Math.floor(AU.ctx.sampleRate*dur)),buf=AU.ctx.createBuffer(1,len,AU.ctx.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+  const src=AU.ctx.createBufferSource();src.buffer=buf;
+  const f=AU.ctx.createBiquadFilter();f.type=type||'bandpass';f.frequency.value=freq;f.Q.value=q;
+  const g=AU.ctx.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  src.connect(f);f.connect(g);g.connect(AU.master);src.start(t);}
+const SFX={
+  tick:()=>noiseBurst(2400,2,0.05,0.10,'highpass'),
+  ping:()=>blip('sine',1150,0.4,0.045,520),
+  pop:()=>noiseBurst(1400+Math.random()*900,4,0.07,0.09),
+  splat:()=>{noiseBurst(420,1,0.24,0.22,'lowpass');blip('sine',290,0.3,0.12,70);},
+  ding:()=>{blip('triangle',1318.5,1.4,0.12);blip('triangle',2637,1.0,0.05);},
+  whoosh:()=>noiseBurst(600,0.8,1.6,0.05)};
+$('sndBtn').onclick=()=>{auInit();auResume();AU.on=!AU.on;
+  if(AU.master)AU.master.gain.setTargetAtTime(AU.on?0.6:0,AU.ctx.currentTime,0.05);
+  $('sndBtn').classList.toggle('off',!AU.on);$('sndLbl').textContent=AU.on?'SOUND ON':'MUTED';
+  toast(AU.on?'<b>SOUND ON</b> — hum, ping, pops, splat & ding all tied to visible events':'<b>MUTED</b> — one switch silences everything',true);};
+document.addEventListener('pointerdown',()=>{auInit();auResume();},{once:false});
+document.addEventListener('keydown',()=>{auInit();auResume();},{once:true});
+
+/* ============================================================ THREE PREVIZ */
+let R=null,scene,cam,three=false;
+const state={clock:0,shot:0,playing:true,speed:1,loopShot:false,source:'reel',
+  lensOv:null,dollyOv:0,key:1,glow:1,quality:'cine',guides:true,wire:false,grid:false,labels:false,dust:true,
+  orbit:{on:false,th:0,ph:1.2,r:8,tth:0,tph:1.2,tr:8,tgt:[0,2,0]},zone:'lab',moodKey:null};
+const MATS=[],GLOWS=[],LABELS=[],FLASH=[];
+const REG={}; // asset name -> {obj, zone, anchor}
+function reg(name,obj,zone,anchor){REG[name]={obj,zone,anchor:anchor||obj.position};}
+let percy,mocker,spokePos={x:-1.6,z:-2.9};
+let popcorn,yolk,shards,splatGrp,glassesGrp,eggMesh,steamSprites=[],haloSprites=[],beamMesh,hornRings=[],boxRings=[],molGroup,molRings=[],dustPts=[],radarTex,radarCtx,radarCanvas,sweepA=0,pingT=0;
+let keyLight,hemi,zoneLights={},zoneGroups={},grids={},vista={
+  lab:{pos:[0,3.4,9.5],tgt:[-1,2.4,-4]},molecule:{pos:[400,2.6,7.5],tgt:[400,2.1,0]},
+  showroom:{pos:[800,3.0,9.8],tgt:[800,2.2,-2]},kitchens:{pos:[1200,11,22],tgt:[1200,11,-6]}};
+const shotFlags={splat:false,ding:false,popN:0};
+const tmpV=null;
+function stdMat(color,opts){const m=new THREE.MeshStandardMaterial(Object.assign({color,roughness:0.75,metalness:0.05},opts||{}));MATS.push(m);return m;}
+function glowMat(color,base){const m=new THREE.MeshStandardMaterial({color:0x111111,emissive:color,emissiveIntensity:base,roughness:0.5});
+  m.userData.base=base;GLOWS.push(m);MATS.push(m);return m;}
+function halo(color,scale,op){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');
+  const g=x.createRadialGradient(64,64,2,64,64,62);const col=new THREE.Color(color);
+  g.addColorStop(0,'rgba('+(col.r*255|0)+','+(col.g*255|0)+','+(col.b*255|0)+',0.85)');
+  g.addColorStop(0.4,'rgba('+(col.r*255|0)+','+(col.g*255|0)+','+(col.b*255|0)+',0.25)');
+  g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);
+  const t=new THREE.CanvasTexture(c);const m=new THREE.SpriteMaterial({map:t,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending});
+  const s=new THREE.Sprite(m);s.scale.set(scale,scale,1);s.userData.baseOp=op;haloSprites.push(s);return s;}
+function textSprite(txt,sub){const c=document.createElement('canvas');c.width=512;c.height=150;const x=c.getContext('2d');
+  x.fillStyle='rgba(10,13,19,0.88)';x.beginPath();x.moveTo(14,0);x.lineTo(498,0);x.quadraticCurveTo(512,0,512,14);x.lineTo(512,136);x.quadraticCurveTo(512,150,498,150);x.lineTo(14,150);x.quadraticCurveTo(0,150,0,136);x.lineTo(0,14);x.quadraticCurveTo(0,0,14,0);x.fill();
+  x.strokeStyle='rgba(255,160,40,0.8)';x.lineWidth=3;x.stroke();
+  x.fillStyle='#FFD9A0';x.font='600 34px IBM Plex Mono, monospace';x.fillText(txt,22,58);
+  x.fillStyle='#8B94A8';x.font='26px IBM Plex Mono, monospace';x.fillText(sub||'',22,105);
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;
+  const m=new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false});
+  const s=new THREE.Sprite(m);s.scale.set(1.9,0.56,1);s.visible=false;LABELS.push(s);return s;}
+function addLabel(name,parent,off){const it=MF_FLAT[name];const s=textSprite(name,it?it.s:'');
+  s.position.set(off[0],off[1],off[2]);parent.add(s);return s;}
+function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t;}
+function box(w,h,d,mat,x,y,z,parent,ry){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+  m.position.set(x,y,z);if(ry)m.rotation.y=ry;m.castShadow=true;m.receiveShadow=true;(parent||scene).add(m);return m;}
+function cyl(rt,rb,h,mat,x,y,z,parent,seg){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg||14),mat);
+  m.position.set(x,y,z);m.castShadow=true;(parent||scene).add(m);return m;}
+function sph(r,mat,x,y,z,parent,ws,hs){const m=new THREE.Mesh(new THREE.SphereGeometry(r,ws||18,hs||14),mat);
+  m.position.set(x,y,z);m.castShadow=true;(parent||scene).add(m);return m;}
+function cable(pts,r,mat,parent){const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
+  const m=new THREE.Mesh(new THREE.TubeGeometry(curve,32,r,6),mat);m.castShadow=true;(parent||scene).add(m);return m;}
+
+function buildCharacter(o){
+  const g=new THREE.Group();const skin=stdMat(o.skin),shirt=stdMat(o.shirt),pants=stdMat(o.pants),hairM=stdMat(o.hair),shoe=stdMat(0x241A12);
+  const legL=cyl(0.13,0.15,1.05,pants,-0.17,0.53,0,g),legR=cyl(0.13,0.15,1.05,pants,0.17,0.53,0,g);
+  box(0.26,0.12,0.42,shoe,-0.17,0.06,0.06,g);box(0.26,0.12,0.42,shoe,0.17,0.06,0.06,g);
+  const hips=new THREE.Group();hips.position.y=1.05;g.add(hips);
+  const torso=cyl(0.34,0.46,1.15,shirt,0,0.62,0,hips,16);
+  if(o.vest){const v=cyl(0.36,0.47,0.9,stdMat(o.vest),0,0.55,0.012,hips,16);v.scale.z=1.02;}
+  if(o.tie){box(0.11,0.5,0.05,stdMat(o.tie),0,0.78,0.36,hips);}
+  if(o.bow){box(0.24,0.09,0.06,stdMat(o.bow),0,1.08,0.34,hips);}
+  const pocket=new THREE.Group();pocket.position.set(0.26,0.90,0.37);hips.add(pocket);
+  if(o.pocket){box(0.30,0.26,0.05,stdMat(0xE5E0D2),0,0,0,pocket);box(0.32,0.04,0.06,stdMat(0xD8D2C0),0,0.13,0.002,pocket);
+    const bar=new THREE.Group();bar.position.set(0,0.10,0.012);bar.rotation.z=-0.10;pocket.add(bar);
+    const bm=stdMat(0x5C3A1E,{roughness:0.4});box(0.34,0.15,0.05,bm,0,0.05,0,bar);
+    box(0.10,0.16,0.052,stdMat(0xC9CDD4,{metalness:0.8,roughness:0.3}),-0.13,0.05,0,bar);
+    const melt=sph(0.09,bm,0.10,0.12,0,bar);melt.scale.set(1.3,0.55,0.7);
+    const drip=cyl(0.022,0.032,0.13,bm,0.14,-0.05,0.028,pocket);
+    reg('percys_choc_bar',bar,'lab',new THREE.Vector3(-4.74,2.0,-1.1));}
+  const head=new THREE.Group();head.position.y=1.50;hips.add(head);
+  sph(0.38,skin,0,0,0,head,22,18);
+  const hair=sph(0.39,hairM,0,0.10,-0.045,head,22,14);hair.scale.set(1,0.62,1);
+  if(o.bald){hair.scale.set(0.98,0.28,0.98);hair.position.set(0,0.24,-0.06);
+    sph(0.10,hairM,-0.36,0.02,-0.05,head);sph(0.10,hairM,0.36,0.02,-0.05,head);}
+  const eyeL=sph(0.075,stdMat(0xFFFFFF,{roughness:0.25}),-0.14,0.06,0.325,head),eyeR=sph(0.075,stdMat(0xFFFFFF,{roughness:0.25}),0.14,0.06,0.325,head);
+  const pupM=stdMat(0x1A140E);const pupL=sph(0.032,pupM,-0.14,0.06,0.392,head),pupR=sph(0.032,pupM,0.14,0.06,0.392,head);
+  const browM=stdMat(o.hair);const browL=box(0.14,0.035,0.03,browM,-0.14,0.19,0.35,head),browR=box(0.14,0.035,0.03,browM,0.14,0.19,0.35,head);
+  sph(0.062,skin,0,-0.03,0.385,head);
+  const mouth=sph(0.07,stdMat(0x7A3030),0,-0.17,0.345,head);mouth.scale.set(1.3,0.35,0.4);
+  sph(0.06,skin,-0.38,0,0,head);sph(0.06,skin,0.38,0,0,head);
+  if(o.mustache){const mu=stdMat(o.hair);const m1=sph(0.075,mu,-0.07,-0.10,0.37,head),m2=sph(0.075,mu,0.07,-0.10,0.37,head);m1.scale.set(1.2,0.5,0.5);m2.scale.set(1.2,0.5,0.5);}
+  let glasses=null;
+  if(o.glasses){glasses=new THREE.Group();glasses.position.set(0,0.06,0.36);head.add(glasses);
+    const gm=stdMat(0x3A3226,{metalness:0.6,roughness:0.4});
+    const t1=new THREE.Mesh(new THREE.TorusGeometry(0.10,0.013,8,20),gm);t1.position.x=-0.14;glasses.add(t1);
+    const t2=t1.clone();t2.position.x=0.14;glasses.add(t2);box(0.08,0.015,0.015,gm,0,0,0,glasses);}
+  function arm(side){const sh=new THREE.Group();sh.position.set(0.42*side,1.07,0);hips.add(sh);
+    cyl(0.09,0.08,0.5,o.rolled&&side>0?skin:shirt,0,-0.25,0,sh);
+    const el=new THREE.Group();el.position.y=-0.5;sh.add(el);
+    cyl(0.075,0.07,0.45,o.rolled?skin:shirt,0,-0.22,0,el);
+    sph(0.11,skin,0,-0.47,0,el);return{sh,el};}
+  const aL=arm(-1),aR=arm(1);
+  const splat=new THREE.Group();splat.position.set(0.04,0.0,0.35);head.add(splat);splat.visible=false;
+  const ym=stdMat(0xFFC93A,{roughness:0.35});
+  const s1=sph(0.13,ym,0,0.04,0.02,splat);s1.scale.set(1.2,1,0.35);
+  const s2=sph(0.08,ym,-0.16,-0.1,0.01,splat);s2.scale.set(1,1.2,0.35);
+  const s3=sph(0.06,ym,0.15,-0.14,0.01,splat);s3.scale.set(0.9,1.4,0.3);
+  cyl(0.02,0.03,0.22,ym,0.05,-0.28,0.02,splat);
+  reg('mocker_egg_splat',splat,'lab');
+  g.userData={hips,head,browL,browR,pupL,pupR,mouth,aL,aR,glasses,splat,torso,
+    pose:{x:0,z:0,ry:0,lean:0,hx:0,brow:0,mouth:0,pup:1,aL:[0,0,0],aR:[0,0,0]},
+    cur:{lean:0,hx:0,brow:0,mouth:0,pup:1,aL:[0,0,0],aR:[0,0,0]}};
+  return g;}
+function applyPose(ch,dt){const u=ch.userData,p=u.pose,c=u.cur;const k=Math.min(1,dt*6);
+  ch.position.x+=(p.x-ch.position.x)*Math.min(1,dt*8);ch.position.z+=(p.z-ch.position.z)*Math.min(1,dt*8);
+  ch.rotation.y+=(p.ry-ch.rotation.y)*Math.min(1,dt*8);
+  ['lean','hx','brow','mouth','pup'].forEach(key=>{c[key]+=(p[key]-c[key])*k;});
+  for(let i=0;i<3;i++){c.aL[i]+=(p.aL[i]-c.aL[i])*k;c.aR[i]+=(p.aR[i]-c.aR[i])*k;}
+  u.hips.rotation.x=c.lean;u.head.rotation.x=c.hx-c.lean*0.7;
+  u.browL.position.y=0.19+c.brow*0.06;u.browR.position.y=0.19+c.brow*0.06;
+  u.browL.rotation.z=c.brow*0.2;u.browR.rotation.z=-c.brow*0.2;
+  u.pupL.scale.setScalar(c.pup);u.pupR.scale.setScalar(c.pup);
+  u.mouth.scale.set(1.3,0.35+c.mouth*1.5,0.4);
+  u.aL.sh.rotation.x=c.aL[0];u.aL.sh.rotation.z=c.aL[1];u.aL.el.rotation.x=c.aL[2];
+  u.aR.sh.rotation.x=c.aR[0];u.aR.sh.rotation.z=c.aR[1];u.aR.el.rotation.x=c.aR[2];}
+function setPose(ch,o){const p=ch.userData.pose;Object.assign(p,o);
+  if(o.aL)p.aL=o.aL;if(o.aR)p.aR=o.aR;}
+
+function buildLab(){
+  const g=new THREE.Group();zoneGroups.lab=g;scene.add(g);
+  const woodT=canvasTex(256,256,(x,w,h)=>{x.fillStyle='#7A5A38';x.fillRect(0,0,w,h);
+    for(let i=0;i<8;i++){x.fillStyle=i%2?'#6E5030':'#7A5A38';x.fillRect(0,i*32,w,30);
+      x.strokeStyle='rgba(40,25,10,0.5)';x.lineWidth=2;x.strokeRect(-2,i*32,w+4,30);
+      x.strokeStyle='rgba(60,40,20,0.35)';x.lineWidth=1;
+      for(let j=0;j<5;j++){x.beginPath();x.moveTo(Math.random()*w,i*32+4);x.bezierCurveTo(w*0.3,i*32+10+Math.random()*14,w*0.7,i*32+16+Math.random()*10,w,i*32+8);x.stroke();}}});
+  woodT.wrapS=woodT.wrapT=THREE.RepeatWrapping;woodT.repeat.set(5,5);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(24,22),stdMat(0xFFFFFF,{map:woodT,roughness:0.85}));
+  floor.rotation.x=-Math.PI/2;floor.position.set(0,0,-1);floor.receiveShadow=true;g.add(floor);
+  const wallM=stdMat(0x4E6B5E,{roughness:0.9}),wains=stdMat(0x3A2E20,{roughness:0.85});
+  const back=new THREE.Mesh(new THREE.PlaneGeometry(24,9),wallM);back.position.set(0,4.5,-8);back.receiveShadow=true;g.add(back);
+  box(24,1.1,0.12,wains,0,0.55,-7.96,g);
+  const lw=new THREE.Mesh(new THREE.PlaneGeometry(22,9),wallM);lw.rotation.y=Math.PI/2;lw.position.set(-10,4.5,-1);lw.receiveShadow=true;g.add(lw);
+  const rw=new THREE.Mesh(new THREE.PlaneGeometry(22,9),wallM);rw.rotation.y=-Math.PI/2;rw.position.set(10,4.5,-1);rw.receiveShadow=true;g.add(rw);
+  box(0.12,1.1,22,wains,-9.96,0.55,-1,g);box(0.12,1.1,22,wains,9.96,0.55,-1,g);
+  box(24,0.28,0.3,stdMat(0x2E2418),0,6.6,-4,g);box(24,0.28,0.3,stdMat(0x2E2418),0,6.6,2,g);
+  // radar cabinet
+  const cab=new THREE.Group();cab.position.set(-5,0,-7.3);g.add(cab);reg('radar_cabinet',cab,'lab',new THREE.Vector3(-5,3.6,-7.3));
+  const steel=stdMat(0x5E6A72,{metalness:0.55,roughness:0.5}),steelD=stdMat(0x3E4850,{metalness:0.5,roughness:0.6});
+  box(4.6,3.4,1.4,steel,0,1.7,0,cab);
+  box(4.7,0.14,1.5,steelD,0,3.44,0,cab);
+  const panelM=stdMat(0x4A545C,{metalness:0.4,roughness:0.55});
+  [-1.5,0,1.5].forEach(px=>{box(1.28,2.9,0.06,panelM,px,1.65,0.72,cab);
+    box(0.05,0.4,0.08,stdMat(0xC9CDD4,{metalness:0.8,roughness:0.3}),px+0.5,1.6,0.76,cab);});
+  const dialM=stdMat(0x1E242A,{roughness:0.4}),dialTip=stdMat(0xFFD9A0);
+  for(let i=0;i<6;i++){const dx=-1.9+i*0.76;const d=cyl(0.10,0.10,0.07,dialM,dx,2.85,0.75,cab);d.rotation.x=Math.PI/2;
+    box(0.02,0.08,0.02,dialTip,dx,2.89,0.79,cab);}
+  const gaugeT=canvasTex(64,64,(x)=>{x.fillStyle='#F2EFE6';x.beginPath();x.arc(32,32,30,0,7);x.fill();
+    x.strokeStyle='#26201A';x.lineWidth=3;x.beginPath();x.arc(32,32,28,0,7);x.stroke();
+    x.lineWidth=2;x.beginPath();x.moveTo(32,32);x.lineTo(48,16);x.stroke();
+    x.fillStyle='#B3541E';x.font='bold 10px monospace';x.fillText('kV',26,50);});
+  [-0.75,0.75].forEach(px=>{const gm=new THREE.Mesh(new THREE.CircleGeometry(0.17,20),stdMat(0xFFFFFF,{map:gaugeT}));
+    gm.position.set(px,2.3,0.76);cab.add(gm);});
+  for(let i=0;i<5;i++)box(1.1,0.045,0.05,steelD,-1.5,0.6+i*0.12,0.73,cab);
+  for(let i=0;i<4;i++){const t=cyl(0.025,0.025,0.1,stdMat(0xC9CDD4,{metalness:0.8}),0.4+i*0.3,0.8,0.75,cab);t.rotation.x=Math.PI/2;}
+  const warnT=canvasTex(256,96,(x,w,h)=>{x.fillStyle='#C9A24B';x.fillRect(0,0,w,h);x.strokeStyle='#26201A';x.lineWidth=6;x.strokeRect(3,3,w-6,h-6);
+    x.fillStyle='#26201A';x.font='bold 30px monospace';x.fillText('MAGNETRON',28,40);x.font='bold 22px monospace';x.fillText('2.45 GHz · HV',44,74);});
+  const warn=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.34),stdMat(0xFFFFFF,{map:warnT}));warn.position.set(1.5,0.9,0.76);cab.add(warn);
+  addLabel('radar_cabinet',cab,[0,4.1,0.8]);
+  // horn
+  const horn=new THREE.Group();horn.position.set(-5,3.5,-7.2);g.add(horn);reg('magnetron_horn',horn,'lab',new THREE.Vector3(-5,4.6,-7.0));
+  cyl(0.26,0.30,0.35,steelD,0,0.1,0,horn);
+  const flare=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.18,0.95,4,1,true),stdMat(0x8A949C,{metalness:0.7,roughness:0.35,side:THREE.DoubleSide}));
+  flare.rotation.x=-Math.PI/2+0.26;flare.rotation.y=Math.PI/4;flare.position.set(0,0.55,0.32);flare.castShadow=true;horn.add(flare);
+  const core=new THREE.Mesh(new THREE.CircleGeometry(0.42,20),glowMat(0xFFA028,2.2));
+  core.rotation.x=-0.26;core.position.set(0,0.66,0.72);horn.add(core);
+  const hh=halo(0xFFA028,2.4,0.5);hh.position.set(0,0.68,0.78);horn.add(hh);
+  addLabel('magnetron_horn',horn,[0,1.5,0.4]);
+  // beam + rings toward Percy
+  const beamG=new THREE.Group();beamG.position.set(-5,4.15,-6.55);g.add(beamG);reg('horn_beam',beamG,'lab');
+  const beamMat=new THREE.MeshBasicMaterial({color:0xFFA028,transparent:true,opacity:0.07,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+  beamMesh=new THREE.Mesh(new THREE.ConeGeometry(1.5,5.6,20,1,true),beamMat);
+  const bdir=new THREE.Vector3(0,-2.1,5.1).normalize();
+  beamMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),bdir);
+  beamMesh.position.copy(bdir.clone().multiplyScalar(2.8));beamG.add(beamMesh);
+  reg('wave_rings',beamG,'lab');
+  for(let i=0;i<3;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(0.5,0.03,8,26),
+    new THREE.MeshBasicMaterial({color:0xFFC46B,transparent:true,opacity:0.5,depthWrite:false,blending:THREE.AdditiveBlending}));
+    ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),bdir);ring.userData={i,dir:bdir};beamG.add(ring);hornRings.push(ring);}
+  // radar screen
+  radarCanvas=document.createElement('canvas');radarCanvas.width=radarCanvas.height=256;radarCtx=radarCanvas.getContext('2d');
+  radarCtx.fillStyle='#04140A';radarCtx.fillRect(0,0,256,256);
+  radarTex=new THREE.CanvasTexture(radarCanvas);
+  const scr=new THREE.Group();scr.position.set(-0.6,6.1,-7.55);g.add(scr);reg('radar_screen',scr,'lab',new THREE.Vector3(-0.6,7.4,-7.5));
+  box(3.6,2.4,0.12,steelD,0,0,-0.04,scr);
+  const scrPlane=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),new THREE.MeshBasicMaterial({map:radarTex}));scrPlane.position.z=0.03;scr.add(scrPlane);
+  addLabel('radar_screen',scr,[0,1.5,0.3]);
+  // kettle table + kettle + egg
+  const kt=new THREE.Group();kt.position.set(-3,0,-4);g.add(kt);reg('kettle_table',kt,'lab',new THREE.Vector3(-3,2.6,-4));
+  const wood=stdMat(0x8A6238,{roughness:0.7});
+  box(1.2,0.08,1.0,wood,0,1.50,0,kt);
+  [[-0.52,-0.42],[0.52,-0.42],[-0.52,0.42],[0.52,0.42]].forEach(p=>cyl(0.04,0.05,1.46,steelD,p[0],0.73,p[1],kt));
+  const kettle=new THREE.Group();kettle.position.set(0,1.54,0);kt.add(kettle);reg('enamel_kettle',kettle,'lab',new THREE.Vector3(-3,2.4,-4));
+  const enamel=stdMat(0xF2EFE6,{roughness:0.3});
+  const kb=sph(0.30,enamel,0,0.28,0,kettle,20,16);kb.scale.y=0.85;
+  cyl(0.12,0.16,0.1,stdMat(0xC0392B,{roughness:0.35}),0,0.55,0,kettle);
+  sph(0.045,stdMat(0x26201A),0,0.62,0,kettle);
+  const spout=cyl(0.045,0.075,0.34,enamel,0.30,0.4,0,kettle);spout.rotation.z=-0.7;
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.028,8,18,Math.PI),stdMat(0x26201A));handle.position.set(-0.05,0.52,0);handle.rotation.z=0.25;kettle.add(handle);
+  const st=halo(0xCFD8DC,0.7,0.22);st.position.set(0.42,0.85,0);kettle.add(st);steamSprites.push({s:st,ph:Math.random()*7,base:0.85});
+  addLabel('enamel_kettle',kettle,[0,1.0,0]);
+  const egg=new THREE.Group();egg.position.set(-0.35,1.54,0.25);kt.add(egg);reg('egg_cup_egg',egg,'lab',new THREE.Vector3(-3.35,2.2,-3.75));
+  cyl(0.10,0.13,0.10,stdMat(0xF2EFE6,{roughness:0.3}),0,0.05,0,egg);
+  eggMesh=sph(0.135,stdMat(0xF6EFDD,{roughness:0.45}),0,0.22,0,egg);eggMesh.scale.y=1.25;
+  // popcorn bowl on cabinet top
+  const bowl=new THREE.Group();bowl.position.set(-3.6,3.42,-6.9);g.add(bowl);reg('popcorn_bowl',bowl,'lab',new THREE.Vector3(-3.6,4.3,-6.9));
+  const bowlM=stdMat(0xB3541E,{roughness:0.4});
+  cyl(0.35,0.22,0.30,bowlM,0,0.15,0,bowl,20);
+  const pileM=stdMat(0xF6EFDD,{roughness:0.8});
+  for(let i=0;i<10;i++){const k=new THREE.Mesh(new THREE.DodecahedronGeometry(0.075),pileM);
+    k.position.set((Math.random()-0.5)*0.4,0.30+Math.random()*0.08,(Math.random()-0.5)*0.4);k.rotation.set(Math.random()*3,Math.random()*3,0);bowl.add(k);}
+  addLabel('popcorn_bowl',bowl,[0,0.9,0]);
+  // popcorn instanced
+  const kGeo=new THREE.DodecahedronGeometry(0.085);
+  popcorn=new THREE.InstancedMesh(kGeo,pileM,80);popcorn.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  popcorn.castShadow=true;popcorn.visible=false;g.add(popcorn);reg('popcorn_kernel',popcorn,'lab',new THREE.Vector3(-3.6,5.2,-6.9));
+  popcorn.userData={p:[],dummy:new THREE.Object3D()};
+  for(let i=0;i<80;i++)popcorn.userData.p.push({spawn:0.10+Math.random()*1.5,x:0,y:-10,z:0,vx:0,vy:0,vz:0,rot:Math.random()*6,rs:(Math.random()-0.5)*8,sc:0.7+Math.random()*0.7,live:false,popped:false});
+  // settled kernels continuity
+  for(let i=0;i<8;i++){const k=new THREE.Mesh(kGeo,pileM);k.position.set(-4.4+Math.random()*1.6,3.5,-6.7-Math.random()*0.5);
+    k.scale.setScalar(0.8+Math.random()*0.5);k.rotation.set(Math.random()*3,Math.random()*3,0);g.add(k);}
+  // workbench
+  const bench=new THREE.Group();bench.position.set(5,0,-5);g.add(bench);reg('workbench_main',bench,'lab',new THREE.Vector3(5,3.2,-5));
+  box(3.0,0.10,1.5,wood,0,1.20,0,bench);
+  [[-1.38,-0.62],[1.38,-0.62],[-1.38,0.62],[1.38,0.62]].forEach(p=>box(0.09,1.15,0.09,steelD,p[0],0.58,p[1],bench));
+  box(2.8,0.06,1.3,wood,0,0.42,0,bench);
+  addLabel('workbench_main',bench,[0,1.9,0]);
+  const vise=new THREE.Group();vise.position.set(1.28,1.25,0.45);bench.add(vise);reg('bench_vise',vise,'lab');
+  box(0.22,0.16,0.18,steelD,0,0.08,0,vise);box(0.06,0.16,0.18,steel,0.16,0.08,0,vise);
+  const vh=cyl(0.02,0.02,0.3,steel,0.2,0.08,0,vise);vh.rotation.z=Math.PI/2;
+  // wave box
+  const wb=new THREE.Group();wb.position.set(0,1.25,0);bench.add(wb);reg('wave_box_mk1',wb,'lab',new THREE.Vector3(5,3.0,-4.6));
+  const wbM=stdMat(0x9AA3AD,{metalness:0.7,roughness:0.42});
+  box(1.56,1.14,1.24,wbM,0,0.57,0,wb);
+  const rivetG=new THREE.SphereGeometry(0.024,6,5);const rivetM=stdMat(0xC9CDD4,{metalness:0.85,roughness:0.3});
+  const rivets=new THREE.InstancedMesh(rivetG,rivetM,44);const rd=new THREE.Object3D();let ri=0;
+  for(let i=0;i<11;i++){rd.position.set(-0.70+i*0.14,1.08,0.625);rd.updateMatrix();rivets.setMatrixAt(ri++,rd.matrix);
+    rd.position.set(-0.70+i*0.14,0.06,0.625);rd.updateMatrix();rivets.setMatrixAt(ri++,rd.matrix);}
+  for(let i=0;i<11;i++){rd.position.set(-0.785,0.10+i*0.096,0.625);rd.updateMatrix();rivets.setMatrixAt(ri++,rd.matrix);
+    rd.position.set(0.785,0.10+i*0.096,0.625);rd.updateMatrix();rivets.setMatrixAt(ri++,rd.matrix);}
+  rivets.instanceMatrix.needsUpdate=true;wb.add(rivets);
+  [[-0.74,0.57],[0.74,0.57]].forEach(p=>{box(0.09,1.14,0.09,stdMat(0x6E7880,{metalness:0.6,roughness:0.5}),p[0],p[1],0.60,wb);});
+  const winFrame=box(0.62,0.50,0.05,stdMat(0x3E4850,{metalness:0.6}),-0.1,0.62,0.62,wb);
+  const winGlow=new THREE.Mesh(new THREE.PlaneGeometry(0.52,0.40),glowMat(0xFFA028,1.6));winGlow.position.set(-0.1,0.62,0.651);wb.add(winGlow);
+  const gridT=canvasTex(64,64,(x,w,h)=>{x.clearRect(0,0,w,h);x.strokeStyle='rgba(20,20,25,0.95)';x.lineWidth=3;
+    for(let i=0;i<=8;i++){x.beginPath();x.moveTo(i*8,0);x.lineTo(i*8,h);x.stroke();x.beginPath();x.moveTo(0,i*8);x.lineTo(w,i*8);x.stroke();}});
+  const winMesh=new THREE.Mesh(new THREE.PlaneGeometry(0.52,0.40),new THREE.MeshBasicMaterial({map:gridT,transparent:true}));
+  winMesh.position.set(-0.1,0.62,0.656);wb.add(winMesh);
+  const wh=halo(0xFFA028,1.5,0.4);wh.position.set(-0.1,0.62,0.75);wb.add(wh);
+  for(let i=0;i<3;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(0.12,0.014,6,20),
+    new THREE.MeshBasicMaterial({color:0xFFD9A0,transparent:true,opacity:0.7,depthWrite:false,blending:THREE.AdditiveBlending}));
+    ring.position.set(-0.1,0.62,0.645);ring.userData={i};wb.add(ring);boxRings.push(ring);}
+  cyl(0.03,0.03,0.9,steelD,-0.80,0.57,0.60,wb);
+  box(0.10,0.14,0.06,stdMat(0x26201A,{roughness:0.4}),0.62,0.62,0.64,wb);
+  const mkT=canvasTex(256,64,(x,w,h)=>{x.fillStyle='#C9CDD4';x.fillRect(0,0,w,h);x.fillStyle='#26201A';
+    x.font='bold 26px monospace';x.fillText('WAVE TRAP · MK I',18,42);});
+  const mk=new THREE.Mesh(new THREE.PlaneGeometry(0.66,0.16),stdMat(0xFFFFFF,{map:mkT,metalness:0.5,roughness:0.4}));
+  mk.position.set(0,1.02,0.635);mk.rotation.x=-0.15;wb.add(mk);
+  addLabel('wave_box_mk1',wb,[0,1.7,0.4]);
+  // magnetron tube on box
+  const tube=new THREE.Group();tube.position.set(0,1.14,-0.05);wb.add(tube);reg('magnetron_tube',tube,'lab',new THREE.Vector3(5,3.1,-5));
+  const copper=stdMat(0xB87333,{metalness:0.8,roughness:0.35});
+  cyl(0.16,0.16,0.45,copper,0,0.25,0,tube);
+  for(let i=0;i<4;i++)box(0.42,0.02,0.42,copper,0,0.12+i*0.09,0,tube);
+  const fil=sph(0.06,glowMat(0xFF7A1A,2.5),0,0.52,0,tube);
+  const th=halo(0xFF7A1A,0.8,0.5);th.position.set(0,0.55,0);tube.add(th);
+  addLabel('magnetron_tube',tube,[0,0.9,0]);
+  // mug + wrench + blueprint + toolbox + solder + jar
+  const mug=new THREE.Group();mug.position.set(-0.65,1.25,0.55);bench.add(mug);reg('coffee_mug',mug,'lab');
+  cyl(0.11,0.10,0.24,stdMat(0x2F8F83,{roughness:0.35}),0,0.12,0,mug);
+  const mh=new THREE.Mesh(new THREE.TorusGeometry(0.07,0.018,8,14,Math.PI),stdMat(0x2F8F83));mh.position.set(0.12,0.12,0);mh.rotation.z=-Math.PI/2;mug.add(mh);
+  const cof=new THREE.Mesh(new THREE.CircleGeometry(0.09,14),stdMat(0x2E1A0C));cof.rotation.x=-Math.PI/2;cof.position.y=0.235;mug.add(cof);
+  const wr=new THREE.Group();wr.position.set(0.75,1.26,0.5);bench.add(wr);reg('wrench_13mm',wr,'lab');
+  box(0.42,0.03,0.07,stdMat(0xB8BEC6,{metalness:0.85,roughness:0.3}),0,0.02,0,wr);
+  const wo=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.025,6,12),stdMat(0xB8BEC6,{metalness:0.85,roughness:0.3}));wo.rotation.x=Math.PI/2;wo.position.set(0.24,0.02,0);wr.add(wo);
+  const bpT=canvasTex(256,192,(x,w,h)=>{x.fillStyle='#1E3A5C';x.fillRect(0,0,w,h);x.strokeStyle='rgba(220,235,255,0.85)';x.lineWidth=2;
+    x.strokeRect(50,50,120,90);x.strokeRect(70,70,50,40);x.beginPath();x.arc(150,95,16,0,7);x.stroke();
+    x.beginPath();x.moveTo(50,160);x.lineTo(170,160);x.stroke();x.font='14px monospace';x.fillStyle='rgba(220,235,255,0.9)';x.fillText('MK I — TRAP',52,34);x.fillText('Ø 0.52 WINDOW',52,178);});
+  const bp=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.6),stdMat(0xFFFFFF,{map:bpT,roughness:0.9}));
+  bp.rotation.x=-Math.PI/2;bp.rotation.z=0.2;bp.position.set(-0.9,1.26,-0.35);bench.add(bp);reg('blueprint_sheet',bp,'lab');
+  const tb=new THREE.Group();tb.position.set(1.05,1.25,-0.35);bench.add(tb);reg('toolbox_open',tb,'lab');
+  const redM=stdMat(0xC0392B,{metalness:0.3,roughness:0.45});
+  box(0.7,0.22,0.32,redM,0,0.11,0,tb);const lid=box(0.7,0.04,0.32,redM,0,0.28,-0.2,tb);lid.rotation.x=-1.1;
+  for(let i=0;i<3;i++)box(0.05,0.16,0.05,stdMat(0xC9CDD4,{metalness:0.7}),-0.2+i*0.18,0.26,0.05,tb);
+  const sol=new THREE.Group();sol.position.set(0.35,1.25,-0.55);bench.add(sol);reg('solder_station',sol,'lab');
+  const coil=new THREE.Mesh(new THREE.TorusGeometry(0.07,0.015,6,14),stdMat(0xB8BEC6,{metalness:0.8}));coil.position.y=0.1;coil.rotation.x=0.4;sol.add(coil);
+  const iron=cyl(0.02,0.035,0.3,stdMat(0x26201A),0.05,0.16,0,sol);iron.rotation.z=0.7;
+  const jar=new THREE.Group();jar.position.set(-1.1,0.45,0.3);bench.add(jar);reg('screws_jar',jar,'lab');
+  cyl(0.10,0.10,0.26,stdMat(0xA8C4CC,{roughness:0.1,metalness:0.1,transparent:true,opacity:0.5}),0,0.13,0,jar);
+  for(let i=0;i<6;i++)box(0.03,0.05,0.03,stdMat(0xB8BEC6,{metalness:0.8}),(Math.random()-0.5)*0.12,0.04+Math.random()*0.08,(Math.random()-0.5)*0.12,jar);
+  // desk lamp
+  const dl=new THREE.Group();dl.position.set(-1.3,1.25,-0.5);bench.add(dl);reg('desk_lamp',dl,'lab');
+  const dlM=stdMat(0x2E4A3E,{metalness:0.4,roughness:0.5});
+  cyl(0.10,0.13,0.05,dlM,0,0.03,0,dl);
+  const a1=cyl(0.02,0.02,0.5,dlM,0.1,0.28,0,dl);a1.rotation.z=-0.4;
+  const a2=cyl(0.02,0.02,0.45,dlM,0.32,0.62,0,dl);a2.rotation.z=0.9;
+  const shade=cyl(0.05,0.14,0.18,dlM,0.5,0.78,0,dl);shade.rotation.z=1.2;
+  const bulb=sph(0.05,glowMat(0xFFD9A0,2),0.55,0.74,0,dl);
+  // scope cart
+  const scope=new THREE.Group();scope.position.set(1.2,0,-5.6);g.add(scope);reg('oscilloscope_cart',scope,'lab',new THREE.Vector3(1.2,2.2,-5.6));
+  box(0.9,0.08,0.7,steelD,0,0.75,0,scope);box(0.9,0.08,0.7,steelD,0,0.3,0,scope);
+  [[-0.38,-0.28],[0.38,-0.28],[-0.38,0.28],[0.38,0.28]].forEach(p=>{cyl(0.03,0.03,0.75,steelD,p[0],0.38,p[1],scope);
+    sph(0.05,stdMat(0x1E242A),p[0],0.05,p[1],scope);});
+  box(0.7,0.55,0.55,stdMat(0x4A545C,{metalness:0.4}),0,1.07,0,scope);
+  const miniScr=new THREE.Mesh(new THREE.CircleGeometry(0.16,20),glowMat(0x2EE87E,1.2));miniScr.position.set(-0.1,1.12,0.28);scope.add(miniScr);
+  for(let i=0;i<3;i++){const k=cyl(0.035,0.035,0.04,dialM,0.18,0.95+i*0.12,0.28,scope);k.rotation.x=Math.PI/2;}
+  // tube shelf
+  const shelf=new THREE.Group();shelf.position.set(3.5,3.6,-7.75);g.add(shelf);reg('tube_shelf',shelf,'lab',new THREE.Vector3(3.5,4.4,-7.7));
+  box(3.6,0.08,0.5,wood,0,0,0,shelf);
+  for(let i=0;i<5;i++){const j=new THREE.Group();j.position.set(-1.4+i*0.55,0.04,0);shelf.add(j);
+    cyl(0.11,0.11,0.32,stdMat(0xA8C4CC,{roughness:0.1,transparent:true,opacity:0.4}),0,0.16,0,j);
+    for(let k=0;k<3;k++)cyl(0.025,0.025,0.14,glowMat(0xFFA028,0.7),(k-1)*0.05,0.12,0,j);
+    if(i===0)reg('jar_vacuum_tubes',j,'lab');}
+  for(let i=0;i<4;i++)box(0.08,0.34,0.26,stdMat([0x8A5A33,0x2F8F83,0xC0392B,0x3A5C8A][i]),0.9+i*0.1,0.21,0,shelf);
+  box(0.5,0.3,0.24,stdMat(0x6E4A28),1.55,0.19,0,shelf);
+  // pegboard
+  const peg=new THREE.Group();peg.position.set(9.9,2.7,-4);peg.rotation.y=-Math.PI/2;g.add(peg);reg('pegboard_tools',peg,'lab',new THREE.Vector3(9.6,3.9,-4));
+  box(2.4,1.6,0.06,stdMat(0x8A6238,{roughness:0.85}),0,0,0,peg);
+  const toolM=stdMat(0xB8BEC6,{metalness:0.8,roughness:0.35});
+  for(let i=0;i<4;i++){box(0.07,0.5-i*0.06,0.05,toolM,-0.9+i*0.35,0.2,0.06,peg);
+    const head=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.02,6,12),toolM);head.position.set(-0.9+i*0.35,0.48-i*0.03,0.06);peg.add(head);}
+  box(0.3,0.08,0.06,stdMat(0xC0392B),0.7,0.3,0.06,peg);box(0.06,0.4,0.05,toolM,0.7,0.05,0.06,peg);
+  box(0.05,0.45,0.05,stdMat(0x26201A),1.0,0.1,0.06,peg);box(0.16,0.1,0.06,toolM,1.0,0.36,0.06,peg);
+  // clock + poster
+  const clockT=canvasTex(128,128,(x)=>{x.fillStyle='#F2EFE6';x.beginPath();x.arc(64,64,60,0,7);x.fill();
+    x.strokeStyle='#26201A';x.lineWidth=6;x.beginPath();x.arc(64,64,58,0,7);x.stroke();
+    x.lineWidth=4;x.beginPath();x.moveTo(64,64);x.lineTo(64,28);x.stroke();x.beginPath();x.moveTo(64,64);x.lineTo(88,74);x.stroke();
+    for(let i=0;i<12;i++){const a=i/12*Math.PI*2;x.beginPath();x.moveTo(64+Math.sin(a)*50,64-Math.cos(a)*50);x.lineTo(64+Math.sin(a)*56,64-Math.cos(a)*56);x.stroke();}});
+  const clock=new THREE.Mesh(new THREE.CircleGeometry(0.4,24),stdMat(0xFFFFFF,{map:clockT}));clock.position.set(2.8,5.2,-7.93);g.add(clock);reg('wall_clock',clock,'lab',new THREE.Vector3(2.8,5.9,-7.9));
+  const postT=canvasTex(128,176,(x,w,h)=>{x.fillStyle='#F2EFE6';x.fillRect(0,0,w,h);x.fillStyle='#C0392B';x.fillRect(0,0,w,42);
+    x.fillStyle='#F2EFE6';x.font='bold 22px monospace';x.fillText('SAFETY',26,30);
+    x.strokeStyle='#C0392B';x.lineWidth=4;for(let i=0;i<3;i++){x.beginPath();x.arc(64,96,14+i*14,-0.8,0.8);x.stroke();}
+    x.fillStyle='#26201A';x.font='bold 13px monospace';x.fillText('LOOSE WAVES',22,152);x.fillText('KEEP CLEAR',26,168);});
+  const poster=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.5),stdMat(0xFFFFFF,{map:postT,roughness:0.9}));
+  poster.position.set(1.2,3.8,-7.94);poster.rotation.z=0.02;g.add(poster);reg('safety_poster',poster,'lab',new THREE.Vector3(1.2,4.8,-7.9));
+  // window blinds + god rays
+  const win=new THREE.Group();win.position.set(-9.9,3.4,-2);win.rotation.y=Math.PI/2;g.add(win);reg('window_blinds',win,'lab',new THREE.Vector3(-9.6,4.9,-2));
+  box(1.9,2.3,0.1,stdMat(0x3A2E20),0,0,0,win);
+  const night=new THREE.Mesh(new THREE.PlaneGeometry(1.7,2.1),glowMat(0x2A4A7A,0.5));night.position.z=0.06;win.add(night);
+  for(let i=0;i<9;i++){const slat=box(1.7,0.12,0.03,stdMat(0xD8D2C0,{roughness:0.8}),0,-0.95+i*0.24,0.1,win);slat.rotation.x=0.5;}
+  const rayM=new THREE.MeshBasicMaterial({color:0x6FA8DC,transparent:true,opacity:0.05,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+  for(let i=0;i<2;i++){const ray=new THREE.Mesh(new THREE.PlaneGeometry(1.1,5.5),rayM);
+    ray.position.set(-8.2+i*0.7,2.6,-2+i*0.5);ray.rotation.z=0.9;ray.rotation.y=Math.PI/2-0.3;g.add(ray);}
+  reg('godray_slats',win,'lab');
+  // cage lamps
+  [[-2,5.6,-3],[4,5.6,-2]].forEach((p,i)=>{const cl=new THREE.Group();cl.position.set(p[0],p[1],p[2]);g.add(cl);
+    if(i===0)reg('cage_lamp',cl,'lab',new THREE.Vector3(p[0],p[1]+0.8,p[2]));
+    cyl(0.015,0.015,1.0,stdMat(0x1E242A),0,0.5,0,cl);
+    sph(0.12,glowMat(0xFFD9A0,1.8),0,-0.1,0,cl);
+    for(let k=0;k<3;k++){const ring=new THREE.Mesh(new THREE.TorusGeometry(0.16,0.012,6,16),stdMat(0x1E242A));
+      ring.position.y=-0.1;ring.rotation.x=Math.PI/2+k*0.5;cl.add(ring);}
+    const lh=halo(0xFFD9A0,1.4,0.3);lh.position.y=-0.1;cl.add(lh);});
+  // stool + lunchbox
+  const stool=new THREE.Group();stool.position.set(-6.3,0,-0.6);g.add(stool);reg('stool',stool,'lab');
+  cyl(0.24,0.24,0.06,wood,0,0.72,0,stool);
+  for(let i=0;i<3;i++){const a=i/3*Math.PI*2;const leg=cyl(0.03,0.03,0.72,steelD,Math.sin(a)*0.16,0.36,Math.cos(a)*0.16,stool);leg.rotation.x=Math.cos(a)*0.15;leg.rotation.z=-Math.sin(a)*0.15;}
+  const lb=new THREE.Group();lb.position.set(0,0.75,0);stool.add(lb);reg('lunchbox_open',lb,'lab',new THREE.Vector3(-6.3,1.5,-0.6));
+  box(0.46,0.18,0.26,stdMat(0x5E6A72,{metalness:0.6,roughness:0.4}),0,0.09,0,lb);
+  const lbl=box(0.46,0.02,0.26,stdMat(0x5E6A72,{metalness:0.6}),0,0.2,-0.16,lb);lbl.rotation.x=-1.3;
+  const foil=box(0.2,0.01,0.14,stdMat(0xC9CDD4,{metalness:0.9,roughness:0.2}),0.3,0.01,0.1,lb);foil.rotation.y=0.4;
+  // clipboard
+  const cb=new THREE.Group();cb.position.set(-2.68,2.2,-6.9);cb.rotation.y=0.3;g.add(cb);reg('clipboard_notes',cb,'lab');
+  box(0.3,0.42,0.02,stdMat(0x8A6238),0,0,0,cb);
+  const notesT=canvasTex(64,88,(x,w,h)=>{x.fillStyle='#F2EFE6';x.fillRect(0,0,w,h);x.strokeStyle='#8B94A8';x.lineWidth=1.5;
+    for(let i=0;i<7;i++){x.beginPath();x.moveTo(8,14+i*10);x.lineTo(8+30+Math.random()*20,14+i*10);x.stroke();}});
+  const notes=new THREE.Mesh(new THREE.PlaneGeometry(0.26,0.36),stdMat(0xFFFFFF,{map:notesT}));notes.position.z=0.012;cb.add(notes);
+  // cables
+  const cabM=stdMat(0x1E242A,{roughness:0.6});
+  const c1=cable([[-2.8,2.0,-6.8],[-1.5,0.15,-6.2],[1.5,0.08,-5.9],[3.6,0.6,-5.4],[4.6,1.0,-5.2]],0.035,cabM,g);
+  reg('cable_bundle',c1,'lab',new THREE.Vector3(0.5,0.6,-6.0));
+  cable([[-7.2,2.6,-7.0],[-8.6,1.2,-6.0],[-9.2,0.1,-3.5]],0.03,cabM,g);
+  cable([[5,2.55,-5.05],[5.4,1.6,-5.6],[4.0,0.2,-6.1],[0,0.1,-6.3],[-2.8,1.2,-6.8]],0.028,stdMat(0x6E2A1A,{roughness:0.6}),g);
+  // characters
+  percy=buildCharacter({skin:0xE8B48A,shirt:0xF2EFE6,pants:0x3A4048,hair:0x4A3220,tie:0x2A3A5C,pocket:true,rolled:true});
+  percy.position.set(-5,0,-1.55);g.add(percy);reg('hero_percy',percy,'lab',new THREE.Vector3(-5,3.4,-1.55));
+  addLabel('hero_percy',percy,[0,3.35,0]);
+  mocker=buildCharacter({skin:0xD9A878,shirt:0xBFD4E6,pants:0x4A3A2A,hair:0x8B8B85,vest:0x8A5A33,bow:0xC0392B,glasses:true,mustache:true,bald:true});
+  mocker.position.set(2,0,-0.8);mocker.rotation.y=-0.35;g.add(mocker);reg('colleague_mocker',mocker,'lab',new THREE.Vector3(2,3.4,-0.8));
+  addLabel('colleague_mocker',mocker,[0,3.35,0]);
+  glassesGrp=mocker.userData.glasses;splatGrp=mocker.userData.splat;
+  // yolk burst
+  const yGeo=new THREE.SphereGeometry(0.055,8,6);
+  yolk=new THREE.InstancedMesh(yGeo,stdMat(0xFFC93A,{roughness:0.35}),24);yolk.instanceMatrix.setUsage(THREE.DynamicDrawUsage);yolk.visible=false;g.add(yolk);
+  shards=new THREE.InstancedMesh(new THREE.TetrahedronGeometry(0.07),stdMat(0xF6EFDD),8);shards.instanceMatrix.setUsage(THREE.DynamicDrawUsage);shards.visible=false;g.add(shards);
+  reg('yolk_burst',yolk,'lab',new THREE.Vector3(-2.8,2.0,-3.5));
+  yolk.userData={p:[],dummy:new THREE.Object3D()};shards.userData={p:[],dummy:new THREE.Object3D()};
+  for(let i=0;i<24;i++)yolk.userData.p.push({x:0,y:-10,z:0,vx:0,vy:0,vz:0,live:false});
+  for(let i=0;i<8;i++)shards.userData.p.push({x:0,y:-10,z:0,vx:0,vy:0,vz:0,live:false,rot:Math.random()*6});
+  // dust
+  const dn=300,dp=new Float32Array(dn*3);
+  for(let i=0;i<dn;i++){dp[i*3]=-9+Math.random()*18;dp[i*3+1]=0.3+Math.random()*6;dp[i*3+2]=-7.5+Math.random()*13;}
+  const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));
+  const dm=new THREE.PointsMaterial({color:0xFFD9A0,size:0.035,transparent:true,opacity:0.35,depthWrite:false,blending:THREE.AdditiveBlending});
+  const dust=new THREE.Points(dg,dm);g.add(dust);dustPts.push(dust);reg('dust_motes',dust,'lab');
+  reg('steam_sprite',kettle,'lab');reg('glow_halo',horn,'lab');
+  // grid
+  const grid=new THREE.GridHelper(22,22,0xFFA028,0x2A3346);grid.position.y=0.02;grid.visible=false;g.add(grid);grids.lab=grid;
+  // zone lights
+  const zl=new THREE.Group();g.add(zl);zoneLights.lab=zl;
+  const hornP=new THREE.PointLight(0xFFA028,1.3,10,2);hornP.position.set(-5,4.1,-6.5);zl.add(hornP);hornP.userData={base:1.3,glow:true};
+  const scrP=new THREE.PointLight(0x2EE87E,0.7,8,2);scrP.position.set(-0.6,6.1,-6.8);zl.add(scrP);scrP.userData={base:0.7,glow:true};
+  const lampP=new THREE.PointLight(0xFFD9A0,0.85,7,2);lampP.position.set(4.2,2.4,-4.6);zl.add(lampP);lampP.userData={base:0.85,glow:true};
+  const winP=new THREE.PointLight(0x6FA8DC,0.55,9,2);winP.position.set(-8.6,3.4,-2);zl.add(winP);winP.userData={base:0.55};
+}
+function buildMolecule(){
+  const g=new THREE.Group();zoneGroups.molecule=g;scene.add(g);g.position.x=400;
+  molGroup=new THREE.Group();molGroup.position.set(0,2.1,0);g.add(molGroup);reg('water_molecule',molGroup,'molecule',new THREE.Vector3(400,4.2,0));
+  const oM=stdMat(0xE03A3A,{roughness:0.3});const hM=stdMat(0xF2EFE6,{roughness:0.35});const bM=stdMat(0x8B94A8,{roughness:0.5});
+  sph(0.85,oM,0,0,0,molGroup,28,22);
+  const a=104.5*D2R/2;
+  [[-Math.sin(a),Math.cos(a)],[Math.sin(a),Math.cos(a)]].forEach(d=>{
+    const hx=d[0]*1.35,hy=d[1]*1.35;
+    sph(0.5,hM,hx,hy,0,molGroup,22,18);
+    const bond=cyl(0.14,0.14,1.1,bM,hx*0.5,hy*0.5,0,molGroup);bond.rotation.z=Math.atan2(d[0],d[1])*-1+Math.PI/2*0;bond.lookAt(new THREE.Vector3(hx,hy,0).add(molGroup.position));bond.rotateX(Math.PI/2);});
+  const oh=halo(0xFF4F5E,3.4,0.35);molGroup.add(oh);
+  addLabel('water_molecule',molGroup,[0,2.2,0]);
+  const dip=new THREE.Group();dip.position.set(0,-1.6,0);g.add(dip);reg('dipole_arrow',dip,'molecule',new THREE.Vector3(400,0.8,0));
+  cyl(0.05,0.05,1.2,stdMat(0x3D9BFF),0,0,0,dip).rotation.z=Math.PI/2;
+  const cone=cyl(0.001,0.14,0.3,stdMat(0x3D9BFF),0.75,0,0,dip);cone.rotation.z=-Math.PI/2;
+  const plus=textSprite('+  δ','dipole flips with field');plus.position.set(1.3,0.3,0);plus.visible=true;plus.scale.set(1.1,0.33,1);dip.add(plus);
+  for(let i=0;i<3;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(1.8,0.03,8,40),
+    new THREE.MeshBasicMaterial({color:0x3D9BFF,transparent:true,opacity:0.4,depthWrite:false,blending:THREE.AdditiveBlending}));
+    ring.position.copy(molGroup.position);ring.userData={i};g.add(ring);molRings.push(ring);}
+  reg('orbit_wave_rings',molGroup,'molecule');
+  const sn=160,sp=new Float32Array(sn*3);
+  for(let i=0;i<sn;i++){sp[i*3]=-12+Math.random()*24;sp[i*3+1]=Math.random()*10;sp[i*3+2]=-8+Math.random()*16;}
+  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+  const stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0x8FC4FF,size:0.05,transparent:true,opacity:0.6,depthWrite:false,blending:THREE.AdditiveBlending}));
+  g.add(stars);dustPts.push(stars);
+  const zl=new THREE.Group();g.add(zl);zoneLights.molecule=zl;
+  const p1=new THREE.PointLight(0x3D9BFF,1.1,15,2);p1.position.set(-4,4,4);zl.add(p1);p1.userData={base:1.1};
+  const p2=new THREE.PointLight(0xFF4FA3,0.9,15,2);p2.position.set(4,1,-3);zl.add(p2);p2.userData={base:0.9};
+  const grid=new THREE.GridHelper(20,20,0x3D9BFF,0x1A2130);grid.position.y=0.02;grid.visible=false;g.add(grid);grids.molecule=grid;
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(30,24),stdMat(0x0A0E18,{roughness:1}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;g.add(fl);
+}
+function buildShowroom(){
+  const g=new THREE.Group();zoneGroups.showroom=g;scene.add(g);g.position.x=800;
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(26,20),stdMat(0x1A1012,{roughness:0.9}));fl.rotation.x=-Math.PI/2;fl.position.z=-1;fl.receiveShadow=true;g.add(fl);
+  const bw=new THREE.Mesh(new THREE.PlaneGeometry(26,10),stdMat(0x241014,{roughness:0.95}));bw.position.set(0,5,-7);g.add(bw);
+  const plinth=new THREE.Group();plinth.position.set(0,0,-2);g.add(plinth);reg('plinth_marble',plinth,'showroom',new THREE.Vector3(800,1.0,-2));
+  box(2.6,0.5,2.2,stdMat(0xE8E2D6,{roughness:0.25}),0,0.25,0,plinth);
+  box(2.7,0.06,2.3,stdMat(0xC9A24B,{metalness:0.8,roughness:0.3}),0,0.52,0,plinth);
+  const oven=new THREE.Group();oven.position.set(0,0.55,0);plinth.add(oven);reg('radarange_oven',oven,'showroom',new THREE.Vector3(800,4.1,-2));
+  const om=stdMat(0x8A949C,{metalness:0.7,roughness:0.35});
+  box(1.7,2.95,1.5,om,0,1.48,0,oven);
+  box(1.74,0.1,1.54,stdMat(0x5E6A72,{metalness:0.6}),0,2.98,0,oven);
+  const doorR=new THREE.Mesh(new THREE.TorusGeometry(0.5,0.07,10,28),stdMat(0x5E6A72,{metalness:0.7,roughness:0.3}));
+  doorR.position.set(0,1.9,0.76);oven.add(doorR);
+  const doorG=new THREE.Mesh(new THREE.CircleGeometry(0.46,26),glowMat(0xFFA028,1.5));doorG.position.set(0,1.9,0.77);oven.add(doorG);
+  const oh=halo(0xFFA028,2.6,0.45);oh.position.set(0,1.9,0.9);oven.add(oh);
+  box(1.3,0.5,0.06,stdMat(0x3E4850,{metalness:0.5}),0,0.85,0.76,oven);
+  for(let i=0;i<3;i++){const d=cyl(0.09,0.09,0.07,stdMat(0x1E242A),-0.4+i*0.4,0.85,0.8,oven);d.rotation.x=Math.PI/2;}
+  const rt=canvasTex(256,64,(x,w,h)=>{x.fillStyle='#C9A24B';x.fillRect(0,0,w,h);x.fillStyle='#26201A';x.font='bold 34px monospace';x.fillText('RADARANGE',26,44);});
+  const rp=new THREE.Mesh(new THREE.PlaneGeometry(1.2,0.3),stdMat(0xFFFFFF,{map:rt,metalness:0.5}));rp.position.set(0,2.62,0.77);oven.add(rp);
+  for(let i=0;i<2;i++){const pipe=cyl(0.07,0.07,2.2,stdMat(0xB87333,{metalness:0.8,roughness:0.35}),0.95,1.4,-0.3+i*0.5,oven);}
+  addLabel('radarange_oven',oven,[0,3.5,0.6]);
+  const spT=canvasTex(128,64,(x,w,h)=>{x.fillStyle='#C9A24B';x.fillRect(0,0,w,h);x.fillStyle='#26201A';x.font='bold 16px monospace';x.fillText('340 kg · 1.8 m',10,28);x.fillText('WATER-COOLED',12,50);});
+  const sp=new THREE.Mesh(new THREE.PlaneGeometry(0.6,0.3),stdMat(0xFFFFFF,{map:spT,metalness:0.5}));sp.position.set(0.86,1.0,0.4);sp.rotation.y=Math.PI/2;oven.add(sp);reg('spec_plate',sp,'showroom');
+  // curtains
+  const vel=stdMat(0x8A1A24,{roughness:0.9});
+  [-1,1].forEach(side=>{const cu=new THREE.Group();cu.position.set(side*3.4,0,-3.5);g.add(cu);
+    if(side<0)reg('curtain_red',cu,'showroom',new THREE.Vector3(800-3.4,4.6,-3.5));
+    for(let i=0;i<8;i++){const pl=cyl(0.22,0.26,4.2,vel,side*i*0.18,2.1,Math.sin(i*1.2)*0.12,cu,10);}});
+  const val=new THREE.Group();val.position.set(0,4.4,-3.5);g.add(val);reg('valance',val,'showroom',new THREE.Vector3(800,5.2,-3.5));
+  box(8.2,0.7,0.4,vel,0,0,0,val);
+  for(let i=0;i<9;i++)sph(0.32,vel,-3.6+i*0.9,-0.35,0,val,12,8).scale.set(1,0.6,0.6);
+  // placard
+  const pc=new THREE.Group();pc.position.set(2.2,0,0.8);g.add(pc);reg('price_placard',pc,'showroom',new THREE.Vector3(802.2,1.8,0.8));
+  cyl(0.03,0.05,1.0,stdMat(0xC9A24B,{metalness:0.8}),0,0.5,0,pc);
+  const ppT=canvasTex(192,256,(x,w,h)=>{x.fillStyle='#F2EFE6';x.fillRect(0,0,w,h);x.strokeStyle='#8A1A24';x.lineWidth=8;x.strokeRect(4,4,w-8,h-8);
+    x.fillStyle='#8A1A24';x.font='bold 44px monospace';x.fillText('$5,000',28,70);
+    x.fillStyle='#26201A';x.font='bold 26px monospace';x.fillText('340 kg',48,130);x.fillText('1.8 m TALL',22,175);
+    x.font='18px monospace';x.fillText('RAYTHEON · 1947',22,225);});
+  const pp=new THREE.Mesh(new THREE.PlaneGeometry(0.9,1.2),stdMat(0xFFFFFF,{map:ppT}));pp.position.set(0,1.35,0.02);pp.rotation.x=-0.15;pc.add(pp);
+  // ropes
+  const rope=new THREE.Group();g.add(rope);reg('velvet_rope',rope,'showroom');
+  [-2.4,0,2.4].forEach(px=>{cyl(0.04,0.06,0.9,stdMat(0xC9A24B,{metalness:0.8,roughness:0.3}),px,0.45,1.8,rope);
+    sph(0.07,stdMat(0xC9A24B,{metalness:0.8}),px,0.92,1.8,rope);});
+  cable([[-2.4,0.88,1.8],[-1.2,0.6,1.8],[0,0.88,1.8]],0.035,vel,rope);
+  cable([[0,0.88,1.8],[1.2,0.6,1.8],[2.4,0.88,1.8]],0.035,vel,rope);
+  // spot cones
+  const coneM=new THREE.MeshBasicMaterial({color:0xFFD9A0,transparent:true,opacity:0.06,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+  [[-3.5,6.5,2,0.5],[3.5,6.5,2,-0.5]].forEach((p,i)=>{const cone=new THREE.Mesh(new THREE.ConeGeometry(1.6,6.5,18,1,true),coneM);
+    cone.position.set(p[0]*0.55,3.6,0);cone.rotation.z=p[3];g.add(cone);if(i===0)reg('spot_cone',cone,'showroom');});
+  const dn=120,dp=new Float32Array(dn*3);
+  for(let i=0;i<dn;i++){dp[i*3]=-4+Math.random()*8;dp[i*3+1]=0.3+Math.random()*6;dp[i*3+2]=-3+Math.random()*6;}
+  const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));
+  const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0xFFD9A0,size:0.04,transparent:true,opacity:0.4,depthWrite:false,blending:THREE.AdditiveBlending}));
+  g.add(dust);dustPts.push(dust);
+  const zl=new THREE.Group();g.add(zl);zoneLights.showroom=zl;
+  const s1=new THREE.SpotLight(0xFFD9A0,1.2,20,0.5,0.5,1.5);s1.position.set(-3.5,6.5,2);s1.target.position.set(0,1.5,-2);zl.add(s1);zl.add(s1.target);s1.userData={base:1.2};
+  const s2=new THREE.SpotLight(0xFFB0A0,0.8,20,0.5,0.6,1.5);s2.position.set(3.5,6.5,2);s2.target.position.set(0,1.5,-2);zl.add(s2);zl.add(s2.target);s2.userData={base:0.8};
+  const bounce=new THREE.PointLight(0xFF4F5E,0.5,10,2);bounce.position.set(0,0.5,2);zl.add(bounce);bounce.userData={base:0.5};
+  const grid=new THREE.GridHelper(20,20,0xFFA028,0x241014);grid.position.y=0.02;grid.visible=false;g.add(grid);grids.showroom=grid;
+}
+function buildKitchens(){
+  const g=new THREE.Group();zoneGroups.kitchens=g;scene.add(g);g.position.x=1200;
+  const back=new THREE.Mesh(new THREE.PlaneGeometry(30,40),stdMat(0x0A0E16,{roughness:1}));back.position.set(0,17,-6.8);g.add(back);reg('grid_backdrop',back,'kitchens');
+  const starT=canvasTex(128,128,(x,w,h)=>{x.fillStyle='#0A1226';x.fillRect(0,0,w,h);
+    x.fillStyle='#E8E2D6';for(let i=0;i<26;i++){x.fillRect(Math.random()*w,Math.random()*h,1.6,1.6);}
+    x.fillStyle='#F2EFE6';x.beginPath();x.arc(96,28,12,0,7);x.fill();x.fillStyle='#0A1226';x.beginPath();x.arc(90,24,10,0,7);x.fill();});
+  const counterM=stdMat(0xD8CDB8,{roughness:0.5}),cabM2=stdMat(0x6E8A7A,{roughness:0.7}),cabM3=stdMat(0x8A6238,{roughness:0.7}),
+    tileBack=[stdMat(0x3E3428,{roughness:0.9}),stdMat(0x2E3A44,{roughness:0.9}),stdMat(0x443028,{roughness:0.9})],
+    floorM=stdMat(0x5C4A34,{roughness:0.85}),fridgeM=stdMat(0xC9CDD4,{metalness:0.5,roughness:0.35}),
+    mwM=stdMat(0x3A4048,{metalness:0.5,roughness:0.4}),mwGlow=glowMat(0xFFA028,1.4),clockGlow=glowMat(0x2EE87E,1.6),
+    warmGlow=glowMat(0xFFD9A0,1.8),plantM=stdMat(0x3A8A4A,{roughness:0.7}),potM=stdMat(0xB3541E,{roughness:0.6}),
+    mugM2=stdMat(0x2F8F83,{roughness:0.4}),nightM=new THREE.MeshBasicMaterial({map:starT});
+  const cols=[-5.1,-1.7,1.7,5.1];
+  for(let j=0;j<9;j++)for(let i=0;i<4;i++){
+    const variant=(i+j)%3;const t=new THREE.Group();t.position.set(cols[i],1.9+j*3.6,-5.9);g.add(t);
+    const nm='kitchen_tile_'+['A','B','C'][variant];
+    if(j===0&&i<3)reg(nm,t,'kitchens',new THREE.Vector3(1200+cols[i],1.9+j*3.6+2.0,-5.9));
+    box(3.4,3.6,0.1,tileBack[variant],0,0,-0.55,t);
+    box(3.4,0.12,1.2,floorM,0,-1.74,0,t);
+    box(3.4,0.1,1.2,counterM,0,-0.62,0,t);
+    box(3.3,0.85,1.05,stdMat(0x4A3A28,{roughness:0.8}),0,-1.15,-0.02,t);
+    if(variant===0){box(0.85,2.6,0.9,fridgeM,-1.15,-0.35,-0.05,t);box(0.06,0.7,0.06,stdMat(0x8B94A8),-0.78,0.2,0.42,t);
+      box(1.5,0.7,0.5,cabM2,0.75,1.15,-0.3,t);}
+    else if(variant===1){box(1.9,0.08,0.5,cabM3,0.4,0.9,-0.3,t);box(1.9,0.08,0.5,cabM3,0.4,1.5,-0.3,t);
+      for(let k=0;k<3;k++)cyl(0.09,0.09,0.22,stdMat([0xC0392B,0x2F8F83,0xC9A24B][k]),-0.2+k*0.5,1.05,-0.3,t);}
+    else{const wnd=new THREE.Mesh(new THREE.PlaneGeometry(0.9,1.1),nightM);wnd.position.set(0.7,0.9,-0.48);t.add(wnd);
+      box(1.0,1.2,0.06,stdMat(0xD8D2C0),0.7,0.9,-0.5,t);
+      if(j===0)reg('window_night',wnd,'kitchens');
+      box(1.0,0.7,0.5,cabM2,-0.9,1.15,-0.3,t);}
+    // microwave — every tile
+    const mw=new THREE.Group();mw.position.set(0.55,-0.37,0.12);t.add(mw);
+    if(j===0&&i===1)reg('microwave_modern',mw,'kitchens',new THREE.Vector3(1200+cols[i]+0.55,1.9+j*3.6-0.1,-5.8));
+    box(0.62,0.40,0.45,mwM,0,0,0,mw);
+    const door=new THREE.Mesh(new THREE.PlaneGeometry(0.36,0.28),mwGlow);door.position.set(-0.07,0,0.228);mw.add(door);
+    box(0.03,0.28,0.02,stdMat(0xC9CDD4,{metalness:0.7}),0.14,0,0.235,mw);
+    const ck=new THREE.Mesh(new THREE.PlaneGeometry(0.10,0.05),clockGlow);ck.position.set(0.22,0.10,0.228);mw.add(ck);
+    if((i+j)%3===0){const pl=new THREE.Group();pl.position.set(-0.6,1.7,0.1);t.add(pl);
+      if(j===0&&i===0)reg('pendant_lamp',pl,'kitchens');
+      cyl(0.012,0.012,0.55,stdMat(0x1E242A),0,-0.28,0,pl);
+      cyl(0.02,0.14,0.16,stdMat(0x26201A),0,-0.6,0,pl);
+      sph(0.05,warmGlow,0,-0.66,0,pl);}
+    if((i*2+j)%4===1){const mg=new THREE.Group();mg.position.set(-0.5,-0.47,0.25);t.add(mg);
+      if(j===0&&i===1)reg('mug_steam_set',mg,'kitchens');
+      cyl(0.07,0.06,0.16,mugM2,0,0.08,0,mg);
+      const st=halo(0xCFD8DC,0.45,0.2);st.position.set(0,0.35,0);mg.add(st);steamSprites.push({s:st,ph:Math.random()*7,base:0.35});}
+    if((i+j*2)%6===2){const pt=new THREE.Group();pt.position.set(1.35,-0.47,0.2);t.add(pt);
+      if(j===0&&i===2)reg('plant_pot',pt,'kitchens');
+      cyl(0.09,0.07,0.14,potM,0,0.07,0,pt);
+      for(let k=0;k<3;k++){const lf=sph(0.07,plantM,Math.sin(k*2.1)*0.06,0.2+k*0.05,Math.cos(k*2.1)*0.05,pt);lf.scale.set(0.7,1.3,0.7);}}
+  }
+  // dark falloff wings
+  [-1,1].forEach(s=>{const wing=new THREE.Mesh(new THREE.PlaneGeometry(8,40),stdMat(0x06080E,{roughness:1}));
+    wing.position.set(s*10.8,17,-5.6);wing.rotation.y=-s*0.35;g.add(wing);});
+  const zl=new THREE.Group();g.add(zl);zoneLights.kitchens=zl;
+  const dir=new THREE.DirectionalLight(0xFFD9A0,0.35);dir.position.set(4,30,12);zl.add(dir);dir.userData={base:0.35};
+  const cool=new THREE.PointLight(0x3D9BFF,0.4,50,2);cool.position.set(0,20,14);zl.add(cool);cool.userData={base:0.4};
+  const grid=new THREE.GridHelper(30,30,0xFFA028,0x1A2130);grid.position.y=0.02;grid.visible=false;g.add(grid);grids.kitchens=grid;
+}
+const ZONE_ENV={
+  lab:{bg:0x0E1A1C,fog:[0x0E1A1C,14,42],hemi:[0x35424E,0x1A130D,0.55],key:{pos:[2,9,4],tgt:[-2,1,-4],int:1.1,col:0xFFF2E0}},
+  molecule:{bg:0x070B18,fog:[0x070B18,16,50],hemi:[0x1A2440,0x0A0E18,0.5],key:{pos:[403,8,6],tgt:[400,2,0],int:0.9,col:0xEAF2FF}},
+  showroom:{bg:0x150A0C,fog:[0x150A0C,16,46],hemi:[0x3A2028,0x140A0C,0.5],key:{pos:[803,9,4],tgt:[800,1.5,-2],int:1.0,col:0xFFE8D0}},
+  kitchens:{bg:0x060A14,fog:[0x060A14,30,90],hemi:[0x2A3450,0x1A140E,0.65],key:{pos:[1200,30,16],tgt:[1200,14,-6],int:0.5,col:0xFFF2E0}}};
+function setZone(z){if(state.zone===z&&zoneGroups[z]&&zoneGroups[z].visible)return;state.zone=z;
+  Object.keys(zoneGroups).forEach(k=>{zoneGroups[k].visible=(k===z);});
+  const e=ZONE_ENV[z];scene.background=new THREE.Color(e.bg);scene.fog=new THREE.Fog(e.fog[0],e.fog[1],e.fog[2]);
+  hemi.color.setHex(e.hemi[0]);hemi.groundColor.setHex(e.hemi[1]);hemi.intensity=e.hemi[2];
+  keyLight.position.set(...e.key.pos);keyLight.target.position.set(...e.key.tgt);
+  keyLight.intensity=e.key.int*state.key;keyLight.color.setHex(state.moodKey!==null?state.moodKey:e.key.col);
+  keyLight.castShadow=(z==='lab'||z==='showroom');
+  R.shadowMap.needsUpdate=true;
+  setHum(z==='lab'&&AU.on?0.035:0);
+  document.querySelectorAll('.zoneBtn').forEach(b=>b.classList.toggle('on',b.dataset.zone===z&&state.source==='roam'));}
+function init3D(){
+  if(typeof THREE==='undefined')throw new Error('THREE missing');
+  const holder=$('gl');
+  R=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
+  R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
+  R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;R.shadowMap.autoUpdate=false;
+  holder.appendChild(R.domElement);
+  R.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();showFallback();});
+  scene=new THREE.Scene();
+  cam=new THREE.PerspectiveCamera(58,9/16,0.05,220);
+  hemi=new THREE.HemisphereLight(0x35424E,0x1A130D,0.55);scene.add(hemi);
+  keyLight=new THREE.SpotLight(0xFFF2E0,1.1,70,0.85,0.55,1.2);
+  keyLight.castShadow=true;keyLight.shadow.mapSize.set(1024,1024);
+  keyLight.shadow.camera.near=1;keyLight.shadow.camera.far=60;keyLight.shadow.bias=-0.0006;
+  scene.add(keyLight);scene.add(keyLight.target);
+  buildLab();buildMolecule();buildShowroom();buildKitchens();
+  three=true;
+  resize();applyQuality();
+  new ResizeObserver(resize).observe(holder);
+  bindViewportInput();
+}
+function resize(){if(!three)return;const h=$('gl');const w=h.clientWidth,ht=h.clientHeight;
+  R.setSize(w,ht,false);cam.aspect=9/16;cam.updateProjectionMatrix();}
+function applyQuality(){if(!three)return;const cap=state.quality==='cine'?2:state.quality==='bal'?1.5:1;
+  R.setPixelRatio(Math.min(window.devicePixelRatio||1,cap));resize();}
+function showFallback(){$('fallback').style.display='grid';
+  $('fbSvg').innerHTML=planSVG(SHOTS[state.shot]);}
+try{init3D();}catch(e){showFallback();}
+
+/* ============================================================ POSES / FX PER SHOT */
+function poseForShot(i){
+  const P={x:-5,z:-1.55,ry:0,lean:0,hx:0,brow:0,mouth:0,pup:1,aL:[0.1,0.12,-0.15],aR:[0.1,-0.12,-0.15]};
+  const M={x:2,z:-0.8,ry:-0.35,lean:0,hx:0,brow:0.2,mouth:0.15,pup:1,aL:[0.4,0.15,-0.5],aR:[0.4,-0.15,-0.5]};
+  if(i===0){P.hx=0.3;P.aR=[0.15,-0.1,-0.2];}
+  if(i===1){P.brow=1;P.mouth=1;P.pup=0.7;P.aR=[-1.15,-0.45,-1.5];P.hx=-0.05;}
+  if(i===2){P.hx=-0.55;P.mouth=0.6;P.brow=0.7;P.aR=[-2.2,-0.3,-0.3];}
+  if(i===3||i===4){Object.assign(M,{x:-1.55,z:-2.85,ry:Math.atan2(-1.45,-1.15),lean:0.62,hx:-0.42,brow:0.55,mouth:0.2,aL:[0.55,0.2,-0.7],aR:[0.55,-0.2,-0.7]});P.hx=0.1;}
+  if(i===5){P.x=6.9;P.z=-3.9;P.ry=0.2;}
+  if(i===6){P.x=6.9;P.z=-3.9;P.ry=-0.15;P.lean=-0.06;P.brow=0.35;P.mouth=0.15;P.aL=[-0.9,0.5,-0.4];P.aR=[0.15,-0.1,-0.2];
+    Object.assign(M,{x:2,z:-0.8,ry:-0.5,brow:0.8,aL:[0.9,0.5,-1.6],aR:[0.9,-0.5,-1.6]});}
+  if(three){setPose(percy,P);setPose(mocker,M);}
+}
+function resetFX(){shotFlags.splat=false;shotFlags.ding=false;shotFlags.popN=0;
+  if(!three)return;
+  splatGrp.visible=false;glassesGrp.rotation.z=0;eggMesh.visible=true;
+  yolk.visible=false;shards.visible=false;popcorn.visible=false;
+  popcorn.userData.p.forEach(p=>{p.live=false;p.popped=false;p.y=-10;});
+  yolk.userData.p.forEach(p=>{p.live=false;p.y=-10;});
+  shards.userData.p.forEach(p=>{p.live=false;p.y=-10;});}
+function fireEgg(){if(!three)return;shotFlags.splat=true;
+  eggMesh.visible=false;splatGrp.visible=true;glassesGrp.rotation.z=0.22;
+  const m=mocker.userData.pose;
+  setPose(mocker,{lean:-0.35,hx:-0.2,brow:1,mouth:1,pup:0.6,aL:[-2.4,0.5,-0.5],aR:[-2.4,-0.5,-0.5]});
+  const org=[-3.35,1.75,-3.75],dir=norm([1.15,0.5,0.65]);
+  yolk.visible=true;shards.visible=true;
+  yolk.userData.p.forEach(p=>{p.live=true;p.x=org[0];p.y=org[1];p.z=org[2];
+    const sp=2.6+Math.random()*2.2;p.vx=dir[0]*sp+(Math.random()-0.5)*1.2;p.vy=dir[1]*sp+Math.random()*1.4;p.vz=dir[2]*sp+(Math.random()-0.5)*1.2;});
+  shards.userData.p.forEach(p=>{p.live=true;p.x=org[0];p.y=org[1];p.z=org[2];
+    p.vx=(Math.random()-0.5)*3;p.vy=1.5+Math.random()*2.5;p.vz=(Math.random()-0.5)*3;});
+  SFX.splat();}
+
+/* ============================================================ PLAYBACK / CAMERA */
+const loopChk=$('loopChk');
+let curShotIdx=-1;
+function shotAt(clock){let acc=0;for(let i=0;i<SHOTS.length;i++){if(clock<acc+SHOTS[i].dur)return{i,t:(clock-acc)/SHOTS[i].dur,start:acc};acc+=SHOTS[i].dur;}
+  return{i:SHOTS.length-1,t:1,start:acc-SHOTS[SHOTS.length-1].dur};}
+function selectShot(i,play){const s=SHOTS[i];let acc=0;for(let k=0;k<i;k++)acc+=SHOTS[k].dur;
+  state.clock=acc+0.0001;state.source='reel';state.orbit.on=false;$('orbitChk').checked=false;
+  state.lensOv=null;state.dollyOv=0;syncLensUI();
+  if(play!==undefined)state.playing=play;
+  $('tl').classList.remove('roam');$('roamTag').style.display='none';
+  onShotEnter(i);}
+function onShotEnter(i){if(i===curShotIdx)return;curShotIdx=i;state.shot=i;const s=SHOTS[i];
+  resetFX();poseForShot(i);
+  if(three)setZone(s.zone);
+  $('ovSid').textContent=s.id;$('ovStt').textContent=s.title;
+  $('ovStc').textContent=s.tc.startsWith('FILM')?s.tc:'PREVIEW HOLD '+s.dur.toFixed(1)+'s · '+s.cam.fov+'°h';
+  $('sl1').textContent=s.id;$('sl2').textContent=s.title;$('sl3').textContent='FOV '+s.cam.fov+'h · BOARD v2 · FIX #'+s.fix+' ✓';
+  const sl=$('ovSlate');sl.classList.remove('show');void sl.offsetWidth;sl.classList.add('show');
+  segEls.forEach((el,k)=>el.classList.toggle('cur',k===i));
+  toast('<b>OWNER NOTE #'+s.fix+' — RESOLVED</b> · '+FIXES.find(f=>f.n===s.fix).t);
+  SFX.tick();
+  if(s.id==='S20')SFX.whoosh();
+  syncLensUI();updateDossier(s);}
+function updateDossier(s){
+  $('dsId').textContent=s.id;$('dsTitle').textContent=s.title;$('dsTC').textContent=s.tc+' · zone x='+FILM.zones[s.zone];
+  $('dsFix').innerHTML='<b>OWNER FIX #'+s.fix+' ✓ RESOLVED</b>'+s.fixText;
+  const rows=[['MOVE',s.cam.move],['FROM','['+s.cam.from.map(n=>n.toFixed(2)).join(', ')+']'],
+    ['TO','['+s.cam.to.map(n=>n.toFixed(2)).join(', ')+']'],
+    ['TARGET','['+s.cam.tFrom.map(n=>n.toFixed(2)).join(', ')+'] → ['+s.cam.tTo.map(n=>n.toFixed(2)).join(', ')+']'],
+    ['FOV',s.cam.fov+'°h ≈ '+vfov(s.cam.fov).toFixed(1)+'°v'],['EASE',s.cam.ease]];
+  $('dsCam').innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
+  $('dsStage').innerHTML=s.staging.map(x=>'<li>'+x+'</li>').join('');
+  $('dsAssets').innerHTML='';
+  s.assets.forEach(a=>{const b=document.createElement('button');b.className='aChip';b.textContent=a;
+    b.onclick=()=>locateAsset(a);$('dsAssets').appendChild(b);});
+  $('dsLink').href='#card-'+s.id;}
+function effectiveCam(){
+  if(state.source==='roam'&&state.orbit.on){const o=state.orbit;
+    return{pos:[o.tgt[0]+o.r*Math.sin(o.ph)*Math.sin(o.th),o.tgt[1]+o.r*Math.cos(o.ph),o.tgt[2]+o.r*Math.sin(o.ph)*Math.cos(o.th)],
+      tgt:o.tgt,fov:state.lensOv!==null?state.lensOv:33};}
+  const sa=shotAt(state.clock);const s=SHOTS[sa.i];const k=shotKeys(s,sa.t);
+  let pos=k.pos,tgt=k.tgt;
+  if(s.id==='S12'&&sa.t>=0.45){const dt=(sa.t-0.45)*s.dur;if(dt<0.14){const a=0.06*(1-dt/0.14);
+    pos=[pos[0]+Math.sin(dt*140)*a,pos[1]+Math.cos(dt*170)*a,pos[2]];}}
+  if(state.dollyOv!==0){const d=norm(sub(pos,tgt));pos=[pos[0]+d[0]*state.dollyOv,pos[1]+d[1]*state.dollyOv,pos[2]+d[2]*state.dollyOv];}
+  if(state.orbit.on){const o=state.orbit;
+    pos=[o.tgt[0]+o.r*Math.sin(o.ph)*Math.sin(o.th),o.tgt[1]+o.r*Math.cos(o.ph),o.tgt[2]+o.r*Math.sin(o.ph)*Math.cos(o.th)];tgt=o.tgt;}
+  return{pos,tgt,fov:state.lensOv!==null?state.lensOv:k.fov};}
+function enterOrbit(){if(state.orbit.on)return;const c=effectiveCam();
+  const v=sub(c.pos,c.tgt);const r=Math.hypot(v[0],v[1],v[2]);
+  const o=state.orbit;o.on=true;o.tgt=[...c.tgt];o.r=o.tr=Math.max(1.2,r);
+  o.ph=o.tph=Math.acos(Math.max(-1,Math.min(1,v[1]/r)));o.th=o.tth=Math.atan2(v[0],v[2]);
+  $('orbitChk').checked=true;}
+function exitOrbit(){state.orbit.on=false;$('orbitChk').checked=false;
+  if(state.source==='roam'){state.source='reel';$('tl').classList.remove('roam');$('roamTag').style.display='none';
+    document.querySelectorAll('.zoneBtn').forEach(b=>b.classList.remove('on'));curShotIdx=-1;onShotEnter(shotAt(state.clock).i);}}
+function bindViewportInput(){
+  const el=$('gl');const ptrs=new Map();let pinchD=0;
+  el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+    if(ptrs.size===1)enterOrbit();
+    if(ptrs.size===2){const a=[...ptrs.values()];pinchD=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);}});
+  el.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;
+    const prev=ptrs.get(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+    if(ptrs.size===1){const o=state.orbit;o.tth-=(e.clientX-prev[0])*0.005;
+      o.tph=Math.max(0.08,Math.min(Math.PI-0.08,o.tph-(e.clientY-prev[1])*0.005));}
+    else if(ptrs.size===2){const a=[...ptrs.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);
+      if(pinchD>0)state.orbit.tr=Math.max(1.2,Math.min(70,state.orbit.tr*pinchD/d));pinchD=d;}});
+  const up=e=>{ptrs.delete(e.pointerId);pinchD=0;};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  el.addEventListener('wheel',e=>{e.preventDefault();enterOrbit();
+    state.orbit.tr=Math.max(1.2,Math.min(70,state.orbit.tr*(1+e.deltaY*0.0012)));},{passive:false});
+  el.addEventListener('dblclick',()=>{exitOrbit();toast('<b>VIEW RESET</b> — back to the locked camera',true);});}
+
+/* ============================================================ CONTROLS */
+function syncLensUI(){const s=SHOTS[state.shot];const spec=state.source==='roam'?33:s.cam.fov;
+  const v=state.lensOv!==null?state.lensOv:spec;
+  $('lensR').value=v;$('lensV').textContent=v.toFixed(1)+'°';
+  $('lensDot').classList.toggle('mod',state.lensOv!==null);
+  $('dollyR').value=state.dollyOv;$('dollyV').textContent=(state.dollyOv>=0?'+':'')+state.dollyOv.toFixed(1)+'u';
+  $('dollyDot').classList.toggle('mod',state.dollyOv!==0);}
+$('lensR').addEventListener('input',e=>{state.lensOv=parseFloat(e.target.value);
+  const spec=state.source==='roam'?33:SHOTS[state.shot].cam.fov;
+  if(Math.abs(state.lensOv-spec)<0.01)state.lensOv=null;syncLensUI();});
+$('dollyR').addEventListener('input',e=>{state.dollyOv=parseFloat(e.target.value);
+  if(Math.abs(state.dollyOv)<0.05)state.dollyOv=0;syncLensUI();});
+$('orbitChk').addEventListener('change',e=>{if(e.target.checked)enterOrbit();else exitOrbit();});
+$('guidesChk').addEventListener('change',e=>{state.guides=e.target.checked;$('guidesSvg').style.display=state.guides?'block':'none';});
+$('keyR').addEventListener('input',e=>{state.key=e.target.value/100;$('keyV').textContent=e.target.value+'%';
+  if(three){keyLight.intensity=ZONE_ENV[state.zone].key.int*state.key;
+    zoneLights[state.zone].children.forEach(l=>{if(l.userData.base&&!l.userData.glow&&l.isPointLight)l.intensity=l.userData.base*state.key;});
+    R.shadowMap.needsUpdate=true;}});
+$('glowR').addEventListener('input',e=>{state.glow=e.target.value/100;$('glowV').textContent=e.target.value+'%';applyGlow();});
+function applyGlow(){if(!three)return;const g=state.glow;
+  GLOWS.forEach(m=>{m.emissiveIntensity=m.userData.base*g;});
+  haloSprites.forEach(s=>{s.material.opacity=s.userData.baseOp*Math.min(1.5,g);});
+  if(beamMesh)beamMesh.material.opacity=0.07*g;
+  Object.values(zoneLights).forEach(zl=>zl.children.forEach(l=>{if(l.userData.glow)l.intensity=l.userData.base*g;}));}
+$('qualSel').addEventListener('change',e=>{state.quality=e.target.value;applyQuality();});
+$('wireChk').addEventListener('change',e=>{state.wire=e.target.checked;MATS.forEach(m=>{m.wireframe=state.wire;});
+  if(three)R.shadowMap.needsUpdate=true;});
+$('gridChk').addEventListener('change',e=>{state.grid=e.target.checked;Object.values(grids).forEach(g=>g.visible=state.grid);});
+$('labelsChk').addEventListener('change',e=>{state.labels=e.target.checked;LABELS.forEach(l=>l.visible=state.labels);});
+$('dustChk').addEventListener('change',e=>{state.dust=e.target.checked;dustPts.forEach(d=>d.visible=state.dust);
+  steamSprites.forEach(s=>s.s.visible=state.dust);});
+$('diceBtn').addEventListener('click',()=>{if(!three)return;
+  const warm=Math.random()>0.4;const h=warm?(20+Math.random()*30)/360:(195+Math.random()*30)/360;
+  const col=new THREE.Color().setHSL(h,0.4,0.72);state.moodKey=col.getHex();keyLight.color.copy(col);
+  hemi.intensity=ZONE_ENV[state.zone].hemi[2]*(0.8+Math.random()*0.5);
+  const gv=70+Math.round(Math.random()*18)*5;$('glowR').value=gv;$('glowR').dispatchEvent(new Event('input'));
+  R.shadowMap.needsUpdate=true;
+  toast('<b>MOOD SHUFFLED</b> — lighting only · cameras stay locked to spec',true);});
+$('resetBtn').addEventListener('click',()=>{
+  state.lensOv=null;state.dollyOv=0;state.moodKey=null;state.key=1;state.glow=1;
+  $('keyR').value=100;$('keyV').textContent='100%';$('glowR').value=100;$('glowV').textContent='100%';
+  exitOrbit();applyGlow();
+  if(three){keyLight.color.setHex(ZONE_ENV[state.zone].key.col);keyLight.intensity=ZONE_ENV[state.zone].key.int;
+    hemi.intensity=ZONE_ENV[state.zone].hemi[2];R.shadowMap.needsUpdate=true;}
+  const i=state.shot;curShotIdx=-1;selectShot(i,state.playing);syncLensUI();
+  toast('<b>SPEC RESTORED</b> — locked camera, locked lighting');});
+$('playAllBtn').addEventListener('click',()=>{loopChk.checked=false;state.loopShot=false;selectShot(0,true);});
+$('expJson').addEventListener('click',()=>{
+  const data={meta:FILM,ownerFixes:FIXES,shots:SHOTS.map(s=>({id:s.id,title:s.title,tc:s.tc,previewHold:s.dur,zone:s.zone,fix:s.fix,fixText:s.fixText,camera:s.cam,staging:s.staging.map(x=>x.replace(/<[^>]+>/g,'')),assets:s.assets,fitSubjects:s.subjects})),
+    manifest:MANIFEST.map(g=>({group:g.g,items:g.items.map(it=>({glb:it.n+'.glb',desc:it.d,size:it.s,usedIn:it.sh}))}))};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='microwave_board_v2.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast('<b>BOARD JSON EXPORTED</b> — 8 shots + 61 assets, engine-ready');});
+$('expPng').addEventListener('click',()=>{if(!three){toast('3D unavailable — PNG export needs WebGL',true);return;}
+  const pr=R.getPixelRatio();const sz=new THREE.Vector2();R.getSize(sz);
+  R.setPixelRatio(1);R.setSize(1080,1920,false);cam.aspect=9/16;cam.updateProjectionMatrix();
+  const c=effectiveCam();cam.position.set(...c.pos);cam.lookAt(new THREE.Vector3(...c.tgt));
+  cam.fov=vfov(c.fov);cam.updateProjectionMatrix();
+  R.render(scene,cam);
+  const url=R.domElement.toDataURL('image/png');
+  R.setPixelRatio(pr);R.setSize(sz.x,sz.y,false);resize();
+  const a=document.createElement('a');a.href=url;a.download=SHOTS[state.shot].id+'_previz_1080x1920.png';a.click();
+  toast('<b>FRAME EXPORTED</b> — true 1080×1920 PNG of the current camera');});
+document.querySelectorAll('.zoneBtn').forEach(b=>b.addEventListener('click',()=>{if(!three)return;
+  const z=b.dataset.zone;state.source='roam';state.playing=false;$('btnPlay').textContent='▶';
+  setZone(z);const v=vista[z];const o=state.orbit;o.on=true;o.tgt=[...v.tgt];
+  const d=sub(v.pos,v.tgt);o.r=o.tr=Math.hypot(...d);o.ph=o.tph=Math.acos(d[1]/o.r);o.th=o.tth=Math.atan2(d[0],d[2]);
+  $('orbitChk').checked=true;$('tl').classList.add('roam');$('roamTag').style.display='block';
+  $('roamTag').textContent='FREE ROAM · '+z.toUpperCase()+' · x='+FILM.zones[z];
+  document.querySelectorAll('.zoneBtn').forEach(x=>x.classList.toggle('on',x===b));
+  toast('<b>FREE ROAM</b> — drag to orbit, wheel to zoom · press ▶ to return to the reel',true);}));
+function locateAsset(name){const it=MF_FLAT[name];if(!it)return;
+  document.getElementById('previz').scrollIntoView({behavior:'smooth'});
+  if(!three){toast('<b>'+name+'</b> · '+it.s+' — '+it.d,true);return;}
+  const r=REG[name];
+  const firstShot=it.sh.find(sh=>SHOTS.some(x=>x.id===sh));
+  if(r&&r.zone!==state.zone&&firstShot){selectShot(SHOTS.findIndex(x=>x.id===firstShot),false);}
+  else if(!r&&firstShot){selectShot(SHOTS.findIndex(x=>x.id===firstShot),false);}
+  const rr=REG[name];
+  if(rr){FLASH.push({name,t:0});
+    const lbl=LABELS.find(l=>l.parent&&l.material.map&&false);
+    // flash: pulse scale via registry anchor halo
+    const h=halo(0x2EE87E,1.6,0.6);h.position.copy(rr.anchor);
+    if(rr.obj.parent)rr.obj.parent.worldToLocal(h.position);
+    (rr.obj.parent||scene).add(h);
+    FLASH[FLASH.length-1].halo=h;
+    toast('<b>'+name+'.glb</b> · '+it.s+' — located in previz');}
+  else toast('<b>'+name+'.glb</b> · '+it.s+' — '+it.d,true);}
+// transport
+$('btnPlay').addEventListener('click',()=>{if(state.source==='roam'){exitOrbit();state.playing=true;}
+  else state.playing=!state.playing;
+  $('btnPlay').textContent=state.playing?'⏸':'▶';});
+$('btnPrev').addEventListener('click',()=>selectShot(Math.max(0,state.shot-1),state.playing));
+$('btnNext').addEventListener('click',()=>selectShot(Math.min(SHOTS.length-1,state.shot+1),state.playing));
+$('spdSel').addEventListener('change',e=>{state.speed=parseFloat(e.target.value);});
+loopChk.addEventListener('change',e=>{state.loopShot=e.target.checked;});
+const tl=$('tl');let scrubbing=false;
+function scrubTo(e){const r=tl.getBoundingClientRect();const f=Math.max(0,Math.min(0.9999,(e.clientX-r.left)/r.width));
+  state.clock=f*TOTAL;state.source='reel';$('tl').classList.remove('roam');
+  if(state.orbit.on){state.orbit.on=false;$('orbitChk').checked=false;}
+  const sa=shotAt(state.clock);if(sa.i!==curShotIdx)onShotEnter(sa.i);}
+tl.addEventListener('pointerdown',e=>{scrubbing=true;tl.setPointerCapture(e.pointerId);scrubTo(e);});
+tl.addEventListener('pointermove',e=>{if(scrubbing)scrubTo(e);});
+tl.addEventListener('pointerup',()=>{scrubbing=false;});
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'&&e.target.type==='text')return;
+  if(e.code==='Space'){e.preventDefault();$('btnPlay').click();}
+  if(e.code==='ArrowRight')$('btnNext').click();
+  if(e.code==='ArrowLeft')$('btnPrev').click();});
+// scrollspy
+const secs=['previz','board','manifest'].map(id=>document.getElementById(id));
+const navLinks=[...document.querySelectorAll('#nav a')];
+const spy=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){
+  navLinks.forEach(a=>a.classList.toggle('on',a.dataset.sec===en.target.id));}});},{rootMargin:'-30% 0px -60% 0px'});
+secs.forEach(s=>spy.observe(s));
+
+/* ============================================================ MAIN LOOP */
+let last=performance.now(),camUiT=0,fitT=0,radarT=0;
+const camPos=new THREE.Vector3(),camTgt=new THREE.Vector3();
+function frame(now){requestAnimationFrame(frame);
+  let dt=Math.min(0.05,(now-last)/1000);last=now;
+  const t=now/1000;
+  if(state.playing&&state.source==='reel'){
+    state.clock+=dt*state.speed;
+    if(state.loopShot){const sa=shotAt(state.clock);
+      if(sa.i!==state.shot){let acc=0;for(let k=0;k<state.shot;k++)acc+=SHOTS[k].dur;state.clock=acc+0.0001;curShotIdx=-1;onShotEnter(state.shot);}}
+    else if(state.clock>=TOTAL){state.clock=0;curShotIdx=-1;}
+    const sa=shotAt(state.clock);if(sa.i!==curShotIdx)onShotEnter(sa.i);}
+  const sa=shotAt(state.clock);const s=SHOTS[sa.i];const st=sa.t;
+  // timeline UI
+  $('tlHead').style.left=(state.clock/TOTAL*100)+'%';
+  $('timeLbl').innerHTML=fmtT(state.clock)+' <span>/ '+fmtT(TOTAL)+' · F'+String(Math.floor(state.clock*30)).padStart(3,'0')+'</span>';
+  // dynamic poses / events
+  if(three){
+    if(s.id==='S01'){percy.userData.pose.hx=st<0.55?0.3:-0.05;percy.userData.pose.brow=st<0.55?0:0.5;}
+    if(s.id==='S12'&&st>=0.45&&!shotFlags.splat)fireEgg();
+    if(s.id==='S17'&&st>=0.85&&!shotFlags.ding){shotFlags.ding=true;SFX.ding();
+      GLOWS.forEach(m=>{if(m.emissive.getHex()===0xFFA028)m.userData.flash=1;});}
+    applyPose(percy,dt);applyPose(mocker,dt);
+    // horn pulse
+    const pulse=0.85+Math.sin(t*4)*0.15;
+    GLOWS.forEach(m=>{let base=m.userData.base*state.glow;
+      if(m.userData.flash){m.userData.flash=Math.max(0,m.userData.flash-dt*1.4);base+=m.userData.flash*3;}
+      if(m.emissive.getHex()===0xFFA028)base*=pulse;
+      m.emissiveIntensity=base;});
+    if(beamMesh)beamMesh.material.opacity=(s.id==='S01'?0.11:0.06)*state.glow*pulse;
+    hornRings.forEach(r=>{const ph=(t*0.55+r.userData.i/3)%1;
+      r.position.copy(r.userData.dir.clone().multiplyScalar(ph*5.2));
+      r.scale.setScalar(0.4+ph*1.8);r.material.opacity=(1-ph)*0.5*state.glow;});
+    boxRings.forEach(r=>{const ph=(t*0.9+r.userData.i/3)%1;
+      r.scale.setScalar(0.5+ph*1.6);r.material.opacity=(1-ph)*0.7*state.glow;
+      r.rotation.z=t*0.7+r.userData.i;});
+    // radar sweep
+    if(state.zone==='lab'&&t-radarT>0.09){radarT=t;sweepA+=0.09*2.6;
+      const x=radarCtx;x.fillStyle='rgba(4,20,10,0.16)';x.fillRect(0,0,256,256);
+      x.strokeStyle='rgba(46,232,126,0.35)';x.lineWidth=1.5;
+      for(let rr=30;rr<=120;rr+=30){x.beginPath();x.arc(128,128,rr,0,7);x.stroke();}
+      x.strokeStyle='rgba(46,232,126,0.9)';x.lineWidth=3;
+      x.beginPath();x.moveTo(128,128);x.lineTo(128+Math.cos(sweepA)*120,128+Math.sin(sweepA)*120);x.stroke();
+      if(Math.random()<0.3){const ba=sweepA-0.1,br=30+Math.random()*85;
+        x.fillStyle='rgba(185,255,214,0.9)';x.beginPath();x.arc(128+Math.cos(ba)*br,128+Math.sin(ba)*br,3,0,7);x.fill();}
+      radarTex.needsUpdate=true;
+      pingT+=0.09;if(pingT>2.42){pingT=0;if(state.playing)SFX.ping();}}
+    // steam
+    steamSprites.forEach(sp=>{const ph=(t*0.4+sp.ph)%1;
+      sp.s.position.y=sp.base+ph*0.5;sp.s.material.opacity=(state.dust?1:0)*(1-ph)*0.22*Math.min(1.5,state.glow);
+      sp.s.scale.setScalar(0.5+ph*0.6);});
+    // dust drift
+    dustPts.forEach((d,i)=>{d.rotation.y=t*0.01*(i+1);d.position.y=Math.sin(t*0.2+i)*0.1;});
+    // molecule
+    if(state.zone==='molecule'){molGroup.rotation.y=t*0.4;molGroup.rotation.z=Math.sin(t*0.5)*0.1;
+      molRings.forEach(r=>{const ph=(t*0.35+r.userData.i/3)%1;r.scale.setScalar(0.6+ph*1.6);
+        r.material.opacity=(1-ph)*0.4*state.glow;r.rotation.x=t*0.3;r.rotation.y=t*0.2;});}
+    // popcorn sim
+    if(s.id==='S09'&&state.source==='reel'){popcorn.visible=true;const d=popcorn.userData.dummy;
+      popcorn.userData.p.forEach((p,i)=>{
+        if(!p.live&&st*s.dur>=p.spawn){p.live=true;p.x=-3.6+(Math.random()-0.5)*0.3;p.y=3.75;p.z=-6.9+(Math.random()-0.5)*0.3;
+          p.vx=(Math.random()-0.5)*1.8;p.vy=2.4+Math.random()*1.4;p.vz=(Math.random()-0.5)*1.4+0.3;
+          if(shotFlags.popN<10){shotFlags.popN++;SFX.pop();}}
+        if(p.live){p.vy-=4.5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;p.rot+=p.rs*dt;
+          const onCab=p.x>-7.3&&p.x<-2.7&&p.z>-8&&p.z<-6.6;const fl=onCab?3.5:0.09;
+          if(p.y<fl){p.y=fl;p.vy*=-0.35;p.vx*=0.7;p.vz*=0.7;if(Math.abs(p.vy)<0.3)p.vy=0;}}
+        d.position.set(p.x,p.live?p.y:-10,p.z);d.rotation.set(p.rot,p.rot*0.7,0);d.scale.setScalar(p.sc);
+        d.updateMatrix();popcorn.setMatrixAt(i,d.matrix);});
+      popcorn.instanceMatrix.needsUpdate=true;}
+    else if(popcorn.visible&&s.id!=='S09'){popcorn.visible=false;}
+    // yolk sim
+    if(yolk.visible){const d=yolk.userData.dummy;let any=false;
+      yolk.userData.p.forEach((p,i)=>{if(p.live){any=true;p.vy-=5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;
+        if(p.y<0.06){p.y=0.06;p.vy=0;p.vx*=0.6;p.vz*=0.6;}}
+        d.position.set(p.x,p.y,p.z);d.scale.setScalar(p.live?1:0.001);d.updateMatrix();yolk.setMatrixAt(i,d.matrix);});
+      yolk.instanceMatrix.needsUpdate=true;
+      const d2=shards.userData.dummy;
+      shards.userData.p.forEach((p,i)=>{if(p.live){p.vy-=5*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;p.rot+=6*dt;
+        if(p.y<0.06){p.y=0.06;p.vy=0;}}
+        d2.position.set(p.x,p.y,p.z);d2.rotation.set(p.rot,p.rot,0);d2.scale.setScalar(p.live?1:0.001);d2.updateMatrix();shards.setMatrixAt(i,d2.matrix);});
+      shards.instanceMatrix.needsUpdate=true;}
+    // flashes
+    for(let i=FLASH.length-1;i>=0;i--){const f=FLASH[i];f.t+=dt;
+      if(f.halo){f.halo.material.opacity=Math.max(0,0.6*(1-f.t/1.8))*(0.6+Math.sin(t*10)*0.4);
+        f.halo.scale.setScalar(1.6+Math.sin(t*6)*0.2);}
+      if(f.t>1.8){if(f.halo&&f.halo.parent)f.halo.parent.remove(f.halo);FLASH.splice(i,1);}}
+    // camera
+    const o=state.orbit;
+    if(o.on){const k=Math.min(1,dt*8);o.th+=(o.tth-o.th)*k;o.ph+=(o.tph-o.ph)*k;o.r+=(o.tr-o.r)*k;}
+    const c=effectiveCam();
+    camPos.set(c.pos[0],c.pos[1],c.pos[2]);camTgt.set(c.tgt[0],c.tgt[1],c.tgt[2]);
+    cam.position.copy(camPos);cam.lookAt(camTgt);
+    const vf=vfov(c.fov);if(Math.abs(cam.fov-vf)>0.01){cam.fov=vf;cam.updateProjectionMatrix();}
+    R.render(scene,cam);
+    // cam readout + fit
+    camUiT+=dt;if(camUiT>0.12){camUiT=0;
+      $('ovCam').innerHTML='CAM <b>'+c.pos.map(n=>n.toFixed(2)).join(' ')+'</b> · TGT <b>'+c.tgt.map(n=>n.toFixed(2)).join(' ')+'</b> · FOV <b>'+c.fov.toFixed(1)+'h/'+vf.toFixed(1)+'v</b>';
+      fitT++;if(fitT%2===0){const pass=fitCheck(s,c.pos,c.tgt,c.fov,'end');
+        const el=$('ovFit');el.textContent=pass?'END-KEY FIT ✓':'CROP ⚠ ADJUST';el.classList.toggle('warn',!pass);}}
+  }
+  // S20 counter
+  if(s.id==='S20'&&state.source==='reel'){$('ovCounter').style.display='block';
+    const e=EASE.easeOutCubic(st);const val=Math.round(Math.exp(lerp(Math.log(1945),Math.log(2.1e8),e)));
+    $('cntBig').textContent=st>0.96?'200,000,000+':val.toLocaleString('en-US');}
+  else $('ovCounter').style.display='none';
+}
+// boot
+onShotEnter(0);syncLensUI();
+if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){state.playing=false;$('btnPlay').textContent='▶';}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
