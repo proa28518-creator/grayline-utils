@@ -1,8 +1,8 @@
 // scenes/motion.js — Pure-in-t Master Motion Truth for Story 6 «الشوكولاتة اللي ساحت»
 // ONE table of times drives engineer & mocker positions/expressions, popcorn/kettle/box states,
-// and all 21 shot cuts aligned strictly to owner's words_owner.txt (56.20 s / 1,686 frames @ 30 fps).
+// and all 21 shot cuts aligned strictly to owner's words_owner.txt (56.20 s / 3,372 frames @ 60 fps).
 
-export const FPS = 30;
+export const FPS = 60;
 export const DURATION = 56.20;
 
 // 4 Worlds spaced 400 units apart along X (zero cross-visibility)
