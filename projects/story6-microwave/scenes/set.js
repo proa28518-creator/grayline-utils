@@ -1286,7 +1286,7 @@ kgTextTwo.visible = false;
 // R11-6 tag — F7 pivots (show-local). Card hangs 0.25 PROUD of the pivot so the
 // pendulum overshoot (+0.22 rad -> -0.185 z) never enters the oven front face.
 const TAG_PIVOT_FALLBACK = [-0.5, 3.60, 1.00];
-const TAG_PIVOT_GLB      = [-1.16, 3.80, 0.69];
+const TAG_PIVOT_GLB      = [-0.61, 3.80, 0.69];
 const tagArm = r11Box(0.05, 0.05, 0.25, K.surface('show', '#5a5048', { gloss: 0.2, spec: 0.1 }),
 TAG_PIVOT_FALLBACK[0], TAG_PIVOT_FALLBACK[1], TAG_PIVOT_FALLBACK[2] + 0.125);
 showGrp.add(tagArm);
