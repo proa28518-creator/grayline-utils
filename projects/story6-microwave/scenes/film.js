@@ -248,15 +248,19 @@ roll: [5.0, 5.8],
 },
 },
 
-// S07 (15.41–17.34): D3 — camera up (2.85/2.75), target down (2.05/2.08), fov 27/26.
-// table1 top y 1.30 (x -8..-2, z -5..-3) drops below the chin line so shoulders +
-// coat read; engineerState S07 is x -5, z -1.55, stand, deadpan (unchanged).
+// S07 (15.41–17.34): R12 fix 3 — camera below head centre (y 1.50/1.45), target
+// raised to 2.30/2.32, fov 29/28. table1 top (y 1.30, x -8..-2, z -5..-3) is now
+// seen edge-on as a ~4px band at y_px 498/553 instead of a mass crossing 55-62px
+// under the chin: 98-128px of coat reads against the back wall below the chin, so
+// the "head sitting on the bench" read is gone. Deadpan face 207->260px of 640,
+// head centre 47%/46% down frame — same close-up class as the applied entry.
+// engineerState S07 unchanged (x -5, z -1.55, stand, deadpan).
 {
 t0: T_SILENT, t1: T_DAY2,
 camera: {
 move: 'push',
-from: { pos: [-5.65, 2.85, 5.10], target: [-5.00, 2.05, -1.55], fov: 27 },
-to:   { pos: [-5.45, 2.75, 3.90], target: [-5.00, 2.08, -1.55], fov: 26 },
+from: { pos: [-5.65, 1.50, 5.10], target: [-5.00, 2.30, -1.55], fov: 29 },
+to:   { pos: [-5.45, 1.45, 3.90], target: [-5.00, 2.32, -1.55], fov: 28 },
 roll: [0.0, 0.5],
 },
 },
@@ -470,18 +474,31 @@ keys: [
 },
 },
 
-// S19 (46.14–50.34): C1 f7 verbatim EXCEPT the 47.10 dial/plaque reframe (Ruling 1) and the 48.55 on-axis price-tag reframe (Ruling 2).
-// Key gaps 0.96 / 1.45 / 1.35 / 0.44 s.
+// S19 (46.14–50.34): R12 MERGED SET (desk arbitration A119) — Qwen A116/f1 keys
+// T_TALL..48.55 + GPT A117 tag-hold keys 49.05 / 49.70 / T_TODAY (roll 0.33).
+// Height comparison held 46.14–47.04 (man + oven, both crowns level within 4px),
+// dial/plaque framing held 47.16–47.90 (slam + damped settle; needle end -0.785
+// per GPT A118 lands mid red-arc, settle ~47.84 inside the hold), tag framing
+// held 48.55–T_TODAY (full "$5,000" through both readable sub-windows and the
+// full spoken line, which runs to 49.89). The applied 47.10 dial key is
+// RE-TIMED to 47.16 only — its pos/target/fov/roll are byte-identical, and
+// 47.16->47.90 is a flat hold, so the locked 47.20 "340 KG" read is the same
+// framing. Qwen's 49.50 key and the old 49.90 / T_TODAY depart keys are REPLACED
+// by the GPT hold keys. Sources: orch/A119_qwen_r12_delivery.md,
+// orch/A117_gpt_tag_fix_adopted.md, orch/A118_gpt_needle_fix_adopted.md.
 {
 t0: T_TALL, t1: T_TODAY,
 camera: {
 move: 'path',
 keys: [
-{ t: T_TALL,  pos: [SHOW_X - 0.2, 2.2, 9.5],  target: [SHOW_X - 0.4, 1.5, 0],    fov: 44, roll: 0.0 },
-{ t: 47.10,   pos: [SHOW_X + 3.67, 2.20, 9.10], target: [SHOW_X + 3.67, 2.20, 0.80], fov: 40, roll: 0.14 },
+{ t: T_TALL,  pos: [SHOW_X - 2.70, 2.30, 9.60], target: [SHOW_X - 2.70, 2.30, 0.40], fov: 44, roll: 0.0 },
+{ t: 47.04,   pos: [SHOW_X - 2.70, 2.30, 9.30], target: [SHOW_X - 2.70, 2.30, 0.40], fov: 44, roll: 0.0 },
+{ t: 47.16,   pos: [SHOW_X + 3.67, 2.20, 9.10], target: [SHOW_X + 3.67, 2.20, 0.80], fov: 40, roll: 0.14 },
+{ t: 47.90,   pos: [SHOW_X + 3.67, 2.20, 9.10], target: [SHOW_X + 3.67, 2.20, 0.80], fov: 40, roll: 0.14 },
 { t: 48.55,   pos: [SHOW_X - 1.16, 2.95, 5.59], target: [SHOW_X - 1.16, 2.95, 0.94], fov: 40, roll: 0.33 },
-{ t: 49.90,   pos: [SHOW_X + 0.6, 2.0, 7.2],  target: [SHOW_X + 0.5, 1.6, 0.3],  fov: 42, roll: 0.46 },
-{ t: T_TODAY, pos: [SHOW_X + 0.55, 2.0, 7.1], target: [SHOW_X + 0.5, 1.6, 0.3],  fov: 42, roll: 0.5 },
+{ t: 49.05,   pos: [SHOW_X - 1.16, 2.95, 5.59], target: [SHOW_X - 1.16, 2.95, 0.94], fov: 40, roll: 0.33 },
+{ t: 49.70,   pos: [SHOW_X - 1.16, 2.95, 5.59], target: [SHOW_X - 1.16, 2.95, 0.94], fov: 40, roll: 0.33 },
+{ t: T_TODAY, pos: [SHOW_X - 1.16, 2.95, 5.59], target: [SHOW_X - 1.16, 2.95, 0.94], fov: 40, roll: 0.33 },
 ],
 },
 },

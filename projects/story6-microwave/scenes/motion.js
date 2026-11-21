@@ -374,7 +374,7 @@ energy: e, heat: smooth(36.9, 37.55, t) };
 }
 // ---- R11-5 SCALE (rest -> SLAM at T_340 -> damped settle) ----
 export function scaleState(t) {
-const rest = -2.05, end = 1.62, tau = t - T_340;
+const rest = -2.05, end = -0.785, tau = t - T_340;
 let a = rest;
 if (tau >= 0) {
 a = tau < 0.12 ? lerp(rest, end, tau / 0.12)
