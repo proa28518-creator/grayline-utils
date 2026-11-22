@@ -6,11 +6,20 @@ const { createHeartServer } = require('../server/server.js');
 
 const repo = path.resolve(__dirname, '..');
 function resolveProject(value) {
-  const p = path.resolve(repo, value || 'projects/story6-microwave');
-  const projects = path.join(repo, 'projects') + path.sep;
-  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
-  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
-  return p;
+  const input = value || 'projects/story6-microwave';
+  const projectsDir = path.join(repo, 'projects');
+  const projectsPrefix = projectsDir + path.sep;
+  const isDirectory = p => { try { return fs.statSync(p).isDirectory(); } catch (_) { return false; } };
+  if (path.isAbsolute(input)) {
+    const absolute = path.resolve(input);
+    if (isDirectory(absolute)) return absolute;
+    throw new Error(`Project directory not found: ${absolute}`);
+  }
+  const named = path.resolve(projectsDir, input);
+  if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;
+  const relative = path.resolve(repo, input);
+  if ((relative === projectsDir || relative.startsWith(projectsPrefix)) && isDirectory(relative)) return relative;
+  throw new Error(`Project directory not found: ${named}`);
 }
 let server;
 async function startServer() {

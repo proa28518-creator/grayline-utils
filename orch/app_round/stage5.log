@@ -1,0 +1,952 @@
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/heart-studio
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: none
+reasoning summaries: none
+session id: 01a2024e-2b49-71a3-9e6c-451f75fe3e4e
+--------
+user
+You are the Codex build seat for Heart Studio (repo: ~/workspace/heart-studio, branch ui/unified-interface). Read AGENTS.md first. Two desk-found defects from live verification of the desktop app. Fix ONLY server/server.js and app/main.js. Verify with `node --check` on both. Do not commit (sandbox .git is read-only); the driver verifies live and commits.
+
+F8 (HIGH — the desktop app's core actions all break): When server.js runs embedded in the Electron main process, `process.execPath` is the Electron binary, not Node. Every site that spawns `process.execPath` to run server/heart-cjs-runner.cjs therefore launches Electron as an app and dies with `Running as root without --no-sandbox is not supported` (observed live from POST /api/projects/slice inside the app). Affected sites: POST /api/projects/new (safeRun), POST /api/projects/slice (safeRun), POST /api/action (runCommand for preview/timing/sound/mix), the RUN legs' timing/sound/mix children (runCommand), and the pass runner's program checks (safeRun still). Fix:
+- Add a helper in server.js: `function nodeSpawnEnv(extra)` returning `{...process.env, ...(extra||{}), ELECTRON_RUN_AS_NODE: '1'}` and a wrapper `function runNode(args, opts)` that behaves like safeRun but spawns process.execPath with that env. (ELECTRON_RUN_AS_NODE=1 makes the Electron binary execute as plain Node; under a plain-Node server the variable is harmless.)
+- Switch ONLY the heart-cjs-runner.cjs spawn sites to the Node-with-env form. For runCommand-based sites, extend runCommand with an optional env parameter merged into the child env, and pass {ELECTRON_RUN_AS_NODE:'1'} at the runner call sites (action handler, RUN timing/sound/mix children).
+- Do NOT apply this env to other safeRun users (ffprobe, gh, the Codex binary, python3 helpers) — they must keep the plain environment.
+
+F2b (MED): app/main.js resolveProject mishandles a bare project name: `heart app story6-microwave` (bin/heart passes HEART_PROJECT=<arg>) resolves the name against the repo root and throws. Fix resolveProject: if the value is an absolute path, use it (must exist); else if projects/<value> exists as a directory, use that; else if the value itself resolves to an existing directory relative to the repo, use it; else throw the existing clear error. The result must always be inside projects/ unless an absolute path to an existing directory was given.
+
+codex
+I’ll inspect the repo instructions and the two requested files, then make only the specified changes and run `node --check` on both.
+exec
+/bin/bash -lc 'cat AGENTS.md && rg -n "heart-cjs-runner|function safeRun|function runCommand|resolveProject|HEART_PROJECT" server/server.js app/main.js' in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+# AGENTS.md — Heart Studio standing direction
+
+Binding rules for every agent session (Codex seat included) working in this repo.
+The full spec lives in `orch/UI_BRIEF.md`; this file is its concise, always-on form.
+Where this file and a task brief conflict, the owner's latest word in `orch/UI_BRIEF.md` wins.
+
+## The acceptance bar (owner's direct word)
+
+- **«لازم كل حاجه تشتغل زي الاصلي» — everything in the interface must actually WORK
+  like the original.** No decorative controls. A control either executes the real
+  program action or is visibly marked **"not wired yet"** in the UI and named as
+  unwired in the delivery report. Never present unwired as working.
+- **Zero known errors is the bar.** Every delivery passes independent Opus + GLM
+  hunts; findings loop back to the author; nothing ships with a known defect.
+
+## Control law
+
+- Layla controls the program; **the interface is the ONLY door** to it.
+- Models are called **only from inside the program, via API**, each with a bounded
+  task, a defined tool surface, and the program's measured checks waiting for the
+  output: program → API → model (bounded) → measured checks → next step.
+- **No free-roaming external model session may be a step of a run.** A leg that
+  cannot be expressed as a bounded in-program call is marked not-yet-wired /
+  not-yet-dispatchable — never improvised around.
+- Seats run off signed-in subscriptions, driven only from inside: GPT via the
+  Codex seat, Opus via LLMsRelay, GLM via APInex #2, Gemini via the owner's
+  Google sign-in (owner does all sign-ins himself). Gemini work is Task mode only.
+
+## Closed system
+
+- Everything happens inside the program on this machine. Heavy work leaves ONLY
+  through the program's own dispatch layer: stills/passes → GitHub Actions API;
+  film render → Colab on-demand queue worker (never a standing session);
+  assembly/finishing → GitHub Actions workflow. Desk VM = controller + QC eyes.
+- A run leg that silently needs a manual action outside the program is a failed build.
+
+## Production rules
+
+- **Frame rate is 24/30 fps only.** 60 fps was cancelled by the owner (2026-11-22);
+  never offer or emit it as a going-forward option.
+- **Voice is law:** the owner's narration file is used exactly as-is — no trimming,
+  no cleaning; the film is exactly as long as the file. The program transcribes/
+  aligns it inside the run for word timings.
+- **Stills before renders. Gates before export.** The five passes run in strict
+  order — Build → Camera angles → Environment overhaul → Post-processing →
+  Shading — each a checkpoint: builder → programmatic checks → critic → fixes →
+  FRESH second critic → hand-over.
+- **Gates are programmatic measured checks** returning a named failure + a fix
+  instruction. Model critics are a second layer; their verdicts never open or
+  close a gate. A station shows "done" only when its artifact predicate passes
+  on disk.
+- Settings edited in the interface are persisted to `project.json` AND actually
+  sent to the renderer/dispatch (`?settings=` / workflow inputs) and recorded
+  with the run.
+
+## Authorship and verification
+
+- **Code authorship is by the Codex seat** (signed in as the owner's ChatGPT
+  account). Local agents drive it, apply its code, run and QC — they do not
+  author program code themselves.
+- Cross-verify every delivery with independent Opus + GLM hunts before reporting.
+
+## Untouched ground
+
+- `vendor/renderer-original/` (pristine backup, checksum-verified) and
+  `~/workspace/creatorize-teardown/` are **never modified**. Russell's files are
+  study material: our interface is **our own code** — never modify or ship his.
+- Do not rewrite `engine/` or `fleet/` render logic; the interface reads state
+  and invokes actions through `bin/heart`, repo scripts, and the dispatch layer.
+- Commit only your own files, on the branch named by the task brief. The working
+  tree may carry unrelated changes — do not stage, revert, or touch them.
+
+## Form
+
+- The interface is a **desktop app with its own window** (Electron shell on
+  Linux), screens/flows mirroring the original's structure with its English
+  labels (owner: English is fine); only the skin is ours.
+- **Production over looks** (owner's word): weight machinery — executors, checks,
+  dispatch, assembly — over visual polish in every round.
+app/main.js:8:function resolveProject(value) {
+app/main.js:17:  const projectDir = resolveProject(process.env.HEART_PROJECT);
+server/server.js:74:  function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
+server/server.js:106:    try {const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
+server/server.js:195:  function runCommand(id, dir, args, cwd = repoDir) {
+server/server.js:199:    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
+server/server.js:288:        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+server/server.js:301:        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+server/server.js:320:          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+server/server.js:385:          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
+server/server.js:390:        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+server/server.js:391:        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
+server/server.js:425:            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+server/server.js:434:            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir]);j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+
+exec
+/bin/bash -lc "sed -n '1,32p' app/main.js; sed -n '60,90p' server/server.js; sed -n '185,215p' server/server.js; sed -n '275,310p' server/server.js; sed -n '375,442p' server/server.js" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+'use strict';
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const { createHeartServer } = require('../server/server.js');
+
+const repo = path.resolve(__dirname, '..');
+function resolveProject(value) {
+  const p = path.resolve(repo, value || 'projects/story6-microwave');
+  const projects = path.join(repo, 'projects') + path.sep;
+  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
+  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
+  return p;
+}
+let server;
+async function startServer() {
+  const projectDir = resolveProject(process.env.HEART_PROJECT);
+  const uiDir = path.join(repo, 'ui');
+  const requested = Number(process.env.HEART_PORT || 8903);
+  try { return await createHeartServer({ projectDir, uiDir, port: requested }); }
+  catch (e) { if (e.code !== 'EADDRINUSE') throw e; return createHeartServer({ projectDir, uiDir, port: 0 }); }
+}
+ipcMain.handle('heart:pick-file', async (_event, kind) => {
+  const filters = kind === 'audio' ? [{ name: 'Audio', extensions: ['wav','mp3','m4a','ogg','flac'] }] : kind === 'text' ? [{ name: 'Text', extensions: ['txt','md','json','srt'] }] : [{ name: 'All files', extensions: ['*'] }];
+  const result = await dialog.showOpenDialog({ properties: ['openFile'], filters });
+  return result.canceled || !result.filePaths.length ? null : result.filePaths[0];
+});
+app.whenReady().then(async () => {
+  const running = await startServer(); server = running.server;
+  const win = new BrowserWindow({ width: 1360, height: 900, backgroundColor: '#0d1117', webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'preload.js') } });
+  win.loadURL(`http://127.0.0.1:${running.port}/app/`);
+  win.on('closed', () => { if (server) server.close(); app.quit(); });
+    chain = chain.then(async () => {
+      const tmp = stateFile + '.tmp.' + process.pid;
+      await fs.promises.writeFile(tmp, snapshot);
+      await fs.promises.rename(tmp, stateFile);
+    }).catch(() => {});
+    return chain;
+  }
+  function log(actor, text) { state.log.push({ t: Date.now(), actor, text }); }
+
+  const jobs = new Map();
+  let connectionCache = null;
+  const connectionNames = ['GPT','Gemini','Opus','GLM'];
+  const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+  const timed = () => new Date().toISOString();
+  function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
+  function runCaptured(bin,args,options={},timeout=0,onData=()=>{},onSpawn=()=>{}) { return new Promise(resolve=>{ let out='',err='',timedOut=false,settled=false;const p=spawn(bin,args,{...options,stdio:['pipe','pipe','pipe']});onSpawn(p);const finish=r=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);resolve({...r,out,err,timedOut});};const timer=timeout?setTimeout(()=>{timedOut=true;p.kill('SIGTERM');setTimeout(()=>{if(!settled)p.kill('SIGKILL');},3000).unref();},timeout):null;p.stdout.on('data',x=>{out+=x;onData('out',x)});p.stderr.on('data',x=>{err+=x;onData('err',x)});p.on('error',e=>{err+=e.message;finish({code:1})});p.on('close',code=>finish({code:code??1})); }); }
+  async function probeConnections() {
+    const results=[];
+    const home=process.env.HOME||'';
+    // Codex CLI output is inspected without returning auth material.
+    let codex=process.env.CODEX_BIN; if(!codex||!fs.existsSync(codex)) codex=['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);
+    let gpt={name:'GPT',probed:true,checkedAt:timed(),status:'dead',reason:'codex binary not found',authMetadata:null};
+    try { if(codex) { const r=await safeRun(codex,['login','status'],{timeout:15000}); const signed=r.code===0&&/logged in|chatgpt|openai account/i.test(r.out+'\n'+r.err);gpt.status=signed?'connected':'dead';gpt.reason=signed?undefined:(r.code!==0?'Codex login status command failed':'Codex output did not indicate a ChatGPT login'); }
+      const a=JSON.parse(fs.readFileSync(path.join(home,'.codex/auth.json'),'utf8'));gpt.authMetadata={auth_mode:a.auth_mode||null,last_refresh:a.last_refresh||null,has_tokens:Object.prototype.hasOwnProperty.call(a,'tokens')};
+    } catch(e){gpt.metadataError='auth metadata unavailable';}
+    results.push(gpt);
+    let gem={name:'Gemini',probed:true,checkedAt:timed(),status:'unknown'};
+    try {
+      const db=path.join(home,'.config/gemini-desktop/Cookies');if(!fs.existsSync(db))throw new Error('Gemini Cookies database not found');
+      const os=require('os'),{spawnSync}=require('child_process');
+      const query="SELECT name FROM cookies WHERE host_key LIKE '%google.%' OR host_key LIKE '%.google.com';";
+  function donePredicate(key, kind) {
+    if (kind === 'sub') return inventory(activeDir).boardCount > 0;
+    const gates = artifactChecks(activeDir).checks;
+    const map = { write: 'script', add: 'voice', run: 'timing', build: 'board', mix: 'mix', export: 'master' };
+    const gateId = map[key];
+    const gate = gates.find(x => x.id === gateId);
+    if (!gate || !gate.pass) return false;
+    if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+    return true;
+  }
+  function runCommand(id, dir, args, cwd = repoDir) {
+    if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+    const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+    jobs.set(id, job);
+    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
+    job.child = child;
+    const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+    child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+    child.on('error', e => { add('err', e.message); job.status = 'failed'; job.ended = true; job.exitCode = 1; });
+      child.on('close', code => {
+      job.exitCode = code;
+      if (code !== 0) job.status = 'failed';
+      else if (job.outputArtifact) {
+        try { const stat=fs.statSync(job.outputArtifact);let ok=stat.isFile()&&stat.size>0;const fresh=stat.mtimeMs>=job.startedAt-2000;if(!fresh){ok=false;job.verification='artifact freshness failed: mtime predates job start';}if(['timing','mix'].includes(job.action)&&ok){const report=JSON.parse(fs.readFileSync(job.outputArtifact,'utf8'));ok=report.ok===true;job.verification=ok?`${job.action} report ok`:`${job.action} report failed: ${(report.failures||[]).map(x=>x.name).join(', ')||'ok was not true'}`;} else if(fresh)job.verification=ok?'artifact exists and is non-empty':'artifact predicate failed'; job.status = ok ? 'done' : 'failed'; }
+        catch (_) { job.status = 'failed'; job.verification = 'artifact predicate failed'; }
+      } else job.status = 'done';
+      job.ended = true; job.finishedAt = Date.now();
+    });
+    return job;
+  }
+
+
+  const server = http.createServer(async (req, res) => {
+    const u = new URL(req.url, 'http://x');
+    const pn = u.pathname;
+    try {
+      if (pn === '/api/projects' && req.method === 'GET') {
+        const names = fs.readdirSync(projectsDir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => inventory(path.join(projectsDir, e.name)));
+        return sendJson(res, 200, names);
+      }
+      if (pn === '/api/projects/new' && req.method === 'POST') {
+        const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+        const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+        if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+        fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+        fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+        const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+        const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
+        git(['add','-A'],dest);const pc=git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','snapshot: brief + voice attached'],dest);if(pc.status!==0)return sendJson(res,500,{error:'project snapshot failed: '+pc.stderr});
+        fs.renameSync(path.join(dest,'.git'),path.join(dest,'.heart-git'));
+        let pushed=false,pushError;const add=git(['add','projects/'+b.name]);const commit=add.status===0?git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m',`project: ${b.name} created via interface`]):add;
+        if(commit.status!==0){pushError=(commit.stderr||commit.stdout||'repo commit failed').trim();}else{const branch=git(['branch','--show-current']);const push=branch.status===0?git(['push','origin',branch.stdout.trim()]):branch; pushed=push.status===0;if(!pushed)pushError=(push.stderr||push.stdout||'push failed').trim();}
+        return sendJson(res,200,{ok:true,project:inventory(dest),pushed,historyMode:'heart-git',...(pushError?{pushError}: {})});
+      }
+      if (pn === '/api/projects/slice' && req.method === 'POST') {
+        const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+        const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+      }
+      if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+      if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>({...p,...passModule.getState(activeDir,p.id)})));
+      if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
+      if(pn==='/api/passes/run'&&req.method==='POST'){
+        const activeRun=Array.from(jobs.values()).find(job=>job.kind==='run'&&!job.ended&&job.projectDir===activeDir);if(activeRun)return sendJson(res,409,{error:`توجد عملية تشغيل جارية: ${activeRun.id}`});
+        const b=await readBody(req),def=passModule.passes.find(x=>x.id===b.pass);if(!def)return sendJson(res,400,{error:'unknown pass'});
+        if(!j.child)return sendJson(res,409,{error:'لا توجد عملية تعمل'});
+        j.status = 'stopping'; j.child.kill('SIGTERM'); setTimeout(() => { if (!j.ended) j.child.kill('SIGKILL'); }, 3000).unref();
+        return sendJson(res, 200, { ok: true });
+      }
+      if (pn === '/api/action' && req.method === 'POST') {
+        const b = await readBody(req), id = 'job-' + Date.now();
+        if (b.action === 'preview') {
+          const out = path.join(activeDir, 'out', 'board', 'ui-preview-' + Date.now() + '.png');
+          fs.mkdirSync(path.dirname(out), { recursive: true });
+          const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
+          j.outputArtifact = out;
+          j.action='preview'; const effective=inventory(activeDir).settings;
+          return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
+        }
+        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
+        return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+      }
+      if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+        const r=dispatchLayer.gh(['run','list','--limit','50','--json','databaseId,workflowName,status,conclusion,createdAt,displayTitle']);if(r.status!==0)return sendJson(res,502,{error:(r.stderr||'gh run list failed').slice(0,500)});
+        const rows=JSON.parse(r.stdout||'[]'),projectName=u.searchParams.get('project');const selected=[];
+        for(const row of rows){if(!/Fleet Render Chunk|fleet-render/i.test(row.workflowName||''))continue;if(projectName){const ar=dispatchLayer.gh(['api',`repos/${'proa28518-creator/grayline-utils'}/actions/runs/${row.databaseId}/artifacts`]);if(ar.status!==0)continue;const artifacts=JSON.parse(ar.stdout||'{}').artifacts||[];if(!artifacts.some(a=>a.name.startsWith('fleet-chunk-'+projectName+'-')))continue;}selected.push(row);}
+        return sendJson(res,200,selected);
+      }
+      if(pn==='/api/colab-queue'&&req.method==='GET'){
+        const file=path.join(activeDir,'out','colab_queue.json');try{return sendJson(res,200,{entries:JSON.parse(fs.readFileSync(file,'utf8'))});}catch(e){if(e.code==='ENOENT')return sendJson(res,200,{entries:[]});return sendJson(res,200,{entries:[],error:'تعذر قراءة colab_queue.json: '+e.message});}
+      }
+      if(pn==='/api/dispatch/stills'&&req.method==='POST'){
+        const b=await readBody(req),dir=b.project?safeProject(b.project):activeDir;if(!dir)return sendJson(res,400,{error:'project غير صالح أو غير موجود'});const settings=b.settings||inventory(dir).settings;if(![24,30].includes(Number(settings.fps)))return sendJson(res,400,{error:'fps يجب أن يكون 24 أو 30'});const job={id:'dispatch-'+Date.now(),projectDir:dir,status:'queued',startedAt:Date.now(),ended:false,log:[],runSettings:{settings,spec:b.spec||'render:0:30'}};jobs.set(job.id,job);(async()=>{try{job.status='dispatched';const runId=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(dir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});await dispatchLayer.monitor(job,{runId,projectDir:dir,kind:'stills',settingsSent:settings,repoDir});}catch(e){job.status='failed';job.ended=true;job.finishedAt=Date.now();job.log.push({t:Date.now(),stream:'err',text:e.message});}})();return sendJson(res,202,{id:job.id,status:job.status});
+      }
+      if(pn==='/api/dispatch/assembly'&&req.method==='POST'){
+        const b=await readBody(req);if(!b.framesRunId&&!b.framesArtifact)return sendJson(res,400,{error:'مطلوب framesRunId أو framesArtifact كمصدر إطارات'});const dir=b.project?safeProject(b.project):activeDir;if(!dir)return sendJson(res,400,{error:'project غير صالح أو غير موجود'});if(![24,30].includes(Number(b.fps)))return sendJson(res,400,{error:'fps يجب أن يكون 24 أو 30'});const job={id:'assembly-'+Date.now(),projectDir:dir,status:'queued',startedAt:Date.now(),ended:false,log:[]};jobs.set(job.id,job);(async()=>{try{job.status='dispatched';const inputs={project:path.basename(dir),frames_artifact:b.framesArtifact||'',frames_run_id:b.framesRunId||'',fps:String(b.fps),mix_rel:b.mixRel||'',mode:'assemble'};const runId=await dispatchLayer.dispatchAsync('fleet-assembly.yml',inputs);await dispatchLayer.monitor(job,{runId,projectDir:dir,kind:'assembly',repoDir});}catch(e){job.status='failed';job.ended=true;job.finishedAt=Date.now();job.log.push({t:Date.now(),stream:'err',text:e.message});}})();return sendJson(res,202,{id:job.id,status:job.status});
+      }
+      if (pn === '/api/run' && req.method === 'POST') {
+        const activePass=Array.from(jobs.values()).find(job=>job.kind==='pass'&&!job.ended&&job.projectDir===activeDir);if(activePass)return sendJson(res,409,{error:`توجد مرحلة جارية: ${activePass.id}`});
+        const activeRun=Array.from(jobs.values()).find(job=>job.kind==='run'&&!job.ended&&job.projectDir===activeDir);
+        if(activeRun)return sendJson(res,409,{error:`توجد عملية تشغيل جارية: ${activeRun.id}`});
+        const b = await readBody(req), id = 'run-' + Date.now();
+        const j = { id, kind: 'run', projectDir: activeDir, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'لا شيء' };
+        jobs.set(id, j);
+        j.runSettings={mode:b.mode==='faster'?'faster':'quality',model:b.model||'free/glm-5.3-flashx',effort:b.effort||'standard',settings:inventory(activeDir).settings,legs:[]};
+        j.steerLogged=0;const leg=(id,state,detail)=>{while(j.steerLogged<(j.steering||[]).length){const s=j.steering[j.steerLogged++];j.log.push({t:Date.now(),stream:'steer',text:'steering received: '+s.text});}const x={id,state,detail};j.runSettings.legs.push(x);j.log.push({t:Date.now(),stream:state==='failed'?'fail':state==='blocked'?'handoff':'pass',text:`${id}: ${state} — ${detail}`});return x;};
+        const exists=p=>fs.existsSync(path.join(activeDir,p));
+        (async()=>{
+          const script=inventory(activeDir).script,voice=inventory(activeDir).voice;
+          if(!script){leg('script','blocked','ملف النص غير موجود');j.status='blocked';j.waitingOn='script: ملف النص غير موجود';}
+          else leg('script','verified',script+' موجود');
+          if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+          if(j.status==='running'){
+            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+            if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+          }
+          if(j.status==='running'){
+            let inv=inventory(activeDir);if(inv.boardCount){leg('board','verified',inv.boardCount+' صورة موجودة');}
+            else if(b.dispatchStills){j.waitingOn='board: جاري إرسال اللقطات وانتظار GitHub Actions';try{const settings=inventory(activeDir).settings,remote={id:id+'-stills',projectDir:activeDir,status:'dispatched',startedAt:Date.now(),ended:false,log:[]};jobs.set(remote.id,remote);const rid=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(activeDir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});remote.runId=rid;j.runId=rid;j.framesRunId=rid;await dispatchLayer.monitor(remote,{runId:rid,projectDir:activeDir,kind:'stills',settingsSent:settings,repoDir});if(remote.status==='done'&&inventory(activeDir).boardCount>0)leg('board','executed',`GitHub Actions run ${rid}; ${inventory(activeDir).boardCount} downloaded stills verified`);else{leg('board','failed',`GitHub Actions run ${rid}: ${remote.verification||remote.status}`);j.status='failed';j.waitingOn='board: فشل dispatch أو لم تجتز اللقطات تحقق الملفات';}}catch(e){leg('board','failed','GitHub stills dispatch failed: '+e.message);j.status='failed';j.waitingOn='board: '+e.message;}}
+            else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+          }
+          if(j.status==='running'){
+            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir]);j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+            if(missing.length&&exists(finalMix)&&!exists('audio/sfx_bed.wav')){let verified=false;try{const report=JSON.parse(fs.readFileSync(mixOut,'utf8'));verified=report.ok===true;}catch(_){}if(!verified){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',finalMix]);verified=q.code===0&&Number(q.out)>0;}if(verified)leg('sound','verified','existing mix verified');else{leg('sound','failed','existing final_mix.wav failed mix report and ffprobe verification');j.status='failed';j.waitingOn='sound: existing mix verification failed';}}
+            else{if(missing.length)j.log.push({t:Date.now(),stream:'info',text:'sound: no sound-design lanes — bed skipped'});else{const sound=await execute('sound');if(sound.status!=='done'){leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'heart sound failed');}}if(j.status==='running'){const mixed=await execute('mix');if(mixed.status==='done'&&JSON.parse(fs.readFileSync(mixOut,'utf8')).ok===true)leg('sound',missing.length?'executed':'executed','mix verified'+(missing.length?' (bed skipped)':''));else{leg('sound','failed',mixed.verification||'mix report ok was not true');j.status='failed';j.waitingOn='sound: mix failed — '+(mixed.verification||'mix report ok was not true');}}}
+          }
+          if(j.status==='running'){const checks=artifactChecks(activeDir),gates=checks.checks.filter(c=>c.id!=='master');checks.checks.filter(c=>c.id==='master').forEach(c=>j.log.push({t:Date.now(),stream:'info',text:'master — pending export'}));gates.forEach(c=>j.log.push({t:Date.now(),stream:c.pass?'pass':'fail',text:`${c.pass?'PASS':'FAIL'} ${c.id} — ${c.evidence}`}));if(gates.some(c=>!c.pass)){const bad=gates.filter(c=>!c.pass).map(c=>c.id);leg('gates','failed',bad.join(', '));j.status='failed';j.waitingOn='gates: '+bad.join(', ');}else leg('gates','verified','all non-master artifact checks passed');}
+          if(j.status==='running'){const master=inventory(activeDir).master;if(master)leg('export','verified',master+' موجود');else if(!j.framesRunId){leg('export','blocked','master missing and no framesRunId');j.status='blocked';j.waitingOn='export: master missing and no framesRunId';}else{try{const git=(args)=>require('child_process').spawnSync('git',['-C',repoDir,...args],{encoding:'utf8'});let gr=git(['add','projects/'+path.basename(activeDir)+'/audio/final_mix.wav','projects/'+path.basename(activeDir)+'/project.json']);if(gr.status!==0)throw new Error('git add: '+(gr.stderr||gr.stdout));gr=git(['diff','--cached','--quiet']);if(gr.status===1){gr=git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','run: mix for assembly']);if(gr.status!==0)throw new Error('git commit: '+(gr.stderr||gr.stdout));}else if(gr.status!==0)throw new Error('git diff --cached failed');const br=git(['branch','--show-current']);if(br.status!==0||!br.stdout.trim())throw new Error('could not resolve current branch');gr=git(['push','origin',br.stdout.trim()]);if(gr.status!==0)throw new Error('git push failed: '+(gr.stderr||gr.stdout));const assembly={id:id+'-assembly',kind:'assembly',projectDir:activeDir,status:'dispatched',startedAt:Date.now(),ended:false,log:[]};jobs.set(assembly.id,assembly);const arid=await dispatchLayer.dispatchAsync('fleet-assembly.yml',{project:path.basename(activeDir),frames_run_id:j.framesRunId,fps:String(inventory(activeDir).settings.fps),mix_rel:'audio/final_mix.wav',mode:'assemble'});await dispatchLayer.monitor(assembly,{runId:arid,projectDir:activeDir,kind:'assembly',repoDir});assembly.log.forEach(x=>j.log.push({...x,text:'assembly: '+x.text}));if(assembly.status!=='done')throw new Error(`assembly run ${arid} failed: ${assembly.log.slice(-1)[0]?.text||assembly.status}`);const root=path.join(activeDir,'out','github-master',arid),files=[];const walk=d=>{for(const ent of fs.readdirSync(d,{withFileTypes:true})){const f=path.join(d,ent.name);if(ent.isDirectory())walk(f);else if(ent.name==='master.mp4')files.push(f);}};if(fs.existsSync(root))walk(root);if(!files.length)throw new Error(`assembly run ${arid}: master.mp4 missing`);const dest=path.join(activeDir,'out/master.mp4');fs.copyFileSync(files[0],dest);const probe=await safeRun('ffprobe',['-v','error','-show_entries','stream=codec_type','-of','json',dest]);const streams=probe.code===0?JSON.parse(probe.out).streams||[]:[];if(!streams.some(x=>x.codec_type==='video')||!streams.some(x=>x.codec_type==='audio'))throw new Error(`assembly run ${arid}: master requires video and audio streams`);leg('export','executed',`assembly run ${arid}; master video/audio verified`);}catch(e){leg('export','failed',e.message);j.status='failed';j.waitingOn='export: '+e.message;}}}
+          if(j.status==='running')j.status='done';j.ended=true;j.finishedAt=Date.now();if(!j.waitingOn)j.waitingOn='لا شيء';
+        })().catch(e=>{j.status='failed';j.ended=true;j.finishedAt=Date.now();j.waitingOn=e.message;j.log.push({t:Date.now(),stream:'fail',text:e.message});});
+        return sendJson(res, 202, { id, status: j.status, waitingOn: j.waitingOn });
+
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/server/server.js
+diff --git a/server/server.js b/server/server.js
+index 605ad3c5796d314b32d2633051dfd45d893f6a26..751472c2b92a93bf37afb4097bbd6483552b533a
+--- a/server/server.js
++++ b/server/server.js
+@@ -72,6 +72,8 @@
+   const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+   const timed = () => new Date().toISOString();
+   function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
++  function nodeSpawnEnv(extra) { return { ...process.env, ...(extra || {}), ELECTRON_RUN_AS_NODE: '1' }; }
++  function runNode(args, opts={}) { return safeRun(process.execPath, args, { ...opts, env: nodeSpawnEnv(opts.env) }); }
+   function runCaptured(bin,args,options={},timeout=0,onData=()=>{},onSpawn=()=>{}) { return new Promise(resolve=>{ let out='',err='',timedOut=false,settled=false;const p=spawn(bin,args,{...options,stdio:['pipe','pipe','pipe']});onSpawn(p);const finish=r=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);resolve({...r,out,err,timedOut});};const timer=timeout?setTimeout(()=>{timedOut=true;p.kill('SIGTERM');setTimeout(()=>{if(!settled)p.kill('SIGKILL');},3000).unref();},timeout):null;p.stdout.on('data',x=>{out+=x;onData('out',x)});p.stderr.on('data',x=>{err+=x;onData('err',x)});p.on('error',e=>{err+=e.message;finish({code:1})});p.on('close',code=>finish({code:code??1})); }); }
+   async function probeConnections() {
+     const results=[];
+@@ -192,11 +194,11 @@
+     if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+     return true;
+   }
+-  function runCommand(id, dir, args, cwd = repoDir) {
++  function runCommand(id, dir, args, cwd = repoDir, env = {}) {
+     if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+     const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+     jobs.set(id, job);
+-    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
++    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+     job.child = child;
+     const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+     child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+@@ -285,7 +287,7 @@
+         const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+         const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+-        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
++        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+@@ -298,7 +300,7 @@
+       }
+       if (pn === '/api/projects/slice' && req.method === 'POST') {
+         const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+-        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
++        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+         const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+       }
+       if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/server/server.js
+diff --git a/server/server.js b/server/server.js
+index 605ad3c5796d314b32d2633051dfd45d893f6a26..cc30a5281f7b8e15afc218878734e3b5e2be534b
+--- a/server/server.js
++++ b/server/server.js
+@@ -72,6 +72,8 @@
+   const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+   const timed = () => new Date().toISOString();
+   function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
++  function nodeSpawnEnv(extra) { return { ...process.env, ...(extra || {}), ELECTRON_RUN_AS_NODE: '1' }; }
++  function runNode(args, opts={}) { return safeRun(process.execPath, args, { ...opts, env: nodeSpawnEnv(opts.env) }); }
+   function runCaptured(bin,args,options={},timeout=0,onData=()=>{},onSpawn=()=>{}) { return new Promise(resolve=>{ let out='',err='',timedOut=false,settled=false;const p=spawn(bin,args,{...options,stdio:['pipe','pipe','pipe']});onSpawn(p);const finish=r=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);resolve({...r,out,err,timedOut});};const timer=timeout?setTimeout(()=>{timedOut=true;p.kill('SIGTERM');setTimeout(()=>{if(!settled)p.kill('SIGKILL');},3000).unref();},timeout):null;p.stdout.on('data',x=>{out+=x;onData('out',x)});p.stderr.on('data',x=>{err+=x;onData('err',x)});p.on('error',e=>{err+=e.message;finish({code:1})});p.on('close',code=>finish({code:code??1})); }); }
+   async function probeConnections() {
+     const results=[];
+@@ -192,11 +194,11 @@
+     if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+     return true;
+   }
+-  function runCommand(id, dir, args, cwd = repoDir) {
++  function runCommand(id, dir, args, cwd = repoDir, env = {}) {
+     if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+     const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+     jobs.set(id, job);
+-    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
++    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+     job.child = child;
+     const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+     child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+@@ -285,7 +287,7 @@
+         const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+         const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+-        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
++        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+@@ -298,7 +300,7 @@
+       }
+       if (pn === '/api/projects/slice' && req.method === 'POST') {
+         const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+-        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
++        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+         const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+       }
+       if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+@@ -317,7 +319,7 @@
+           const dir=path.dirname(sf),briefFile=path.join(dir,'brief.md');const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\nAnnotations: ${JSON.stringify(state.annotations||[])}\nEnd with a summary of changes.`;fs.writeFileSync(briefFile,brief);save();
+           const home=process.env.HOME||'',codex=process.env.CODEX_BIN&&fs.existsSync(process.env.CODEX_BIN)?process.env.CODEX_BIN:['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);if(!codex)throw new Error('Codex binary not found (CODEX_BIN, /usr/lib/chatgpt/resources/codex, or extracted workspace binary)');
+           const builder=async prompt=>{log('builder','Starting bounded Codex builder');const r=await runCaptured(codex,['exec','-m','gpt-6-luna','-s','workspace-write','-C',repoDir],{cwd:repoDir},1200000,(s,c)=>log('builder',`${s}: ${String(c).trim()}`),p=>{j.child=p;p.stdin.end(prompt)});j.child=null;if(r.timedOut||r.code!==0)throw new Error(`builder failed${r.timedOut?' (20-minute timeout)':''}: ${tail(r.err+'\n'+r.out)}`);return tail(r.out);};
+-          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
++          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+           const critic1=async(summary,result,round)=>{const ev=path.join(dir,`evidence1${round?'-'+round:''}.txt`),prompt=`Pass: ${def.label}\nScope: ${def.scope}\nBuilder summary tail:\n${summary}\nChecks:\n${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nReview the evidence. Respond with VERDICT: YES or VERDICT: NO, then reasons.`;fs.writeFileSync(ev,prompt);const r=await safeRun('python3',[path.join(home,'workspace/tools/apinex2_chat.py'),'chat','free/glm-5.3-flashx',ev,'1200'],{cwd:repoDir});const answer=r.out+'\n'+r.err,m=answer.match(/VERDICT:\s*(YES|NO)/i);if(r.code!==0||!m)throw new Error('GLM critic dead door: '+(r.code!==0?tail(answer):'unparseable verdict'));log('critic',`GLM verdict ${m[1]}: ${tail(answer)}`);return{yes:m[1].toUpperCase()==='YES',findings:answer};};
+           let summary=await builder(fs.readFileSync(briefFile,'utf8'));enforceScope('builder');let result=await checks(),verdict=await critic1(summary,result,0),rounds=0,maxRounds=b.mode==='faster'?1:2;while(!verdict.yes&&rounds<maxRounds){rounds++;ps.rounds=(ps.rounds||0)+1;save();const steer=j.steering.map(x=>x.text).join('\n'),fix=`${fs.readFileSync(briefFile,'utf8')}\n\nCritic findings:\n${verdict.findings}\n\nNew steering:\n${steer}`;if(steer)log('steer',`Steering appended to fix prompt: ${steer}`);log('fix',`Fix round ${rounds}`);summary=await builder(fix);enforceScope(`fix round ${rounds}`);result=await checks();verdict=await critic1(summary,result,rounds);}
+           const ev2=path.join(dir,'evidence2.txt'),prompt2=`Fresh second critic review for ${def.label}. Scope: ${def.scope}\nBuilder summary tail: ${summary}\nPost-fix checks: ${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nGive VERDICT: YES or VERDICT: NO and reasons.`;fs.writeFileSync(ev2,prompt2);let key='';const envText=fs.readFileSync(path.join(home,'workspace/user/files/llmsrelay.env'),'utf8'),km=envText.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(km)key=km[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('Opus critic dead door: LLMSRELAY_API_KEY missing');const out2=path.join(dir,'opus-reply.txt'),op=await safeRun('python3',[path.join(home,'workspace/tools/opus_call.py'),ev2,out2,'1200'],{cwd:repoDir,env:{...process.env,LLMS_KEY:key}});const answer2=fs.existsSync(out2)?fs.readFileSync(out2,'utf8'):op.out,m2=answer2.match(/VERDICT:\s*(YES|NO)/i);if(op.code!==0||!m2)throw new Error('Opus critic dead door: '+(op.code!==0?tail(answer2):'unparseable verdict'));log('critic',`Fresh Opus verdict ${m2[1]}: ${tail(answer2)}`);const failedChecks=result.filter(x=>!x.ok);if(failedChecks.length||m2[1].toUpperCase()!=='YES')throw new Error(`handoff rejected: ${failedChecks.map(x=>x.name+': '+x.reason).join('; ')} ${m2[1]==='NO'?tail(answer2):''}`);
+@@ -382,13 +384,13 @@
+           const out = path.join(activeDir, 'out', 'board', 'ui-preview-' + Date.now() + '.png');
+           fs.mkdirSync(path.dirname(out), { recursive: true });
+           const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+-          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
++          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+           j.outputArtifact = out;
+           j.action='preview'; const effective=inventory(activeDir).settings;
+           return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
+         }
+-        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+-        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
++        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
++        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models'], repoDir, { ELECTRON_RUN_AS_NODE: '1' }).status });
+         return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+       }
+       if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+@@ -422,7 +424,7 @@
+           else leg('script','verified',script+' موجود');
+           if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+           if(j.status==='running'){
+-            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
++            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+             if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+           }
+           if(j.status==='running'){
+@@ -431,7 +433,7 @@
+             else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+           }
+           if(j.status==='running'){
+-            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir]);j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
++            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+             if(missing.length&&exists(finalMix)&&!exists('audio/sfx_bed.wav')){let verified=false;try{const report=JSON.parse(fs.readFileSync(mixOut,'utf8'));verified=report.ok===true;}catch(_){}if(!verified){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',finalMix]);verified=q.code===0&&Number(q.out)>0;}if(verified)leg('sound','verified','existing mix verified');else{leg('sound','failed','existing final_mix.wav failed mix report and ffprobe verification');j.status='failed';j.waitingOn='sound: existing mix verification failed';}}
+             else{if(missing.length)j.log.push({t:Date.now(),stream:'info',text:'sound: no sound-design lanes — bed skipped'});else{const sound=await execute('sound');if(sound.status!=='done'){leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'heart sound failed');}}if(j.status==='running'){const mixed=await execute('mix');if(mixed.status==='done'&&JSON.parse(fs.readFileSync(mixOut,'utf8')).ok===true)leg('sound',missing.length?'executed':'executed','mix verified'+(missing.length?' (bed skipped)':''));else{leg('sound','failed',mixed.verification||'mix report ok was not true');j.status='failed';j.waitingOn='sound: mix failed — '+(mixed.verification||'mix report ok was not true');}}}
+           }
+
+codex
+The runner launch sites are now marked to run the Electron executable as Node, while other `safeRun` uses keep their existing environment. I’m updating project resolution next, then I’ll check that every runner spawn is covered and syntax-check the two files.
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/app/main.js
+diff --git a/app/main.js b/app/main.js
+index 0b415adc0d66bbdfc3f0c9972da0a139bcfb01cd..98a39eff580f289f7a0e2ac3ae3fd580c325e2b8
+--- a/app/main.js
++++ b/app/main.js
+@@ -6,11 +6,20 @@
+ 
+ const repo = path.resolve(__dirname, '..');
+ function resolveProject(value) {
+-  const p = path.resolve(repo, value || 'projects/story6-microwave');
+-  const projects = path.join(repo, 'projects') + path.sep;
+-  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
+-  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
+-  return p;
++  const input = value || 'projects/story6-microwave';
++  const projectsDir = path.join(repo, 'projects');
++  const projectsPrefix = projectsDir + path.sep;
++  const isDirectory = p => { try { return fs.statSync(p).isDirectory(); } catch (_) { return false; } };
++  if (path.isAbsolute(input)) {
++    const absolute = path.resolve(input);
++    if (isDirectory(absolute)) return absolute;
++    throw new Error(`Project directory not found: ${absolute}`);
++  }
++  const named = path.resolve(projectsDir, input);
++  if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;
++  const relative = path.resolve(repo, input);
++  if ((relative === projectsDir || relative.startsWith(projectsPrefix)) && isDirectory(relative)) return relative;
++  throw new Error(`Project directory not found: ${named}`);
+ }
+ let server;
+ async function startServer() {
+diff --git a/server/server.js b/server/server.js
+index 605ad3c5796d314b32d2633051dfd45d893f6a26..cc30a5281f7b8e15afc218878734e3b5e2be534b
+--- a/server/server.js
++++ b/server/server.js
+@@ -72,6 +72,8 @@
+   const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+   const timed = () => new Date().toISOString();
+   function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
++  function nodeSpawnEnv(extra) { return { ...process.env, ...(extra || {}), ELECTRON_RUN_AS_NODE: '1' }; }
++  function runNode(args, opts={}) { return safeRun(process.execPath, args, { ...opts, env: nodeSpawnEnv(opts.env) }); }
+   function runCaptured(bin,args,options={},timeout=0,onData=()=>{},onSpawn=()=>{}) { return new Promise(resolve=>{ let out='',err='',timedOut=false,settled=false;const p=spawn(bin,args,{...options,stdio:['pipe','pipe','pipe']});onSpawn(p);const finish=r=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);resolve({...r,out,err,timedOut});};const timer=timeout?setTimeout(()=>{timedOut=true;p.kill('SIGTERM');setTimeout(()=>{if(!settled)p.kill('SIGKILL');},3000).unref();},timeout):null;p.stdout.on('data',x=>{out+=x;onData('out',x)});p.stderr.on('data',x=>{err+=x;onData('err',x)});p.on('error',e=>{err+=e.message;finish({code:1})});p.on('close',code=>finish({code:code??1})); }); }
+   async function probeConnections() {
+     const results=[];
+@@ -192,11 +194,11 @@
+     if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+     return true;
+   }
+-  function runCommand(id, dir, args, cwd = repoDir) {
++  function runCommand(id, dir, args, cwd = repoDir, env = {}) {
+     if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+     const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+     jobs.set(id, job);
+-    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
++    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+     job.child = child;
+     const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+     child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+@@ -285,7 +287,7 @@
+         const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+         const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+-        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
++        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+@@ -298,7 +300,7 @@
+       }
+       if (pn === '/api/projects/slice' && req.method === 'POST') {
+         const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+-        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
++        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+         const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+       }
+       if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+@@ -317,7 +319,7 @@
+           const dir=path.dirname(sf),briefFile=path.join(dir,'brief.md');const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\nAnnotations: ${JSON.stringify(state.annotations||[])}\nEnd with a summary of changes.`;fs.writeFileSync(briefFile,brief);save();
+           const home=process.env.HOME||'',codex=process.env.CODEX_BIN&&fs.existsSync(process.env.CODEX_BIN)?process.env.CODEX_BIN:['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);if(!codex)throw new Error('Codex binary not found (CODEX_BIN, /usr/lib/chatgpt/resources/codex, or extracted workspace binary)');
+           const builder=async prompt=>{log('builder','Starting bounded Codex builder');const r=await runCaptured(codex,['exec','-m','gpt-6-luna','-s','workspace-write','-C',repoDir],{cwd:repoDir},1200000,(s,c)=>log('builder',`${s}: ${String(c).trim()}`),p=>{j.child=p;p.stdin.end(prompt)});j.child=null;if(r.timedOut||r.code!==0)throw new Error(`builder failed${r.timedOut?' (20-minute timeout)':''}: ${tail(r.err+'\n'+r.out)}`);return tail(r.out);};
+-          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
++          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+           const critic1=async(summary,result,round)=>{const ev=path.join(dir,`evidence1${round?'-'+round:''}.txt`),prompt=`Pass: ${def.label}\nScope: ${def.scope}\nBuilder summary tail:\n${summary}\nChecks:\n${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nReview the evidence. Respond with VERDICT: YES or VERDICT: NO, then reasons.`;fs.writeFileSync(ev,prompt);const r=await safeRun('python3',[path.join(home,'workspace/tools/apinex2_chat.py'),'chat','free/glm-5.3-flashx',ev,'1200'],{cwd:repoDir});const answer=r.out+'\n'+r.err,m=answer.match(/VERDICT:\s*(YES|NO)/i);if(r.code!==0||!m)throw new Error('GLM critic dead door: '+(r.code!==0?tail(answer):'unparseable verdict'));log('critic',`GLM verdict ${m[1]}: ${tail(answer)}`);return{yes:m[1].toUpperCase()==='YES',findings:answer};};
+           let summary=await builder(fs.readFileSync(briefFile,'utf8'));enforceScope('builder');let result=await checks(),verdict=await critic1(summary,result,0),rounds=0,maxRounds=b.mode==='faster'?1:2;while(!verdict.yes&&rounds<maxRounds){rounds++;ps.rounds=(ps.rounds||0)+1;save();const steer=j.steering.map(x=>x.text).join('\n'),fix=`${fs.readFileSync(briefFile,'utf8')}\n\nCritic findings:\n${verdict.findings}\n\nNew steering:\n${steer}`;if(steer)log('steer',`Steering appended to fix prompt: ${steer}`);log('fix',`Fix round ${rounds}`);summary=await builder(fix);enforceScope(`fix round ${rounds}`);result=await checks();verdict=await critic1(summary,result,rounds);}
+           const ev2=path.join(dir,'evidence2.txt'),prompt2=`Fresh second critic review for ${def.label}. Scope: ${def.scope}\nBuilder summary tail: ${summary}\nPost-fix checks: ${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nGive VERDICT: YES or VERDICT: NO and reasons.`;fs.writeFileSync(ev2,prompt2);let key='';const envText=fs.readFileSync(path.join(home,'workspace/user/files/llmsrelay.env'),'utf8'),km=envText.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(km)key=km[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('Opus critic dead door: LLMSRELAY_API_KEY missing');const out2=path.join(dir,'opus-reply.txt'),op=await safeRun('python3',[path.join(home,'workspace/tools/opus_call.py'),ev2,out2,'1200'],{cwd:repoDir,env:{...process.env,LLMS_KEY:key}});const answer2=fs.existsSync(out2)?fs.readFileSync(out2,'utf8'):op.out,m2=answer2.match(/VERDICT:\s*(YES|NO)/i);if(op.code!==0||!m2)throw new Error('Opus critic dead door: '+(op.code!==0?tail(answer2):'unparseable verdict'));log('critic',`Fresh Opus verdict ${m2[1]}: ${tail(answer2)}`);const failedChecks=result.filter(x=>!x.ok);if(failedChecks.length||m2[1].toUpperCase()!=='YES')throw new Error(`handoff rejected: ${failedChecks.map(x=>x.name+': '+x.reason).join('; ')} ${m2[1]==='NO'?tail(answer2):''}`);
+@@ -382,13 +384,13 @@
+           const out = path.join(activeDir, 'out', 'board', 'ui-preview-' + Date.now() + '.png');
+           fs.mkdirSync(path.dirname(out), { recursive: true });
+           const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+-          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
++          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+           j.outputArtifact = out;
+           j.action='preview'; const effective=inventory(activeDir).settings;
+           return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
+         }
+-        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+-        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
++        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
++        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models'], repoDir, { ELECTRON_RUN_AS_NODE: '1' }).status });
+         return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+       }
+       if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+@@ -422,7 +424,7 @@
+           else leg('script','verified',script+' موجود');
+           if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+           if(j.status==='running'){
+-            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
++            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+             if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+           }
+           if(j.status==='running'){
+@@ -431,7 +433,7 @@
+             else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+           }
+           if(j.status==='running'){
+-            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir]);j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
++            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+             if(missing.length&&exists(finalMix)&&!exists('audio/sfx_bed.wav')){let verified=false;try{const report=JSON.parse(fs.readFileSync(mixOut,'utf8'));verified=report.ok===true;}catch(_){}if(!verified){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',finalMix]);verified=q.code===0&&Number(q.out)>0;}if(verified)leg('sound','verified','existing mix verified');else{leg('sound','failed','existing final_mix.wav failed mix report and ffprobe verification');j.status='failed';j.waitingOn='sound: existing mix verification failed';}}
+             else{if(missing.length)j.log.push({t:Date.now(),stream:'info',text:'sound: no sound-design lanes — bed skipped'});else{const sound=await execute('sound');if(sound.status!=='done'){leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'heart sound failed');}}if(j.status==='running'){const mixed=await execute('mix');if(mixed.status==='done'&&JSON.parse(fs.readFileSync(mixOut,'utf8')).ok===true)leg('sound',missing.length?'executed':'executed','mix verified'+(missing.length?' (bed skipped)':''));else{leg('sound','failed',mixed.verification||'mix report ok was not true');j.status='failed';j.waitingOn='sound: mix failed — '+(mixed.verification||'mix report ok was not true');}}}
+           }
+
+exec
+/bin/bash -lc 'node --check server/server.js' in /home/hatch/workspace/heart-studio
+exec
+/bin/bash -lc 'node --check app/main.js' in /home/hatch/workspace/heart-studio
+exec
+/bin/bash -lc "rg -n -C 1 \"heart-cjs-runner\\.cjs\" server/server.js; git diff -- server/server.js app/main.js" in /home/hatch/workspace/heart-studio
+ succeeded in 170ms:
+107-    let glm={name:'GLM',probed:true,checkedAt:timed(),status:'dead',model:'free/glm-5.3-flashx'};
+108:    try {const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
+109-    catch(e){glm.reason='APInex catalog probe failed: '+String(e.message).slice(0,180);}results.push(glm);
+--
+289-        if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+290:        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+291-        fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+--
+302-        const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+303:        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+304-        const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+--
+321-          const builder=async prompt=>{log('builder','Starting bounded Codex builder');const r=await runCaptured(codex,['exec','-m','gpt-6-luna','-s','workspace-write','-C',repoDir],{cwd:repoDir},1200000,(s,c)=>log('builder',`${s}: ${String(c).trim()}`),p=>{j.child=p;p.stdin.end(prompt)});j.child=null;if(r.timedOut||r.code!==0)throw new Error(`builder failed${r.timedOut?' (20-minute timeout)':''}: ${tail(r.err+'\n'+r.out)}`);return tail(r.out);};
+322:          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+323-          const critic1=async(summary,result,round)=>{const ev=path.join(dir,`evidence1${round?'-'+round:''}.txt`),prompt=`Pass: ${def.label}\nScope: ${def.scope}\nBuilder summary tail:\n${summary}\nChecks:\n${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nReview the evidence. Respond with VERDICT: YES or VERDICT: NO, then reasons.`;fs.writeFileSync(ev,prompt);const r=await safeRun('python3',[path.join(home,'workspace/tools/apinex2_chat.py'),'chat','free/glm-5.3-flashx',ev,'1200'],{cwd:repoDir});const answer=r.out+'\n'+r.err,m=answer.match(/VERDICT:\s*(YES|NO)/i);if(r.code!==0||!m)throw new Error('GLM critic dead door: '+(r.code!==0?tail(answer):'unparseable verdict'));log('critic',`GLM verdict ${m[1]}: ${tail(answer)}`);return{yes:m[1].toUpperCase()==='YES',findings:answer};};
+--
+386-          const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+387:          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+388-          j.outputArtifact = out;
+--
+391-        }
+392:        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+393:        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models'], repoDir, { ELECTRON_RUN_AS_NODE: '1' }).status });
+394-        return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+--
+426-          if(j.status==='running'){
+427:            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+428-            if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+--
+435-          if(j.status==='running'){
+436:            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+437-            if(missing.length&&exists(finalMix)&&!exists('audio/sfx_bed.wav')){let verified=false;try{const report=JSON.parse(fs.readFileSync(mixOut,'utf8'));verified=report.ok===true;}catch(_){}if(!verified){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',finalMix]);verified=q.code===0&&Number(q.out)>0;}if(verified)leg('sound','verified','existing mix verified');else{leg('sound','failed','existing final_mix.wav failed mix report and ffprobe verification');j.status='failed';j.waitingOn='sound: existing mix verification failed';}}
+diff --git a/app/main.js b/app/main.js
+index 0b415ad..98a39ef 100644
+--- a/app/main.js
++++ b/app/main.js
+@@ -6,11 +6,20 @@ const { createHeartServer } = require('../server/server.js');
+ 
+ const repo = path.resolve(__dirname, '..');
+ function resolveProject(value) {
+-  const p = path.resolve(repo, value || 'projects/story6-microwave');
+-  const projects = path.join(repo, 'projects') + path.sep;
+-  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
+-  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
+-  return p;
++  const input = value || 'projects/story6-microwave';
++  const projectsDir = path.join(repo, 'projects');
++  const projectsPrefix = projectsDir + path.sep;
++  const isDirectory = p => { try { return fs.statSync(p).isDirectory(); } catch (_) { return false; } };
++  if (path.isAbsolute(input)) {
++    const absolute = path.resolve(input);
++    if (isDirectory(absolute)) return absolute;
++    throw new Error(`Project directory not found: ${absolute}`);
++  }
++  const named = path.resolve(projectsDir, input);
++  if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;
++  const relative = path.resolve(repo, input);
++  if ((relative === projectsDir || relative.startsWith(projectsPrefix)) && isDirectory(relative)) return relative;
++  throw new Error(`Project directory not found: ${named}`);
+ }
+ let server;
+ async function startServer() {
+diff --git a/server/server.js b/server/server.js
+index 605ad3c..cc30a52 100644
+--- a/server/server.js
++++ b/server/server.js
+@@ -72,6 +72,8 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+   const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+   const timed = () => new Date().toISOString();
+   function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
++  function nodeSpawnEnv(extra) { return { ...process.env, ...(extra || {}), ELECTRON_RUN_AS_NODE: '1' }; }
++  function runNode(args, opts={}) { return safeRun(process.execPath, args, { ...opts, env: nodeSpawnEnv(opts.env) }); }
+   function runCaptured(bin,args,options={},timeout=0,onData=()=>{},onSpawn=()=>{}) { return new Promise(resolve=>{ let out='',err='',timedOut=false,settled=false;const p=spawn(bin,args,{...options,stdio:['pipe','pipe','pipe']});onSpawn(p);const finish=r=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);resolve({...r,out,err,timedOut});};const timer=timeout?setTimeout(()=>{timedOut=true;p.kill('SIGTERM');setTimeout(()=>{if(!settled)p.kill('SIGKILL');},3000).unref();},timeout):null;p.stdout.on('data',x=>{out+=x;onData('out',x)});p.stderr.on('data',x=>{err+=x;onData('err',x)});p.on('error',e=>{err+=e.message;finish({code:1})});p.on('close',code=>finish({code:code??1})); }); }
+   async function probeConnections() {
+     const results=[];
+@@ -192,11 +194,11 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+     if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+     return true;
+   }
+-  function runCommand(id, dir, args, cwd = repoDir) {
++  function runCommand(id, dir, args, cwd = repoDir, env = {}) {
+     if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+     const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+     jobs.set(id, job);
+-    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
++    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+     job.child = child;
+     const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+     child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+@@ -285,7 +287,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+         const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+         const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+-        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
++        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+@@ -298,7 +300,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+       }
+       if (pn === '/api/projects/slice' && req.method === 'POST') {
+         const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+-        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
++        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+         const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+       }
+       if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+@@ -317,7 +319,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+           const dir=path.dirname(sf),briefFile=path.join(dir,'brief.md');const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\nAnnotations: ${JSON.stringify(state.annotations||[])}\nEnd with a summary of changes.`;fs.writeFileSync(briefFile,brief);save();
+           const home=process.env.HOME||'',codex=process.env.CODEX_BIN&&fs.existsSync(process.env.CODEX_BIN)?process.env.CODEX_BIN:['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);if(!codex)throw new Error('Codex binary not found (CODEX_BIN, /usr/lib/chatgpt/resources/codex, or extracted workspace binary)');
+           const builder=async prompt=>{log('builder','Starting bounded Codex builder');const r=await runCaptured(codex,['exec','-m','gpt-6-luna','-s','workspace-write','-C',repoDir],{cwd:repoDir},1200000,(s,c)=>log('builder',`${s}: ${String(c).trim()}`),p=>{j.child=p;p.stdin.end(prompt)});j.child=null;if(r.timedOut||r.code!==0)throw new Error(`builder failed${r.timedOut?' (20-minute timeout)':''}: ${tail(r.err+'\n'+r.out)}`);return tail(r.out);};
+-          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
++          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+           const critic1=async(summary,result,round)=>{const ev=path.join(dir,`evidence1${round?'-'+round:''}.txt`),prompt=`Pass: ${def.label}\nScope: ${def.scope}\nBuilder summary tail:\n${summary}\nChecks:\n${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nReview the evidence. Respond with VERDICT: YES or VERDICT: NO, then reasons.`;fs.writeFileSync(ev,prompt);const r=await safeRun('python3',[path.join(home,'workspace/tools/apinex2_chat.py'),'chat','free/glm-5.3-flashx',ev,'1200'],{cwd:repoDir});const answer=r.out+'\n'+r.err,m=answer.match(/VERDICT:\s*(YES|NO)/i);if(r.code!==0||!m)throw new Error('GLM critic dead door: '+(r.code!==0?tail(answer):'unparseable verdict'));log('critic',`GLM verdict ${m[1]}: ${tail(answer)}`);return{yes:m[1].toUpperCase()==='YES',findings:answer};};
+           let summary=await builder(fs.readFileSync(briefFile,'utf8'));enforceScope('builder');let result=await checks(),verdict=await critic1(summary,result,0),rounds=0,maxRounds=b.mode==='faster'?1:2;while(!verdict.yes&&rounds<maxRounds){rounds++;ps.rounds=(ps.rounds||0)+1;save();const steer=j.steering.map(x=>x.text).join('\n'),fix=`${fs.readFileSync(briefFile,'utf8')}\n\nCritic findings:\n${verdict.findings}\n\nNew steering:\n${steer}`;if(steer)log('steer',`Steering appended to fix prompt: ${steer}`);log('fix',`Fix round ${rounds}`);summary=await builder(fix);enforceScope(`fix round ${rounds}`);result=await checks();verdict=await critic1(summary,result,rounds);}
+           const ev2=path.join(dir,'evidence2.txt'),prompt2=`Fresh second critic review for ${def.label}. Scope: ${def.scope}\nBuilder summary tail: ${summary}\nPost-fix checks: ${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nGive VERDICT: YES or VERDICT: NO and reasons.`;fs.writeFileSync(ev2,prompt2);let key='';const envText=fs.readFileSync(path.join(home,'workspace/user/files/llmsrelay.env'),'utf8'),km=envText.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(km)key=km[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('Opus critic dead door: LLMSRELAY_API_KEY missing');const out2=path.join(dir,'opus-reply.txt'),op=await safeRun('python3',[path.join(home,'workspace/tools/opus_call.py'),ev2,out2,'1200'],{cwd:repoDir,env:{...process.env,LLMS_KEY:key}});const answer2=fs.existsSync(out2)?fs.readFileSync(out2,'utf8'):op.out,m2=answer2.match(/VERDICT:\s*(YES|NO)/i);if(op.code!==0||!m2)throw new Error('Opus critic dead door: '+(op.code!==0?tail(answer2):'unparseable verdict'));log('critic',`Fresh Opus verdict ${m2[1]}: ${tail(answer2)}`);const failedChecks=result.filter(x=>!x.ok);if(failedChecks.length||m2[1].toUpperCase()!=='YES')throw new Error(`handoff rejected: ${failedChecks.map(x=>x.name+': '+x.reason).join('; ')} ${m2[1]==='NO'?tail(answer2):''}`);
+@@ -382,13 +384,13 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+           const out = path.join(activeDir, 'out', 'board', 'ui-preview-' + Date.now() + '.png');
+           fs.mkdirSync(path.dirname(out), { recursive: true });
+           const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+-          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
++          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+           j.outputArtifact = out;
+           j.action='preview'; const effective=inventory(activeDir).settings;
+           return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
+         }
+-        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+-        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
++        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
++        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models'], repoDir, { ELECTRON_RUN_AS_NODE: '1' }).status });
+         return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+       }
+       if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+@@ -422,7 +424,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+           else leg('script','verified',script+' موجود');
+           if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+           if(j.status==='running'){
+-            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
++            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+             if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+           }
+           if(j.status==='running'){
+@@ -431,7 +433,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+             else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+           }
+           if(j.status==='running'){
+-            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir]);j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
++            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+             if(missing.length&&exists(finalMix)&&!exists('audio/sfx_bed.wav')){let verified=false;try{const report=JSON.parse(fs.readFileSync(mixOut,'utf8'));verified=report.ok===true;}catch(_){}if(!verified){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',finalMix]);verified=q.code===0&&Number(q.out)>0;}if(verified)leg('sound','verified','existing mix verified');else{leg('sound','failed','existing final_mix.wav failed mix report and ffprobe verification');j.status='failed';j.waitingOn='sound: existing mix verification failed';}}
+             else{if(missing.length)j.log.push({t:Date.now(),stream:'info',text:'sound: no sound-design lanes — bed skipped'});else{const sound=await execute('sound');if(sound.status!=='done'){leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'heart sound failed');}}if(j.status==='running'){const mixed=await execute('mix');if(mixed.status==='done'&&JSON.parse(fs.readFileSync(mixOut,'utf8')).ok===true)leg('sound',missing.length?'executed':'executed','mix verified'+(missing.length?' (bed skipped)':''));else{leg('sound','failed',mixed.verification||'mix report ok was not true');j.status='failed';j.waitingOn='sound: mix failed — '+(mixed.verification||'mix report ok was not true');}}}
+           }
+
+ succeeded in 266ms:
+ succeeded in 266ms:
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/server/server.js
+diff --git a/app/main.js b/app/main.js
+index 0b415adc0d66bbdfc3f0c9972da0a139bcfb01cd..98a39eff580f289f7a0e2ac3ae3fd580c325e2b8
+--- a/app/main.js
++++ b/app/main.js
+@@ -6,11 +6,20 @@
+ 
+ const repo = path.resolve(__dirname, '..');
+ function resolveProject(value) {
+-  const p = path.resolve(repo, value || 'projects/story6-microwave');
+-  const projects = path.join(repo, 'projects') + path.sep;
+-  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
+-  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
+-  return p;
++  const input = value || 'projects/story6-microwave';
++  const projectsDir = path.join(repo, 'projects');
++  const projectsPrefix = projectsDir + path.sep;
++  const isDirectory = p => { try { return fs.statSync(p).isDirectory(); } catch (_) { return false; } };
++  if (path.isAbsolute(input)) {
++    const absolute = path.resolve(input);
++    if (isDirectory(absolute)) return absolute;
++    throw new Error(`Project directory not found: ${absolute}`);
++  }
++  const named = path.resolve(projectsDir, input);
++  if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;
++  const relative = path.resolve(repo, input);
++  if ((relative === projectsDir || relative.startsWith(projectsPrefix)) && isDirectory(relative)) return relative;
++  throw new Error(`Project directory not found: ${named}`);
+ }
+ let server;
+ async function startServer() {
+diff --git a/server/server.js b/server/server.js
+index 605ad3c5796d314b32d2633051dfd45d893f6a26..249adadc6f908b842ffa296d5dd05fee5d42fe7c
+--- a/server/server.js
++++ b/server/server.js
+@@ -72,6 +72,8 @@
+   const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+   const timed = () => new Date().toISOString();
+   function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
++  function nodeSpawnEnv(extra) { return { ...process.env, ...(extra || {}), ELECTRON_RUN_AS_NODE: '1' }; }
++  function runNode(args, opts={}) { return safeRun(process.execPath, args, { ...opts, env: nodeSpawnEnv(opts.env) }); }
+   function runCaptured(bin,args,options={},timeout=0,onData=()=>{},onSpawn=()=>{}) { return new Promise(resolve=>{ let out='',err='',timedOut=false,settled=false;const p=spawn(bin,args,{...options,stdio:['pipe','pipe','pipe']});onSpawn(p);const finish=r=>{if(settled)return;settled=true;if(timer)clearTimeout(timer);resolve({...r,out,err,timedOut});};const timer=timeout?setTimeout(()=>{timedOut=true;p.kill('SIGTERM');setTimeout(()=>{if(!settled)p.kill('SIGKILL');},3000).unref();},timeout):null;p.stdout.on('data',x=>{out+=x;onData('out',x)});p.stderr.on('data',x=>{err+=x;onData('err',x)});p.on('error',e=>{err+=e.message;finish({code:1})});p.on('close',code=>finish({code:code??1})); }); }
+   async function probeConnections() {
+     const results=[];
+@@ -103,7 +105,7 @@
+     try { const helper=path.join(home,'workspace/tools/opus_call.py'), envFile=path.join(home,'workspace/user/files/llmsrelay.env');let key='';const contents=fs.readFileSync(envFile,'utf8');const m=contents.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(m)key=m[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('LLMSRELAY_API_KEY is missing');const dir=fs.mkdtempSync(path.join(require('os').tmpdir(),'heart-opus-probe-'));const prompt=path.join(dir,'prompt.txt'),out=path.join(dir,'out.txt');fs.writeFileSync(prompt,'Reply with exactly: OK');const r=await safeRun('python3',[helper,prompt,out,'32'],{env:{...process.env,LLMS_KEY:key},timeout:45000});const answer=fs.existsSync(out)?fs.readFileSync(out,'utf8'):r.out;opus.status=r.code===0&&answer.startsWith('OK')?'connected':'dead';if(opus.status==='dead')opus.reason='Opus ping did not return OK';fs.rmSync(dir,{recursive:true,force:true}); }
+     catch(e){opus.reason='Opus probe failed: '+String(e.message).slice(0,180);}results.push(opus);
+     let glm={name:'GLM',probed:true,checkedAt:timed(),status:'dead',model:'free/glm-5.3-flashx'};
+-    try {const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
++    try {const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
+     catch(e){glm.reason='APInex catalog probe failed: '+String(e.message).slice(0,180);}results.push(glm);
+     connectionCache={checkedAt:timed(),connections:results};return connectionCache;
+   }
+@@ -192,11 +194,11 @@
+     if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+     return true;
+   }
+-  function runCommand(id, dir, args, cwd = repoDir) {
++  function runCommand(id, dir, args, cwd = repoDir, env = {}) {
+     if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+     const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+     jobs.set(id, job);
+-    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
++    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+     job.child = child;
+     const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+     child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+@@ -285,7 +287,7 @@
+         const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+         const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+-        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
++        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+@@ -298,7 +300,7 @@
+       }
+       if (pn === '/api/projects/slice' && req.method === 'POST') {
+         const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+-        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
++        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+         const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+       }
+       if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+@@ -317,7 +319,7 @@
+           const dir=path.dirname(sf),briefFile=path.join(dir,'brief.md');const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\nAnnotations: ${JSON.stringify(state.annotations||[])}\nEnd with a summary of changes.`;fs.writeFileSync(briefFile,brief);save();
+           const home=process.env.HOME||'',codex=process.env.CODEX_BIN&&fs.existsSync(process.env.CODEX_BIN)?process.env.CODEX_BIN:['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);if(!codex)throw new Error('Codex binary not found (CODEX_BIN, /usr/lib/chatgpt/resources/codex, or extracted workspace binary)');
+           const builder=async prompt=>{log('builder','Starting bounded Codex builder');const r=await runCaptured(codex,['exec','-m','gpt-6-luna','-s','workspace-write','-C',repoDir],{cwd:repoDir},1200000,(s,c)=>log('builder',`${s}: ${String(c).trim()}`),p=>{j.child=p;p.stdin.end(prompt)});j.child=null;if(r.timedOut||r.code!==0)throw new Error(`builder failed${r.timedOut?' (20-minute timeout)':''}: ${tail(r.err+'\n'+r.out)}`);return tail(r.out);};
+-          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
++          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+           const critic1=async(summary,result,round)=>{const ev=path.join(dir,`evidence1${round?'-'+round:''}.txt`),prompt=`Pass: ${def.label}\nScope: ${def.scope}\nBuilder summary tail:\n${summary}\nChecks:\n${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nReview the evidence. Respond with VERDICT: YES or VERDICT: NO, then reasons.`;fs.writeFileSync(ev,prompt);const r=await safeRun('python3',[path.join(home,'workspace/tools/apinex2_chat.py'),'chat','free/glm-5.3-flashx',ev,'1200'],{cwd:repoDir});const answer=r.out+'\n'+r.err,m=answer.match(/VERDICT:\s*(YES|NO)/i);if(r.code!==0||!m)throw new Error('GLM critic dead door: '+(r.code!==0?tail(answer):'unparseable verdict'));log('critic',`GLM verdict ${m[1]}: ${tail(answer)}`);return{yes:m[1].toUpperCase()==='YES',findings:answer};};
+           let summary=await builder(fs.readFileSync(briefFile,'utf8'));enforceScope('builder');let result=await checks(),verdict=await critic1(summary,result,0),rounds=0,maxRounds=b.mode==='faster'?1:2;while(!verdict.yes&&rounds<maxRounds){rounds++;ps.rounds=(ps.rounds||0)+1;save();const steer=j.steering.map(x=>x.text).join('\n'),fix=`${fs.readFileSync(briefFile,'utf8')}\n\nCritic findings:\n${verdict.findings}\n\nNew steering:\n${steer}`;if(steer)log('steer',`Steering appended to fix prompt: ${steer}`);log('fix',`Fix round ${rounds}`);summary=await builder(fix);enforceScope(`fix round ${rounds}`);result=await checks();verdict=await critic1(summary,result,rounds);}
+           const ev2=path.join(dir,'evidence2.txt'),prompt2=`Fresh second critic review for ${def.label}. Scope: ${def.scope}\nBuilder summary tail: ${summary}\nPost-fix checks: ${JSON.stringify(result,null,2)}\nProbe files: ${result.map(x=>x.name).join(', ')}\nGive VERDICT: YES or VERDICT: NO and reasons.`;fs.writeFileSync(ev2,prompt2);let key='';const envText=fs.readFileSync(path.join(home,'workspace/user/files/llmsrelay.env'),'utf8'),km=envText.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(km)key=km[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('Opus critic dead door: LLMSRELAY_API_KEY missing');const out2=path.join(dir,'opus-reply.txt'),op=await safeRun('python3',[path.join(home,'workspace/tools/opus_call.py'),ev2,out2,'1200'],{cwd:repoDir,env:{...process.env,LLMS_KEY:key}});const answer2=fs.existsSync(out2)?fs.readFileSync(out2,'utf8'):op.out,m2=answer2.match(/VERDICT:\s*(YES|NO)/i);if(op.code!==0||!m2)throw new Error('Opus critic dead door: '+(op.code!==0?tail(answer2):'unparseable verdict'));log('critic',`Fresh Opus verdict ${m2[1]}: ${tail(answer2)}`);const failedChecks=result.filter(x=>!x.ok);if(failedChecks.length||m2[1].toUpperCase()!=='YES')throw new Error(`handoff rejected: ${failedChecks.map(x=>x.name+': '+x.reason).join('; ')} ${m2[1]==='NO'?tail(answer2):''}`);
+@@ -382,13 +384,13 @@
+           const out = path.join(activeDir, 'out', 'board', 'ui-preview-' + Date.now() + '.png');
+           fs.mkdirSync(path.dirname(out), { recursive: true });
+           const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+-          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
++          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+           j.outputArtifact = out;
+           j.action='preview'; const effective=inventory(activeDir).settings;
+           return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
+         }
+-        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+-        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
++        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
++        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models'], repoDir, { ELECTRON_RUN_AS_NODE: '1' }).status });
+         return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+       }
+       if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+@@ -422,7 +424,7 @@
+           else leg('script','verified',script+' موجود');
+           if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+           if(j.status==='running'){
+-            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
++            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+             if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+           }
+           if(j.status==='running'){
+@@ -431,7 +433,7 @@
+             else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+           }
+           if(j.status==='running'){
+-            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir]);j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
++            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+             if(missing.length&&exists(finalMix)&&!exists('audio/sfx_bed.wav')){let verified=false;try{const report=JSON.parse(fs.readFileSync(mixOut,'utf8'));verified=report.ok===true;}catch(_){}if(!verified){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',finalMix]);verified=q.code===0&&Number(q.out)>0;}if(verified)leg('sound','verified','existing mix verified');else{leg('sound','failed','existing final_mix.wav failed mix report and ffprobe verification');j.status='failed';j.waitingOn='sound: existing mix verification failed';}}
+             else{if(missing.length)j.log.push({t:Date.now(),stream:'info',text:'sound: no sound-design lanes — bed skipped'});else{const sound=await execute('sound');if(sound.status!=='done'){leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'heart sound failed');}}if(j.status==='running'){const mixed=await execute('mix');if(mixed.status==='done'&&JSON.parse(fs.readFileSync(mixOut,'utf8')).ok===true)leg('sound',missing.length?'executed':'executed','mix verified'+(missing.length?' (bed skipped)':''));else{leg('sound','failed',mixed.verification||'mix report ok was not true');j.status='failed';j.waitingOn='sound: mix failed — '+(mixed.verification||'mix report ok was not true');}}}
+           }
+
+exec
+/bin/bash -lc 'node --check server/server.js && node --check app/main.js' in /home/hatch/workspace/heart-studio
+exec
+/bin/bash -lc "rg -n \"safeRun\\(process\\.execPath|heart-cjs-runner\\.cjs\" server/server.js; git status --short" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+76:  function runNode(args, opts={}) { return safeRun(process.execPath, args, { ...opts, env: nodeSpawnEnv(opts.env) }); }
+108:    try {const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
+290:        const created=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+303:        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+322:          const checks=async()=>{let pj={};try{pj=JSON.parse(fs.readFileSync(path.join(activeDir,'project.json'),'utf8'))}catch(_){}let duration=Number.isFinite(pj.end)?pj.end:null;const voice=inventory(activeDir).voice;if(!(duration>0)&&voice){const q=await safeRun('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(activeDir,voice)]);duration=q.code===0?Number(q.out):null;}if(!(duration>0))duration=10;const results=[];for(const [i,ratio]of[.1,.5,.9].entries()){const name=`probe-${i+1}.png`,out=path.join(dir,name),sec=duration*ratio;fs.mkdirSync(dir,{recursive:true});const r=await runNode([path.join(__dirname,'heart-cjs-runner.cjs'),'still',activeDir,String(sec),out],{cwd:repoDir});let ok=r.code===0&&fs.existsSync(out),reason=ok?'file exists':'still command/file failed';if(ok){const q=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',out]);try{const s=JSON.parse(q.out).streams[0];ok=q.code===0&&s.width===1080&&s.height===1920;reason=ok?'1080x1920':'expected 1080x1920';}catch(_){ok=false;reason='ffprobe could not read dimensions';}}results.push({name,ok,reason});log('check',`${name}: ${ok?'PASS':'FAIL'} — ${reason}`);}return results;};
+387:          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+392:        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+393:        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models'], repoDir, { ELECTRON_RUN_AS_NODE: '1' }).status });
+427:            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+436:            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p)),mixOut=path.join(activeDir,'out/mix_report.json'),finalMix=path.join(activeDir,'out/mix_stage/audio/final_mix.wav');const execute=async(action)=>{const child=runCommand(id+'-'+action,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),action,activeDir],repoDir,{ELECTRON_RUN_AS_NODE:'1'});j.child=child.child;child.outputArtifact=action==='mix'?mixOut:path.join(activeDir,'audio/sfx_bed.wav');child.action=action;await new Promise(resolve=>{const poll=()=>child.ended?resolve():setTimeout(poll,100);poll();});j.child=null;return child;};
+ M app/main.js
+ M server/server.js
+?? orch/A52_renderday_audit.md
+?? orch/APP_CAPABILITY_MAP_FROM_VIDEO.md
+?? orch/APP_UI_STRUCTURE_FROM_BUNDLE.md
+?? orch/app_round/launch_app.sh
+?? orch/app_round/shots/
+?? orch/app_round/stage5.log
+?? orch/app_round/stage5_fixes.md
+?? orch/ui_codex_fix_last_message.txt
+?? orch/ui_codex_fix_run.log
+?? orch/ui_codex_last_message.txt
+?? orch/ui_codex_round2_fix.log
+?? orch/ui_codex_round2_run.log
+?? orch/ui_codex_run.log
+?? orch/ui_codex_run_attempt1_stuck_stdin.log
+?? orch/ui_hunt_findings.md
+?? orch/ui_hunt_glm_raw.txt
+?? orch/ui_hunt_glm_raw2.txt
+?? orch/ui_hunt_opus.md
+?? orch/video-ref/
+?? projects/rooftop-kite/
+?? projects/story3-tram/
+?? projects/story4-market/voice_ar.wav
+?? projects/story6-microwave/orch/
+?? projects/story6-microwave/scenes_backup_diag/
+?? projects/story6-microwave/scenes_backup_preA102/
+?? projects/story6-microwave/scenes_backup_preA120/
+?? projects/story6-microwave/scenes_backup_preA124/
+?? projects/story6-microwave/scenes_backup_preA41/
+?? projects/story6-microwave/scenes_backup_preA44/
+?? projects/story6-microwave/scenes_backup_preA48/
+?? projects/story6-microwave/scenes_backup_preA49/
+?? projects/story6-microwave/scenes_backup_preA62/
+?? projects/story6-microwave/scenes_backup_preA67/
+?? projects/story6-microwave/scenes_backup_preA70/
+?? projects/story6-microwave/scenes_backup_preA73/
+?? projects/story6-microwave/scenes_backup_preA75/
+?? projects/story6-microwave/scenes_backup_preA77/
+?? projects/story6-oven/
+
+ succeeded in 127ms:
+codex
+Fixed F8 and F2b in [server.js](/home/hatch/workspace/heart-studio/server/server.js) and [main.js](/home/hatch/workspace/heart-studio/app/main.js).
+
+Runner launches now set `ELECTRON_RUN_AS_NODE=1`, while unrelated child processes keep their existing environments. Project resolution now accepts bare names under `projects/` and existing absolute directories.
+
+Both `node --check` commands passed. I left the changes uncommitted and did not touch the unrelated working-tree files.
+tokens used
+33,369
+Fixed F8 and F2b in [server.js](/home/hatch/workspace/heart-studio/server/server.js) and [main.js](/home/hatch/workspace/heart-studio/app/main.js).
+
+Runner launches now set `ELECTRON_RUN_AS_NODE=1`, while unrelated child processes keep their existing environments. Project resolution now accepts bare names under `projects/` and existing absolute directories.
+
+Both `node --check` commands passed. I left the changes uncommitted and did not touch the unrelated working-tree files.
