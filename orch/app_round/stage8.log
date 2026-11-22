@@ -1,0 +1,219 @@
+Reading prompt from stdin...
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/heart-studio
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: none
+reasoning summaries: none
+session id: 01a20268-c8dc-7931-9fc9-58c05b8fb33d
+--------
+user
+You are the Codex build seat for Heart Studio (repo: ~/workspace/heart-studio, branch ui/unified-interface). Read AGENTS.md first. One defect (F11), proven live. Fix ONLY in server/dispatch.js. Verify with `node --check server/dispatch.js`. Do not commit; the driver verifies live and commits.
+
+F11 (HIGH): the dispatch monitor's artifact download is killed by the gh() helper's default 30-second spawnSync timeout. Desk reproduction, using this module's own gh(): downloading run 45002453056's 302 MB artifact returned status null, signal SIGTERM, `spawnSync gh ETIMEDOUT` at exactly 30.0 s, destination left empty — and the run's board leg then failed with only the word "failed" visible, because the download's stderr was empty.
+
+Fix:
+1. In monitor(), the artifact download call must use a long timeout: pass an options override so this call gets 30 minutes (e.g. `gh(['run','download', runId, '-D', dest], { timeout: 30 * 60 * 1000 })`). The gh() helper already accepts an opts spread — use it; do not change the 30 s default for the small JSON calls (list/view/dispatch), which should stay snappy.
+2. Make download failures diagnosable from the job log: when the download result has a non-zero/null status, build the logged error text from, in order: trimmed stderr, else the spawn error's message (result.error), else `exit <status> signal <signal>`. The current code logs only stderr, which was empty for the timeout kill and hid the cause.
+
+codex
+I’ll inspect the repo guidance and the targeted dispatch code, then make only the requested change in `server/dispatch.js` and run the specified syntax check.
+exec
+/bin/bash -lc 'cat AGENTS.md && rg -n "run.*download|function gh|const gh|artifact" server/dispatch.js' in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+# AGENTS.md — Heart Studio standing direction
+
+Binding rules for every agent session (Codex seat included) working in this repo.
+The full spec lives in `orch/UI_BRIEF.md`; this file is its concise, always-on form.
+Where this file and a task brief conflict, the owner's latest word in `orch/UI_BRIEF.md` wins.
+
+## The acceptance bar (owner's direct word)
+
+- **«لازم كل حاجه تشتغل زي الاصلي» — everything in the interface must actually WORK
+  like the original.** No decorative controls. A control either executes the real
+  program action or is visibly marked **"not wired yet"** in the UI and named as
+  unwired in the delivery report. Never present unwired as working.
+- **Zero known errors is the bar.** Every delivery passes independent Opus + GLM
+  hunts; findings loop back to the author; nothing ships with a known defect.
+
+## Control law
+
+- Layla controls the program; **the interface is the ONLY door** to it.
+- Models are called **only from inside the program, via API**, each with a bounded
+  task, a defined tool surface, and the program's measured checks waiting for the
+  output: program → API → model (bounded) → measured checks → next step.
+- **No free-roaming external model session may be a step of a run.** A leg that
+  cannot be expressed as a bounded in-program call is marked not-yet-wired /
+  not-yet-dispatchable — never improvised around.
+- Seats run off signed-in subscriptions, driven only from inside: GPT via the
+  Codex seat, Opus via LLMsRelay, GLM via APInex #2, Gemini via the owner's
+  Google sign-in (owner does all sign-ins himself). Gemini work is Task mode only.
+
+## Closed system
+
+- Everything happens inside the program on this machine. Heavy work leaves ONLY
+  through the program's own dispatch layer: stills/passes → GitHub Actions API;
+  film render → Colab on-demand queue worker (never a standing session);
+  assembly/finishing → GitHub Actions workflow. Desk VM = controller + QC eyes.
+- A run leg that silently needs a manual action outside the program is a failed build.
+
+## Production rules
+
+- **Frame rate is 24/30 fps only.** 60 fps was cancelled by the owner (2026-11-22);
+  never offer or emit it as a going-forward option.
+- **Voice is law:** the owner's narration file is used exactly as-is — no trimming,
+  no cleaning; the film is exactly as long as the file. The program transcribes/
+  aligns it inside the run for word timings.
+- **Stills before renders. Gates before export.** The five passes run in strict
+  order — Build → Camera angles → Environment overhaul → Post-processing →
+  Shading — each a checkpoint: builder → programmatic checks → critic → fixes →
+  FRESH second critic → hand-over.
+- **Gates are programmatic measured checks** returning a named failure + a fix
+  instruction. Model critics are a second layer; their verdicts never open or
+  close a gate. A station shows "done" only when its artifact predicate passes
+  on disk.
+- Settings edited in the interface are persisted to `project.json` AND actually
+  sent to the renderer/dispatch (`?settings=` / workflow inputs) and recorded
+  with the run.
+
+## Authorship and verification
+
+- **Code authorship is by the Codex seat** (signed in as the owner's ChatGPT
+  account). Local agents drive it, apply its code, run and QC — they do not
+  author program code themselves.
+- Cross-verify every delivery with independent Opus + GLM hunts before reporting.
+
+## Untouched ground
+
+- `vendor/renderer-original/` (pristine backup, checksum-verified) and
+  `~/workspace/creatorize-teardown/` are **never modified**. Russell's files are
+  study material: our interface is **our own code** — never modify or ship his.
+- Do not rewrite `engine/` or `fleet/` render logic; the interface reads state
+  and invokes actions through `bin/heart`, repo scripts, and the dispatch layer.
+- Commit only your own files, on the branch named by the task brief. The working
+  tree may carry unrelated changes — do not stage, revert, or touch them.
+
+## Form
+
+- The interface is a **desktop app with its own window** (Electron shell on
+  Linux), screens/flows mirroring the original's structure with its English
+  labels (owner: English is fine); only the skin is ours.
+- **Production over looks** (owner's word): weight machinery — executors, checks,
+  dispatch, assembly — over visual polish in every round.
+7:function gh(args, opts={}) { const r=spawnSync('gh',['-R',REPO,...args],{encoding:'utf8',timeout:30000,...opts});return {...r,stdout:scrub(r.stdout||''),stderr:scrub(r.stderr||'')}; }
+34:      if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+37:      const dl=gh(['run','download',runId,'-D',dest]);if(dl.status!==0){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub((dl.stderr||'artifact download failed').trim())});break;}
+38:      if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+39:      for(const f of fs.readdirSync(dest,{recursive:true})){if(String(f).endsWith('.tar.gz')){const ar=path.join(dest,String(f));const u=spawnSync('tar',['--no-same-owner','-xzf',ar,'-C',dest],{encoding:'utf8'});if(u.status!==0)throw new Error('artifact_unpack_failed: '+scrub(u.stderr));}}
+42:        if(!info)throw new Error('run-info.json missing from downloaded artifact');const board=path.join(projectDir,'out','board');fs.mkdirSync(board,{recursive:true});for(const f of fs.readdirSync(dest,{recursive:true})){if(/\.(png|jpe?g|webp)$/i.test(String(f))){const src=path.join(dest,String(f));fs.copyFileSync(src,path.join(board,`gh-${runId}-${path.basename(String(f))}`));}}job.verification=`run-info settings: ${JSON.stringify(info.settings||{})}; sent: ${JSON.stringify(settingsSent)}`;
+
+exec
+/bin/bash -lc "sed -n '1,85p' server/dispatch.js" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+'use strict';
+const { spawn, spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const REPO='proa28518-creator/grayline-utils';
+function scrub(value) { return String(value).replace(/ghp_[A-Za-z0-9_]+|gho_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|Bearer \S+/g,'[redacted]'); }
+function gh(args, opts={}) { const r=spawnSync('gh',['-R',REPO,...args],{encoding:'utf8',timeout:30000,...opts});return {...r,stdout:scrub(r.stdout||''),stderr:scrub(r.stderr||'')}; }
+function json(r) { if(r.status!==0) throw new Error(scrub((r.stderr||r.stdout||'gh failed').trim().slice(0,1000))); try{return JSON.parse(r.stdout||'{}');}catch(e){throw new Error(scrub(e.message));} }
+function before(workflow) { return json(gh(['run','list','--workflow',workflow,'--limit','1','--json','databaseId'])).map(x=>String(x.databaseId)); }
+function dispatch(workflow, inputs) {
+  const pre=before(workflow); const ref=process.env.GITHUB_REF||'main';
+  const args=['workflow','run',workflow,'--ref',ref]; for(const [k,v] of Object.entries(inputs)) args.push('-f',`${k}=${v}`);
+  const r=gh(args); if(r.status!==0) throw new Error(scrub((r.stderr||r.stdout||'gh workflow run failed').trim()));
+  for(let i=0;i<20;i++){const rows=json(gh(['run','list','--workflow',workflow,'--limit','10','--json','databaseId,createdAt'])); const found=rows.filter(x=>!pre.includes(String(x.databaseId))).sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0]; if(found)return String(found.databaseId); Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,1000);}
+  throw new Error('Dispatched workflow but could not find its run id');
+}
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function dispatchAsync(workflow,inputs){
+  const pre=before(workflow),ref=process.env.GITHUB_REF||'main',args=['workflow','run',workflow,'--ref',ref];
+  for(const [k,v] of Object.entries(inputs))args.push('-f',`${k}=${v}`);
+  const r=gh(args);if(r.status!==0)throw new Error(scrub((r.stderr||r.stdout||'gh workflow run failed').trim()));
+  for(let i=0;i<20;i++){const rows=json(gh(['run','list','--workflow',workflow,'--limit','10','--json','databaseId,createdAt']));const found=rows.filter(x=>!pre.includes(String(x.databaseId))).sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0];if(found)return String(found.databaseId);await sleep(1000);}
+  throw new Error('Dispatched workflow but could not find its run id');
+}
+function child(args, cwd) { return spawn(args[0],args.slice(1),{cwd,stdio:['ignore','pipe','pipe']}); }
+async function monitor(job, {runId,projectDir,kind,settingsSent,repoDir}) {
+  job.runId=runId; job.log.push({t:Date.now(),stream:'system',text:`GitHub Actions run id: ${runId}`});
+  let pollFailures=0;
+  while(!job.cancelRequested){
+    const r=gh(['run','view',runId,'--json','status,conclusion']);
+    if(r.status!==0){pollFailures++;const error=scrub((r.stderr||'gh run view failed').trim());if(pollFailures>=5){job.log.push({t:Date.now(),stream:'err',text:error});job.status='failed';break;}job.log.push({t:Date.now(),stream:'err',text:`poll retry ${pollFailures}/5: ${error}`});await sleep(15000);continue;}
+    let data;try{data=JSON.parse(r.stdout);}catch(e){pollFailures++;const error=scrub(e.message);if(pollFailures>=5){job.log.push({t:Date.now(),stream:'err',text:error});job.status='failed';break;}job.log.push({t:Date.now(),stream:'err',text:`poll retry ${pollFailures}/5: ${error}`});await sleep(15000);continue;}pollFailures=0;job.log.push({t:Date.now(),stream:'system',text:scrub(`${data.status}${data.conclusion?' · '+data.conclusion:''} · run ${runId}`)});
+    if(data.status==='completed'){
+      if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+      if(data.conclusion!=='success'){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:'Workflow concluded: '+data.conclusion});break;}
+      const dest=kind==='stills'?path.join(projectDir,'out','fleet',runId):path.join(projectDir,'out','github-master',runId);fs.mkdirSync(dest,{recursive:true});
+      const dl=gh(['run','download',runId,'-D',dest]);if(dl.status!==0){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub((dl.stderr||'artifact download failed').trim())});break;}
+      if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+      for(const f of fs.readdirSync(dest,{recursive:true})){if(String(f).endsWith('.tar.gz')){const ar=path.join(dest,String(f));const u=spawnSync('tar',['--no-same-owner','-xzf',ar,'-C',dest],{encoding:'utf8'});if(u.status!==0)throw new Error('artifact_unpack_failed: '+scrub(u.stderr));}}
+      if(kind==='stills'){
+        let info=null;for(const f of fs.readdirSync(dest,{recursive:true}))if(String(f)==='run-info.json'){info=JSON.parse(fs.readFileSync(path.join(dest,String(f)),'utf8'));break;}
+        if(!info)throw new Error('run-info.json missing from downloaded artifact');const board=path.join(projectDir,'out','board');fs.mkdirSync(board,{recursive:true});for(const f of fs.readdirSync(dest,{recursive:true})){if(/\.(png|jpe?g|webp)$/i.test(String(f))){const src=path.join(dest,String(f));fs.copyFileSync(src,path.join(board,`gh-${runId}-${path.basename(String(f))}`));}}job.verification=`run-info settings: ${JSON.stringify(info.settings||{})}; sent: ${JSON.stringify(settingsSent)}`;
+      } else {
+        const mp4s=[];for(const f of fs.readdirSync(dest,{recursive:true}))if(String(f).endsWith('.mp4'))mp4s.push(path.join(dest,String(f)));
+        const master=mp4s.find(x=>/master/.test(x))||mp4s[0];if(!master)throw new Error('master mp4 missing');
+        const probe=spawnSync('ffprobe',['-v','error','-show_entries','stream=codec_type','-of','json',master],{encoding:'utf8'});const streams=JSON.parse(probe.stdout||'{}').streams||[];if(probe.status!==0||!streams.length)throw new Error('master ffprobe validation failed');job.verification='master exists; ffprobe streams: '+streams.map(x=>x.codec_type).join(',');
+      }
+      job.status='done';job.log.push({t:Date.now(),stream:'pass',text:'Artifacts back and verified · '+job.verification});break;
+    }
+    await sleep(15000);
+  }
+  if(job.cancelRequested){job.status='stopped';}
+  job.ended=true;job.finishedAt=Date.now();
+}
+module.exports={gh,json,dispatch,dispatchAsync,monitor};
+
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/server/dispatch.js
+diff --git a/server/dispatch.js b/server/dispatch.js
+index 44c178400f8738f0a2d3f58ece299b17d7285371..cefaf05cc924892d75c420f5c62eb9cf4ad38fa5
+--- a/server/dispatch.js
++++ b/server/dispatch.js
+@@ -34,7 +34,7 @@
+       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+       if(data.conclusion!=='success'){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:'Workflow concluded: '+data.conclusion});break;}
+       const dest=kind==='stills'?path.join(projectDir,'out','fleet',runId):path.join(projectDir,'out','github-master',runId);fs.mkdirSync(dest,{recursive:true});
+-      const dl=gh(['run','download',runId,'-D',dest]);if(dl.status!==0){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub((dl.stderr||'artifact download failed').trim())});break;}
++      const dl=gh(['run','download',runId,'-D',dest],{timeout:30*60*1000});if(dl.status!==0){const error=(dl.stderr||'').trim()||dl.error?.message||`exit ${dl.status} signal ${dl.signal}`;job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub(error)});break;}
+       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+       for(const f of fs.readdirSync(dest,{recursive:true})){if(String(f).endsWith('.tar.gz')){const ar=path.join(dest,String(f));const u=spawnSync('tar',['--no-same-owner','-xzf',ar,'-C',dest],{encoding:'utf8'});if(u.status!==0)throw new Error('artifact_unpack_failed: '+scrub(u.stderr));}}
+       if(kind==='stills'){
+
+codex
+The artifact download now gets a 30-minute timeout, while the `gh()` default remains 30 seconds for other calls. Download failures log stderr, then the spawn error, then status and signal. I’m running the requested syntax check and confirming the diff is limited to this file.
+exec
+/bin/bash -lc 'git diff -- server/dispatch.js' in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+diff --git a/server/dispatch.js b/server/dispatch.js
+index 44c1784..cefaf05 100644
+--- a/server/dispatch.js
++++ b/server/dispatch.js
+@@ -34,7 +34,7 @@ async function monitor(job, {runId,projectDir,kind,settingsSent,repoDir}) {
+       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+       if(data.conclusion!=='success'){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:'Workflow concluded: '+data.conclusion});break;}
+       const dest=kind==='stills'?path.join(projectDir,'out','fleet',runId):path.join(projectDir,'out','github-master',runId);fs.mkdirSync(dest,{recursive:true});
+-      const dl=gh(['run','download',runId,'-D',dest]);if(dl.status!==0){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub((dl.stderr||'artifact download failed').trim())});break;}
++      const dl=gh(['run','download',runId,'-D',dest],{timeout:30*60*1000});if(dl.status!==0){const error=(dl.stderr||'').trim()||dl.error?.message||`exit ${dl.status} signal ${dl.signal}`;job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub(error)});break;}
+       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+       for(const f of fs.readdirSync(dest,{recursive:true})){if(String(f).endsWith('.tar.gz')){const ar=path.join(dest,String(f));const u=spawnSync('tar',['--no-same-owner','-xzf',ar,'-C',dest],{encoding:'utf8'});if(u.status!==0)throw new Error('artifact_unpack_failed: '+scrub(u.stderr));}}
+       if(kind==='stills'){
+
+exec
+/bin/bash -lc 'node --check server/dispatch.js' in /home/hatch/workspace/heart-studio
+ succeeded in 196ms:
+codex
+Updated [server/dispatch.js](/home/hatch/workspace/heart-studio/server/dispatch.js) so artifact downloads use a 30-minute timeout. Download failures now log stderr, the spawn error message, or the exit status and signal, in that order.
+
+`node --check server/dispatch.js` passed. No commit made.
+tokens used
+23,564
+Updated [server/dispatch.js](/home/hatch/workspace/heart-studio/server/dispatch.js) so artifact downloads use a 30-minute timeout. Download failures now log stderr, the spawn error message, or the exit status and signal, in that order.
+
+`node --check server/dispatch.js` passed. No commit made.

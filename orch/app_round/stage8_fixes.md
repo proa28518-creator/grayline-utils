@@ -1,0 +1,7 @@
+You are the Codex build seat for Heart Studio (repo: ~/workspace/heart-studio, branch ui/unified-interface). Read AGENTS.md first. One defect (F11), proven live. Fix ONLY in server/dispatch.js. Verify with `node --check server/dispatch.js`. Do not commit; the driver verifies live and commits.
+
+F11 (HIGH): the dispatch monitor's artifact download is killed by the gh() helper's default 30-second spawnSync timeout. Desk reproduction, using this module's own gh(): downloading run 45002453056's 302 MB artifact returned status null, signal SIGTERM, `spawnSync gh ETIMEDOUT` at exactly 30.0 s, destination left empty — and the run's board leg then failed with only the word "failed" visible, because the download's stderr was empty.
+
+Fix:
+1. In monitor(), the artifact download call must use a long timeout: pass an options override so this call gets 30 minutes (e.g. `gh(['run','download', runId, '-D', dest], { timeout: 30 * 60 * 1000 })`). The gh() helper already accepts an opts spread — use it; do not change the 30 s default for the small JSON calls (list/view/dispatch), which should stay snappy.
+2. Make download failures diagnosable from the job log: when the download result has a non-zero/null status, build the logged error text from, in order: trimmed stderr, else the spawn error's message (result.error), else `exit <status> signal <signal>`. The current code logs only stderr, which was empty for the timeout kill and hid the cause.
