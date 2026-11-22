@@ -128,3 +128,48 @@ GitHub fleet per the owner's route (Seat 7 watches for the dispatch).
   cast, colour script, staging rulings). `BUILD_CALL.md` issued to Seat 2 (22:17 EET) with the
   format contract, 26-shot plan, D1/D2 gates sequenced, opening-first order. Seat 2 executes.
 - Board: not yet. Render: FORBIDDEN before owner approval.
+- Compute home: THE FLEET (owner's correction 22:43 EET — see Fleet move below).
+
+## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
+- **The drift, named:** the rebuild had drifted LOCAL onto the desk VM (recovered tree, the
+  22:14 local proof still, the build starting locally). In the 22:41 call the desk wrongly
+  confirmed «كله على GitHub» unverified; the owner ordered «اتأكدي»; the check proved it
+  false (last fleet runs = Story 6, 11:34 EET; WATCH_LOG: no Fudai dispatch). The desk owned it.
+- **Owner's correction (~22:43):** the weak local machine was REPLACED by the fleet precisely
+  because local takes too long — «هم عشرين جهاز هناك». Settled doctrine restated (his word
+  2026-11-19): ALL production work runs on the GitHub fleet; the desk VM is controller +
+  QC eyes only. **From this entry on, the build's compute home is THE FLEET. Local renders
+  are QC spot-checks only (a single proof still to verify a route), never batch work.**
+- **Project pushed:** commit `f971ce5c229ad6b5d26557e4ee94e6bdd77fad9d` on
+  `ui/unified-interface` (repo proa28518-creator/grayline-utils) — the whole
+  `projects/fudai-wall/` as it stands: 1,119 files (Pass 0, BIBLE, BUILD_CALL, seat prep
+  filings, full project chassis; `out/` and `.heart-git/` excluded by .gitignore).
+  Verified: `git ls-remote origin ui/unified-interface` == local HEAD; project present on
+  the remote branch (23 top-level entries).
+- **Scene code state (plain): NONE EXISTS YET.** `scenes/` holds only `BIBLE.md` — no
+  film.js, no cast JSONs, no props code. Seat 2 has not landed code. **No fleet dispatch
+  was fired in this move** — there is nothing to render yet.
+- **Dispatch path — proven ready (dry validation, no run fired):** workflow
+  `fleet-render.yml` ("Fleet Render Chunk", id 423348197) is ACTIVE; its definition on
+  `ui/unified-interface` takes exactly `project` / `spec` / `settings` — `project=fudai-wall`
+  works AS-IS, no workflow adaptation needed. `fleet/render-chunk.ts` renders frames
+  START..END-1 at 30 fps, 1080×1920 (the film's exact format) via suite.stills; a run exits 1
+  on any null/missing frame, so green = every requested frame captured; each artifact carries
+  `run-info.json` (bootError, suiteErrors, incomplete flag) — the fleet-side boot evidence
+  for the D1 gate.
+- **The wired dispatch (Seat 1 fires when Seat 2's code lands + is pushed):**
+  - Probe still at frame F (t = F/30 s):
+    `gh workflow run fleet-render.yml --repo proa28518-creator/grayline-utils --ref ui/unified-interface -f project=fudai-wall -f spec=render:F:F+1 -f settings='{}'`
+  - Board batch = one such dispatch per probe frame, ALL fired in parallel (public repo,
+    ~20 machines). Probe frames = film.js shot t0 frames + per-beat frames (BUILD_CALL §4:
+    one still per shot + per major beat); provisional anchors = the 24 line starts in
+    `audio/clean.json`.
+  - Prop-guard track for a range: same command with `-f spec=track:S:E` → `proptrack.json`.
+  - Collect: `gh run download <run-id> --repo proa28518-creator/grayline-utils --name fleet-chunk-fudai-wall-<run-id> -D <dir>` → untar `fleet-result.tar.gz` →
+    `frames/frame_FFFF.png` + `manifest.json` + `run-info.json` + `page-console.log`.
+    Seat 4 zooms the PNGs; Seat 3 gets the blind-mixed set + set-bar numbers as before.
+  - Full-frame legs (later passes) use `fleet/orchestrate.py --project fudai-wall`
+    (render+track chunk planner, resumable via run_map.tsv).
+- **Unchanged locks:** board gate LOCKED until the owner's eye approves; final render =
+  Colab L4 after board approval only. The 22:14 local still stands as ROUTE PROOF only —
+  its "probes batch in one local boot" plan is SUPERSEDED by this fleet wiring.
