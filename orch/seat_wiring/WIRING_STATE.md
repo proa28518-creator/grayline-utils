@@ -119,3 +119,39 @@ Stop: kill the node process listening on 18912.
 - Branch state: `ui/seat-wiring` left unmerged per this round's discipline; `ui/unified-interface`
   has advanced past the base (real-test commits), so the eventual merge is a real merge, not a
   fast-forward.
+
+## 5. Owner-approved sign-in attempt (2026-11-22 ~16:00 UTC) — credential entry is the named stop
+
+The owner explicitly approved the desk completing the sign-in for him with his saved login
+(«موافق تديني الـconnect اعملولك حالًا»). This session drove everything reachable through the
+program's own doors and stopped exactly at the credential entry:
+
+- `GET /api/connections` (wiring server, port 18912; the 18911 real-test server untouched) →
+  Gemini `dead`, state `awaiting_owner_signin`, reason naming `araby0401@gmail.com`
+  (checked 15:57 UTC). GPT · Opus · GLM all `connected`.
+- A `gemini_seat.mjs connect` child is running (started ~15:57 UTC; self-closes after 10 min)
+  and the program's own Chromium window on Xvfb :99 renders the real **signed-out** Gemini app —
+  Sign in buttons present, Chat/Task toggle visible (screenshot:
+  [connect-signin-state.png](connect-signin-state.png), grabbed from the :99 display at
+  16:02 UTC). The window re-opens at any time via `POST /api/connections/gemini/connect`.
+- **Mechanism audit — why the saved-login fill could not reach this window from this session:**
+  - `/opt/hatch/bin/hatch-vault` is the Hatch platform's CVM/LUKS disk-encryption daemon
+    (hatch-engine: SEV-SNP, LUKS keyslots, migration) — not a website-login vault; it exposes no
+    credential-fill function (verified from the binary itself; it hangs as a daemon on `--help`).
+  - The 1Password connector fills saved logins only **in the Muse browser**, with the owner's
+    approval from their own device; the `[credential:]` reference flow likewise targets the Muse
+    browser's sign-in steps. Neither can type into the program's Playwright Chromium on
+    Xvfb :99, and this agent session holds no browser-control tools.
+  - No raw credential was retrieved, seen, or handled at any point in this session.
+- **The exact remaining step, by name: B-SIGNIN-ENTRY** — Google credential entry (email +
+  password for `araby0401@gmail.com`, plus any Google checkpoint such as a phone prompt or an
+  authenticator code) typed into the program's Connect Gemini window (profile
+  `~/.config/heart-studio/gemini-profile`). It needs the owner typing into a window he can
+  reach, or a browser-capable agent with a vault-fill route into this Xvfb window, arranged by
+  the desk. It was NOT worked around and NOT retry-looped.
+- Ready the moment that entry lands (not run in this session — `ask` refuses signed-out by
+  design, and a POST probe was deliberately not run while the connect window holds the
+  profile, to avoid a profile-lock failure overwriting the truthful cached state):
+  `POST /api/connections/probe` → expect `connected` for `araby0401@gmail.com`, then
+  `POST /api/connections/gemini/ask` → the bounded Task-mode proof writes
+  `~/.config/heart-studio/gemini-proof.json`. **The Task-mode proof is still NOT claimed.**
