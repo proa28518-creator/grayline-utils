@@ -1,0 +1,1665 @@
+Reading prompt from stdin...
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/heart-studio
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: none
+reasoning summaries: none
+session id: 01a2023f-26df-7f71-b727-f5f9d199b44c
+--------
+user
+You are the Codex build seat for Heart Studio (repo: ~/workspace/heart-studio, branch ui/unified-interface). Read AGENTS.md at the repo root first — its rules bind this session. This is STAGE 3 of the desktop-app round: build OUR OWN desktop app under app/. Two reference screenshots are attached to this prompt: the original app's Berserk supervision screen and its model picker. Mirror that STRUCTURE and flow (left rail, supervision feed, run controls, model/effort pickers) — the code, name, colors and skin are ours. Do NOT copy or ship any file from vendor/, app-shell/, or the teardown. Do not modify server/, bin/, ui/, engine/, fleet/, or projects/*. Stage 2 already provides the server API (served at /app/ from app/renderer): /api/projects, /api/project, /api/select, /api/settings, /api/history(+revert), /api/qc, /api/annotations, /api/connections(+probe), /api/projects/new, /api/projects/slice, /api/action (preview|timing|sound|models|mix), /api/run, /api/job, /api/stop, /api/steer, /api/dispatch/stills, /api/dispatch/assembly, /api/dispatch/runs, /api/colab-queue, /api/passes, /api/passes/run, /api/passes/rollback. Vanilla JS + plain Node only — no npm dependencies, no build step. Commit only app/ files on ui/unified-interface and end with a summary + how you verified (launch it headless and report what rendered).
+
+Build:
+
+1. **app/package.json** — {name: "heart-studio-app", private: true, main: "main.js"}.
+2. **app/main.js** — Electron main process, our own code: require ../server/server.js's createHeartServer with projectDir = process.env.HEART_PROJECT resolved (a project name under projects/ or a path; default projects/story6-microwave) and uiDir ../ui; port = HEART_PORT or 8903 (if listen fails with EADDRINUSE, retry with port 0). Create a BrowserWindow (1360x900, backgroundColor #0d1117) loading http://127.0.0.1:<actualPort>/app/. Register ipcMain handler `heart:pick-file` → dialog.showOpenDialog (filters from the renderer: audio / text / any) returning the chosen absolute path or null. On window close: close the HTTP server and quit. contextIsolation: true, nodeIntegration: false, preload: app/preload.js.
+3. **app/preload.js** — contextBridge: window.heartApp = { pickFile: (kind) => ipcRenderer.invoke('heart:pick-file', kind) }.
+4. **app/renderer/index.html + app.css + app.js** — the interface. English labels. Dark console, our skin (near-black #0d1117, cards #131a22, border #232c38, accent amber #e9b949, text #e6edf3 / muted #8b98a5). Layout mirroring the reference: fixed left rail (brand "Heart Studio", nav, New project button, connections footer), main content area per screen.
+
+Screens and their REAL wiring (anything without a backend gets a visible `not wired yet` badge and a disabled control — never a fake action):
+- **Rail nav:** Home, Berserk, Projects, Channels, Editor, Styles, Library, Memory, Routines, Renders, YouTube. Footer: four seat dots (GPT, Gemini, Opus, GLM) from GET /api/connections + a Probe button (POST /api/connections/probe, then refresh).
+- **Home:** connection cards (status + reason when dead), project cards from /api/projects (title, badges: script/voice/timing/board count/master from the real inventory fields), recent fleet runs from /api/dispatch/runs (top 8: workflow, status/conclusion, id, created).
+- **Berserk (the RUN console — mirror the reference screenshot):** active project name; controls row: Quality/Faster toggle (segmented), model select (free/glm-5.3-flashx, free/gpt-6-luna), effort select (standard, high), spec text input (default `render:0:30`), "Dispatch stills for board" checkbox, RUN button (POST /api/run with {mode, model, effort, spec, dispatchStills}), Stop button (POST /api/stop). Below: the legs checklist (script, voice, timing, board, sound, gates, export) with live states from polling GET /api/job every 1.5 s; the live feed (job log lines, monospace, auto-scroll); a prominent waiting-on line: `Waiting on you: <text>` or `Waiting on you: nothing`. Frame strip: the active project's board stills (GET /api/project → board[], served at /project/out/board/<name>) as thumbnails; clicking one opens an annotation prompt (frame name + change text) → POST /api/annotations, and the saved annotation appears in a list under the strip with its status text from the API. Steering box at the bottom (like the reference's "Tell it something while it works"): text input + Send → POST /api/steer {id: currentJobId, text}; enabled only while a run/pass job is active, otherwise show the hint `Steering is live during a run`. Dispatch panel: "Dispatch stills" button (POST /api/dispatch/stills {project, spec, settings from the project}) and "Dispatch assembly" (inputs: frames run id, fps select 24/30, mix path default `audio/final_mix.wav` → POST /api/dispatch/assembly); each shows its job status inline (poll /api/job). Colab panel: GET /api/colab-queue entries (or empty state) + the badge `not dispatchable from inside the program yet`.
+- **Projects:** cards/table from /api/projects with a Select button (POST /api/select {name}) and "Open in Editor" (select + go to Editor).
+- **New project** (rail button + its own screen): form — name, idea (textarea), audio file (Pick button using window.heartApp.pickFile('audio') with a text-input fallback for the path), timings file (optional, same pattern), template select (options from /api/projects names, default demo-ring). Create → POST /api/projects/new; result panel shows created project + `pushed: yes/no` and, when no, the warning `Not pushed yet — fleet dispatch cannot see this project`. On success, select the new project and offer "Open Berserk".
+- **Editor:** active project stations from GET /api/project (Script & voice, Timing, Board, QC gates, Render, Finish, Master — each with its real evidence string), the gates checklist from GET /api/qc (pass/fail + evidence per check), a Settings form (captions checkbox, fps radio 24/30 only → POST /api/settings, show the API's note), History (GET /api/history: honest empty state when no repo; per-commit Revert button → POST /api/history/revert), board stills grid with click-to-annotate (same as Berserk), a Slice control (seconds input → POST /api/projects/slice → list the produced file paths), a "Mix now" button (POST /api/action {action:'mix'} → poll the job → show verification), and the FIVE PASS buttons in strict order (Build, Camera angles, Environment overhaul, Post-processing, Shading) with state chips from GET /api/passes, a Run button per pass (POST /api/passes/run {pass, mode: current toggle}) disabled unless all earlier passes are checkpointed, a Rollback button per pass (POST /api/passes/rollback), and a pass feed area that polls the pass job and shows its log.
+- **Renders:** table from GET /api/dispatch/runs (workflow, status, conclusion, created at, run id).
+- **Channels, Styles, Library, Memory, Routines, YouTube:** honest placeholder screens — the section title, a visible `not wired yet` badge, and one line stating there is no backend for this section yet. No fake content.
+
+Also add app/README.md: what the app is and the exact launch command (`node bin/heart app [project]`, or the electron binary path with app/ as argument).
+
+Verify before committing: launch the app headless (xvfb-run with the electron binary from app-shell/node_modules, --remote-debugging-port) or at minimum load main.js's server and fetch /app/ + confirm the HTML/CSS/JS are served and the JS parses (node --check). Report what you actually verified.
+
+codex
+I’ll first inspect the repo instructions, current branch, and the Stage 2 API shapes, then build the desktop shell and renderer only under `app/`. I’ll verify the served UI and JavaScript before committing only those files.
+exec
+/bin/bash -lc 'pwd && git branch --show-current && cat AGENTS.md && git status --short && rg --files app server | head -200' in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+/home/hatch/workspace/heart-studio
+ui/unified-interface
+# AGENTS.md — Heart Studio standing direction
+
+Binding rules for every agent session (Codex seat included) working in this repo.
+The full spec lives in `orch/UI_BRIEF.md`; this file is its concise, always-on form.
+Where this file and a task brief conflict, the owner's latest word in `orch/UI_BRIEF.md` wins.
+
+## The acceptance bar (owner's direct word)
+
+- **«لازم كل حاجه تشتغل زي الاصلي» — everything in the interface must actually WORK
+  like the original.** No decorative controls. A control either executes the real
+  program action or is visibly marked **"not wired yet"** in the UI and named as
+  unwired in the delivery report. Never present unwired as working.
+- **Zero known errors is the bar.** Every delivery passes independent Opus + GLM
+  hunts; findings loop back to the author; nothing ships with a known defect.
+
+## Control law
+
+- Layla controls the program; **the interface is the ONLY door** to it.
+- Models are called **only from inside the program, via API**, each with a bounded
+  task, a defined tool surface, and the program's measured checks waiting for the
+  output: program → API → model (bounded) → measured checks → next step.
+- **No free-roaming external model session may be a step of a run.** A leg that
+  cannot be expressed as a bounded in-program call is marked not-yet-wired /
+  not-yet-dispatchable — never improvised around.
+- Seats run off signed-in subscriptions, driven only from inside: GPT via the
+  Codex seat, Opus via LLMsRelay, GLM via APInex #2, Gemini via the owner's
+  Google sign-in (owner does all sign-ins himself). Gemini work is Task mode only.
+
+## Closed system
+
+- Everything happens inside the program on this machine. Heavy work leaves ONLY
+  through the program's own dispatch layer: stills/passes → GitHub Actions API;
+  film render → Colab on-demand queue worker (never a standing session);
+  assembly/finishing → GitHub Actions workflow. Desk VM = controller + QC eyes.
+- A run leg that silently needs a manual action outside the program is a failed build.
+
+## Production rules
+
+- **Frame rate is 24/30 fps only.** 60 fps was cancelled by the owner (2026-11-22);
+  never offer or emit it as a going-forward option.
+- **Voice is law:** the owner's narration file is used exactly as-is — no trimming,
+  no cleaning; the film is exactly as long as the file. The program transcribes/
+  aligns it inside the run for word timings.
+- **Stills before renders. Gates before export.** The five passes run in strict
+  order — Build → Camera angles → Environment overhaul → Post-processing →
+  Shading — each a checkpoint: builder → programmatic checks → critic → fixes →
+  FRESH second critic → hand-over.
+- **Gates are programmatic measured checks** returning a named failure + a fix
+  instruction. Model critics are a second layer; their verdicts never open or
+  close a gate. A station shows "done" only when its artifact predicate passes
+  on disk.
+- Settings edited in the interface are persisted to `project.json` AND actually
+  sent to the renderer/dispatch (`?settings=` / workflow inputs) and recorded
+  with the run.
+
+## Authorship and verification
+
+- **Code authorship is by the Codex seat** (signed in as the owner's ChatGPT
+  account). Local agents drive it, apply its code, run and QC — they do not
+  author program code themselves.
+- Cross-verify every delivery with independent Opus + GLM hunts before reporting.
+
+## Untouched ground
+
+- `vendor/renderer-original/` (pristine backup, checksum-verified) and
+  `~/workspace/creatorize-teardown/` are **never modified**. Russell's files are
+  study material: our interface is **our own code** — never modify or ship his.
+- Do not rewrite `engine/` or `fleet/` render logic; the interface reads state
+  and invokes actions through `bin/heart`, repo scripts, and the dispatch layer.
+- Commit only your own files, on the branch named by the task brief. The working
+  tree may carry unrelated changes — do not stage, revert, or touch them.
+
+## Form
+
+- The interface is a **desktop app with its own window** (Electron shell on
+  Linux), screens/flows mirroring the original's structure with its English
+  labels (owner: English is fine); only the skin is ours.
+- **Production over looks** (owner's word): weight machinery — executors, checks,
+  dispatch, assembly — over visual polish in every round.
+?? orch/A52_renderday_audit.md
+?? orch/APP_CAPABILITY_MAP_FROM_VIDEO.md
+?? orch/APP_UI_STRUCTURE_FROM_BUNDLE.md
+?? orch/app_round/stage2.log
+?? orch/app_round/stage2b.log
+?? orch/app_round/stage2b_server.md
+?? orch/app_round/stage3.log
+?? orch/ui_codex_fix_last_message.txt
+?? orch/ui_codex_fix_run.log
+?? orch/ui_codex_last_message.txt
+?? orch/ui_codex_round2_fix.log
+?? orch/ui_codex_round2_run.log
+?? orch/ui_codex_run.log
+?? orch/ui_codex_run_attempt1_stuck_stdin.log
+?? orch/ui_hunt_findings.md
+?? orch/ui_hunt_glm_raw.txt
+?? orch/ui_hunt_glm_raw2.txt
+?? orch/ui_hunt_opus.md
+?? orch/video-ref/
+?? projects/rooftop-kite/
+?? projects/story3-tram/
+?? projects/story4-market/voice_ar.wav
+?? projects/story6-microwave/orch/
+?? projects/story6-microwave/scenes_backup_diag/
+?? projects/story6-microwave/scenes_backup_preA102/
+?? projects/story6-microwave/scenes_backup_preA120/
+?? projects/story6-microwave/scenes_backup_preA124/
+?? projects/story6-microwave/scenes_backup_preA41/
+?? projects/story6-microwave/scenes_backup_preA44/
+?? projects/story6-microwave/scenes_backup_preA48/
+?? projects/story6-microwave/scenes_backup_preA49/
+?? projects/story6-microwave/scenes_backup_preA62/
+?? projects/story6-microwave/scenes_backup_preA67/
+?? projects/story6-microwave/scenes_backup_preA70/
+?? projects/story6-microwave/scenes_backup_preA73/
+?? projects/story6-microwave/scenes_backup_preA75/
+?? projects/story6-microwave/scenes_backup_preA77/
+?? projects/story6-oven/
+rg: app: No such file or directory (os error 2)
+server/passes.js
+server/server.js
+server/dispatch.js
+server/heart-cjs-runner.cjs
+server/package.json
+
+exec
+/bin/bash -lc "cat orch/UI_BRIEF.md && sed -n '1,260p' server/server.js && sed -n '1,240p' server/passes.js && sed -n '1,220p' server/dispatch.js" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+# UI BRIEF — Unified Heart Interface (واجهة القلب الموحدة)
+
+You (Codex) are the author of this build. Work in this repo: `~/workspace/heart-studio`
+(the "Heart Studio" program — our own Linux implementation of the Creatorize heart).
+Commit your work on a NEW branch named **`ui/unified-interface`**.
+
+## What you are building
+
+ONE unified web interface for the heart — the single surface that controls the heart
+and all its files/projects, succeeding our current control page (صفحة تحكم القلب).
+Model the *flow* on how Russell's Creatorize app drives its core — reference material
+is on disk, read it before designing:
+
+- `~/workspace/creatorize-teardown/TEARDOWN.md`
+- `~/workspace/creatorize-teardown/COMPLETENESS.md`
+- `~/workspace/creatorize-teardown/unpacked/asar/` — the app's UI structure & step flow
+  (his main actions: Build · Camera angles · Environment overhaul · Post processing ·
+  Shading, plus project list, settings, update/health status)
+
+## Read first (this repo)
+
+- `README.md` — what the program is; the `heart` CLI (`heart serve`, `heart new`,
+  `heart still`, `heart models`, `heart consult`, `heart critic`, …)
+- `bin/heart` — the CLI implementation; your UI's actions must call THIS (or repo
+  scripts), never re-implement its logic in the page
+- `ui/index.html` + `server/server.js` — the existing Arabic control UI and its
+  zero-dependency Node server (port 8903, per-project `panel_state.json`). Follow the
+  repo's existing conventions: extend/replace inside `ui/` + `server/` unless you find
+  a strong repo reason to do otherwise — if you do, say so in your summary.
+- `projects/` — real project folders: `demo-ring`, `rooftop-kite`, `story3-tram`,
+  `story4-market`, `story5-elevator`, `story6-microwave`, `story6-oven`
+- `fleet/` — render dispatch (`orchestrate.py`, `render-chunk.ts`, `seat-consult.py`)
+- `orch/` — desk-level gates/audits
+
+## GAP AUDIT FINDINGS — design consequences (read before designing)
+
+A full audit of the app vs our program has landed: `orch/HEART_GAP_AUDIT.md`
+(commit cc054d2). Read it. Four findings directly govern this interface's design:
+
+- **G1 (the headline) — this must be a step-EXECUTING surface, not a status panel.**
+  In Russell's app, buttons *execute*: `runStep()` → `runStepWith()` runs the real
+  pipeline per step, with cancellation cleanup and per-pass agent invocation
+  constructed in code. Our old panel's `/api/step` only wrote
+  `steps[step] = 'requested'` into `panel_state.json` and waited for a human to
+  notice — that is the core defect this interface exists to kill. Design every
+  station as: **Run control → the server dispatches the real program action**
+  (a `heart` command, a repo/fleet script, or a step-worker dispatch) **→ live
+  output/log for the running step → the resulting artifact is verified → only then
+  does the station read as done.** Include a working **cancel/stop** for a running
+  step. Where the backend executor for a step does not exist yet in the program,
+  build the surface for execution anyway (run control, log pane, status states:
+  idle / running / verifying / done / failed) and mark that step's run control
+  «غير موصول بعد» — never fall back to a button that merely flips a status string.
+- **G3 — gates verify artifacts, not honor-system strings — and the gate itself is
+  PROGRAMMATIC, never a model's opinion.** Russell's mechanism, in his words:
+  *"the app's own checks measure every shot and they don't care what Claude
+  thinks — anything that fails goes back to the builder with what's wrong and how
+  to fix it."* So the gates station is built on **measured checks owned by the
+  program** (the suite's `film_check` / prop-guard class: set-bar percentages,
+  per-shot measurements, artifact predicates), each returning a **named failure +
+  a fix instruction** that routes back to the builder leg. Model critics (our
+  GLM critic included) are a **second layer** shown alongside — their verdicts
+  inform, they never open or close a gate. A gate that displays a critic's
+  opinion as its pass/fail is a design defect. Our current
+  `/api/setstep` lets any caller set any step to `done` with no check. In this
+  interface, a station may show «done» **only when its artifact predicate passes**
+  (e.g. voice station: the audio file exists; timing: the timings file exists and
+  parses; board: stills count > 0; mix: the final mix file exists; master: the
+  master mp4 exists). The QC-gates station must display the actual artifact checks
+  (pass/fail per check, from the files) — not a status someone typed. If you add or
+  extend server endpoints, enforce the predicate server-side before accepting
+  `done`, following the audit's fix shape.
+- **G10 — the interface must actually send project settings to the renderer.**
+  Our host parses `?settings=` overrides at boot, but nothing ever sends any:
+  Story 6's `project.json` has `"settings": {}` and it rendered entirely on host
+  defaults (captions ON by default). The project view must include a **settings
+  station/panel** that (a) shows the project's *effective* settings — base
+  `project.json` settings merged with what will be passed to the renderer,
+  (b) lets the operator edit the settings the program supports (at minimum:
+  captions on/off, and frame rate fixed to the 24/30 standing rule), persisting
+  them to `project.json`, and (c) when a render/still action is triggered from
+  the UI, passes them through as the `?settings=` override (and the effective
+  settings are recorded with the run). If the render-dispatch side cannot accept
+  settings yet, wire what exists and mark the remainder «غير موصول بعد» — but the
+  effective-settings display must be real from day one.
+- **G4 — per-project git undo is part of the app's model; design for it.** The app
+  installs git as "project edit history = undo": `ensureRepo()` inits a repo per
+  project, every edit is snapshot-committed, and undo/redo restores ranges. Our
+  `heart new` does not `git init` yet and panel state is one history-free JSON.
+  The project view must include a **history (السجل) surface**: the project's git
+  log/snapshots where a repo exists, with restore/undo actions wired to git where
+  possible; for projects without a repo, show that honestly («لا يوجد سجل Git بعد»)
+  rather than hiding the surface. Do not silently invent a parallel history store.
+
+Also noted in the audit and relevant to the QC station (G2/G11): our critic
+currently grades builder-written text, not frames — so the gates station should
+surface *frame evidence* (board stills / contact sheet) alongside any critic
+verdict, and the finish station should surface the render's grade status
+(`filmGradedInFrames` / `filmGrade` from `run-info.json`) when present instead of
+assuming grading happened.
+
+## THE RUN IS THE CORE OBJECT — owner's framing (2026-11-22)
+
+The owner defines this interface himself: **the interface is the controller — it
+runs the heart, it moves the passes together, it assembles the machine; it is the
+ignition button.** Design consequence, above everything else in this brief:
+
+- The central object of the UI is **the RUN** (تشغيل): one operator action — press
+  start — that **executes the whole sequence through the real program** (`heart`
+  CLI / repo & fleet scripts): stations in order, gates verified by artifacts
+  between them, render and export *inside* the same run — never a status-only
+  panel with a start-shaped decoration on it.
+- The run has a live supervision view while it executes (see the capability map
+  below): what is running now, hand-off states, progress/ETA where the program
+  honestly knows them, and a **«بانتظارك» (WAITING ON YOU)** line that says what
+  needs the operator — or «لا شيء» (nothing).
+- Where the backend cannot yet execute a leg of the run end-to-end, the run must
+  stop honestly at that leg and say so (waiting-on-you: backend not wired), with
+  that leg's control marked «غير موصول بعد». A run that silently skips a leg, or
+  pretends to complete it, is a failed build.
+- **The RUN executes in Russell's own sequence — adopt it verbatim as the station
+  order** (from his closing workflow summary and the Send mechanism, transcript
+  03:37–04:23 and 11:22):
+  1. Create the project (from the one brief + narration/assets)
+  2. Check the tools the style needs
+  3. Read transcript + style guide (the run's own transcribe/align produces the
+     word timings — see the Addendum below)
+  4. The director picks the builder (model/effort routing made visible here)
+  5. Exact shot plan (the whole short planned second by second, every shot
+     landing on its word — before anything is built)
+  6. The five passes, in order, **each a checkpoint** (builder → programmatic
+     checks → critic → fixes → fresh critic → hand-over)
+  7. Whole-film checks (the full-film error hunt)
+  8. Sound mix under the voice (the app mixes its sound under the narration)
+  9. Export — the finished film lands in the conversation/run view
+  10. Human step: click any moment in the editor + a one-line fix instruction
+  The project view's station spine (script/voice → timing → board → gates →
+  render → finish → master) remains the project's anatomy; the RUN's execution
+  order is this sequence. Where they differ in naming, the run view follows this
+  list.
+
+## CAPABILITY MAP — from Russell's own autopilot video (owner-supplied)
+
+Read `orch/APP_CAPABILITY_MAP_FROM_VIDEO.md` in full before designing. Owner's
+rule: **same capabilities, NOT the same look** — the interface is our own design.
+The capability shapes to build in:
+
+1. **Conversation-first creation.** A new project starts from one natural-language
+   brief (+ narration/assets): the brief carries the law — format (vertical 9:16,
+   1080×1920), "end to end, all passes, export, don't ask me, decide and keep
+   going", and a budget spent on quality, not speed. The new-project surface is a
+   brief form (brief text + voice file + assets), not a bare folder-name prompt.
+   **Voice is law:** the narration file is used exactly as-is — no trimming, no
+   cleaning, no re-timing; the film is exactly as long as the file.
+2. **Five passes, five buttons, strict order** — Build → Camera angles →
+   Environment → Post processing → Shading (over the station spine you already
+   have). Each pass, as a unit: **builder → critic verdict → builder's fixes →
+   a FRESH second critic on the fixed frames → hand-over.** Each pass's checks
+   verify its own layer *and* the invariants of the earlier layers ("acting,
+   props and voice unchanged"). Passes cannot be started out of order.
+3. **Quality mode vs Faster builds toggle.** Quality = work until the checks
+   pass, no time limit (stall guard only); Faster = sooner video, visibly a
+   trade-down. The toggle is part of the run controls and is recorded with the run.
+4. **Model / effort routing.** The run controls carry the model + effort selection
+   the program actually supports (our `heart models` / consult seats) — wire to
+   what exists, mark the rest «غير موصول بعد». No decorative model pickers.
+5. **Supervision view.** Named work spaces with hand-off states (who holds the
+   film now: build / critic / fix / second critic / render / finish), progress %
+   and ETA where honestly derivable, and the «بانتظارك» line. This is the run's
+   home screen while it executes.
+6. **Click-to-change fixes.** On the artifact itself (board still / frame), the
+   operator can click and state the change — an annotation-driven correction that
+   attaches to that shot/frame and re-enters the run as a fix task, not a new
+   chat brief. (Surface + data model this round; execution wiring where the
+   program supports it, else «غير موصول بعد».)
+7. **Cost/time transparency.** Per film and per run: wall-clock per pass and
+   token/model usage where the program records it, shown in the run view —
+   measured numbers only, never estimates dressed as measurements.
+8. **Export inside the same run.** After the last pass closes, export/render is
+   the run's final leg (with the gates verified before it, per G3) — not a
+   separate tool the operator must go and find.
+
+## STRUCTURAL BLUEPRINT — his app's screens, from the bundle we hold
+
+Alongside the capability map, read `orch/APP_UI_STRUCTURE_FROM_BUNDLE.md` — the
+full screen inventory extracted from the app's own renderer chunks
+(`creatorize-teardown/unpacked/asar/out/renderer/assets/`) plus where the
+executor lives (main process + `@anthropic-ai/claude-agent-sdk` in the bundle).
+Owner's direction: build ours **on that blueprint** — mirror the *composition*,
+our own look:
+
+- **Run screen** (his "Berserk" chunk): conversation-first creation — brief +
+  law + attachments (audio/music/pictures, drop-them-here) → RUN; a mid-run
+  steering input ("tell it something while it works"); model + effort picker;
+  "Exact shot plan" toggle; Style selection (incl. Automatic); Faster builds vs
+  Quality mode; the live feed = step timeline with plain-language narration,
+  contact-sheet filmstrips as evidence, per-step progress, critic verdicts and
+  fixes as they happen; run outputs lead to "Open in editor".
+- **Editor** (his largest screen): the five ordered passes as five buttons,
+  frames, click-to-change on the artifact.
+- **First-class sections** in one shell: Projects · Editor · Styles · Library ·
+  Memory · Renders · Videos, with search/run and New project as shell-level
+  actions and a live connection status ("Claude connected" equivalent — for us:
+  the model-seat status).
+- The lesson the blueprint teaches: renderer screens + step executor + tool
+  surface are **one machine**. Sections that our program cannot back yet
+  (Routines/autopilot spaces, Thumbnails, YouTube) appear only if they can be
+  honest — as visibly marked «غير موصول بعد» sections, never as fake screens.
+
+If you already have a structure underway when you read this, align it to this
+composition (run screen → editor with five ordered passes → library / memory /
+renders sections) rather than restarting: same capabilities and working
+structure, our own visual identity.
+
+## CONTROL LAW — the program calls the models; models never roam (owner's rule, 2026-11-22)
+
+The control law behind the whole design, in the owner's terms: **Layla is the
+controller of the program; the interface is the ONLY door that deals with the
+program.** External models have no rules of their own when left outside — so in
+our program:
+
+- Models are called **only from inside the program, through the API** — each
+  call with a **bounded task**, a **defined tool surface**, and the program's
+  **measured checks waiting for its output**. This is exactly how Russell embeds
+  Claude via the Agent SDK: the program goes to the model with what IT wants;
+  the model never roams free and never invents process.
+- The only allowed shape of a model step is:
+  **program → API → model (bounded) → measured checks → next step.**
+- **No free-roaming external model session may be a step of a run.** A run leg
+  that consists of "an agent somewhere goes and does the step" is forbidden by
+  design; if a leg cannot yet be expressed as a bounded in-program API call with
+  checks, it is marked not-yet-wired / not-yet-dispatchable (see the marks
+  below) — never improvised around.
+- **Layla supervises the program itself** (through this interface), not a crowd
+  of external sessions: the interface is her one door, and everything she is
+  shown — states, gates, checkpoints, feed — is the program's own record.
+
+UI consequences: model invocations appear in the run feed as program-issued
+calls (task, model/effort, tool surface, checks result), not as links out to
+external chats; the model/effort routing controls configure the program's own
+API calls; and no UI element may deep-link a run step to an external model
+session.
+
+## HARD ARCHITECTURE — one closed system, dispatch only through the program (owner-approved 2026-11-22)
+
+The owner has clarified and APPROVED the API architecture. This is a hard
+requirement, in his terms — if the system comes apart into scattered manual
+steps, it breaks:
+
+1. **ONE CLOSED SYSTEM.** Everything happens inside the program (on this VM).
+   No step of a RUN may require a manual action outside it — no hand-pushes to
+   GitHub, no browser-driven Colab sessions as part of a run, no operator
+   carrying files between tools. If a human has to leave the program to move a
+   run forward, the design is wrong.
+2. **Heavy work leaves the machine ONLY through the program's own dispatch
+   layer ("the API"):**
+   - Storyboard/still frames and pass jobs → **GitHub via the official Actions
+     API** (`workflow_dispatch` with inputs, run-status polling, artifact/log
+     retrieval).
+   - The film render → **Colab via a queue worker** (job file in → status /
+     results out).
+3. **Colab is ON-DEMAND.** It starts when a render job exists and is not kept
+   running otherwise. No standing sessions.
+4. **All state lives in the program itself** — files, measured gates,
+   checkpoints, and the run feed are the program's own, on this machine.
+
+**UI consequences (binding for this build):**
+- The RUN button's backend contract **is this dispatch layer**: pressing start
+  dispatches through the program (fleet/orchestrate + the Actions API / Colab
+  queue worker), polls status through it, and retrieves artifacts/logs through
+  it. The run feed is fed by the dispatch layer's states, not by an operator
+  reporting back.
+- Any step that **cannot yet be dispatched from inside the program** must be
+  visibly marked as such in the UI — «غير قابل للإرسال من داخل البرنامج بعد»
+  (not yet dispatchable from inside the program) — a distinct mark from a merely
+  unwired executor. A step that is silently manual (works only if a human does
+  something outside) presented as a normal run leg is a failed build.
+- The fleet/Colab legs' status surfaces (queued / dispatched / running /
+  artifacts back) come from the dispatch layer's polling, with the job's
+  identity (Actions run id / queue job id) visible in the run feed.
+
+## ADDENDUM — transcript findings (owner-supplied, 2026-11-22)
+
+Source: Russell's own spoken transcript (`orch/video-ref/russell_video_transcript_ar.md`;
+summary in the capability map's Addendum 2). Three binding consequences:
+
+1. **Do NOT mirror today's layout — it is about to be replaced.** Russell announced
+   **v0.3 "in the next few days"**: a completely redesigned UI, Routines with
+   multi-agent coordination, and retention analysis. Build strictly on
+   **capabilities and working structure** (the sections above); invest nothing in
+   imitating the current screens' arrangement or look. Our interface is our own —
+   and now his is about to stop being his, too.
+2. **Every pass is a CHECKPOINT.** In his words, each pass is a save point: the run
+   can **resume or roll back at pass boundaries**. The RUN model in this interface
+   must therefore carry explicit per-pass boundary states — *not started / running /
+   checkpointed (passed its gates) / rolled back* — and, once the executor exists,
+   resume-from-checkpoint and roll-back-to-checkpoint actions at those boundaries
+   (this pairs with G4's per-project git snapshots: a checkpoint = the pass's gate
+   pass + a snapshot). Design the states and the surface now; wire the actions to
+   the executor/snapshot backend where it exists, else «غير موصول بعد». A single
+   undifferentiated progress bar for the whole run is the wrong model.
+3. **The interface's agent is the DIRECTOR; align lives inside the run.** Berserk,
+   in Russell's definition, "is not the one who draws the shots; he is the
+   DIRECTOR" — the surface's agent manages the build (routes work, runs critics,
+   enforces gates) rather than generating shots itself. Frame the run's narration
+   and hand-off language accordingly. And: **the app transcribes the narration
+   itself** to give every word its timing — so the timing station (محطة التوقيت)
+   is the run's own **transcribe/align step**, producing and verifying the word
+   timings inside the run (cf. audit G7), not a passive display of an externally
+   made file. Where our align tooling does not exist yet, the station shows the
+   timings file's provenance honestly (owner-supplied vs run-produced).
+
+Also from the transcript, for the gates station's checklist language: his final
+pass plays the whole film hunting errors (characters through chairs, props inside
+heads, anything cropped or too dark), fixes until clean, THEN exports — the
+«بوابات الجودة» station's whole-film hunt belongs immediately before export.
+
+## The interface (this round's deliverable)
+
+Arabic RTL, dark studio console, visually consistent with the existing صفحة تحكم القلب.
+One screen flow:
+
+1. **Projects list** — every folder under `projects/`, with real status derived from
+   the project's own files (script present? voice present? board stills count? master
+   present?), not mock data.
+2. **Project view** — the pipeline as explicit stations, in order:
+   1. النص والصوت (script / voice)
+   2. التوقيت (timing)
+   3. لوحة اللقطات (storyboard board with stills)
+   4. بوابات الجودة (QC gates)
+   5. الريندر (render — fleet / Colab)
+   6. التشطيب (finish)
+   7. الماستر ورابط Drive (master + Drive link)
+   Each station shows **real status read from the project files** (existence, counts,
+   timestamps — whatever the files honestly support). No invented progress numbers.
+   Per G1/G3 above, each station is an execution surface: a run control that
+   dispatches the real action through the server, a live log/output pane while it
+   runs, a stop control, and a done state that is only reached after the station's
+   artifact check passes.
+   The project view also carries two cross-cutting surfaces from the audit:
+   **إعدادات المشروع** (effective project settings — G10) and **السجل** (per-project
+   git history / undo — G4).
+3. **Controls call the real program** — buttons/actions must invoke the `heart` CLI or
+   existing repo scripts through the server. **No fake buttons**: where a backend
+   action does not exist yet, render the control visibly marked **«غير موصول بعد»**
+   (not yet wired).
+
+### Fully wire ONE project end-to-end: `projects/story6-microwave`
+
+Its real layout (verify against disk, do not assume):
+`project.json`, `script_owner_ar.md` (script of record), `voice_owner.wav`,
+`words_owner.txt` (timing), `shots.md`, `scenes/`, `orch/` (gate/hunt reports A100+),
+`out/board/` (board stills), `out/story6_full.mp4` (the delivered master),
+`out/story6_picture.mp4`. Station statuses for this project must reflect these files.
+
+## Standing rules — bake them into the UI
+
+- **Frame rate is 24/30 fps.** 60 fps was CANCELLED by the owner on 2026-11-22.
+  Anywhere the UI shows or offers a render frame rate, it is 24/30 — never 60.
+  (Note: Story 6's delivered master happens to be a 60 fps file; display its real
+  metadata honestly, but do not offer 60 as a going-forward option.)
+- **Stills before renders** — the board station precedes the render station; the flow
+  must make that order visible/enforced in the UI.
+- **Gates before export** — QC gates station precedes finish/master; a project whose
+  gates have not passed must not present export as a normal next step.
+
+## Constraints
+
+- Zero-dependency spirit of the existing server (plain Node, no npm installs) unless
+  the repo already carries a dependency for it.
+- Do not modify: `engine/`, any project's content files, `fleet/` render logic.
+  Your surface reads state and invokes actions; it does not rewrite the pipeline.
+- The working tree has unrelated uncommitted changes (e.g. `fleet/render-chunk.ts`,
+  `bin/heart`, `DRIVER.md`) and untracked folders — **do not stage, commit, revert or
+  otherwise touch them**. Commit ONLY your UI files, on `ui/unified-interface`.
+- The gap audit (`orch/HEART_GAP_AUDIT.md`, commit cc054d2) has landed and its
+  design consequences are folded into this brief above (G1/G3/G10/G4). In your
+  final summary, state explicitly how each of G1, G3, G10 and G4 is reflected in
+  what you built, what remains backend-dependent (executor worker, artifact
+  predicates in the API, `git init` in `heart new`, settings support in
+  render dispatch), and which UI parts you still expect to change as the audit's
+  fix shapes land in the program.
+- The capability map (`orch/APP_CAPABILITY_MAP_FROM_VIDEO.md`) and the owner's
+  RUN framing are likewise folded in above. In your final summary, also state:
+  how the RUN works in what you built (what pressing start actually executes,
+  where it honestly stops if a leg is unwired), and how each capability shape —
+  conversation-first creation, five ordered passes with fresh-critic hand-over,
+  Quality/Faster toggle, model/effort routing, supervision view with
+  «بانتظارك», click-to-change, cost/time transparency, export-in-run — is
+  reflected, wired, or marked «غير موصول بعد».
+
+## Definition of done (this round)
+
+- [ ] Branch `ui/unified-interface` created; your UI work committed on it
+- [ ] Server starts locally and serves: projects list + the Story 6 project view,
+      with station statuses read from real files
+- [ ] Every control either calls a real `heart`/repo action or is visibly marked
+      «غير موصول بعد»
+- [ ] Stations are execution surfaces per G1 (run + live log + stop + verified
+      done), and no station can show «done» without its artifact check passing (G3)
+- [ ] Project view shows effective settings (G10) and the git history surface (G4),
+      honestly reporting projects that have no repo yet
+- [ ] A RUN can be started from the interface: it executes the station sequence
+      through the real program in order (Russell's verbatim sequence: create →
+      tool check → transcript + style guide → director picks builder → exact
+      shot plan → five checkpointed passes → whole-film checks → mix under the
+      voice → export into the run view → human one-line fix), verifies gate
+      artifacts between legs, shows the supervision view (hand-off state,
+      «بانتظارك» line), and stops honestly at any leg whose backend is not
+      yet wired
+- [ ] Gates are programmatic measured checks returning named failures + fix
+      instructions; model-critic verdicts are displayed as a second layer and
+      never act as the gate itself
+- [ ] Closed-system dispatch: every RUN leg either dispatches from inside the
+      program (Actions API for stills/passes, Colab queue worker for the render,
+      on-demand only) or is visibly marked «غير قابل للإرسال من داخل البرنامج
+      بعد»; no leg silently depends on a manual action outside the program
+- [ ] The five passes exist as ordered pass controls (Build → Camera →
+      Environment → Post → Shading) with the builder → critic → fixes → fresh
+      critic → hand-over shape represented in the run flow
+- [ ] New-project surface is conversation-first (brief + voice + assets);
+      run controls carry the Quality/Faster toggle and the model/effort
+      selection the program actually supports
+- [ ] You state the **exact run command** in your final summary
+- [ ] Final summary: what you built, where it lives, what is wired vs marked unwired,
+      and which parts await the gap-audit findings
+
+## Owner decision 2026-11-22 ~06:45 — Connect Gemini (mirrors Creatorize's Connect Claude)
+- The program carries a **Connect Gemini** action inside the interface (Home/Settings), exactly mirroring how Creatorize connects Claude: one sign-in with the owner's Gmail/Google account (the subscription account), performed by the owner himself; the program then detects the stored session, shows a "Gemini connected" status, and drives Gemini sessions ONLY from inside the program (bounded tasks, the program's tool surface, measured checks as the gate).
+- Antigravity is NOT the Gemini route anymore (owner's word 2026-11-22 ~06:43: «مش هنستخدم بقى انتي جرافيتي — هنستخدم جيميناي على طول»). Gemini is used directly, Task mode for model work.
+- Seat pattern for every model in the program: a signed-in subscription (Gemini ↔ Gmail sign-in; Claude ↔ Claude sign-in; GPT ↔ ChatGPT sign-in, already live via the Codex seat).
+
+## Owner addition 2026-11-22 ~06:48 — Connect GPT joins Connect Gemini
+- The interface's connections row carries **Connect GPT** beside Connect Gemini, same pattern: sign-in with the owner's ChatGPT account from inside the program, connected-status shown, sessions driven only from inside with bounded tasks and measured checks.
+- Note: this seat is already live on the desk VM (the Codex seat, signed in as araby0401@gmail.com, which built this interface) — the UI work is surfacing and governing that existing connection, not creating it. Russell's bundle embeds the Codex SDK the same way, so the pattern is proven on both sides.
+
+## Owner decision 2026-11-22 ~06:50 — assembly/finishing happens on GitHub
+- «عشان الشغل يكون أدق وأنضف، التجميع يحصل على GitHub»: the final assembly (frames + mix + encode + finish gates) runs as a GitHub Actions workflow on a clean machine every run — NOT on the desk VM. The desk VM is controller/director + QC eyes only.
+- Pipeline shape is now: program dispatches → stills & passes on GitHub → render on Colab (on-demand queue worker) → frames to GitHub → assembly/finishing on GitHub → master out (artifact/Drive). The fleet finish discipline (pts audit, setpts re-encode, SSIM verify, never stream-copy) becomes part of that Actions workflow.
+
+## Layla's proposals — owner approved ALL, 2026-11-22 ~06:54 («ضيفيهم كلهم في المواصفات»)
+Drawn from the Creatorize capability map + our own gap audit; they join the spec for the rounds after round 2:
+1. **New-film conversation entry:** a «فيلم جديد» flow where the owner writes the idea and drops his voice recording; the program creates the project and runs transcribe + align inside the run (no manual file prep to start a film).
+2. **Quality / Faster toggle on every run:** Quality = no step passes until the program's measured checks pass, no time pressure; Faster = draft mode, checks advisory. (Mirrors his Quality mode vs Faster builds.)
+3. **Shared asset library inside the program:** reusable props/scenes/characters with search + propose/get tools (the mcp__suite__library_* pattern), so films stop rebuilding every element from scratch.
+4. **Retention analysis feeding the Write step:** analyze published shorts' audience-retention drop points and feed the findings into story writing (his announced v0.3 direction; serves the owner's viral goal).
+5. **In-program lessons memory:** every film leaves a written lessons record (what failed checks and why); the builder/director sessions read it at the start of the next run — lessons stop living only in Layla's own memory.
+
+## Owner priority note 2026-11-22 ~07:46 — production over looks
+«مش مهم الشكل، أهم حاجه الانتاج»: the interface is a tool, not a product. In every remaining round, weight the production machinery (step executors, measured checks, dispatch, assembly) over visual polish. A plain surface that produces films at the bar beats a beautiful one that does not.
+
+## Owner correction 2026-11-22 ~08:09 — the interface FORM is a desktop app, not a browser page
+«الواجهه اللي انا طلبتها واجهه زي ما هو عاملها مش واجهه في متصفح»: the deliverable form is a real desktop application with its own window, like Creatorize (an Electron app), NOT a page opened in a browser tab at 127.0.0.1. The current browser-served page is an interim scaffold for building the machinery. The machinery (server, executor, dispatch, checks) is unchanged by this — it gets packaged into the app shell (Electron wrapper around the same local server, the same way Creatorize itself is built). Shell packaging is part of the professional-interface phase, but the FORM requirement is standing from now: no future round may present the browser page as the finished interface.
+
+## Owner direction 2026-11-22 ~08:11 — the interface mirrors Russell's; only the skin is ours
+«هو سايب الواجهه بتاعته فاحنا مش هنغير غير الستايل، اما بالنسبه الاكواد الواجهه زي ما هي»: the owner's intent is that the interface keeps Creatorize's own structure, screens, buttons and flows (per orch/APP_UI_STRUCTURE_FROM_BUNDLE.md) and only the skin changes — our name, colors, Arabic RTL. Implementation note recorded with his word: the bundle's UI code itself is compiled/minified and welded to Russell's own main process and tool surface, so the durable route to his intent is rebuilding our shell as its structural twin from the bundle map (same screens/order/controls), not patching his compiled assets, which would break on every one of his updates and cannot answer our machinery without a translator layer. Either way, the acceptance bar is his: from the user's seat it must look and flow like his interface, in our skin.
+
+## Owner architectural rule 2026-11-22 ~08:11 — the interface mounts on the heart's own sockets
+«لو عملنا وجهه تاني من جديد مش هتركب على القلب وباظت البرنامج»: Russell built the interface code against the heart's own contracts — the mcp__suite__* tool surface, the project-folder layout, the step/state conventions in the bundle. A from-scratch invented interface drifts off those sockets and breaks the fit (this already happened in part in rounds 1–2: our own panel_state and invented run legs — the root of several gap-audit findings). RULE for all coming rounds: the suite's contracts from the bundle are the specification; our interface and executor speak them (same tool names/shapes, same project layout, same step semantics), and only the skin is ours. Any existing invention that parallels a suite contract gets re-aligned to the contract, not extended.
+
+## Owner decision 2026-11-22 ~08:19, desk-verified — the interface IS his renderer files
+«الواجهه موجوده عندك في الملف»: verified on disk — ~/workspace/creatorize-teardown/unpacked/asar/out/renderer/ holds the COMPLETE interface: index.html ("Creatorize Suite"), a standalone CSS bundle, and per-screen modules by name (Berserk, ClaudePanel, Editor, Layouts, Library, Memory, NewVideo, PersonalEditor, Presets, Renders, Routines, Studio, StyleImport, Videos) + media assets, 15 MB total. INTERFACE TRACK CHANGES: the interface is THESE files (reskinned via their CSS/name strings), not a rebuilt twin and not our custom page. Our engineering work is the ADAPTER behind them: their renderer expects an Electron main process + the suite tool surface + a local 127.0.0.1 server (per its CSP); our machinery must answer their calls on their contracts. Our rounds 1–2 custom UI is superseded as the interface (its executor/dispatch machinery remains, re-pointed to serve the real interface's contracts).
+
+## Owner scope 2026-11-22 ~08:20 — the mounted-renderer version is a STUDY build
+«اعتبر النسخه اللي هتثبتيها وهتعمليها بالواجهه بتاعته مجرد بس دراسه»: the version mounted with Russell's own interface is a STUDY build — its purpose is to learn, by running his interface on our side, exactly what it asks, expects and does on its contracts. It is not the production product and does not replace the production line; its findings feed the production program, which is built informed by the study.
+
+## Owner sequence 2026-11-22 ~08:21 — mount, map, add, then skin
+The order is fixed by the owner: (1) mount his interface as-is (study build, pristine backup kept); (2) learn the code map from the running study — where the style code is, where each feature's code is; (3) add OUR features onto the mounted interface; (4) change the style at leisure, once the map is known. Building from zero while holding the original is rejected («شايلين دماغنا وحاطين جزمه»). Additions come BEFORE skinning.
+
+## Owner acceptance bar 2026-11-22 ~08:34 — the integrated program must be COMPLETE on the desk
+«بعد ما تخلصي الدمج الكامل يبقى البرنامج بالكامل على جهازك وماشي، يبقى في مستودعات خارجيه بس لازم يكون البرنامج ده كامل»: the integration is done only when the desk holds the COMPLETE program — his interface files, the heart, the executor/dispatch machinery, and every library/body part it needs to run — working end to end on this machine. External repositories are dispatch targets (stills/render/assembly), never storage for missing organs. A copy that arrives somewhere else missing pieces (the 546 MB skeleton symptom) fails this bar.
+
+## Owner quick solution 2026-11-22 ~09:03 — convert the same program as-is to Linux first
+«هنحول نفس البرنامج زي ما هو لينكس الاول»: alongside the current work, the direct route is a Linux conversion of Russell's actual app as-is — the app is Electron (its body is JS), so run the whole unpacked app (main + renderer + resources) under a Linux Electron runtime. The study's job is to surface every Windows-specific dependency by name (win32 native modules, bundled .exe/.dll helpers, path/shell assumptions). This conversion study precedes additions and skinning, per the mount → map → add → skin sequence.
+
+## Owner step 2026-11-22 ~09:04 — after the Linux install, remove the registration face
+«بعد التثبيت نطلب ازاله وجه التسجيل عشان نعرف نجري تعديلاتنا»: after the converted app boots on Linux, the app's registration/member gate screen is removed in our study copy so it stops blocking our modifications. Distinction recorded: the member/registration gate is Russell's door; the SEAT sign-ins (Connect Claude/Gemini/GPT) are operating wiring the machinery runs on — removing those would disable the seats, so they stay.
+
+## Owner word 2026-11-22 ~09:16 — English labels are fine
+«لو عيزاها بنفس الانجليزيه اومي»: the interface may keep the original's English labels as-is; Arabic is not required. Default: original English screen names/labels (less work, fewer surprises); Arabic joins only if the owner asks during the skin phase.
+'use strict';
+/* Heart Studio — zero-dependency local server.
+ * Serves the control UI (/), the project host page + files (/project/...),
+ * and a small JSON API over <project>/panel_state.json.
+ * State writes are serialized and atomic (tmp file + rename). */
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const dispatchLayer = require('./dispatch');
+const appDir = path.join(__dirname, '..', 'app', 'renderer');
+const passModule = require('./passes');
+
+const STEPS = ['write', 'add', 'run', 'build', 'mix', 'export'];
+const SUBSTEPS = ['camera', 'environment', 'post', 'shading'];
+const MIME = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript',
+  '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.glb': 'model/gltf-binary',
+  '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.mp4': 'video/mp4',
+  '.woff': 'font/woff', '.woff2': 'font/woff2', '.css': 'text/css', '.txt': 'text/plain',
+  '.md': 'text/plain', '.bin': 'application/octet-stream'
+};
+
+function defaultState(projectDir) {
+  let title = 'مشروع جديد';
+  try {
+    const pj = JSON.parse(fs.readFileSync(path.join(projectDir, 'project.json'), 'utf8'));
+    if (pj && pj.title) title = pj.title;
+  } catch (e) { /* no project.json — fine */ }
+  let script = '';
+  try { script = fs.readFileSync(path.join(projectDir, 'script.txt'), 'utf8'); } catch (e) { /* none */ }
+  return {
+    title, idea: '', script, scriptVersion: 1, voice: null,
+    steps: { write: 'idle', add: 'idle', run: 'idle', build: 'idle', mix: 'idle', export: 'idle' },
+    stepTimes: {},
+    substeps: { camera: 'idle', environment: 'idle', post: 'idle', shading: 'idle' },
+    approvals: [], finalFilm: null,
+    log: [{ t: Date.now(), actor: 'system', text: 'تم إنشاء المشروع' }]
+  };
+}
+
+function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+  const repoDir = path.resolve(__dirname, '..');
+  const projectsDir = path.join(repoDir, 'projects');
+  let activeDir = projectDir;
+  let stateFile = path.join(activeDir, 'panel_state.json');
+  let state;
+  try {
+    state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+    const d = defaultState(activeDir);
+    state = Object.assign(d, state);
+    state.steps = Object.assign(d.steps, state.steps || {});
+    state.substeps = Object.assign(d.substeps, state.substeps || {});
+  } catch (e) { state = defaultState(projectDir); }
+
+  let chain = Promise.resolve();
+  function persist() {
+    const snapshot = JSON.stringify(state, null, 1);
+    chain = chain.then(async () => {
+      const tmp = stateFile + '.tmp.' + process.pid;
+      await fs.promises.writeFile(tmp, snapshot);
+      await fs.promises.rename(tmp, stateFile);
+    }).catch(() => {});
+    return chain;
+  }
+  function log(actor, text) { state.log.push({ t: Date.now(), actor, text }); }
+
+  const jobs = new Map();
+  let connectionCache = null;
+  const connectionNames = ['GPT','Gemini','Opus','GLM'];
+  const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+  const timed = () => new Date().toISOString();
+  function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
+  async function probeConnections() {
+    const results=[];
+    const home=process.env.HOME||'';
+    // Codex CLI output is inspected without returning auth material.
+    let codex=process.env.CODEX_BIN; if(!codex||!fs.existsSync(codex)) codex=['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);
+    let gpt={name:'GPT',probed:true,checkedAt:timed(),status:'dead',reason:'codex binary not found',authMetadata:null};
+    try { if(codex) { const r=await safeRun(codex,['login','status'],{timeout:15000}); const signed=r.code===0&&/logged in|chatgpt|openai account/i.test(r.out+'\n'+r.err);gpt.status=signed?'connected':'dead';gpt.reason=signed?undefined:(r.code!==0?'Codex login status command failed':'Codex output did not indicate a ChatGPT login'); }
+      const a=JSON.parse(fs.readFileSync(path.join(home,'.codex/auth.json'),'utf8'));gpt.authMetadata={auth_mode:a.auth_mode||null,last_refresh:a.last_refresh||null,has_tokens:Object.prototype.hasOwnProperty.call(a,'tokens')};
+    } catch(e){gpt.metadataError='auth metadata unavailable';}
+    results.push(gpt);
+    let gem={name:'Gemini',probed:true,checkedAt:timed(),status:'unknown'};
+    try {
+      const db=path.join(home,'.config/gemini-desktop/Cookies');if(!fs.existsSync(db))throw new Error('Gemini Cookies database not found');
+      const os=require('os'),{spawnSync}=require('child_process');
+      const query="SELECT name FROM cookies WHERE host_key LIKE '%google.%' OR host_key LIKE '%.google.com';";
+      const readNames=file=>spawnSync('sqlite3',[`file:${file}?immutable=1`,query],{encoding:'utf8',timeout:10000});
+      let r=readNames(db);
+      if(r.status!==0){
+        const dir=fs.mkdtempSync(path.join(os.tmpdir(),'heart-gem-'));
+        try { const copy=path.join(dir,'Cookies');fs.copyFileSync(db,copy);r=spawnSync('sqlite3',[copy,query],{encoding:'utf8',timeout:10000}); }
+        finally { fs.rmSync(dir,{recursive:true,force:true}); }
+      }
+      if(r.status!==0)throw new Error(r.stderr||'sqlite read failed');
+      const names=r.stdout.split(/\r?\n/);const found=names.some(n=>['__Secure-1PSID','__Secure-3PSID','SID'].includes(n));gem.status=found?'connected':'dead';gem.state=found?'connected':'awaiting_owner_signin';if(!found)gem.reason='سجّل دخول المالك في تطبيق Gemini desktop على هذا الجهاز';
+    }
+    catch(e){gem.status='unknown';gem.reason='تعذر قراءة قاعدة جلسة Gemini: '+String(e.message).slice(0,180);}results.push(gem);
+    let opus={name:'Opus',probed:true,checkedAt:timed(),status:'dead'};
+    try { const helper=path.join(home,'workspace/tools/opus_call.py'), envFile=path.join(home,'workspace/user/files/llmsrelay.env');let key='';const contents=fs.readFileSync(envFile,'utf8');const m=contents.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(m)key=m[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('LLMSRELAY_API_KEY is missing');const dir=fs.mkdtempSync(path.join(require('os').tmpdir(),'heart-opus-probe-'));const prompt=path.join(dir,'prompt.txt'),out=path.join(dir,'out.txt');fs.writeFileSync(prompt,'Reply with exactly: OK');const r=await safeRun('python3',[helper,prompt,out,'32'],{env:{...process.env,LLMS_KEY:key},timeout:45000});const answer=fs.existsSync(out)?fs.readFileSync(out,'utf8'):r.out;opus.status=r.code===0&&answer.startsWith('OK')?'connected':'dead';if(opus.status==='dead')opus.reason='Opus ping did not return OK';fs.rmSync(dir,{recursive:true,force:true}); }
+    catch(e){opus.reason='Opus probe failed: '+String(e.message).slice(0,180);}results.push(opus);
+    let glm={name:'GLM',probed:true,checkedAt:timed(),status:'dead',model:'free/glm-5.3-flashx'};
+    try {const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
+    catch(e){glm.reason='APInex catalog probe failed: '+String(e.message).slice(0,180);}results.push(glm);
+    connectionCache={checkedAt:timed(),connections:results};return connectionCache;
+  }
+  function safeProject(name) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(String(name || ''))) return null;
+    const dir = path.join(projectsDir, String(name));
+    try { if (fs.statSync(dir).isDirectory()) return dir; } catch (_) {}
+    return null;
+  }
+  function inventory(dir, includeMetadata = false) {
+    const exists = rel => fs.existsSync(path.join(dir, rel));
+    const boardDir = path.join(dir, 'out', 'board');
+    let board = [];
+    try { board = fs.readdirSync(boardDir).filter(n => /\.(png|jpe?g|webp)$/i.test(n)); } catch (_) {}
+    const script = ['script_owner_ar.md', 'script.txt', 'script.md'].find(exists) || null;
+    const voice = ['voice_owner.wav', 'voice_ar.wav', 'audio/source.wav'].find(exists) || null;
+    const timing = ['words_owner.txt', 'audio/clean.json', 'timings.json'].find(exists) || null;
+    const master = ['out/story6_full.mp4', 'out/master.mp4', 'out/final.mp4'].find(exists) || null;
+    let runInfo = null;
+    for (const p of ['out/run-info.json', 'out/fleet/run-info.json']) try { runInfo = JSON.parse(fs.readFileSync(path.join(dir, p), 'utf8')); break; } catch (_) {}
+    let baseSettings = {};
+    try { baseSettings = JSON.parse(fs.readFileSync(path.join(dir, 'project.json'), 'utf8')).settings || {}; } catch (_) {}
+    const captionsSetting = baseSettings.captions;
+    const settings = { ...baseSettings, captions: { on: typeof captionsSetting === 'object' ? captionsSetting.on !== false : captionsSetting !== false }, fps: Number(baseSettings.fps) === 24 ? 24 : 30 };
+    let masterMetadata = null;
+    if (master && includeMetadata) {
+      const r = require('child_process').spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate,width,height', '-of', 'json', path.join(dir, master)], { encoding: 'utf8', timeout: 5000 });
+      try { const stream = JSON.parse(r.stdout).streams[0]; masterMetadata = { fps: stream.r_frame_rate, width: stream.width, height: stream.height }; } catch (_) {}
+    }
+    return { name: path.basename(dir), title: (() => { try { return JSON.parse(fs.readFileSync(path.join(dir, 'project.json'), 'utf8')).title || path.basename(dir); } catch (_) { return path.basename(dir); } })(), script, voice, timing, boardCount: board.length, board: board.slice(0, 24), master, masterMetadata, baseSettings, settings, runInfo };
+  }
+  function projectGit(dir) {
+    const { spawnSync } = require('child_process');
+    if (!fs.existsSync(path.join(dir, '.git'))) return [];
+    const r = spawnSync('git', ['-C', dir, 'log', '-8', '--date=iso-strict', '--pretty=format:%H%x09%h%x09%ad%x09%s'], { encoding: 'utf8' });
+    return r.status === 0 ? r.stdout.split('\n').filter(Boolean).map(line => { const [hash, short, date, ...msg] = line.split('\t'); return { hash, short, date, message: msg.join('\t') }; }) : [];
+  }
+  function artifactChecks(dir) {
+    const inv = inventory(dir);
+    let timingValid = false;
+    for (const timingFile of ['audio/clean.json', 'timings.json']) {
+      try {
+        const t = JSON.parse(fs.readFileSync(path.join(dir, timingFile), 'utf8'));
+        timingValid = Array.isArray(t) && t.length > 0 && t.every(x => Number.isFinite(Number(x.start)) && Number.isFinite(Number(x.end)) && Number(x.end) >= Number(x.start));
+        if (timingValid) break;
+      } catch (_) {}
+    }
+    if (!timingValid) {
+      try {
+        const text = fs.readFileSync(path.join(dir, 'words_owner.txt'), 'utf8');
+        const rows = [...text.matchAll(/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+\S+/gm)];
+        timingValid = rows.length > 0 && rows.every((m, i) => {
+          const start = Number(m[1]) * 60 + Number(m[2]), end = Number(m[3]) * 60 + Number(m[4]);
+          const prevEnd = i ? Number(rows[i - 1][3]) * 60 + Number(rows[i - 1][4]) : -1;
+          return end >= start && start >= prevEnd;
+        });
+      } catch (_) {}
+    }
+    const mix = ['out/mix_stage/audio/final_mix.wav', 'out/final_mix.wav', 'out/story6_mix.wav', 'out/mix.wav'].find(p => fs.existsSync(path.join(dir, p))) || null;
+    const gates = [
+      { id: 'script', label: 'النص موجود', pass: !!inv.script, evidence: inv.script || '—' },
+      { id: 'voice', label: 'ملف الصوت الأصلي موجود كما هو', pass: !!inv.voice, evidence: inv.voice || '—' },
+      { id: 'timing', label: 'ملف التوقيت موجود وقابل للقراءة', pass: timingValid, evidence: inv.timing || '—' },
+      { id: 'board', label: 'لوحة اللقطات تحتوي صوراً', pass: inv.boardCount > 0, evidence: inv.boardCount + ' صورة' },
+      { id: 'mix', label: 'ملف المكس النهائي موجود', pass: !!mix, evidence: mix || 'لا يوجد ملف معروف' },
+      { id: 'master', label: 'ملف الماستر موجود', pass: !!inv.master, evidence: inv.master || '—' }
+    ];
+    return { checks: gates, pass: gates.every(x => x.pass), frameEvidence: inv.board, runInfo: inv.runInfo };
+  }
+  function donePredicate(key, kind) {
+    if (kind === 'sub') return inventory(activeDir).boardCount > 0;
+    const gates = artifactChecks(activeDir).checks;
+    const map = { write: 'script', add: 'voice', run: 'timing', build: 'board', mix: 'mix', export: 'master' };
+    const gateId = map[key];
+    const gate = gates.find(x => x.id === gateId);
+    if (!gate || !gate.pass) return false;
+    if (key === 'export' && !artifactChecks(activeDir).pass) return false;
+    return true;
+  }
+  function runCommand(id, dir, args, cwd = repoDir) {
+    if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
+    const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+    jobs.set(id, job);
+    const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
+    job.child = child;
+    const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
+    child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
+    child.on('error', e => { add('err', e.message); job.status = 'failed'; job.ended = true; job.exitCode = 1; });
+      child.on('close', code => {
+      job.exitCode = code;
+      if (code !== 0) job.status = 'failed';
+      else if (job.outputArtifact) {
+        try { const stat=fs.statSync(job.outputArtifact);let ok=stat.isFile()&&stat.size>0;const fresh=stat.mtimeMs>=job.startedAt-2000;if(!fresh){ok=false;job.verification='artifact freshness failed: mtime predates job start';}if(['timing','mix'].includes(job.action)&&ok){const report=JSON.parse(fs.readFileSync(job.outputArtifact,'utf8'));ok=report.ok===true;job.verification=ok?`${job.action} report ok`:`${job.action} report failed: ${(report.failures||[]).map(x=>x.name).join(', ')||'ok was not true'}`;} else if(fresh)job.verification=ok?'artifact exists and is non-empty':'artifact predicate failed'; job.status = ok ? 'done' : 'failed'; }
+        catch (_) { job.status = 'failed'; job.verification = 'artifact predicate failed'; }
+      } else job.status = 'done';
+      job.ended = true; job.finishedAt = Date.now();
+    });
+    return job;
+  }
+
+  function scriptSaved(newScript) {
+    if (newScript === state.script) return;
+    state.script = newScript;
+    state.scriptVersion += 1;
+    const later = ['run', 'build', 'mix', 'export'];
+    const dirty = later.some(s => state.steps[s] !== 'idle') ||
+      SUBSTEPS.some(s => state.substeps[s] !== 'idle') || state.approvals.length || state.finalFilm;
+    if (dirty) {
+      later.forEach(s => { state.steps[s] = 'idle'; delete state.stepTimes[s]; });
+      SUBSTEPS.forEach(s => { state.substeps[s] = 'idle'; delete state.stepTimes['sub:' + s]; });
+      state.approvals = []; state.finalFilm = null;
+      log('system', 'أُعيد حفظ النص (الإصدار ' + state.scriptVersion + ') — أُعيد تعيين «تشغيل ومعالجة الصوت» وكل ما بعده');
+    } else {
+      log('owner', 'حفظ نص الفيلم — الإصدار ' + state.scriptVersion);
+    }
+  }
+
+  function maybeCompleteBuild() {
+    if (SUBSTEPS.every(s => state.substeps[s] === 'done') && state.steps.build !== 'done') {
+      state.steps.build = 'done';
+      state.stepTimes.build = state.stepTimes.build || {};
+      state.stepTimes.build.end = Date.now();
+      log('system', 'اكتملت مرحلة «بناء المشاهد» — كل الممرات الأربعة تمت');
+    }
+  }
+
+  function setStepStatus(kind, key, status) {
+    const map = kind === 'sub' ? state.substeps : state.steps;
+    map[key] = status;
+    const tk = kind === 'sub' ? 'sub:' + key : key;
+    state.stepTimes[tk] = state.stepTimes[tk] || {};
+    if (status === 'running') state.stepTimes[tk].start = Date.now();
+    if (status === 'done' || status === 'failed') state.stepTimes[tk].end = Date.now();
+    if (kind === 'sub') maybeCompleteBuild();
+  }
+
+  function sendJson(res, code, obj) {
+    const body = JSON.stringify(obj);
+    res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(body);
+  }
+  function readBody(req) {
+    return new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', c => { data += c; if (data.length > 8 * 1024 * 1024) req.destroy(); });
+      req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}); } catch (e) { reject(e); } });
+      req.on('error', reject);
+    });
+  }
+  function serveFile(res, root, urlPath) {
+    const p = path.normalize(path.join(root, decodeURIComponent(urlPath)));
+    const normalizedRoot = path.normalize(root);
+    if (p !== normalizedRoot && !p.startsWith(normalizedRoot + path.sep)) { res.writeHead(403); return res.end(); }
+    fs.readFile(p, (err, data) => {
+      if (err) { res.writeHead(404); return res.end('not found'); }
+'use strict';
+const fs=require('fs'),path=require('path');
+const passes=[
+ {id:'build',label:'Build',scope:'Own the scene structure and authored source needed to realize the approved story.',allowedPaths:['scenes/','src/','engine.js','models.js']},
+ {id:'camera',label:'Camera angles',scope:'Own camera placement, framing, and shot specifications.',allowedPaths:['scenes/','specs/']},
+ {id:'environment',label:'Environment overhaul',scope:'Own world layout, backgrounds, and environmental assets.',allowedPaths:['scenes/','world/','assets/']},
+ {id:'post',label:'Post-processing',scope:'Own finishing intent and post-processing source/specifications.',allowedPaths:['finishing_plan.md','specs/','src/']},
+ {id:'shading',label:'Shading',scope:'Own material and lighting specifications and library assets.',allowedPaths:['scenes/','specs/','lib/']}
+].map(x=>({...x,invariants:'Acting, props, voice and timings from earlier layers stay unchanged.'}));
+function stateFile(project,id){return path.join(project,'out','passes',id,'state.json')}
+function getState(project,id){const f=stateFile(project,id);try{return JSON.parse(fs.readFileSync(f,'utf8'))}catch(_){return{pass:id,state:'not_started',rounds:0,updatedAt:null,history:[]}}}
+module.exports={passes,getState,stateFile};
+'use strict';
+const { spawn, spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const REPO='proa28518-creator/grayline-utils';
+function scrub(value) { return String(value).replace(/ghp_[A-Za-z0-9_]+|gho_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|Bearer \S+/g,'[redacted]'); }
+function gh(args, opts={}) { const r=spawnSync('gh',['-R',REPO,...args],{encoding:'utf8',timeout:30000,...opts});return {...r,stdout:scrub(r.stdout||''),stderr:scrub(r.stderr||'')}; }
+function json(r) { if(r.status!==0) throw new Error(scrub((r.stderr||r.stdout||'gh failed').trim().slice(0,1000))); try{return JSON.parse(r.stdout||'{}');}catch(e){throw new Error(scrub(e.message));} }
+function before(workflow) { return json(gh(['run','list','--workflow',workflow,'--limit','1','--json','databaseId'])).map(x=>String(x.databaseId)); }
+function dispatch(workflow, inputs) {
+  const pre=before(workflow); const ref=process.env.GITHUB_REF||'main';
+  const args=['workflow','run',workflow,'--ref',ref]; for(const [k,v] of Object.entries(inputs)) args.push('-f',`${k}=${v}`);
+  const r=gh(args); if(r.status!==0) throw new Error(scrub((r.stderr||r.stdout||'gh workflow run failed').trim()));
+  for(let i=0;i<20;i++){const rows=json(gh(['run','list','--workflow',workflow,'--limit','10','--json','databaseId,createdAt'])); const found=rows.filter(x=>!pre.includes(String(x.databaseId))).sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0]; if(found)return String(found.databaseId); Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,1000);}
+  throw new Error('Dispatched workflow but could not find its run id');
+}
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function dispatchAsync(workflow,inputs){
+  const pre=before(workflow),ref=process.env.GITHUB_REF||'main',args=['workflow','run',workflow,'--ref',ref];
+  for(const [k,v] of Object.entries(inputs))args.push('-f',`${k}=${v}`);
+  const r=gh(args);if(r.status!==0)throw new Error(scrub((r.stderr||r.stdout||'gh workflow run failed').trim()));
+  for(let i=0;i<20;i++){const rows=json(gh(['run','list','--workflow',workflow,'--limit','10','--json','databaseId,createdAt']));const found=rows.filter(x=>!pre.includes(String(x.databaseId))).sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0];if(found)return String(found.databaseId);await sleep(1000);}
+  throw new Error('Dispatched workflow but could not find its run id');
+}
+function child(args, cwd) { return spawn(args[0],args.slice(1),{cwd,stdio:['ignore','pipe','pipe']}); }
+async function monitor(job, {runId,projectDir,kind,settingsSent,repoDir}) {
+  job.runId=runId; job.log.push({t:Date.now(),stream:'system',text:`GitHub Actions run id: ${runId}`});
+  let pollFailures=0;
+  while(!job.cancelRequested){
+    const r=gh(['run','view',runId,'--json','status,conclusion']);
+    if(r.status!==0){pollFailures++;const error=scrub((r.stderr||'gh run view failed').trim());if(pollFailures>=5){job.log.push({t:Date.now(),stream:'err',text:error});job.status='failed';break;}job.log.push({t:Date.now(),stream:'err',text:`poll retry ${pollFailures}/5: ${error}`});await sleep(15000);continue;}
+    let data;try{data=JSON.parse(r.stdout);}catch(e){pollFailures++;const error=scrub(e.message);if(pollFailures>=5){job.log.push({t:Date.now(),stream:'err',text:error});job.status='failed';break;}job.log.push({t:Date.now(),stream:'err',text:`poll retry ${pollFailures}/5: ${error}`});await sleep(15000);continue;}pollFailures=0;job.log.push({t:Date.now(),stream:'system',text:scrub(`${data.status}${data.conclusion?' · '+data.conclusion:''} · run ${runId}`)});
+    if(data.status==='completed'){
+      if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+      if(data.conclusion!=='success'){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:'Workflow concluded: '+data.conclusion});break;}
+      const dest=kind==='stills'?path.join(projectDir,'out','fleet',runId):path.join(projectDir,'out','github-master',runId);fs.mkdirSync(dest,{recursive:true});
+      const dl=gh(['run','download',runId,'-D',dest]);if(dl.status!==0){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub((dl.stderr||'artifact download failed').trim())});break;}
+      if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
+      for(const f of fs.readdirSync(dest,{recursive:true})){if(String(f).endsWith('.tar.gz')){const ar=path.join(dest,String(f));const u=spawnSync('tar',['--no-same-owner','-xzf',ar,'-C',dest],{encoding:'utf8'});if(u.status!==0)throw new Error('artifact_unpack_failed: '+scrub(u.stderr));}}
+      if(kind==='stills'){
+        let info=null;for(const f of fs.readdirSync(dest,{recursive:true}))if(String(f)==='run-info.json'){info=JSON.parse(fs.readFileSync(path.join(dest,String(f)),'utf8'));break;}
+        if(!info)throw new Error('run-info.json missing from downloaded artifact');const board=path.join(projectDir,'out','board');fs.mkdirSync(board,{recursive:true});for(const f of fs.readdirSync(dest,{recursive:true})){if(/\.(png|jpe?g|webp)$/i.test(String(f))){const src=path.join(dest,String(f));fs.copyFileSync(src,path.join(board,`gh-${runId}-${path.basename(String(f))}`));}}job.verification=`run-info settings: ${JSON.stringify(info.settings||{})}; sent: ${JSON.stringify(settingsSent)}`;
+      } else {
+        const mp4s=[];for(const f of fs.readdirSync(dest,{recursive:true}))if(String(f).endsWith('.mp4'))mp4s.push(path.join(dest,String(f)));
+        const master=mp4s.find(x=>/master/.test(x))||mp4s[0];if(!master)throw new Error('master mp4 missing');
+        const probe=spawnSync('ffprobe',['-v','error','-show_entries','stream=codec_type','-of','json',master],{encoding:'utf8'});const streams=JSON.parse(probe.stdout||'{}').streams||[];if(probe.status!==0||!streams.length)throw new Error('master ffprobe validation failed');job.verification='master exists; ffprobe streams: '+streams.map(x=>x.codec_type).join(',');
+      }
+      job.status='done';job.log.push({t:Date.now(),stream:'pass',text:'Artifacts back and verified · '+job.verification});break;
+    }
+    await sleep(15000);
+  }
+  if(job.cancelRequested){job.status='stopped';}
+  job.ended=true;job.finishedAt=Date.now();
+}
+module.exports={gh,json,dispatch,dispatchAsync,monitor};
+
+exec
+/bin/bash -lc "rg -n \"url.pathname|pathname ===|case '/api|createHeartServer|listen\\(|/api/(projects|project|run|settings|action|passes|job|annotations|dispatch|history|qc|connections|colab|steer|stop)\" server/server.js" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+43:function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+270:      if (pn === '/api/projects' && req.method === 'GET') {
+274:      if (pn === '/api/projects/new' && req.method === 'POST') {
+288:      if (pn === '/api/projects/slice' && req.method === 'POST') {
+294:      if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+295:      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>({...p,...passModule.getState(activeDir,p.id)})));
+296:      if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
+297:      if(pn==='/api/passes/run'&&req.method==='POST'){
+303:      if(pn==='/api/passes/rollback'&&req.method==='POST')return sendJson(res,501,{error:'rollback not wired'});
+304:      if (pn === '/api/connections/probe' && req.method === 'POST') return sendJson(res,200,await probeConnections());
+305:      if (pn === '/api/project' && req.method === 'GET') return sendJson(res, 200, { ...inventory(activeDir, true), path: path.relative(repoDir, activeDir), gates: artifactChecks(activeDir), history: projectGit(activeDir) });
+315:      if (pn === '/api/settings' && req.method === 'POST') {
+323:      if (pn === '/api/history' && req.method === 'GET') return sendJson(res, 200, { available: fs.existsSync(path.join(activeDir, '.git')), commits: projectGit(activeDir) });
+324:      if (pn === '/api/history/revert' && req.method === 'POST') {
+332:      if (pn === '/api/qc' && req.method === 'GET') return sendJson(res, 200, artifactChecks(activeDir));
+333:      if (pn === '/api/annotations' && req.method === 'GET') return sendJson(res, 200, state.annotations || []);
+334:      if (pn === '/api/annotations' && req.method === 'POST') {
+342:      if (pn === '/api/job' && req.method === 'GET') {
+347:      if (pn === '/api/stop' && req.method === 'POST') {
+355:      if (pn === '/api/action' && req.method === 'POST') {
+370:      if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+376:      if(pn==='/api/colab-queue'&&req.method==='GET'){
+379:      if(pn==='/api/dispatch/stills'&&req.method==='POST'){
+382:      if(pn==='/api/dispatch/assembly'&&req.method==='POST'){
+385:      if (pn === '/api/run' && req.method === 'POST') {
+514:    server.listen(port, '127.0.0.1', () => resolve({ server, port: server.address().port }));
+518:module.exports = { createHeartServer, STEPS, SUBSTEPS };
+523:  createHeartServer({ projectDir, uiDir, port }).then(({ port: p }) => {
+
+exec
+/bin/bash -lc "sed -n '250,425p' server/server.js; sed -n '425,525p' server/server.js; ls app-shell/node_modules/.bin/electron app-shell/node_modules/electron/dist/electron 2>/dev/null" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+      req.on('data', c => { data += c; if (data.length > 8 * 1024 * 1024) req.destroy(); });
+      req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}); } catch (e) { reject(e); } });
+      req.on('error', reject);
+    });
+  }
+  function serveFile(res, root, urlPath) {
+    const p = path.normalize(path.join(root, decodeURIComponent(urlPath)));
+    const normalizedRoot = path.normalize(root);
+    if (p !== normalizedRoot && !p.startsWith(normalizedRoot + path.sep)) { res.writeHead(403); return res.end(); }
+    fs.readFile(p, (err, data) => {
+      if (err) { res.writeHead(404); return res.end('not found'); }
+      res.writeHead(200, { 'Content-Type': MIME[path.extname(p).toLowerCase()] || 'application/octet-stream' });
+      res.end(data);
+    });
+  }
+
+  const server = http.createServer(async (req, res) => {
+    const u = new URL(req.url, 'http://x');
+    const pn = u.pathname;
+    try {
+      if (pn === '/api/projects' && req.method === 'GET') {
+        const names = fs.readdirSync(projectsDir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => inventory(path.join(projectsDir, e.name)));
+        return sendJson(res, 200, names);
+      }
+      if (pn === '/api/projects/new' && req.method === 'POST') {
+        const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+        const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+        if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+        fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+        fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+        const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+        const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
+        git(['add','-A'],dest);const pc=git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','snapshot: brief + voice attached'],dest);if(pc.status!==0)return sendJson(res,500,{error:'project snapshot failed: '+pc.stderr});
+        let pushed=false,pushError;const add=git(['add','projects/'+b.name]);const commit=add.status===0?git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m',`project: ${b.name} created via interface`]):add;
+        if(commit.status!==0){pushError=(commit.stderr||commit.stdout||'repo commit failed').trim();}else{const branch=git(['branch','--show-current']);const push=branch.status===0?git(['push','origin',branch.stdout.trim()]):branch; pushed=push.status===0;if(!pushed)pushError=(push.stderr||push.stdout||'push failed').trim();}
+        return sendJson(res,200,{ok:true,project:inventory(dest),pushed,...(pushError?{pushError}: {})});
+      }
+      if (pn === '/api/projects/slice' && req.method === 'POST') {
+        const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+        const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+      }
+      if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,pn==='/app'?'/index.html':pn.slice(4));
+      if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>({...p,...passModule.getState(activeDir,p.id)})));
+      if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
+      if(pn==='/api/passes/run'&&req.method==='POST'){
+        const b=await readBody(req),def=passModule.passes.find(x=>x.id===b.pass);if(!def)return sendJson(res,400,{error:'unknown pass'});
+        const ix=passModule.passes.indexOf(def);if(passModule.passes.slice(0,ix).some(p=>passModule.getState(activeDir,p.id).state!=='checkpointed'))return sendJson(res,409,{error:'earlier pass is not checkpointed'});
+        const id='pass-'+Date.now(),j={id,kind:'pass',projectDir:activeDir,status:'running',startedAt:Date.now(),ended:false,log:[],steering:[]};jobs.set(id,j);const sf=passModule.stateFile(activeDir,def.id);fs.mkdirSync(path.dirname(sf),{recursive:true});const ps=passModule.getState(activeDir,def.id);ps.state='running';ps.updatedAt=new Date().toISOString();ps.history.push({t:Date.now(),event:'started',detail:'Builder dispatched'});fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');
+        (async()=>{try{const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\nAnnotations: ${JSON.stringify(state.annotations||[])}\nSteering: ${j.steering.map(x=>x.text).join('\n')}\nEnd with a summary of changes.`;fs.writeFileSync(path.join(path.dirname(sf),'brief.md'),brief);j.log.push({t:Date.now(),stream:'builder',text:'Pass brief written. Codex builder dispatch is not available from this server process.'});throw new Error('codex builder dispatch unavailable');}catch(e){ps.state='failed';ps.updatedAt=new Date().toISOString();ps.history.push({t:Date.now(),event:'failed',detail:e.message});fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');j.status='failed';j.waitingOn=e.message;j.ended=true;j.finishedAt=Date.now();j.log.push({t:Date.now(),stream:'fail',text:e.message});}})();return sendJson(res,202,{id,status:j.status});
+      }
+      if(pn==='/api/passes/rollback'&&req.method==='POST')return sendJson(res,501,{error:'rollback not wired'});
+      if (pn === '/api/connections/probe' && req.method === 'POST') return sendJson(res,200,await probeConnections());
+      if (pn === '/api/project' && req.method === 'GET') return sendJson(res, 200, { ...inventory(activeDir, true), path: path.relative(repoDir, activeDir), gates: artifactChecks(activeDir), history: projectGit(activeDir) });
+      if (pn === '/api/select' && req.method === 'POST') {
+        const b = await readBody(req);
+        if (!/^[a-zA-Z0-9_-]+$/.test(String(b.name || ''))) return sendJson(res, 400, { error: 'اسم مشروع غير صالح' });
+        const next = path.join(projectsDir, b.name);
+        try { if (!fs.statSync(next).isDirectory()) throw new Error(); } catch (_) { return sendJson(res, 404, { error: 'المشروع غير موجود' }); }
+        activeDir = next; stateFile = path.join(activeDir, 'panel_state.json');
+        try { state = JSON.parse(fs.readFileSync(stateFile, 'utf8')); } catch (_) { state = defaultState(activeDir); }
+        return sendJson(res, 200, { ...inventory(activeDir, true), path: path.relative(repoDir, activeDir), gates: artifactChecks(activeDir), history: projectGit(activeDir) });
+      }
+      if (pn === '/api/settings' && req.method === 'POST') {
+        const b = await readBody(req);
+        if (typeof b.captions !== 'boolean' || ![24, 30].includes(Number(b.fps))) return sendJson(res, 400, { error: 'الإعدادات المقبولة: captions و24/30 fps' });
+        const file = path.join(activeDir, 'project.json'), pj = JSON.parse(fs.readFileSync(file, 'utf8'));
+        pj.settings = { ...(pj.settings || {}), captions: { ...(typeof pj.settings?.captions === 'object' ? pj.settings.captions : {}), on: b.captions }, fps: Number(b.fps) };
+        fs.writeFileSync(file, JSON.stringify(pj, null, 2) + '\n');
+        return sendJson(res, 200, { ok: true, settings: pj.settings, note: 'الإعدادات محفوظة في project.json وسيتم تمريرها إلى heart still وGitHub Actions.' });
+      }
+      if (pn === '/api/history' && req.method === 'GET') return sendJson(res, 200, { available: fs.existsSync(path.join(activeDir, '.git')), commits: projectGit(activeDir) });
+      if (pn === '/api/history/revert' && req.method === 'POST') {
+        const b = await readBody(req), commits = projectGit(activeDir);
+        if (!fs.existsSync(path.join(activeDir, '.git'))) return sendJson(res, 409, { error: 'لا يوجد مستودع Git لهذا المشروع' });
+        if (!commits.some(c => c.hash === b.hash)) return sendJson(res, 400, { error: 'اللقطة ليست ضمن سجل هذا المشروع' });
+        const r = require('child_process').spawnSync('git', ['-C', activeDir, 'revert', '--no-edit', b.hash], { encoding: 'utf8' });
+        if (r.status !== 0) return sendJson(res, 409, { error: (r.stderr || r.stdout || 'تعذر التراجع').slice(0, 500) });
+        return sendJson(res, 200, { ok: true, commits: projectGit(activeDir) });
+      }
+      if (pn === '/api/qc' && req.method === 'GET') return sendJson(res, 200, artifactChecks(activeDir));
+      if (pn === '/api/annotations' && req.method === 'GET') return sendJson(res, 200, state.annotations || []);
+      if (pn === '/api/annotations' && req.method === 'POST') {
+        const b = await readBody(req);
+        if (typeof b.frame !== 'string' || typeof b.change !== 'string' || !b.change.trim()) return sendJson(res, 400, { error: 'تحتاج الملاحظة إلى إطار ووصف تغيير' });
+        const a = { id: 'fix-' + Date.now(), project: path.basename(activeDir), frame: b.frame, change: b.change.trim(), status: 'captured_unwired', t: Date.now() };
+        state.annotations = state.annotations || []; state.annotations.push(a);
+        await persist();
+        return sendJson(res, 201, { ...a, note: 'حُفظت ملاحظة مرتبطة بالإطار؛ إعادتها إلى worker الإصلاح غير موصول بعد.' });
+      }
+      if (pn === '/api/job' && req.method === 'GET') {
+        const j = jobs.get(u.searchParams.get('id'));
+        if (!j) return sendJson(res, 404, { error: 'العملية غير موجودة' });
+        return sendJson(res, 200, { id: j.id, project: path.basename(j.projectDir), status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, steering:j.steering||[], waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null, runId:j.runId||null,legs:j.runSettings?.legs||null });
+      }
+      if (pn === '/api/stop' && req.method === 'POST') {
+        const b = await readBody(req), j = jobs.get(b.id);
+        if (!j || j.ended) return sendJson(res, 409, { error: 'لا توجد عملية تعمل' });
+        if(j.runId){j.cancelRequested=true;dispatchLayer.gh(['run','cancel',j.runId]);return sendJson(res,200,{ok:true});}
+        if(!j.child)return sendJson(res,409,{error:'لا توجد عملية تعمل'});
+        j.status = 'stopping'; j.child.kill('SIGTERM'); setTimeout(() => { if (!j.ended) j.child.kill('SIGKILL'); }, 3000).unref();
+        return sendJson(res, 200, { ok: true });
+      }
+      if (pn === '/api/action' && req.method === 'POST') {
+        const b = await readBody(req), id = 'job-' + Date.now();
+        if (b.action === 'preview') {
+          const out = path.join(activeDir, 'out', 'board', 'ui-preview-' + Date.now() + '.png');
+          fs.mkdirSync(path.dirname(out), { recursive: true });
+          const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
+          const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
+          j.outputArtifact = out;
+          j.action='preview'; const effective=inventory(activeDir).settings;
+          return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
+        }
+        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+        if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
+        return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
+      }
+      if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+        const r=dispatchLayer.gh(['run','list','--limit','50','--json','databaseId,workflowName,status,conclusion,createdAt,displayTitle']);if(r.status!==0)return sendJson(res,502,{error:(r.stderr||'gh run list failed').slice(0,500)});
+        const rows=JSON.parse(r.stdout||'[]'),projectName=u.searchParams.get('project');const selected=[];
+        for(const row of rows){if(!/Fleet Render Chunk|fleet-render/i.test(row.workflowName||''))continue;if(projectName){const ar=dispatchLayer.gh(['api',`repos/${'proa28518-creator/grayline-utils'}/actions/runs/${row.databaseId}/artifacts`]);if(ar.status!==0)continue;const artifacts=JSON.parse(ar.stdout||'{}').artifacts||[];if(!artifacts.some(a=>a.name.startsWith('fleet-chunk-'+projectName+'-')))continue;}selected.push(row);}
+        return sendJson(res,200,selected);
+      }
+      if(pn==='/api/colab-queue'&&req.method==='GET'){
+        const file=path.join(activeDir,'out','colab_queue.json');try{return sendJson(res,200,{entries:JSON.parse(fs.readFileSync(file,'utf8'))});}catch(e){if(e.code==='ENOENT')return sendJson(res,200,{entries:[]});return sendJson(res,200,{entries:[],error:'تعذر قراءة colab_queue.json: '+e.message});}
+      }
+      if(pn==='/api/dispatch/stills'&&req.method==='POST'){
+        const b=await readBody(req),dir=b.project?safeProject(b.project):activeDir;if(!dir)return sendJson(res,400,{error:'project غير صالح أو غير موجود'});const settings=b.settings||inventory(dir).settings;if(![24,30].includes(Number(settings.fps)))return sendJson(res,400,{error:'fps يجب أن يكون 24 أو 30'});const job={id:'dispatch-'+Date.now(),projectDir:dir,status:'queued',startedAt:Date.now(),ended:false,log:[],runSettings:{settings,spec:b.spec||'render:0:30'}};jobs.set(job.id,job);(async()=>{try{job.status='dispatched';const runId=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(dir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});await dispatchLayer.monitor(job,{runId,projectDir:dir,kind:'stills',settingsSent:settings,repoDir});}catch(e){job.status='failed';job.ended=true;job.finishedAt=Date.now();job.log.push({t:Date.now(),stream:'err',text:e.message});}})();return sendJson(res,202,{id:job.id,status:job.status});
+      }
+      if(pn==='/api/dispatch/assembly'&&req.method==='POST'){
+        const b=await readBody(req);if(!b.framesRunId&&!b.framesArtifact)return sendJson(res,400,{error:'مطلوب framesRunId أو framesArtifact كمصدر إطارات'});const dir=b.project?safeProject(b.project):activeDir;if(!dir)return sendJson(res,400,{error:'project غير صالح أو غير موجود'});if(![24,30].includes(Number(b.fps)))return sendJson(res,400,{error:'fps يجب أن يكون 24 أو 30'});const job={id:'assembly-'+Date.now(),projectDir:dir,status:'queued',startedAt:Date.now(),ended:false,log:[]};jobs.set(job.id,job);(async()=>{try{job.status='dispatched';const inputs={project:path.basename(dir),frames_artifact:b.framesArtifact||'',frames_run_id:b.framesRunId||'',fps:String(b.fps),mix_rel:b.mixRel||'',mode:'assemble'};const runId=await dispatchLayer.dispatchAsync('fleet-assembly.yml',inputs);await dispatchLayer.monitor(job,{runId,projectDir:dir,kind:'assembly',repoDir});}catch(e){job.status='failed';job.ended=true;job.finishedAt=Date.now();job.log.push({t:Date.now(),stream:'err',text:e.message});}})();return sendJson(res,202,{id:job.id,status:job.status});
+      }
+      if (pn === '/api/run' && req.method === 'POST') {
+        const activeRun=Array.from(jobs.values()).find(job=>job.kind==='run'&&!job.ended&&job.projectDir===activeDir);
+        if(activeRun)return sendJson(res,409,{error:`توجد عملية تشغيل جارية: ${activeRun.id}`});
+        const b = await readBody(req), id = 'run-' + Date.now();
+        const j = { id, kind: 'run', projectDir: activeDir, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'لا شيء' };
+        jobs.set(id, j);
+        j.runSettings={mode:b.mode==='faster'?'faster':'quality',model:b.model||'free/glm-5.3-flashx',effort:b.effort||'standard',settings:inventory(activeDir).settings,legs:[]};
+        const leg=(id,state,detail)=>{const x={id,state,detail};j.runSettings.legs.push(x);j.log.push({t:Date.now(),stream:state==='failed'?'fail':state==='blocked'?'handoff':'pass',text:`${id}: ${state} — ${detail}`});return x;};
+        const exists=p=>fs.existsSync(path.join(activeDir,p));
+        (async()=>{
+          const script=inventory(activeDir).script,voice=inventory(activeDir).voice;
+          if(!script){leg('script','blocked','ملف النص غير موجود');j.status='blocked';j.waitingOn='script: ملف النص غير موجود';}
+          else leg('script','verified',script+' موجود');
+          if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+          if(j.status==='running'){
+            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+            if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+          }
+          if(j.status==='running'){
+            let inv=inventory(activeDir);if(inv.boardCount){leg('board','verified',inv.boardCount+' صورة موجودة');}
+            else if(b.dispatchStills){j.waitingOn='board: جاري إرسال اللقطات وانتظار GitHub Actions';try{const settings=inventory(activeDir).settings,remote={id:id+'-stills',projectDir:activeDir,status:'dispatched',startedAt:Date.now(),ended:false,log:[]};jobs.set(remote.id,remote);const rid=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(activeDir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});remote.runId=rid;j.runId=rid;await dispatchLayer.monitor(remote,{runId:rid,projectDir:activeDir,kind:'stills',settingsSent:settings,repoDir});if(remote.status==='done'&&inventory(activeDir).boardCount>0)leg('board','executed',`GitHub Actions run ${rid}; ${inventory(activeDir).boardCount} downloaded stills verified`);else{leg('board','failed',`GitHub Actions run ${rid}: ${remote.verification||remote.status}`);j.status='failed';j.waitingOn='board: فشل dispatch أو لم تجتز اللقطات تحقق الملفات';}}catch(e){leg('board','failed','GitHub stills dispatch failed: '+e.message);j.status='failed';j.waitingOn='board: '+e.message;}}
+            else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+          }
+          if(j.status==='running'){
+            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p));const mix=['out/mix_stage/audio/final_mix.wav','out/final_mix.wav','out/story6_mix.wav','out/mix.wav'].find(exists);
+            if(!missing.length){const sound=runCommand(id+'-sound',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'sound',activeDir]);j.child=sound.child;sound.outputArtifact=path.join(activeDir,'audio/sfx_bed.wav');await new Promise(resolve=>{const check=()=>sound.ended?resolve():setTimeout(check,100);check();});j.child=null;if(sound.status==='done')leg('sound','executed','audio/sfx_bed.wav verified');else{leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'فشل الصوت');}}
+            else if(mix)leg('sound','verified','mix موجود مسبقاً: '+mix);
+            else{leg('sound','blocked','مدخلات مفقودة: '+missing.join(', '));j.status='blocked';j.waitingOn='sound: المدخلات المفقودة '+missing.join(', ');}
+          }
+          if(j.status==='running'){const checks=artifactChecks(activeDir);checks.checks.forEach(c=>j.log.push({t:Date.now(),stream:c.pass?'pass':'fail',text:`${c.pass?'PASS':'FAIL'} ${c.id} — ${c.evidence}`}));if(!checks.pass){leg('gates','failed',checks.checks.filter(c=>!c.pass).map(c=>c.id).join(', '));j.status='failed';j.waitingOn='gates: '+checks.checks.filter(c=>!c.pass).map(c=>c.id).join(', ');}else leg('gates','verified','كل فحوصات الملفات مرت');}
+          if(j.status==='running'){const master=inventory(activeDir).master;if(master)leg('export','verified',master+' موجود');else{leg('export','blocked','ملف الماستر غير موجود؛ أرسل التجميع إلى GitHub بشكل منفصل');j.status='blocked';j.waitingOn='export: master missing; GitHub assembly is a separate control';}}
+          if(j.status==='running')j.status='done';j.ended=true;j.finishedAt=Date.now();if(!j.waitingOn)j.waitingOn='لا شيء';
+        })().catch(e=>{j.status='failed';j.ended=true;j.finishedAt=Date.now();j.waitingOn=e.message;j.log.push({t:Date.now(),stream:'fail',text:e.message});});
+        return sendJson(res, 202, { id, status: j.status, waitingOn: j.waitingOn });
+      }
+      if (pn === '/api/state' && req.method === 'GET') return sendJson(res, 200, state);
+      if (pn === '/api/state' && req.method === 'POST') {
+        const b = await readBody(req);
+        if (typeof b.title === 'string') state.title = b.title;
+        if (typeof b.idea === 'string') state.idea = b.idea;
+        if (typeof b.script === 'string') scriptSaved(b.script);
+        if (typeof b.script === 'string') scriptSaved(b.script);
+        if ('voice' in b) state.voice = b.voice;
+        if (b.steps) for (const k of STEPS) if (b.steps[k] && b.steps[k] !== 'done') setStepStatus('step', k, b.steps[k]);
+        if (b.substeps) for (const k of SUBSTEPS) if (b.substeps[k] && b.substeps[k] !== 'done') setStepStatus('sub', k, b.substeps[k]);
+        if ('finalFilm' in b) state.finalFilm = b.finalFilm;
+        await persist();
+        return sendJson(res, 200, state);
+      }
+      if (pn === '/api/log' && req.method === 'POST') {
+        const b = await readBody(req);
+        log(b.actor || 'agent', String(b.text || ''));
+        await persist();
+        return sendJson(res, 200, { ok: true });
+      }
+      if (pn === '/api/step' && req.method === 'POST') {           // owner's order
+        return sendJson(res, 501, { error: 'لا يوجد منفذ لتنفيذ المحطات منفردة بعد؛ لا يتم تسجيل طلب وهمي.' });
+      }
+      if (pn === '/api/setstep' && req.method === 'POST') {        // agent write-back
+        const b = await readBody(req);
+        if (b.status === 'done' && !donePredicate(b.substep || b.step, b.substep ? 'sub' : 'step'))
+          return sendJson(res, 409, { error: 'لا يمكن اعتماد done: شرط الأثر على القرص لم يمر' });
+        if (b.substep && SUBSTEPS.includes(b.substep)) setStepStatus('sub', b.substep, b.status);
+        else if (b.step && STEPS.includes(b.step)) setStepStatus('step', b.step, b.status);
+        else return sendJson(res, 400, { error: 'step/substep غير معروف' });
+        log('agent', 'حالة ' + (b.substep || b.step) + ' ← ' + b.status);
+        await persist();
+        return sendJson(res, 200, state);
+      }
+      if (pn === '/api/batch' && req.method === 'POST') {          // agent posts stills
+        const b = await readBody(req);
+        if (!SUBSTEPS.includes(b.substep) || !Array.isArray(b.frames))
+          return sendJson(res, 400, { error: 'batch يحتاج substep و frames[]' });
+        const fixRounds = state.approvals.filter(a => a.substep === b.substep && a.status === 'rejected').length;
+        const batch = {
+          id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 999),
+          substep: b.substep, frames: b.frames, status: 'pending', reason: '', fixRounds, t: Date.now()
+        };
+        state.approvals.push(batch);
+        setStepStatus('sub', b.substep, 'waiting_approval');
+        log('agent', 'وصلت دفعة لقطات لمراجعة: ' + b.substep + ' (' + b.frames.length + ' لقطات)');
+        await persist();
+        return sendJson(res, 200, batch);
+      }
+      if (pn === '/api/approve' && req.method === 'POST') {
+        const b = await readBody(req);
+        const batch = state.approvals.find(a => a.id === b.id);
+        if (!batch) return sendJson(res, 404, { error: 'الدفعة غير موجودة' });
+        if (!donePredicate(batch.substep, 'sub')) return sendJson(res, 409, { error: 'لا يمكن اعتماد اللقطات: لا توجد صور board على القرص' });
+        batch.status = 'approved'; batch.tDecision = Date.now();
+        setStepStatus('sub', batch.substep, 'done');
+        log('owner', 'وافق على لقطات: ' + batch.substep);
+        await persist();
+        return sendJson(res, 200, state);
+      }
+      if (pn === '/api/reject' && req.method === 'POST') {
+        const b = await readBody(req);
+        const batch = state.approvals.find(a => a.id === b.id);
+        if (!batch) return sendJson(res, 404, { error: 'الدفعة غير موجودة' });
+        batch.status = 'rejected'; batch.reason = String(b.reason || ''); batch.tDecision = Date.now();
+        batch.fixRounds += 1;
+        setStepStatus('sub', batch.substep, 'running');
+        log('owner', 'رفض لقطات ' + batch.substep + (batch.reason ? ' — السبب: ' + batch.reason : '') + ' (جولة إصلاح ' + batch.fixRounds + ')');
+        await persist();
+        return sendJson(res, 200, state);
+      }
+      if (pn === '/api/voice' && req.method === 'POST') {
+        const b = await readBody(req);
+        state.voice = b.voice || null;
+        log('agent', state.voice ? 'تم إرفاق ملف الصوت: ' + state.voice.name : 'أُزيل ملف الصوت');
+        await persist();
+        return sendJson(res, 200, state);
+      }
+      if (pn === '/api/film' && req.method === 'POST') {
+        const b = await readBody(req);
+        state.finalFilm = { url: b.url || '', duration: b.duration || 0, size: b.size || 0 };
+        log('agent', 'الفيلم النهائي جاهز');
+        await persist();
+        return sendJson(res, 200, state);
+      }
+      if (pn === '/' ) return serveFile(res, uiDir, '/index.html');
+      if (pn.startsWith('/ui/')) return serveFile(res, uiDir, pn.slice(3));
+      if (pn.startsWith('/project/')) return serveFile(res, activeDir, pn.slice(8));
+      res.writeHead(404); res.end('not found');
+    } catch (e) {
+      sendJson(res, 500, { error: String(e && e.message || e) });
+    }
+  });
+
+  return new Promise(resolve => {
+    server.listen(port, '127.0.0.1', () => resolve({ server, port: server.address().port }));
+  });
+}
+
+module.exports = { createHeartServer, STEPS, SUBSTEPS };
+if (require.main === module) {
+  const projectDir = path.resolve(process.argv[2] || path.join(__dirname, '..', 'projects', 'demo-ring'));
+  const uiDir = path.join(__dirname, '..', 'ui');
+  const port = Number(process.argv[3] || 8903);
+  createHeartServer({ projectDir, uiDir, port }).then(({ port: p }) => {
+    console.log('Heart Studio server: http://127.0.0.1:' + p + '/  (project: ' + projectDir + ')');
+  });
+app-shell/node_modules/.bin/electron
+app-shell/node_modules/electron/dist/electron
+
+exec
+/bin/bash -lc "sed -n '1,75p' server/server.js; cat .gitignore 2>/dev/null" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+'use strict';
+/* Heart Studio — zero-dependency local server.
+ * Serves the control UI (/), the project host page + files (/project/...),
+ * and a small JSON API over <project>/panel_state.json.
+ * State writes are serialized and atomic (tmp file + rename). */
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const dispatchLayer = require('./dispatch');
+const appDir = path.join(__dirname, '..', 'app', 'renderer');
+const passModule = require('./passes');
+
+const STEPS = ['write', 'add', 'run', 'build', 'mix', 'export'];
+const SUBSTEPS = ['camera', 'environment', 'post', 'shading'];
+const MIME = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript',
+  '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.glb': 'model/gltf-binary',
+  '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.mp4': 'video/mp4',
+  '.woff': 'font/woff', '.woff2': 'font/woff2', '.css': 'text/css', '.txt': 'text/plain',
+  '.md': 'text/plain', '.bin': 'application/octet-stream'
+};
+
+function defaultState(projectDir) {
+  let title = 'مشروع جديد';
+  try {
+    const pj = JSON.parse(fs.readFileSync(path.join(projectDir, 'project.json'), 'utf8'));
+    if (pj && pj.title) title = pj.title;
+  } catch (e) { /* no project.json — fine */ }
+  let script = '';
+  try { script = fs.readFileSync(path.join(projectDir, 'script.txt'), 'utf8'); } catch (e) { /* none */ }
+  return {
+    title, idea: '', script, scriptVersion: 1, voice: null,
+    steps: { write: 'idle', add: 'idle', run: 'idle', build: 'idle', mix: 'idle', export: 'idle' },
+    stepTimes: {},
+    substeps: { camera: 'idle', environment: 'idle', post: 'idle', shading: 'idle' },
+    approvals: [], finalFilm: null,
+    log: [{ t: Date.now(), actor: 'system', text: 'تم إنشاء المشروع' }]
+  };
+}
+
+function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+  const repoDir = path.resolve(__dirname, '..');
+  const projectsDir = path.join(repoDir, 'projects');
+  let activeDir = projectDir;
+  let stateFile = path.join(activeDir, 'panel_state.json');
+  let state;
+  try {
+    state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+    const d = defaultState(activeDir);
+    state = Object.assign(d, state);
+    state.steps = Object.assign(d.steps, state.steps || {});
+    state.substeps = Object.assign(d.substeps, state.substeps || {});
+  } catch (e) { state = defaultState(projectDir); }
+
+  let chain = Promise.resolve();
+  function persist() {
+    const snapshot = JSON.stringify(state, null, 1);
+    chain = chain.then(async () => {
+      const tmp = stateFile + '.tmp.' + process.pid;
+      await fs.promises.writeFile(tmp, snapshot);
+      await fs.promises.rename(tmp, stateFile);
+    }).catch(() => {});
+    return chain;
+  }
+  function log(actor, text) { state.log.push({ t: Date.now(), actor, text }); }
+
+  const jobs = new Map();
+  let connectionCache = null;
+  const connectionNames = ['GPT','Gemini','Opus','GLM'];
+  const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+  const timed = () => new Date().toISOString();
+  function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
+  async function probeConnections() {
+# runtime panel state (per machine, per project)
+projects/*/panel_state.json
+panel_state.json.tmp.*
+# render outputs
+projects/*/out/
+# APInex key material — never commit (see mcp/apinex_helper.py)
+.env
+# MCP server runtime log
+mcp/server.log
+
+# python bytecode
+__pycache__/
+
+codex
+The server already serves `app/renderer` at `/app/`, so the desktop app can use the Stage 2 server without changing protected paths. I’ve confirmed several backend limits that the UI must report plainly: annotation execution is not wired, pass runs fail when Codex dispatch is unavailable, rollback returns “not wired,” and the Colab queue is currently a status surface.
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/app/README.md
+/home/hatch/workspace/heart-studio/app/main.js
+/home/hatch/workspace/heart-studio/app/package.json
+/home/hatch/workspace/heart-studio/app/preload.js
+diff --git a/app/README.md b/app/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..4b03efa1df0dc4d32e487e5c24ec42f20c56d049
+--- /dev/null
++++ b/app/README.md
+@@ -0,0 +1,5 @@
++# Heart Studio desktop app
++
++Electron desktop shell for Heart Studio's local control server. It serves the app from `/app/` and uses the existing Stage 2 API.
++
++Launch from the repository root with `node bin/heart app [project]` (when the CLI app command is available), or launch Electron directly with `app/` as its argument, for example `app-shell/node_modules/.bin/electron app/`. Set `HEART_PROJECT` to a project name or path under `projects/`; the default is `projects/story6-microwave`. `HEART_PORT` defaults to 8903 and falls back to an ephemeral port if occupied.
+diff --git a/app/main.js b/app/main.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b415adc0d66bbdfc3f0c9972da0a139bcfb01cd
+--- /dev/null
++++ b/app/main.js
+@@ -0,0 +1,34 @@
++'use strict';
++const { app, BrowserWindow, ipcMain, dialog } = require('electron');
++const path = require('path');
++const fs = require('fs');
++const { createHeartServer } = require('../server/server.js');
++
++const repo = path.resolve(__dirname, '..');
++function resolveProject(value) {
++  const p = path.resolve(repo, value || 'projects/story6-microwave');
++  const projects = path.join(repo, 'projects') + path.sep;
++  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
++  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
++  return p;
++}
++let server;
++async function startServer() {
++  const projectDir = resolveProject(process.env.HEART_PROJECT);
++  const uiDir = path.join(repo, 'ui');
++  const requested = Number(process.env.HEART_PORT || 8903);
++  try { return await createHeartServer({ projectDir, uiDir, port: requested }); }
++  catch (e) { if (e.code !== 'EADDRINUSE') throw e; return createHeartServer({ projectDir, uiDir, port: 0 }); }
++}
++ipcMain.handle('heart:pick-file', async (_event, kind) => {
++  const filters = kind === 'audio' ? [{ name: 'Audio', extensions: ['wav','mp3','m4a','ogg','flac'] }] : kind === 'text' ? [{ name: 'Text', extensions: ['txt','md','json','srt'] }] : [{ name: 'All files', extensions: ['*'] }];
++  const result = await dialog.showOpenDialog({ properties: ['openFile'], filters });
++  return result.canceled || !result.filePaths.length ? null : result.filePaths[0];
++});
++app.whenReady().then(async () => {
++  const running = await startServer(); server = running.server;
++  const win = new BrowserWindow({ width: 1360, height: 900, backgroundColor: '#0d1117', webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'preload.js') } });
++  win.loadURL(`http://127.0.0.1:${running.port}/app/`);
++  win.on('closed', () => { if (server) server.close(); app.quit(); });
++}).catch(err => { console.error(err); app.quit(); });
++app.on('window-all-closed', () => { if (server) server.close(); app.quit(); });
+diff --git a/app/package.json b/app/package.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..576f69b65ddc26871d9bc38a2a9b78f592bc1e88
+--- /dev/null
++++ b/app/package.json
+@@ -0,0 +1 @@
++{"name":"heart-studio-app","private":true,"main":"main.js"}
+diff --git a/app/preload.js b/app/preload.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..f5b22599ed21c46b0e291db662aabcffefaf9eb6
+--- /dev/null
++++ b/app/preload.js
+@@ -0,0 +1,3 @@
++'use strict';
++const { contextBridge, ipcRenderer } = require('electron');
++contextBridge.exposeInMainWorld('heartApp', { pickFile: kind => ipcRenderer.invoke('heart:pick-file', kind) });
+
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/app/renderer/app.css
+/home/hatch/workspace/heart-studio/app/renderer/index.html
+diff --git a/app/README.md b/app/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..4b03efa1df0dc4d32e487e5c24ec42f20c56d049
+--- /dev/null
++++ b/app/README.md
+@@ -0,0 +1,5 @@
++# Heart Studio desktop app
++
++Electron desktop shell for Heart Studio's local control server. It serves the app from `/app/` and uses the existing Stage 2 API.
++
++Launch from the repository root with `node bin/heart app [project]` (when the CLI app command is available), or launch Electron directly with `app/` as its argument, for example `app-shell/node_modules/.bin/electron app/`. Set `HEART_PROJECT` to a project name or path under `projects/`; the default is `projects/story6-microwave`. `HEART_PORT` defaults to 8903 and falls back to an ephemeral port if occupied.
+diff --git a/app/main.js b/app/main.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b415adc0d66bbdfc3f0c9972da0a139bcfb01cd
+--- /dev/null
++++ b/app/main.js
+@@ -0,0 +1,34 @@
++'use strict';
++const { app, BrowserWindow, ipcMain, dialog } = require('electron');
++const path = require('path');
++const fs = require('fs');
++const { createHeartServer } = require('../server/server.js');
++
++const repo = path.resolve(__dirname, '..');
++function resolveProject(value) {
++  const p = path.resolve(repo, value || 'projects/story6-microwave');
++  const projects = path.join(repo, 'projects') + path.sep;
++  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
++  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
++  return p;
++}
++let server;
++async function startServer() {
++  const projectDir = resolveProject(process.env.HEART_PROJECT);
++  const uiDir = path.join(repo, 'ui');
++  const requested = Number(process.env.HEART_PORT || 8903);
++  try { return await createHeartServer({ projectDir, uiDir, port: requested }); }
++  catch (e) { if (e.code !== 'EADDRINUSE') throw e; return createHeartServer({ projectDir, uiDir, port: 0 }); }
++}
++ipcMain.handle('heart:pick-file', async (_event, kind) => {
++  const filters = kind === 'audio' ? [{ name: 'Audio', extensions: ['wav','mp3','m4a','ogg','flac'] }] : kind === 'text' ? [{ name: 'Text', extensions: ['txt','md','json','srt'] }] : [{ name: 'All files', extensions: ['*'] }];
++  const result = await dialog.showOpenDialog({ properties: ['openFile'], filters });
++  return result.canceled || !result.filePaths.length ? null : result.filePaths[0];
++});
++app.whenReady().then(async () => {
++  const running = await startServer(); server = running.server;
++  const win = new BrowserWindow({ width: 1360, height: 900, backgroundColor: '#0d1117', webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'preload.js') } });
++  win.loadURL(`http://127.0.0.1:${running.port}/app/`);
++  win.on('closed', () => { if (server) server.close(); app.quit(); });
++}).catch(err => { console.error(err); app.quit(); });
++app.on('window-all-closed', () => { if (server) server.close(); app.quit(); });
+diff --git a/app/package.json b/app/package.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..576f69b65ddc26871d9bc38a2a9b78f592bc1e88
+--- /dev/null
++++ b/app/package.json
+@@ -0,0 +1 @@
++{"name":"heart-studio-app","private":true,"main":"main.js"}
+diff --git a/app/preload.js b/app/preload.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..f5b22599ed21c46b0e291db662aabcffefaf9eb6
+--- /dev/null
++++ b/app/preload.js
+@@ -0,0 +1,3 @@
++'use strict';
++const { contextBridge, ipcRenderer } = require('electron');
++contextBridge.exposeInMainWorld('heartApp', { pickFile: kind => ipcRenderer.invoke('heart:pick-file', kind) });
+diff --git a/app/renderer/app.css b/app/renderer/app.css
+new file mode 100644
+index 0000000000000000000000000000000000000000..77d2a7685389a3a83e9cac70f1bd6da63efa55ab
+--- /dev/null
++++ b/app/renderer/app.css
+@@ -0,0 +1 @@
++:root{color-scheme:dark;--bg:#0d1117;--panel:#131a22;--panel2:#171f29;--line:#232c38;--amber:#e9b949;--text:#e6edf3;--muted:#8b98a5;--green:#54c78a;--red:#f07878;--blue:#79a9ff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit;color:inherit}button{background:#202a36;border:1px solid var(--line);border-radius:7px;padding:8px 12px;cursor:pointer}button:hover:not(:disabled){border-color:#596777;background:#263341}button:disabled{opacity:.42;cursor:not-allowed}input,select,textarea{background:#0e141b;border:1px solid var(--line);border-radius:7px;padding:10px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--amber)}textarea{resize:vertical;min-height:80px}.rail{position:fixed;inset:0 auto 0 0;width:224px;background:#0a0f14;border-right:1px solid var(--line);padding:19px 14px;display:flex;flex-direction:column;z-index:2}.brand{display:flex;align-items:center;gap:10px;padding:2px 5px 20px}.brand-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--amber);color:#141820;font-size:18px}.brand small,.rail-bottom small{display:block;color:var(--muted);font-size:11px}.project-switch{padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);margin-bottom:14px}.project-switch span,.seat-title span,.label,.eyebrow{display:block;color:var(--muted);font-size:10px;letter-spacing:.09em;font-weight:700}.project-switch b{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav{display:grid;gap:3px}nav button{background:transparent;border:0;text-align:left;color:#aab4be;padding:9px 10px}nav button.active{background:#19212a;color:var(--text)}nav button.active:before{content:' ';display:inline-block;width:4px;height:15px;background:var(--amber);border-radius:4px;margin-right:10px;vertical-align:middle}.nav-label{padding:14px 10px 4px;color:#5e6b78;font-size:10px;text-transform:uppercase;letter-spacing:.1em}.new-project{margin-top:auto;background:var(--amber);color:#15191e;border:0;font-weight:700}.rail-bottom{padding-top:18px}.seat-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.seat-title button{padding:4px 8px;font-size:11px}.seats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}.seat{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px;font-size:11px}.seat i,.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#66727e;margin-right:5px}.seat i.connected,.live-dot{background:var(--green);box-shadow:0 0 8px #54c78a55}main{margin-left:224px;min-height:100vh}.topbar{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:#0d1117eF;position:sticky;top:0;z-index:1}.crumb{font-size:11px;color:var(--muted);letter-spacing:.08em}.crumb span{margin:0 8px;color:#46515c}.crumb b{color:var(--text);letter-spacing:0}.top-project{font-size:12px;color:var(--muted);margin-top:3px}.top-actions{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);letter-spacing:.1em}.icon-btn{font-size:12px;letter-spacing:0}.view{max-width:1240px;margin:auto;padding:29px 32px 60px}h1{font-size:26px;margin:0 0 5px;letter-spacing:-.03em}h2{font-size:16px;margin:0}.sub{color:var(--muted);margin:0 0 22px}.section-head{display:flex;align-items:center;justify-content:space-between;margin:27px 0 12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}.card h3{font-size:14px;margin:0 0 10px}.card p{color:var(--muted);margin:5px 0}.muted{color:var(--muted)}.stats{display:flex;gap:8px;flex-wrap:wrap}.badge,.chip{display:inline-flex;border:1px solid var(--line);border-radius:5px;padding:3px 7px;color:var(--muted);font-size:10px}.badge.ok,.chip.done{color:var(--green);border-color:#24553e}.badge.warn,.chip.failed{color:var(--red);border-color:#593333}.chip.running{color:var(--amber);border-color:#65542b}.accent{color:var(--amber)}.btn-primary{background:var(--amber);color:#171a1e;border:0;font-weight:750}.btn-danger{color:var(--red)}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.row.between{justify-content:space-between}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:12px;color:#bac4ce}.field input,.field select,.field textarea{width:100%}.field small{color:var(--muted)}.segmented{display:inline-flex;padding:3px;background:#0c1218;border:1px solid var(--line);border-radius:8px}.segmented button{border:0;background:transparent;color:var(--muted)}.segmented button.selected{background:#30313a;color:var(--amber)}.hero-console{border:1px solid #4f4328;background:linear-gradient(135deg,#211e17,#151a20 42%);padding:18px;border-radius:11px}.run-controls{display:grid;grid-template-columns:1.1fr 1.15fr .8fr 1fr auto auto;gap:9px;align-items:end;margin-top:16px}.run-controls .field{margin:0}.feed{height:208px;overflow:auto;background:#090e13;border:1px solid var(--line);border-radius:8px;padding:12px;font:12px/1.65 ui-monospace,SFMono-Regular,monospace;color:#b2c1ce}.feed-line{white-space:pre-wrap}.feed-line.fail{color:var(--red)}.feed-line.pass{color:var(--green)}.feed-line.steer{color:var(--amber)}.legs{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.leg{background:#10171e;border:1px solid var(--line);border-radius:7px;padding:9px 7px;font-size:11px}.leg b{display:block;margin-bottom:5px}.waiting{padding:12px 14px;border-left:3px solid var(--amber);background:#211e17;border-radius:4px;margin:14px 0;font-weight:650}.frames{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.frame{padding:4px;background:#0a0e13;border:1px solid var(--line);border-radius:7px;cursor:pointer}.frame img{width:100%;height:94px;object-fit:cover;border-radius:4px}.frame span{display:block;font-size:10px;color:var(--muted);padding:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.frame:hover{border-color:var(--amber)}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;border-bottom:1px solid var(--line);padding:10px 8px;vertical-align:top}.table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.check{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1d2630}.check input{margin-top:3px}.check .evidence{display:block;color:var(--muted);font-size:11px}.pass-list{display:grid;gap:8px}.pass-row{display:grid;grid-template-columns:1.3fr auto auto auto;gap:8px;align-items:center;background:#10171e;border:1px solid var(--line);border-radius:7px;padding:10px}.pass-row small{color:var(--muted)}.not-wired{color:#e3bb65;border-color:#65542b}.empty{padding:25px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:8px}.annotation-list{display:grid;gap:7px}.annotation{padding:9px;border:1px solid var(--line);border-radius:7px;background:#10171e}.annotation small{display:block;color:var(--muted)}.inline-form{display:flex;gap:8px}.inline-form input{flex:1}#toast{position:fixed;bottom:18px;right:20px;padding:10px 14px;background:#263341;border:1px solid #445365;border-radius:7px;opacity:0;transform:translateY(8px);transition:.2s;z-index:4;max-width:500px}#toast.show{opacity:1;transform:none}.warning{color:#f2c76d;background:#251f13;padding:10px;border-radius:7px}.success{color:var(--green)}@media(max-width:1000px){.rail{width:190px}main{margin-left:190px}.run-controls{grid-template-columns:repeat(3,1fr)}.legs{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.frames{grid-template-columns:repeat(4,1fr)}}
+diff --git a/app/renderer/index.html b/app/renderer/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e456dfd6b6f1c003c4a3795c986ad91e8690db7
+--- /dev/null
++++ b/app/renderer/index.html
+@@ -0,0 +1,4 @@
++<!doctype html>
++<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heart Studio</title><link rel="stylesheet" href="/app/app.css"></head>
++<body><aside class="rail"><div class="brand"><span class="brand-icon">♥</span><div><b>Heart Studio</b><small>Production console</small></div></div><div class="project-switch"><span>ACTIVE PROJECT</span><b id="railProject">Loading…</b></div><nav id="nav"></nav><button class="new-project" data-screen="new">＋ New project</button><div class="rail-bottom"><div class="seat-title"><span>MODEL SEATS</span><button id="probe">Probe</button></div><div id="seats" class="seats"></div><small>Local control server</small></div></aside>
++<main><header class="topbar"><div><div class="crumb">HEART STUDIO <span>/</span> <b id="screenTitle">Home</b></div><div id="topProject" class="top-project"></div></div><div class="top-actions"><span class="live-dot"></span><span>LOCAL</span><button class="icon-btn" data-screen="projects">Projects</button></div></header><div id="view" class="view"></div></main><div id="toast" role="status"></div><script src="/app/app.js"></script></body></html>
+
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/app/renderer/app.js
+diff --git a/app/README.md b/app/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..4b03efa1df0dc4d32e487e5c24ec42f20c56d049
+--- /dev/null
++++ b/app/README.md
+@@ -0,0 +1,5 @@
++# Heart Studio desktop app
++
++Electron desktop shell for Heart Studio's local control server. It serves the app from `/app/` and uses the existing Stage 2 API.
++
++Launch from the repository root with `node bin/heart app [project]` (when the CLI app command is available), or launch Electron directly with `app/` as its argument, for example `app-shell/node_modules/.bin/electron app/`. Set `HEART_PROJECT` to a project name or path under `projects/`; the default is `projects/story6-microwave`. `HEART_PORT` defaults to 8903 and falls back to an ephemeral port if occupied.
+diff --git a/app/main.js b/app/main.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b415adc0d66bbdfc3f0c9972da0a139bcfb01cd
+--- /dev/null
++++ b/app/main.js
+@@ -0,0 +1,34 @@
++'use strict';
++const { app, BrowserWindow, ipcMain, dialog } = require('electron');
++const path = require('path');
++const fs = require('fs');
++const { createHeartServer } = require('../server/server.js');
++
++const repo = path.resolve(__dirname, '..');
++function resolveProject(value) {
++  const p = path.resolve(repo, value || 'projects/story6-microwave');
++  const projects = path.join(repo, 'projects') + path.sep;
++  if (!p.startsWith(projects) && !path.isAbsolute(value || '')) throw new Error('Project must be a project name or path under projects/.');
++  if (!fs.statSync(p).isDirectory()) throw new Error(`Project directory not found: ${p}`);
++  return p;
++}
++let server;
++async function startServer() {
++  const projectDir = resolveProject(process.env.HEART_PROJECT);
++  const uiDir = path.join(repo, 'ui');
++  const requested = Number(process.env.HEART_PORT || 8903);
++  try { return await createHeartServer({ projectDir, uiDir, port: requested }); }
++  catch (e) { if (e.code !== 'EADDRINUSE') throw e; return createHeartServer({ projectDir, uiDir, port: 0 }); }
++}
++ipcMain.handle('heart:pick-file', async (_event, kind) => {
++  const filters = kind === 'audio' ? [{ name: 'Audio', extensions: ['wav','mp3','m4a','ogg','flac'] }] : kind === 'text' ? [{ name: 'Text', extensions: ['txt','md','json','srt'] }] : [{ name: 'All files', extensions: ['*'] }];
++  const result = await dialog.showOpenDialog({ properties: ['openFile'], filters });
++  return result.canceled || !result.filePaths.length ? null : result.filePaths[0];
++});
++app.whenReady().then(async () => {
++  const running = await startServer(); server = running.server;
++  const win = new BrowserWindow({ width: 1360, height: 900, backgroundColor: '#0d1117', webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'preload.js') } });
++  win.loadURL(`http://127.0.0.1:${running.port}/app/`);
++  win.on('closed', () => { if (server) server.close(); app.quit(); });
++}).catch(err => { console.error(err); app.quit(); });
++app.on('window-all-closed', () => { if (server) server.close(); app.quit(); });
+diff --git a/app/package.json b/app/package.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..576f69b65ddc26871d9bc38a2a9b78f592bc1e88
+--- /dev/null
++++ b/app/package.json
+@@ -0,0 +1 @@
++{"name":"heart-studio-app","private":true,"main":"main.js"}
+diff --git a/app/preload.js b/app/preload.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..f5b22599ed21c46b0e291db662aabcffefaf9eb6
+--- /dev/null
++++ b/app/preload.js
+@@ -0,0 +1,3 @@
++'use strict';
++const { contextBridge, ipcRenderer } = require('electron');
++contextBridge.exposeInMainWorld('heartApp', { pickFile: kind => ipcRenderer.invoke('heart:pick-file', kind) });
+diff --git a/app/renderer/app.css b/app/renderer/app.css
+new file mode 100644
+index 0000000000000000000000000000000000000000..77d2a7685389a3a83e9cac70f1bd6da63efa55ab
+--- /dev/null
++++ b/app/renderer/app.css
+@@ -0,0 +1 @@
++:root{color-scheme:dark;--bg:#0d1117;--panel:#131a22;--panel2:#171f29;--line:#232c38;--amber:#e9b949;--text:#e6edf3;--muted:#8b98a5;--green:#54c78a;--red:#f07878;--blue:#79a9ff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit;color:inherit}button{background:#202a36;border:1px solid var(--line);border-radius:7px;padding:8px 12px;cursor:pointer}button:hover:not(:disabled){border-color:#596777;background:#263341}button:disabled{opacity:.42;cursor:not-allowed}input,select,textarea{background:#0e141b;border:1px solid var(--line);border-radius:7px;padding:10px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--amber)}textarea{resize:vertical;min-height:80px}.rail{position:fixed;inset:0 auto 0 0;width:224px;background:#0a0f14;border-right:1px solid var(--line);padding:19px 14px;display:flex;flex-direction:column;z-index:2}.brand{display:flex;align-items:center;gap:10px;padding:2px 5px 20px}.brand-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--amber);color:#141820;font-size:18px}.brand small,.rail-bottom small{display:block;color:var(--muted);font-size:11px}.project-switch{padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);margin-bottom:14px}.project-switch span,.seat-title span,.label,.eyebrow{display:block;color:var(--muted);font-size:10px;letter-spacing:.09em;font-weight:700}.project-switch b{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav{display:grid;gap:3px}nav button{background:transparent;border:0;text-align:left;color:#aab4be;padding:9px 10px}nav button.active{background:#19212a;color:var(--text)}nav button.active:before{content:' ';display:inline-block;width:4px;height:15px;background:var(--amber);border-radius:4px;margin-right:10px;vertical-align:middle}.nav-label{padding:14px 10px 4px;color:#5e6b78;font-size:10px;text-transform:uppercase;letter-spacing:.1em}.new-project{margin-top:auto;background:var(--amber);color:#15191e;border:0;font-weight:700}.rail-bottom{padding-top:18px}.seat-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.seat-title button{padding:4px 8px;font-size:11px}.seats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}.seat{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px;font-size:11px}.seat i,.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#66727e;margin-right:5px}.seat i.connected,.live-dot{background:var(--green);box-shadow:0 0 8px #54c78a55}main{margin-left:224px;min-height:100vh}.topbar{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:#0d1117eF;position:sticky;top:0;z-index:1}.crumb{font-size:11px;color:var(--muted);letter-spacing:.08em}.crumb span{margin:0 8px;color:#46515c}.crumb b{color:var(--text);letter-spacing:0}.top-project{font-size:12px;color:var(--muted);margin-top:3px}.top-actions{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);letter-spacing:.1em}.icon-btn{font-size:12px;letter-spacing:0}.view{max-width:1240px;margin:auto;padding:29px 32px 60px}h1{font-size:26px;margin:0 0 5px;letter-spacing:-.03em}h2{font-size:16px;margin:0}.sub{color:var(--muted);margin:0 0 22px}.section-head{display:flex;align-items:center;justify-content:space-between;margin:27px 0 12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}.card h3{font-size:14px;margin:0 0 10px}.card p{color:var(--muted);margin:5px 0}.muted{color:var(--muted)}.stats{display:flex;gap:8px;flex-wrap:wrap}.badge,.chip{display:inline-flex;border:1px solid var(--line);border-radius:5px;padding:3px 7px;color:var(--muted);font-size:10px}.badge.ok,.chip.done{color:var(--green);border-color:#24553e}.badge.warn,.chip.failed{color:var(--red);border-color:#593333}.chip.running{color:var(--amber);border-color:#65542b}.accent{color:var(--amber)}.btn-primary{background:var(--amber);color:#171a1e;border:0;font-weight:750}.btn-danger{color:var(--red)}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.row.between{justify-content:space-between}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:12px;color:#bac4ce}.field input,.field select,.field textarea{width:100%}.field small{color:var(--muted)}.segmented{display:inline-flex;padding:3px;background:#0c1218;border:1px solid var(--line);border-radius:8px}.segmented button{border:0;background:transparent;color:var(--muted)}.segmented button.selected{background:#30313a;color:var(--amber)}.hero-console{border:1px solid #4f4328;background:linear-gradient(135deg,#211e17,#151a20 42%);padding:18px;border-radius:11px}.run-controls{display:grid;grid-template-columns:1.1fr 1.15fr .8fr 1fr auto auto;gap:9px;align-items:end;margin-top:16px}.run-controls .field{margin:0}.feed{height:208px;overflow:auto;background:#090e13;border:1px solid var(--line);border-radius:8px;padding:12px;font:12px/1.65 ui-monospace,SFMono-Regular,monospace;color:#b2c1ce}.feed-line{white-space:pre-wrap}.feed-line.fail{color:var(--red)}.feed-line.pass{color:var(--green)}.feed-line.steer{color:var(--amber)}.legs{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.leg{background:#10171e;border:1px solid var(--line);border-radius:7px;padding:9px 7px;font-size:11px}.leg b{display:block;margin-bottom:5px}.waiting{padding:12px 14px;border-left:3px solid var(--amber);background:#211e17;border-radius:4px;margin:14px 0;font-weight:650}.frames{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.frame{padding:4px;background:#0a0e13;border:1px solid var(--line);border-radius:7px;cursor:pointer}.frame img{width:100%;height:94px;object-fit:cover;border-radius:4px}.frame span{display:block;font-size:10px;color:var(--muted);padding:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.frame:hover{border-color:var(--amber)}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;border-bottom:1px solid var(--line);padding:10px 8px;vertical-align:top}.table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.check{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1d2630}.check input{margin-top:3px}.check .evidence{display:block;color:var(--muted);font-size:11px}.pass-list{display:grid;gap:8px}.pass-row{display:grid;grid-template-columns:1.3fr auto auto auto;gap:8px;align-items:center;background:#10171e;border:1px solid var(--line);border-radius:7px;padding:10px}.pass-row small{color:var(--muted)}.not-wired{color:#e3bb65;border-color:#65542b}.empty{padding:25px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:8px}.annotation-list{display:grid;gap:7px}.annotation{padding:9px;border:1px solid var(--line);border-radius:7px;background:#10171e}.annotation small{display:block;color:var(--muted)}.inline-form{display:flex;gap:8px}.inline-form input{flex:1}#toast{position:fixed;bottom:18px;right:20px;padding:10px 14px;background:#263341;border:1px solid #445365;border-radius:7px;opacity:0;transform:translateY(8px);transition:.2s;z-index:4;max-width:500px}#toast.show{opacity:1;transform:none}.warning{color:#f2c76d;background:#251f13;padding:10px;border-radius:7px}.success{color:var(--green)}@media(max-width:1000px){.rail{width:190px}main{margin-left:190px}.run-controls{grid-template-columns:repeat(3,1fr)}.legs{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.frames{grid-template-columns:repeat(4,1fr)}}
+diff --git a/app/renderer/app.js b/app/renderer/app.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..ed34fc081e84f815b28023ed759f5c1c9082e776
+--- /dev/null
++++ b/app/renderer/app.js
+@@ -0,0 +1,22 @@
++'use strict';
++const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
++const navItems=[['Home','home'],['Berserk','berserk'],['Projects','projects'],['Channels','channels'],['Editor','editor'],['Styles','styles'],['Library','library'],['Memory','memory'],['Routines','routines'],['Renders','renders'],['YouTube','youtube']];
++let screen='home',project=null,projects=[],jobId=null,passJobId=null,mode='quality',jobTimer=null,passTimer=null,annotations=[];
++async function api(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});let d;try{d=await r.json()}catch(_){d={error:await r.text()}}if(!r.ok)throw Error(d.error||`Request failed (${r.status})`);return d}
++function toast(s){const t=$('#toast');t.textContent=s;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),3600)}
++function heading(title,sub=''){return `<h1>${esc(title)}</h1>${sub?`<p class="sub">${esc(sub)}</p>`:''}`}
++function panel(title,content,extra=''){return `<section class="card ${extra}"><h3>${title}</h3>${content}</section>`}
++function badge(text,cls=''){return `<span class="badge ${cls}">${esc(text)}</span>`}
++function setNav(){const nav=$('#nav');nav.innerHTML=`<div class="nav-label">Workspace</div>`+navItems.map(([n,id],i)=>`${i===4?'<div class="nav-label">Production</div>':''}<button data-screen="${id}" class="${screen===id?'active':''}">${n}</button>`).join('');$('#screenTitle').textContent=navItems.find(x=>x[1]===screen)?.[0]||'New project';$('#railProject').textContent=project?.title||project?.name||'No project';$('#topProject').textContent=project?`${project.title||project.name} · ${project.path||''}`:''}
++async function refreshProject(){try{project=await api('/api/project')}catch(e){toast(e.message)}}
++async function boot(){setNav();try{projects=await api('/api/projects');await refreshProject();await refreshSeats();render()}catch(e){$('#view').innerHTML=`${heading('Heart Studio','The local server could not provide project data.')}<div class="warning">${esc(e.message)}</div>`}}
++async function refreshSeats(){try{const d=await api('/api/connections');const rows=d.connections||[];$('#seats').innerHTML=['GPT','Gemini','Opus','GLM'].map(n=>{const x=rows.find(c=>c.name===n)||{};return `<div class="seat"><i class="${x.status==='connected'?'connected':''}"></i>${n} <span class="muted">${esc(x.status||'unprobed')}</span></div>`}).join('')}catch(_){}}
++function render(){setNav();const view=$('#view');const pages={home:homePage,berserk:berserkPage,projects:projectsPage,new:newPage,editor:editorPage,renders:rendersPage};if(pages[screen])view.innerHTML=pages[screen]();else view.innerHTML=`${heading(navItems.find(x=>x[1]===screen)?.[0]||screen)}<div class="card"><div class="row">${badge('not wired yet','not-wired')}</div><p class="muted">There is no backend for this section yet.</p></div>`;bindPage();}
++function invBadges(p){return `<div class="stats">${badge(p.script?'Script ready':'No script',p.script?'ok':'')}${badge(p.voice?'Voice ready':'No voice',p.voice?'ok':'')}${badge(p.timing?'Timing ready':'No timing',p.timing?'ok':'')}${badge(`${p.boardCount||0} board frames`)}${badge(p.master?'Master ready':'No master',p.master?'ok':'')}</div>`}
++function homePage(){const cards=projects.map(p=>`<article class="card"><div class="row between"><h3>${esc(p.title||p.name)}</h3>${badge(p.name===project?.name?'Selected':'Project')}</div>${invBadges(p)}<div class="row" style="margin-top:12px"><button data-select="${esc(p.name)}">Select</button><button data-open-editor="${esc(p.name)}">Open Editor</button></div></article>`).join('');return `${heading('Home','The production floor for projects, seats, and dispatched work.')}<div class="section-head"><h2>Model seats</h2><button id="probeHome">Probe all seats</button></div><div class="grid two">${['GPT','Gemini','Opus','GLM'].map(n=>panel(n,`<p id="homeSeat-${n}" class="muted">Loading connection state…</p>`)).join('')}</div><div class="section-head"><h2>Projects</h2><button data-screen="projects">All projects →</button></div><div class="grid">${cards||'<div class="empty">No projects found.</div>'}</div><div class="section-head"><h2>Recent fleet runs</h2><button data-screen="renders">View renders →</button></div><div id="homeRuns" class="card muted">Loading fleet runs…</div>`}
++function legNames(){return ['script','voice','timing','board','sound','gates','export']}
++function berserkPage(){const legs=legNames().map(x=>`<div class="leg"><b>${x}</b><span id="leg-${x}" class="chip">waiting</span></div>`).join('');return `${heading('Berserk','Supervise the run from brief checks through verified export.')}<section class="hero-console"><div class="row between"><div><span class="eyebrow">RUN CONTROL · ACTIVE PROJECT</span><h2 style="margin-top:5px">${esc(project?.title||project?.name||'No project selected')}</h2></div><span id="runStatus" class="chip">idle</span></div><div class="run-controls"><div class="field"><label>Build mode</label><div class="segmented"><button data-mode="quality" class="${mode==='quality'?'selected':''}">Quality</button><button data-mode="faster" class="${mode==='faster'?'selected':''}">Faster</button></div></div><div class="field"><label for="runModel">Model</label><select id="runModel"><option value="free/glm-5.3-flashx">GLM 5.3 FlashX</option><option value="free/gpt-6-luna">GPT 6 Luna</option></select></div><div class="field"><label for="runEffort">Effort</label><select id="runEffort"><option>standard</option><option>high</option></select></div><div class="field"><label for="runSpec">Render spec</label><input id="runSpec" value="render:0:30"></div><label class="field"><span>Stills</span><span><input id="dispatchStills" type="checkbox"> Dispatch for board</span></label><button id="runBtn" class="btn-primary">▶ RUN</button></div></section><div class="waiting" id="waitingLine">Waiting on you: nothing</div><div class="section-head"><h2>Run legs</h2><span class="muted">Artifact predicates control completion</span></div><div class="legs">${legs}</div><div class="section-head"><h2>Live supervision feed</h2><button id="stopBtn" class="btn-danger" disabled>■ Stop</button></div><div class="feed" id="runFeed">Run events will appear here when a job starts.</div><div class="section-head"><h2>Board frames <span class="muted">· click a frame to annotate</span></h2></div><div class="frames">${(project?.board||[]).map(f=>`<button class="frame" data-frame="${esc(f)}"><img src="/project/out/board/${encodeURIComponent(f)}"><span>${esc(f)}</span></button>`).join('')||'<div class="empty">No board stills found for this project.</div>'}</div><div class="section-head"><h2>Frame annotations</h2></div><div id="annotations" class="annotation-list"></div><div class="section-head"><h2>Steer the run</h2></div><div class="inline-form"><input id="steerText" placeholder="Tell the program what to change while it works" ${jobId?'':'disabled'}><button id="steerBtn" ${jobId?'':'disabled'}>Send</button></div>${jobId?'':'<small class="muted">Steering is live during a run</small>'}<div class="section-head"><h2>Dispatch</h2></div><div class="grid two"><section class="card"><h3>Storyboard stills</h3><p class="muted">Uses this project’s effective settings.</p><div class="inline-form"><input id="stillsSpec" value="render:0:30"><button id="stillsBtn">Dispatch stills</button></div><p id="stillsStatus" class="muted"></p></section><section class="card"><h3>Assembly</h3><div class="field"><label>Frames run id</label><input id="framesRun" placeholder="GitHub Actions run id"></div><div class="row"><label>FPS <select id="assemblyFps"><option>24</option><option selected>30</option></select></label><label>Mix path <input id="mixPath" value="audio/final_mix.wav"></label><button id="assemblyBtn">Dispatch assembly</button></div><p id="assemblyStatus" class="muted"></p></section></div><div class="section-head"><h2>Film render queue</h2>${badge('not dispatchable from inside the program yet','not-wired')}</div><div id="colab" class="card muted">Loading queue…</div>`}
++function projectsPage(){return `${heading('Projects','Choose the project controlled by the production console.')}<div class="grid">${projects.map(p=>`<article class="card"><h3>${esc(p.title||p.name)}</h3><p class="muted">${esc(p.name)}</p>${invBadges(p)}<div class="row" style="margin-top:14px"><button data-select="${esc(p.name)}">Select</button><button data-open-editor="${esc(p.name)}">Open in Editor</button></div></article>`).join('')}</div>`}
++function newPage(){return `${heading('New project','Start with a brief and attach the original narration file.')}<div class="grid two"><form class="card" id="newForm"><h3>Project brief</h3><div class="field"><label>Name</label><input name="name" pattern="[a-zA-Z0-9_-]+" required placeholder="my-short-film"></div><div class="field"><label>Idea / direction</label><textarea name="idea" required placeholder="Describe the film and what the program should build."></textarea></div><div class="field"><label>Voice file (used exactly as provided)</label><div class="inline-form"><input name="audioPath" required placeholder="Absolute audio file path"><button type="button" data-pick="audio" data-target="audioPath">Pick</button></div></div><div class="field"><label>Timings file (optional)</label><div class="inline-form"><input name="timingsPath" placeholder="Optional absolute path"><button type="button" data-pick="text" data-target="timingsPath">Pick</button></div></div><div class="field"><label>Template</label><select name="template">${projects.map(p=>`<option value="${esc(p.name)}" ${p.name==='demo-ring'?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><button class="btn-primary">Create project</button></form><section class="card"><h3>Creation result</h3><div id="newResult" class="muted">The created project and push result will appear here.</div></section></div>`}
++function editorPage(){return `${heading('Editor',`Project anatomy and measured evidence · ${project?.title||project?.name||''}`)}<div class="section-head"><h2>Stations</h2><button id="refreshEditor">Refresh evidence</button></div><div class="grid">${[['Script & voice',project?.script,project?.voice],['Timing',project?.timing],['Board',project?.boardCount?`${project.boardCount} frames`:null],['QC gates',project?.gates?.pass?'All measured checks pass':'Checks need attention'],['Render',project?.runInfo?.filmGradedInFrames?'Frame grade recorded':null],['Finish',project?.runInfo?.filmGrade||null],['Master',project?.master]].map(([t,...e])=>panel(t,`<p>${e.filter(Boolean).map(esc).join('<br>')||'<span class="muted">No matching artifact on disk.</span>'}</p>`)).join('')}</div><div class="section-head"><h2>Programmatic QC gates</h2></div><div class="card" id="qc"></div><div class="section-head"><h2>Project settings</h2></div><form class="card" id="settingsForm"><div class="row"><label><input type="checkbox" name="captions" ${project?.settings?.captions?.on?'checked':''}> Captions</label><label>Frame rate <select name="fps"><option value="24" ${project?.settings?.fps===24?'selected':''}>24 fps</option><option value="30" ${project?.settings?.fps!==24?'selected':''}>30 fps</option></select></label><button>Save settings</button><span id="settingsNote" class="muted"></span></div></form><div class="section-head"><h2>History</h2></div><div id="history" class="card muted">Loading project history…</div><div class="section-head"><h2>Board stills</h2></div><div class="frames">${(project?.board||[]).map(f=>`<button class="frame" data-frame="${esc(f)}"><img src="/project/out/board/${encodeURIComponent(f)}"><span>${esc(f)}</span></button>`).join('')||'<div class="empty">No board stills found.</div>'}</div><div class="section-head"><h2>Slice narration</h2></div><div class="card"><div class="inline-form"><input id="sliceSeconds" type="number" min="0.1" max="600" value="30"><button id="sliceBtn">Create slice</button></div><div id="sliceResult" class="muted"></div></div><div class="section-head"><h2>Sound mix</h2></div><div class="card"><button id="mixBtn">Mix now</button><span id="mixResult" class="muted"></span></div><div class="section-head"><h2>Pass checkpoints</h2><span class="muted">Build → Camera angles → Environment overhaul → Post-processing → Shading</span></div><div id="passes" class="pass-list"></div><div class="section-head"><h2>Pass feed</h2></div><div id="passFeed" class="feed">Select Run on an available pass to see its feed.</div><div class="section-head"><h2>Frame annotations</h2></div><div id="annotations" class="annotation-list"></div>`}
++function rendersPage(){return `${heading('Renders','GitHub Actions fleet runs reported by the dispatch layer.')}<div class="card" id="renderTable">Loading fleet runs…</div>`}
+diff --git a/app/renderer/index.html b/app/renderer/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e456dfd6b6f1c003c4a3795c986ad91e8690db7
+--- /dev/null
++++ b/app/renderer/index.html
+@@ -0,0 +1,4 @@
++<!doctype html>
++<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heart Studio</title><link rel="stylesheet" href="/app/app.css"></head>
++<body><aside class="rail"><div class="brand"><span class="brand-icon">♥</span><div><b>Heart Studio</b><small>Production console</small></div></div><div class="project-switch"><span>ACTIVE PROJECT</span><b id="railProject">Loading…</b></div><nav id="nav"></nav><button class="new-project" data-screen="new">＋ New project</button><div class="rail-bottom"><div class="seat-title"><span>MODEL SEATS</span><button id="probe">Probe</button></div><div id="seats" class="seats"></div><small>Local control server</small></div></aside>
++<main><header class="topbar"><div><div class="crumb">HEART STUDIO <span>/</span> <b id="screenTitle">Home</b></div><div id="topProject" class="top-project"></div></div><div class="top-actions"><span class="live-dot"></span><span>LOCAL</span><button class="icon-btn" data-screen="projects">Projects</button></div></header><div id="view" class="view"></div></main><div id="toast" role="status"></div><script src="/app/app.js"></script></body></html>
+
