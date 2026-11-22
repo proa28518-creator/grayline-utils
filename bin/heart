@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 /* Heart Studio CLI.
- *   heart new <name>            scaffold a project under projects/
+ *   heart new <name> [template] scaffold a project under projects/
+ *   heart slice <project> <seconds> <outDir> slice voice and timings
+ *   heart mix <project>         create and verify the final audio mix
+ *   heart app [project]         launch the desktop app
  *   heart serve [project]       start the local server (default project: demo-ring)
  *   heart still <project> <t> <out.png>
  *                               boot the project's host page headless and capture one still
@@ -9,8 +12,12 @@
  *   heart consult <model> <f>   send a prompt file to a model, print its reply
  *   heart critic <evidence>     GLM critic verdict on build evidence
  * [project] may be a project name (under projects/) or a filesystem path. */
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fs = require('fs');
-const path = require('path');
 const http = require('http');
 const { spawn, spawnSync } = require('child_process');
 const os = require('os');
@@ -53,11 +60,12 @@ function copyDir(src, dst, skip) {
   }
 }
 
-function cmdNew(name) {
+function cmdNew(name, templateName) {
   if (!name) { console.error('الاستخدام: heart new <name>'); process.exit(1); }
   const dst = path.join(HEART_HOME, 'projects', name);
   if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
-  const template = path.join(HEART_HOME, 'projects', 'demo-ring');
+  const template = path.join(HEART_HOME, 'projects', templateName || 'demo-ring');
+  if (!fs.existsSync(template) || !fs.statSync(template).isDirectory()) { console.error('new_template_missing: ' + (templateName || 'demo-ring')); process.exit(1); }
   copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
   try {
     const pjPath = path.join(dst, 'project.json');
@@ -66,8 +74,90 @@ function cmdNew(name) {
     fs.writeFileSync(pjPath, JSON.stringify(pj));
   } catch (e) { /* keep template project.json */ }
   fs.writeFileSync(path.join(dst, 'script.txt'), '');
+  const gitInit = spawnSync('git', ['init'], { cwd: dst, encoding: 'utf8' });
+  let gitWarning = gitInit.status !== 0;
+  if (!gitWarning) {
+    const add = spawnSync('git', ['add', '-A'], { cwd: dst, encoding: 'utf8' });
+    const commit = add.status === 0 ? spawnSync('git', ['-c', 'user.name=Heart Studio', '-c', 'user.email=heart@localhost', 'commit', '-m', 'snapshot: project created'], { cwd: dst, encoding: 'utf8' }) : add;
+    gitWarning = add.status !== 0 || commit.status !== 0;
+  }
+  if (gitWarning) console.error('new_git_snapshot_warning: project created, but its initial git snapshot failed.');
   console.log('تم إنشاء المشروع: ' + dst);
   console.log('ابدأ الخادم: heart serve ' + name);
+}
+
+const VOICE_CANDIDATES = ['voice_owner.wav', 'voice_ar.wav', 'audio/source.wav'];
+function probeDuration(file, errorName) {
+  const r = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file], { encoding: 'utf8' });
+  const n = Number((r.stdout || '').trim());
+  if (r.status !== 0 || !Number.isFinite(n)) throw new Error(errorName);
+  return n;
+}
+function fmtTime(seconds) {
+  const cs = Math.round(seconds * 100), mins = Math.floor(cs / 6000), secs = (cs % 6000) / 100;
+  return String(mins).padStart(2, '0') + ':' + secs.toFixed(2).padStart(5, '0');
+}
+function cmdSlice(arg, secondsArg, outArg) {
+  const dir = resolveProject(arg), seconds = Number(secondsArg);
+  if (!Number.isFinite(seconds) || seconds <= 0 || !outArg) throw new Error('slice_usage: heart slice <project> <seconds> <outDir>');
+  const voice = VOICE_CANDIDATES.find(p => fs.existsSync(path.join(dir, p)));
+  const wordsFile = path.join(dir, 'words_owner.txt'), cleanFile = path.join(dir, 'audio', 'clean.json');
+  const hasWords = fs.existsSync(wordsFile), hasClean = fs.existsSync(cleanFile);
+  if (!voice) throw new Error('slice_no_voice');
+  if (!hasWords && !hasClean) throw new Error('slice_no_timings');
+  const outDir = path.resolve(outArg); fs.mkdirSync(outDir, { recursive: true });
+  const voiceOut = path.join(outDir, 'voice_slice.wav');
+  const ff = spawnSync('ffmpeg', ['-y', '-v', 'error', '-i', path.join(dir, voice), '-t', String(seconds), '-c:a', 'pcm_s16le', voiceOut], { encoding: 'utf8' });
+  if (ff.status !== 0) throw new Error('slice_ffmpeg_failed: ' + (ff.stderr || '').trim());
+  let words = 0, entries = 0;
+  if (hasWords) {
+    const re = /^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$/;
+    const out = [];
+    for (const line of fs.readFileSync(wordsFile, 'utf8').split(/\r?\n/)) {
+      const m = line.match(re); if (!m) continue;
+      const start = Number(m[1]) * 60 + Number(m[2]), end = Number(m[3]) * 60 + Number(m[4]);
+      if (start < seconds) { out.push('[' + fmtTime(start) + ' - ' + fmtTime(Math.min(end, seconds)) + '] ' + m[5]); words++; }
+    }
+    fs.writeFileSync(path.join(outDir, 'words_slice.txt'), out.join('\n') + (out.length ? '\n' : ''));
+  }
+  if (hasClean) {
+    const data = JSON.parse(fs.readFileSync(cleanFile, 'utf8'));
+    if (!Array.isArray(data)) throw new Error('slice_clean_json_invalid');
+    const sliced = data.filter(x => Number(x.start) < seconds).map(x => ({ ...x, end: Math.min(Number(x.end), seconds) }));
+    entries = sliced.length; fs.writeFileSync(path.join(outDir, 'clean_slice.json'), JSON.stringify(sliced, null, 2) + '\n');
+  }
+  console.log(JSON.stringify({ voice, words, entries, seconds }));
+}
+function cmdMix(arg) {
+  const dir = resolveProject(arg), voice = VOICE_CANDIDATES.find(p => fs.existsSync(path.join(dir, p)));
+  if (!voice) throw new Error('mix_no_voice');
+  const voicePath = path.join(dir, voice), D = probeDuration(voicePath, 'mix_voice_probe_failed');
+  const bedPath = path.join(dir, 'audio', 'sfx_bed.wav'), bedUsed = fs.existsSync(bedPath);
+  const stageOut = path.join(dir, 'out', 'mix_stage', 'audio', 'final_mix.wav'), projectOut = path.join(dir, 'audio', 'final_mix.wav');
+  fs.mkdirSync(path.dirname(stageOut), { recursive: true }); fs.mkdirSync(path.dirname(projectOut), { recursive: true });
+  const filter = bedUsed
+    ? `[1:a]apad,atrim=duration=${D}[bed];[bed][0:a]sidechaincompress=threshold=0.02:ratio=8:attack=20:release=300[duck];[duck][0:a]amix=inputs=2:duration=first:normalize=0[mix];[mix]loudnorm=I=-16:TP=-1.5:LRA=11[out]`
+    : '[0:a]loudnorm=I=-16:TP=-1.5:LRA=11[out]';
+  const args = ['-y', '-v', 'error', '-i', voicePath]; if (bedUsed) args.push('-i', bedPath);
+  args.push('-filter_complex', filter, '-map', '[out]', '-c:a', 'pcm_s16le', stageOut);
+  const ff = spawnSync('ffmpeg', args, { encoding: 'utf8' });
+  if (ff.status !== 0) throw new Error('mix_ffmpeg_failed: ' + (ff.stderr || '').trim());
+  fs.copyFileSync(stageOut, projectOut);
+  const mixSec = probeDuration(stageOut, 'mix_output_probe_failed'), ok = Math.abs(mixSec - D) <= 0.2;
+  const report = { ok, voiceSec: D, mixSec, bedUsed, outputs: [stageOut, projectOut] };
+  const reportPath = path.join(dir, 'out', 'mix_report.json'); fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report));
+  if (!ok) throw new Error('mix_duration_mismatch');
+}
+function cmdApp(project) {
+  const candidates = [process.env.ELECTRON_BIN, path.join(HEART_HOME, 'app', 'node_modules', '.bin', 'electron'), path.join(HEART_HOME, 'app-shell', 'node_modules', '.bin', 'electron')].filter(Boolean);
+  let binary = candidates.find(p => fs.existsSync(p));
+  if (!binary) {
+    const r = spawnSync('which', ['electron'], { encoding: 'utf8' }); if (r.status === 0) binary = r.stdout.trim();
+  }
+  if (!binary) throw new Error('app_electron_not_found');
+  const child = spawn(binary, [path.join(HEART_HOME, 'app')], { cwd: HEART_HOME, detached: true, stdio: 'ignore', env: { ...process.env, ...(project ? { HEART_PROJECT: project } : {}) } });
+  child.unref();
 }
 
 async function cmdServe(arg, portArg) {
@@ -307,7 +397,10 @@ function cmdCritic(evidenceFile) {
 
 (async () => {
   const [cmd, a, b, c] = process.argv.slice(2);
-  if (cmd === 'new') cmdNew(a);
+  if (cmd === 'new') cmdNew(a, b);
+  else if (cmd === 'slice') cmdSlice(a, b, c);
+  else if (cmd === 'mix') cmdMix(a);
+  else if (cmd === 'app') cmdApp(a);
   else if (cmd === 'serve') await cmdServe(a, b);
   else if (cmd === 'still') await cmdStill(a, b, c);
   else if (cmd === 'timing') cmdTiming(a);
@@ -318,6 +411,9 @@ function cmdCritic(evidenceFile) {
   else {
     console.log('Heart Studio — أوامر:');
     console.log('  heart new <name>                  إنشاء مشروع جديد');
+    console.log('  heart slice <project> <seconds> <outDir> قص الصوت والتوقيت');
+    console.log('  heart mix <project>               إنشاء المزيج الصوتي النهائي');
+    console.log('  heart app [project]               تشغيل تطبيق سطح المكتب');
     console.log('  heart serve [project]             تشغيل صفحة التحكم والخادم');
     console.log('  heart still <project> <t> <out>   التقاط لقطة واحدة عند الثانية t');
     console.log('  heart timing <project>            فحص التوقيت وكتابة تقرير');
