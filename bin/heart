@@ -50,12 +50,13 @@ function findChrome() {
   return null;
 }
 
-function copyDir(src, dst, skip) {
+function copyDir(src, dst, skip, relative = '') {
   fs.mkdirSync(dst, { recursive: true });
   for (const item of fs.readdirSync(src, { withFileTypes: true })) {
-    if (skip && skip(item.name)) continue;
+    const rel = path.join(relative, item.name);
+    if (skip && skip(item.name, rel, item.isDirectory())) continue;
     const s = path.join(src, item.name), d = path.join(dst, item.name);
-    if (item.isDirectory()) copyDir(s, d, skip);
+    if (item.isDirectory()) copyDir(s, d, skip, rel);
     else if (item.isFile()) fs.copyFileSync(s, d);
   }
 }
@@ -66,7 +67,17 @@ function cmdNew(name, templateName) {
   if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
   const template = path.join(HEART_HOME, 'projects', templateName || 'demo-ring');
   if (!fs.existsSync(template) || !fs.statSync(template).isDirectory()) { console.error('new_template_missing: ' + (templateName || 'demo-ring')); process.exit(1); }
-  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
+  const templateAudioState = new Set([
+    'clean.json', 'clean.wav', 'raw.wav', 'source.wav', 'final_mix.wav', 'sfx_bed.wav',
+    'sound_music.wav', 'sound_sfx.wav', 'events.json', 'timeline.json', 'beds.json',
+    'cuts.json', 'prep_report.json', 'sfx_placed.txt', 'sfx_used.json'
+  ]);
+  copyDir(template, dst, (name, relative, isDirectory) => {
+    const rel = relative.split(path.sep).join('/');
+    if (name === 'out' && isDirectory) return true;
+    if (!isDirectory && (name === 'panel_state.json' || /^critic_verdict.*\.md$/.test(name))) return true;
+    return !isDirectory && rel.startsWith('audio/') && templateAudioState.has(name);
+  });
   try {
     const pjPath = path.join(dst, 'project.json');
     const pj = JSON.parse(fs.readFileSync(pjPath, 'utf8'));

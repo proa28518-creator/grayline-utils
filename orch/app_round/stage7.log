@@ -1,0 +1,602 @@
+Reading prompt from stdin...
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/heart-studio
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: none
+reasoning summaries: none
+session id: 01a20255-e7ae-76f3-9d32-4dca12afcb7d
+--------
+user
+You are the Codex build seat for Heart Studio (repo: ~/workspace/heart-studio, branch ui/unified-interface). Read AGENTS.md first. One defect (F10), found live in the acceptance run: a project created from a template inherits the TEMPLATE's production state, and the run then fails its timing gate against the wrong film's data. Fix in bin/heart and server/server.js only. Verify with `node --check server/server.js` and a syntax sanity run of the CLI (`node bin/heart` prints usage). Do not commit; the driver verifies live and commits.
+
+Evidence: projects created from demo-ring inherit demo-ring's audio/ (clean.json = demo-ring's 117-entry, 49.856 s timing spine; clean.wav/raw.wav/source.wav = its narration). `heart timing` prefers audio/clean.json as the timing source, so the new project's run failed `timing_exceeds_voice` against its own 5.88 s owner voice.
+
+Fix part 1 — bin/heart `heart new` template copy: when copying a template into a new project, skip production-state files (the template's own finished-film artifacts are not reusable assets):
+- Under the template's audio/ directory, skip these names: clean.json, clean.wav, raw.wav, source.wav, final_mix.wav, sfx_bed.wav, sound_music.wav, sound_sfx.wav, events.json, timeline.json, beds.json, cuts.json, prep_report.json, sfx_placed.txt, sfx_used.json.
+- At any level, skip: panel_state.json and files matching critic_verdict*.md.
+- Everything else copies as today (scene code, assets, engine, project.json, script files).
+
+Fix part 2 — server/server.js POST /api/projects/new: after the owner's timings file is copied to words_owner.txt, parse its entries (same `[MM:SS.cc - MM:SS.cc] word` line format the timing code already parses) and, when at least one entry parses, write the project's audio/clean.json as the canonical clean list: a JSON array of {start, end, line, who: null, word} objects (seconds as numbers, line = 1-based entry index). This makes the owner's attached timings the project's timing spine in the program's canonical form, replacing anything present. If no entries parse, leave clean.json absent (remove an inherited one if present) so the timing leg reports the real problem with the owner's file.
+
+codex
+I’ll read the repo instructions and inspect the two requested code paths, then make the narrow changes and run the specified syntax checks.
+exec
+/bin/bash -lc "cat AGENTS.md && rg -n \"heart new|projects/new|words_owner|clean\\.json|critic_verdict|panel_state\" bin/heart server/server.js" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+# AGENTS.md — Heart Studio standing direction
+
+Binding rules for every agent session (Codex seat included) working in this repo.
+The full spec lives in `orch/UI_BRIEF.md`; this file is its concise, always-on form.
+Where this file and a task brief conflict, the owner's latest word in `orch/UI_BRIEF.md` wins.
+
+## The acceptance bar (owner's direct word)
+
+- **«لازم كل حاجه تشتغل زي الاصلي» — everything in the interface must actually WORK
+  like the original.** No decorative controls. A control either executes the real
+  program action or is visibly marked **"not wired yet"** in the UI and named as
+  unwired in the delivery report. Never present unwired as working.
+- **Zero known errors is the bar.** Every delivery passes independent Opus + GLM
+  hunts; findings loop back to the author; nothing ships with a known defect.
+
+## Control law
+
+- Layla controls the program; **the interface is the ONLY door** to it.
+- Models are called **only from inside the program, via API**, each with a bounded
+  task, a defined tool surface, and the program's measured checks waiting for the
+  output: program → API → model (bounded) → measured checks → next step.
+- **No free-roaming external model session may be a step of a run.** A leg that
+  cannot be expressed as a bounded in-program call is marked not-yet-wired /
+  not-yet-dispatchable — never improvised around.
+- Seats run off signed-in subscriptions, driven only from inside: GPT via the
+  Codex seat, Opus via LLMsRelay, GLM via APInex #2, Gemini via the owner's
+  Google sign-in (owner does all sign-ins himself). Gemini work is Task mode only.
+
+## Closed system
+
+- Everything happens inside the program on this machine. Heavy work leaves ONLY
+  through the program's own dispatch layer: stills/passes → GitHub Actions API;
+  film render → Colab on-demand queue worker (never a standing session);
+  assembly/finishing → GitHub Actions workflow. Desk VM = controller + QC eyes.
+- A run leg that silently needs a manual action outside the program is a failed build.
+
+## Production rules
+
+- **Frame rate is 24/30 fps only.** 60 fps was cancelled by the owner (2026-11-22);
+  never offer or emit it as a going-forward option.
+- **Voice is law:** the owner's narration file is used exactly as-is — no trimming,
+  no cleaning; the film is exactly as long as the file. The program transcribes/
+  aligns it inside the run for word timings.
+- **Stills before renders. Gates before export.** The five passes run in strict
+  order — Build → Camera angles → Environment overhaul → Post-processing →
+  Shading — each a checkpoint: builder → programmatic checks → critic → fixes →
+  FRESH second critic → hand-over.
+- **Gates are programmatic measured checks** returning a named failure + a fix
+  instruction. Model critics are a second layer; their verdicts never open or
+  close a gate. A station shows "done" only when its artifact predicate passes
+  on disk.
+- Settings edited in the interface are persisted to `project.json` AND actually
+  sent to the renderer/dispatch (`?settings=` / workflow inputs) and recorded
+  with the run.
+
+## Authorship and verification
+
+- **Code authorship is by the Codex seat** (signed in as the owner's ChatGPT
+  account). Local agents drive it, apply its code, run and QC — they do not
+  author program code themselves.
+- Cross-verify every delivery with independent Opus + GLM hunts before reporting.
+
+## Untouched ground
+
+- `vendor/renderer-original/` (pristine backup, checksum-verified) and
+  `~/workspace/creatorize-teardown/` are **never modified**. Russell's files are
+  study material: our interface is **our own code** — never modify or ship his.
+- Do not rewrite `engine/` or `fleet/` render logic; the interface reads state
+  and invokes actions through `bin/heart`, repo scripts, and the dispatch layer.
+- Commit only your own files, on the branch named by the task brief. The working
+  tree may carry unrelated changes — do not stage, revert, or touch them.
+
+## Form
+
+- The interface is a **desktop app with its own window** (Electron shell on
+  Linux), screens/flows mirroring the original's structure with its English
+  labels (owner: English is fine); only the skin is ours.
+- **Production over looks** (owner's word): weight machinery — executors, checks,
+  dispatch, assembly — over visual polish in every round.
+bin/heart:4: *   heart new <name> [template] scaffold a project under projects/
+bin/heart:64:  if (!name) { console.error('الاستخدام: heart new <name>'); process.exit(1); }
+bin/heart:69:  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
+bin/heart:104:  const wordsFile = path.join(dir, 'words_owner.txt'), cleanFile = path.join(dir, 'audio', 'clean.json');
+bin/heart:265:  const dir = resolveProject(arg), candidates = [['audio/clean.json', 'run-produced'], ['words_owner.txt', 'owner-supplied']];
+bin/heart:283:  if (!source) failures.push({ name: 'timing_file_missing', detail: 'لم يوجد audio/clean.json أو words_owner.txt' });
+bin/heart:413:    console.log('  heart new <name>                  إنشاء مشروع جديد');
+server/server.js:4: * and a small JSON API over <project>/panel_state.json.
+server/server.js:47:  let stateFile = path.join(activeDir, 'panel_state.json');
+server/server.js:125:    const timing = ['words_owner.txt', 'audio/clean.json', 'timings.json'].find(exists) || null;
+server/server.js:158:    for (const timingFile of ['audio/clean.json', 'timings.json']) {
+server/server.js:167:        const text = fs.readFileSync(path.join(dir, 'words_owner.txt'), 'utf8');
+server/server.js:286:      if (pn === '/api/projects/new' && req.method === 'POST') {
+server/server.js:290:        const created=await runNode([path.join(repoDir,'bin','heart'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+server/server.js:291:        fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+server/server.js:337:        activeDir = next; stateFile = path.join(activeDir, 'panel_state.json');
+
+exec
+/bin/bash -lc "sed -n '1,135p' bin/heart && sed -n '145,185p' server/server.js && sed -n '260,310p' server/server.js && git status --short --branch" in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+#!/usr/bin/env node
+'use strict';
+/* Heart Studio CLI.
+ *   heart new <name> [template] scaffold a project under projects/
+ *   heart slice <project> <seconds> <outDir> slice voice and timings
+ *   heart mix <project>         create and verify the final audio mix
+ *   heart app [project]         launch the desktop app
+ *   heart serve [project]       start the local server (default project: demo-ring)
+ *   heart still <project> <t> <out.png>
+ *                               boot the project's host page headless and capture one still
+ *   heart models [substr]       APInex model catalog (via mcp/apinex_helper.py)
+ *   heart consult <model> <f>   send a prompt file to a model, print its reply
+ *   heart critic <evidence>     GLM critic verdict on build evidence
+ * [project] may be a project name (under projects/) or a filesystem path. */
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fs = require('fs');
+const http = require('http');
+const { spawn, spawnSync } = require('child_process');
+const os = require('os');
+
+const HEART_HOME = process.env.HEART_HOME || path.resolve(__dirname, '..');
+const UI_DIR = path.join(HEART_HOME, 'ui');
+const { createHeartServer } = require(path.join(HEART_HOME, 'server', 'server.js'));
+
+function resolveProject(arg) {
+  if (!arg) return path.join(HEART_HOME, 'projects', 'demo-ring');
+  if (fs.existsSync(arg) && fs.statSync(arg).isDirectory()) return path.resolve(arg);
+  const p = path.join(HEART_HOME, 'projects', arg);
+  if (fs.existsSync(p)) return p;
+  console.error('المشروع غير موجود: ' + arg);
+  process.exit(1);
+}
+
+function findChrome() {
+  if (process.env.CHROME_PATH && fs.existsSync(process.env.CHROME_PATH)) return process.env.CHROME_PATH;
+  const cache = path.join(process.env.HOME || '', '.cache', 'ms-playwright');
+  try {
+    const dirs = fs.readdirSync(cache).filter(d => /^chromium-\d+$/.test(d)).sort().reverse();
+    for (const d of dirs) {
+      const p = path.join(cache, d, 'chrome-linux64', 'chrome');
+      if (fs.existsSync(p)) return p;
+    }
+  } catch (e) { /* no playwright cache */ }
+  for (const p of ['/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable'])
+    if (fs.existsSync(p)) return p;
+  return null;
+}
+
+function copyDir(src, dst, skip) {
+  fs.mkdirSync(dst, { recursive: true });
+  for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+    if (skip && skip(item.name)) continue;
+    const s = path.join(src, item.name), d = path.join(dst, item.name);
+    if (item.isDirectory()) copyDir(s, d, skip);
+    else if (item.isFile()) fs.copyFileSync(s, d);
+  }
+}
+
+function cmdNew(name, templateName) {
+  if (!name) { console.error('الاستخدام: heart new <name>'); process.exit(1); }
+  const dst = path.join(HEART_HOME, 'projects', name);
+  if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
+  const template = path.join(HEART_HOME, 'projects', templateName || 'demo-ring');
+  if (!fs.existsSync(template) || !fs.statSync(template).isDirectory()) { console.error('new_template_missing: ' + (templateName || 'demo-ring')); process.exit(1); }
+  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
+  try {
+    const pjPath = path.join(dst, 'project.json');
+    const pj = JSON.parse(fs.readFileSync(pjPath, 'utf8'));
+    pj.title = name;
+    fs.writeFileSync(pjPath, JSON.stringify(pj));
+  } catch (e) { /* keep template project.json */ }
+  fs.writeFileSync(path.join(dst, 'script.txt'), '');
+  const gitInit = spawnSync('git', ['init'], { cwd: dst, encoding: 'utf8' });
+  let gitWarning = gitInit.status !== 0;
+  if (!gitWarning) {
+    const add = spawnSync('git', ['add', '-A'], { cwd: dst, encoding: 'utf8' });
+    const commit = add.status === 0 ? spawnSync('git', ['-c', 'user.name=Heart Studio', '-c', 'user.email=heart@localhost', 'commit', '-m', 'snapshot: project created'], { cwd: dst, encoding: 'utf8' }) : add;
+    gitWarning = add.status !== 0 || commit.status !== 0;
+  }
+  if (gitWarning) console.error('new_git_snapshot_warning: project created, but its initial git snapshot failed.');
+  console.log('تم إنشاء المشروع: ' + dst);
+  console.log('ابدأ الخادم: heart serve ' + name);
+}
+
+const VOICE_CANDIDATES = ['voice_owner.wav', 'voice_ar.wav', 'audio/source.wav'];
+function probeDuration(file, errorName) {
+  const r = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file], { encoding: 'utf8' });
+  const n = Number((r.stdout || '').trim());
+  if (r.status !== 0 || !Number.isFinite(n)) throw new Error(errorName);
+  return n;
+}
+function fmtTime(seconds) {
+  const cs = Math.round(seconds * 100), mins = Math.floor(cs / 6000), secs = (cs % 6000) / 100;
+  return String(mins).padStart(2, '0') + ':' + secs.toFixed(2).padStart(5, '0');
+}
+function cmdSlice(arg, secondsArg, outArg) {
+  const dir = resolveProject(arg), seconds = Number(secondsArg);
+  if (!Number.isFinite(seconds) || seconds <= 0 || !outArg) throw new Error('slice_usage: heart slice <project> <seconds> <outDir>');
+  const voice = VOICE_CANDIDATES.find(p => fs.existsSync(path.join(dir, p)));
+  const wordsFile = path.join(dir, 'words_owner.txt'), cleanFile = path.join(dir, 'audio', 'clean.json');
+  const hasWords = fs.existsSync(wordsFile), hasClean = fs.existsSync(cleanFile);
+  if (!voice) throw new Error('slice_no_voice');
+  if (!hasWords && !hasClean) throw new Error('slice_no_timings');
+  const outDir = path.resolve(outArg); fs.mkdirSync(outDir, { recursive: true });
+  const voiceOut = path.join(outDir, 'voice_slice.wav');
+  const ff = spawnSync('ffmpeg', ['-y', '-v', 'error', '-i', path.join(dir, voice), '-t', String(seconds), '-c:a', 'pcm_s16le', voiceOut], { encoding: 'utf8' });
+  if (ff.status !== 0) throw new Error('slice_ffmpeg_failed: ' + (ff.stderr || '').trim());
+  let words = 0, entries = 0;
+  if (hasWords) {
+    const re = /^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$/;
+    const out = [];
+    for (const line of fs.readFileSync(wordsFile, 'utf8').split(/\r?\n/)) {
+      const m = line.match(re); if (!m) continue;
+      const start = Number(m[1]) * 60 + Number(m[2]), end = Number(m[3]) * 60 + Number(m[4]);
+      if (start < seconds) { out.push('[' + fmtTime(start) + ' - ' + fmtTime(Math.min(end, seconds)) + '] ' + m[5]); words++; }
+    }
+    fs.writeFileSync(path.join(outDir, 'words_slice.txt'), out.join('\n') + (out.length ? '\n' : ''));
+  }
+  if (hasClean) {
+    const data = JSON.parse(fs.readFileSync(cleanFile, 'utf8'));
+    if (!Array.isArray(data)) throw new Error('slice_clean_json_invalid');
+    const sliced = data.filter(x => Number(x.start) < seconds).map(x => ({ ...x, end: Math.min(Number(x.end), seconds) }));
+    entries = sliced.length; fs.writeFileSync(path.join(outDir, 'clean_slice.json'), JSON.stringify(sliced, null, 2) + '\n');
+  }
+  console.log(JSON.stringify({ voice, words, entries, seconds }));
+}
+function cmdMix(arg) {
+  const dir = resolveProject(arg), voice = VOICE_CANDIDATES.find(p => fs.existsSync(path.join(dir, p)));
+  if (!voice) throw new Error('mix_no_voice');
+  const voicePath = path.join(dir, voice), D = probeDuration(voicePath, 'mix_voice_probe_failed');
+  const bedPath = path.join(dir, 'audio', 'sfx_bed.wav'), bedUsed = fs.existsSync(bedPath);
+  function gitInProject(dir, args) {
+    const gd = projectGitDir(dir);
+    if (!gd) return { status: 1, stderr: 'no project git repo', stdout: '' };
+    return require('child_process').spawnSync('git', ['--git-dir', path.join(dir, gd), '--work-tree', dir, ...args], { encoding: 'utf8', cwd: dir });
+  }
+  function projectGit(dir) {
+    if (!projectGitDir(dir)) return [];
+    const r = gitInProject(dir, ['log', '-8', '--date=iso-strict', '--pretty=format:%H%x09%h%x09%ad%x09%s']);
+    return r.status === 0 ? r.stdout.split('\n').filter(Boolean).map(line => { const [hash, short, date, ...msg] = line.split('\t'); return { hash, short, date, message: msg.join('\t') }; }) : [];
+  }
+  function artifactChecks(dir) {
+    const inv = inventory(dir);
+    let timingValid = false;
+    for (const timingFile of ['audio/clean.json', 'timings.json']) {
+      try {
+        const t = JSON.parse(fs.readFileSync(path.join(dir, timingFile), 'utf8'));
+        timingValid = Array.isArray(t) && t.length > 0 && t.every(x => Number.isFinite(Number(x.start)) && Number.isFinite(Number(x.end)) && Number(x.end) >= Number(x.start));
+        if (timingValid) break;
+      } catch (_) {}
+    }
+    if (!timingValid) {
+      try {
+        const text = fs.readFileSync(path.join(dir, 'words_owner.txt'), 'utf8');
+        const rows = [...text.matchAll(/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+\S+/gm)];
+        timingValid = rows.length > 0 && rows.every((m, i) => {
+          const start = Number(m[1]) * 60 + Number(m[2]), end = Number(m[3]) * 60 + Number(m[4]);
+          const prevEnd = i ? Number(rows[i - 1][3]) * 60 + Number(rows[i - 1][4]) : -1;
+          return end >= start && start >= prevEnd;
+        });
+      } catch (_) {}
+    }
+    const mix = ['out/mix_stage/audio/final_mix.wav', 'out/final_mix.wav', 'out/story6_mix.wav', 'out/mix.wav'].find(p => fs.existsSync(path.join(dir, p))) || null;
+    const gates = [
+      { id: 'script', label: 'النص موجود', pass: !!inv.script, evidence: inv.script || '—' },
+      { id: 'voice', label: 'ملف الصوت الأصلي موجود كما هو', pass: !!inv.voice, evidence: inv.voice || '—' },
+      { id: 'timing', label: 'ملف التوقيت موجود وقابل للقراءة', pass: timingValid, evidence: inv.timing || '—' },
+      { id: 'board', label: 'لوحة اللقطات تحتوي صوراً', pass: inv.boardCount > 0, evidence: inv.boardCount + ' صورة' },
+      { id: 'mix', label: 'ملف المكس النهائي موجود', pass: !!mix, evidence: mix || 'لا يوجد ملف معروف' },
+      { id: 'master', label: 'ملف الماستر موجود', pass: !!inv.master, evidence: inv.master || '—' }
+    ];
+    return { checks: gates, pass: gates.every(x => x.pass), frameEvidence: inv.board, runInfo: inv.runInfo };
+    return new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', c => { data += c; if (data.length > 8 * 1024 * 1024) req.destroy(); });
+      req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}); } catch (e) { reject(e); } });
+      req.on('error', reject);
+    });
+  }
+  function serveFile(res, root, urlPath) {
+    const p = path.normalize(path.join(root, decodeURIComponent(urlPath)));
+    const normalizedRoot = path.normalize(root);
+    if (p !== normalizedRoot && !p.startsWith(normalizedRoot + path.sep)) { res.writeHead(403); return res.end(); }
+    fs.readFile(p, (err, data) => {
+      if (err) { res.writeHead(404); return res.end('not found'); }
+      res.writeHead(200, { 'Content-Type': MIME[path.extname(p).toLowerCase()] || 'application/octet-stream' });
+      res.end(data);
+    });
+  }
+
+  const server = http.createServer(async (req, res) => {
+    const u = new URL(req.url, 'http://x');
+    const pn = u.pathname;
+    try {
+      if (pn === '/api/projects' && req.method === 'GET') {
+        const names = fs.readdirSync(projectsDir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => inventory(path.join(projectsDir, e.name)));
+        return sendJson(res, 200, names);
+      }
+      if (pn === '/api/projects/new' && req.method === 'POST') {
+        const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+        const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+        if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+        const created=await runNode([path.join(repoDir,'bin','heart'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+        fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+        fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+        const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+        const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
+        git(['add','-A'],dest);const pc=git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','snapshot: brief + voice attached'],dest);if(pc.status!==0)return sendJson(res,500,{error:'project snapshot failed: '+pc.stderr});
+        fs.renameSync(path.join(dest,'.git'),path.join(dest,'.heart-git'));
+        let pushed=false,pushError;const add=git(['add','projects/'+b.name]);const commit=add.status===0?git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m',`project: ${b.name} created via interface`]):add;
+        if(commit.status!==0){pushError=(commit.stderr||commit.stdout||'repo commit failed').trim();}else{const branch=git(['branch','--show-current']);const push=branch.status===0?git(['push','origin',branch.stdout.trim()]):branch; pushed=push.status===0;if(!pushed)pushError=(push.stderr||push.stdout||'push failed').trim();}
+        return sendJson(res,200,{ok:true,project:inventory(dest),pushed,historyMode:'heart-git',...(pushError?{pushError}: {})});
+      }
+      if (pn === '/api/projects/slice' && req.method === 'POST') {
+        const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+        const out=path.join(dir,'out',`slice-${seconds}s`),r=await runNode([path.join(repoDir,'bin','heart'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+        const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+      }
+      if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,(pn==='/app'||pn==='/app/')?'/index.html':pn.slice(4));
+      if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>({...p,...passModule.getState(activeDir,p.id)})));
+      if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
+      if(pn==='/api/passes/run'&&req.method==='POST'){
+## ui/unified-interface
+?? orch/A52_renderday_audit.md
+?? orch/APP_CAPABILITY_MAP_FROM_VIDEO.md
+?? orch/APP_UI_STRUCTURE_FROM_BUNDLE.md
+?? orch/app_round/shots/berserk-run-started.png
+?? orch/app_round/shots/new-filled.png
+?? orch/app_round/stage7.log
+?? orch/app_round/stage7_fixes.md
+?? orch/ui_codex_fix_last_message.txt
+?? orch/ui_codex_fix_run.log
+?? orch/ui_codex_last_message.txt
+?? orch/ui_codex_round2_fix.log
+?? orch/ui_codex_round2_run.log
+?? orch/ui_codex_run.log
+?? orch/ui_codex_run_attempt1_stuck_stdin.log
+?? orch/ui_hunt_findings.md
+?? orch/ui_hunt_glm_raw.txt
+?? orch/ui_hunt_glm_raw2.txt
+?? orch/ui_hunt_opus.md
+?? orch/video-ref/
+?? projects/rooftop-kite/
+?? projects/story3-tram/
+?? projects/story4-market/voice_ar.wav
+?? projects/story6-microwave/orch/
+?? projects/story6-microwave/scenes_backup_diag/
+?? projects/story6-microwave/scenes_backup_preA102/
+?? projects/story6-microwave/scenes_backup_preA120/
+?? projects/story6-microwave/scenes_backup_preA124/
+?? projects/story6-microwave/scenes_backup_preA41/
+?? projects/story6-microwave/scenes_backup_preA44/
+?? projects/story6-microwave/scenes_backup_preA48/
+?? projects/story6-microwave/scenes_backup_preA49/
+?? projects/story6-microwave/scenes_backup_preA62/
+?? projects/story6-microwave/scenes_backup_preA67/
+?? projects/story6-microwave/scenes_backup_preA70/
+?? projects/story6-microwave/scenes_backup_preA73/
+?? projects/story6-microwave/scenes_backup_preA75/
+?? projects/story6-microwave/scenes_backup_preA77/
+?? projects/story6-oven/
+
+codex
+The template copier currently skips only `panel_state.json` and `out`, while the create endpoint copies owner timings without rebuilding `audio/clean.json`. I’m updating the copier to apply the requested path-aware exclusions and making the endpoint replace or remove the canonical timing file based on parsed owner entries.
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/bin/heart
+diff --git a/bin/heart b/bin/heart
+index e2f3567a7fb4b02b3c9ddaddb7cb57264bb48069..53c57db843e0cf58b1661635768b010007a510bd
+--- a/bin/heart
++++ b/bin/heart
+@@ -50,12 +50,13 @@
+   return null;
+ }
+ 
+-function copyDir(src, dst, skip) {
++function copyDir(src, dst, skip, relative = '') {
+   fs.mkdirSync(dst, { recursive: true });
+   for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+-    if (skip && skip(item.name)) continue;
++    const rel = path.join(relative, item.name);
++    if (skip && skip(item.name, rel, item.isDirectory())) continue;
+     const s = path.join(src, item.name), d = path.join(dst, item.name);
+-    if (item.isDirectory()) copyDir(s, d, skip);
++    if (item.isDirectory()) copyDir(s, d, skip, rel);
+     else if (item.isFile()) fs.copyFileSync(s, d);
+   }
+ }
+@@ -66,7 +67,17 @@
+   if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
+   const template = path.join(HEART_HOME, 'projects', templateName || 'demo-ring');
+   if (!fs.existsSync(template) || !fs.statSync(template).isDirectory()) { console.error('new_template_missing: ' + (templateName || 'demo-ring')); process.exit(1); }
+-  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
++  const templateAudioState = new Set([
++    'clean.json', 'clean.wav', 'raw.wav', 'source.wav', 'final_mix.wav', 'sfx_bed.wav',
++    'sound_music.wav', 'sound_sfx.wav', 'events.json', 'timeline.json', 'beds.json',
++    'cuts.json', 'prep_report.json', 'sfx_placed.txt', 'sfx_used.json'
++  ]);
++  copyDir(template, dst, (name, relative, isDirectory) => {
++    const rel = relative.split(path.sep).join('/');
++    if (name === 'out' && isDirectory) return true;
++    if (!isDirectory && (name === 'panel_state.json' || /^critic_verdict.*\.md$/.test(name))) return true;
++    return !isDirectory && rel.startsWith('audio/') && templateAudioState.has(name);
++  });
+   try {
+     const pjPath = path.join(dst, 'project.json');
+     const pj = JSON.parse(fs.readFileSync(pjPath, 'utf8'));
+
+apply patch
+patch: completed
+/home/hatch/workspace/heart-studio/server/server.js
+diff --git a/bin/heart b/bin/heart
+index e2f3567a7fb4b02b3c9ddaddb7cb57264bb48069..53c57db843e0cf58b1661635768b010007a510bd
+--- a/bin/heart
++++ b/bin/heart
+@@ -50,12 +50,13 @@
+   return null;
+ }
+ 
+-function copyDir(src, dst, skip) {
++function copyDir(src, dst, skip, relative = '') {
+   fs.mkdirSync(dst, { recursive: true });
+   for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+-    if (skip && skip(item.name)) continue;
++    const rel = path.join(relative, item.name);
++    if (skip && skip(item.name, rel, item.isDirectory())) continue;
+     const s = path.join(src, item.name), d = path.join(dst, item.name);
+-    if (item.isDirectory()) copyDir(s, d, skip);
++    if (item.isDirectory()) copyDir(s, d, skip, rel);
+     else if (item.isFile()) fs.copyFileSync(s, d);
+   }
+ }
+@@ -66,7 +67,17 @@
+   if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
+   const template = path.join(HEART_HOME, 'projects', templateName || 'demo-ring');
+   if (!fs.existsSync(template) || !fs.statSync(template).isDirectory()) { console.error('new_template_missing: ' + (templateName || 'demo-ring')); process.exit(1); }
+-  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
++  const templateAudioState = new Set([
++    'clean.json', 'clean.wav', 'raw.wav', 'source.wav', 'final_mix.wav', 'sfx_bed.wav',
++    'sound_music.wav', 'sound_sfx.wav', 'events.json', 'timeline.json', 'beds.json',
++    'cuts.json', 'prep_report.json', 'sfx_placed.txt', 'sfx_used.json'
++  ]);
++  copyDir(template, dst, (name, relative, isDirectory) => {
++    const rel = relative.split(path.sep).join('/');
++    if (name === 'out' && isDirectory) return true;
++    if (!isDirectory && (name === 'panel_state.json' || /^critic_verdict.*\.md$/.test(name))) return true;
++    return !isDirectory && rel.startsWith('audio/') && templateAudioState.has(name);
++  });
+   try {
+     const pjPath = path.join(dst, 'project.json');
+     const pj = JSON.parse(fs.readFileSync(pjPath, 'utf8'));
+diff --git a/server/server.js b/server/server.js
+index 3c3807035faa0423a564a49b7e003b61d5f9460b..6c2dba7a60bf6fe4f544c5d56aac241c3937a0c6
+--- a/server/server.js
++++ b/server/server.js
+@@ -289,6 +289,18 @@
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+         const created=await runNode([path.join(repoDir,'bin','heart'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
++        const cleanFile=path.join(dest,'audio','clean.json');
++        if(b.timingsPath){
++          const timingText=fs.readFileSync(path.join(dest,'words_owner.txt'),'utf8');
++          const timingPattern=/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$/;
++          const entries=[];
++          for(const line of timingText.split(/\r?\n/)){
++            const match=line.match(timingPattern);if(!match)continue;
++            entries.push({start:Number(match[1])*60+Number(match[2]),end:Number(match[3])*60+Number(match[4]),line:entries.length+1,who:null,word:match[5]});
++          }
++          if(entries.length){fs.mkdirSync(path.dirname(cleanFile),{recursive:true});fs.writeFileSync(cleanFile,JSON.stringify(entries,null,2)+'\n');}
++          else if(fs.existsSync(cleanFile))fs.unlinkSync(cleanFile);
++        }
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+         const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
+
+exec
+/bin/bash -lc 'node --check server/server.js && node bin/heart' in /home/hatch/workspace/heart-studio
+ succeeded in 202ms:
+Heart Studio — أوامر:
+  heart new <name>                  إنشاء مشروع جديد
+  heart slice <project> <seconds> <outDir> قص الصوت والتوقيت
+  heart mix <project>               إنشاء المزيج الصوتي النهائي
+  heart app [project]               تشغيل تطبيق سطح المكتب
+  heart serve [project]             تشغيل صفحة التحكم والخادم
+  heart still <project> <t> <out>   التقاط لقطة واحدة عند الثانية t
+  heart timing <project>            فحص التوقيت وكتابة تقرير
+  heart sound <project>             تنفيذ تصميم الصوت
+  heart models [substr]             نماذج APInex المتاحة
+  heart consult <model> <file>      استشارة نموذج بملف برومبت
+  heart critic <evidence-file>      حكم الناقد (GLM) على أدلة البناء
+
+exec
+/bin/bash -lc 'git diff -- bin/heart server/server.js && git status --short -- bin/heart server/server.js' in /home/hatch/workspace/heart-studio
+ succeeded in 0ms:
+diff --git a/bin/heart b/bin/heart
+index e2f3567..53c57db 100755
+--- a/bin/heart
++++ b/bin/heart
+@@ -50,12 +50,13 @@ function findChrome() {
+   return null;
+ }
+ 
+-function copyDir(src, dst, skip) {
++function copyDir(src, dst, skip, relative = '') {
+   fs.mkdirSync(dst, { recursive: true });
+   for (const item of fs.readdirSync(src, { withFileTypes: true })) {
+-    if (skip && skip(item.name)) continue;
++    const rel = path.join(relative, item.name);
++    if (skip && skip(item.name, rel, item.isDirectory())) continue;
+     const s = path.join(src, item.name), d = path.join(dst, item.name);
+-    if (item.isDirectory()) copyDir(s, d, skip);
++    if (item.isDirectory()) copyDir(s, d, skip, rel);
+     else if (item.isFile()) fs.copyFileSync(s, d);
+   }
+ }
+@@ -66,7 +67,17 @@ function cmdNew(name, templateName) {
+   if (fs.existsSync(dst)) { console.error('المشروع موجود بالفعل: ' + dst); process.exit(1); }
+   const template = path.join(HEART_HOME, 'projects', templateName || 'demo-ring');
+   if (!fs.existsSync(template) || !fs.statSync(template).isDirectory()) { console.error('new_template_missing: ' + (templateName || 'demo-ring')); process.exit(1); }
+-  copyDir(template, dst, n => n === 'panel_state.json' || n === 'out');
++  const templateAudioState = new Set([
++    'clean.json', 'clean.wav', 'raw.wav', 'source.wav', 'final_mix.wav', 'sfx_bed.wav',
++    'sound_music.wav', 'sound_sfx.wav', 'events.json', 'timeline.json', 'beds.json',
++    'cuts.json', 'prep_report.json', 'sfx_placed.txt', 'sfx_used.json'
++  ]);
++  copyDir(template, dst, (name, relative, isDirectory) => {
++    const rel = relative.split(path.sep).join('/');
++    if (name === 'out' && isDirectory) return true;
++    if (!isDirectory && (name === 'panel_state.json' || /^critic_verdict.*\.md$/.test(name))) return true;
++    return !isDirectory && rel.startsWith('audio/') && templateAudioState.has(name);
++  });
+   try {
+     const pjPath = path.join(dst, 'project.json');
+     const pj = JSON.parse(fs.readFileSync(pjPath, 'utf8'));
+diff --git a/server/server.js b/server/server.js
+index 3c38070..6c2dba7 100644
+--- a/server/server.js
++++ b/server/server.js
+@@ -289,6 +289,18 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
+         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+         const created=await runNode([path.join(repoDir,'bin','heart'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
++        const cleanFile=path.join(dest,'audio','clean.json');
++        if(b.timingsPath){
++          const timingText=fs.readFileSync(path.join(dest,'words_owner.txt'),'utf8');
++          const timingPattern=/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$/;
++          const entries=[];
++          for(const line of timingText.split(/\r?\n/)){
++            const match=line.match(timingPattern);if(!match)continue;
++            entries.push({start:Number(match[1])*60+Number(match[2]),end:Number(match[3])*60+Number(match[4]),line:entries.length+1,who:null,word:match[5]});
++          }
++          if(entries.length){fs.mkdirSync(path.dirname(cleanFile),{recursive:true});fs.writeFileSync(cleanFile,JSON.stringify(entries,null,2)+'\n');}
++          else if(fs.existsSync(cleanFile))fs.unlinkSync(cleanFile);
++        }
+         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+         const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
+ M bin/heart
+ M server/server.js
+
+codex
+Implemented the template-state exclusions in `bin/heart` and made `/api/projects/new` rebuild `audio/clean.json` from parsed owner timings, or remove it when none parse.
+
+Both requested checks passed: `node --check server/server.js` and `node bin/heart` (printed usage). Changes are limited to [bin/heart](/home/hatch/workspace/heart-studio/bin/heart) and [server/server.js](/home/hatch/workspace/heart-studio/server/server.js); nothing was committed.
+tokens used
+22,640
+Implemented the template-state exclusions in `bin/heart` and made `/api/projects/new` rebuild `audio/clean.json` from parsed owner timings, or remove it when none parse.
+
+Both requested checks passed: `node --check server/server.js` and `node bin/heart` (printed usage). Changes are limited to [bin/heart](/home/hatch/workspace/heart-studio/bin/heart) and [server/server.js](/home/hatch/workspace/heart-studio/server/server.js); nothing was committed.

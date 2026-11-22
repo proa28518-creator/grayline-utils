@@ -289,6 +289,18 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
         const created=await runNode([path.join(repoDir,'bin','heart'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
         fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+        const cleanFile=path.join(dest,'audio','clean.json');
+        if(b.timingsPath){
+          const timingText=fs.readFileSync(path.join(dest,'words_owner.txt'),'utf8');
+          const timingPattern=/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$/;
+          const entries=[];
+          for(const line of timingText.split(/\r?\n/)){
+            const match=line.match(timingPattern);if(!match)continue;
+            entries.push({start:Number(match[1])*60+Number(match[2]),end:Number(match[3])*60+Number(match[4]),line:entries.length+1,who:null,word:match[5]});
+          }
+          if(entries.length){fs.mkdirSync(path.dirname(cleanFile),{recursive:true});fs.writeFileSync(cleanFile,JSON.stringify(entries,null,2)+'\n');}
+          else if(fs.existsSync(cleanFile))fs.unlinkSync(cleanFile);
+        }
         fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
         const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};if(![24,30].includes(Number(pj.settings.fps)))pj.settings.fps=30;fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
         const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
