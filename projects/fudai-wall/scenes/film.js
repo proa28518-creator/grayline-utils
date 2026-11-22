@@ -90,7 +90,7 @@ export default {
   {id:'seawall',kind:'seawall',in:'world',at:PLACES.COAST_WALL.at,w:90,h:18,gateW:7,keys:[{t:0,at:PLACES.COAST_WALL.at}]},
   {id:'storeys',kind:'storeys',in:'world',at:add(PLACES.COAST_WALL,[4.5,0,2.5]),h:17.4,floors:5,keys:[{t:0,at:add(PLACES.COAST_WALL,[4.5,0,2.5])},{t:'line:3.start',in:'hidden'}]},
   {id:'boat',kind:'boat',in:'world',at:BOAT,keys:[{t:0,at:BOAT},{t:'line:2.end',at:add(PLACES.SEA,[.12,.25,14.08])}]},
-  {id:'popsign',kind:'sign',in:'world',at:add(PLACES.COAST_VILLAGE,[0,8.5,-4]),text:'3,000',w:3.4,h:1.5,post:0,keys:[{t:0,in:'hidden'},{t:'line:3.word:4',in:'world',at:add(PLACES.COAST_VILLAGE,[0,8.5,-4])},{t:'line:3.end',in:'hidden'}]},
+  {id:'popsign',kind:'sign',in:'world',at:add(PLACES.COAST_VILLAGE,[0,8.5,-4]),text:'3,000',w:3.4,h:1.5,post:0,keys:[{t:0,in:'hidden'},{t:'line:3.word:4',in:'world',at:add(PLACES.COAST_VILLAGE,[0,8.5,-4])},{t:'line:4.start',in:'hidden'}]},
   {id:'crane_a',kind:'crane',in:'world',at:add(PLACES.COAST_WALL,[-14,0,3.5]),rot:[0,15,0],keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[-14,0,3.5]),rot:[0,15,0]},{t:'line:5.start',in:'hidden'}]},
   {id:'crane_b',kind:'crane',in:'world',at:add(PLACES.COAST_WALL,[13,0,3.5]),rot:[0,-20,0],keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[13,0,3.5]),rot:[0,-20,0]},{t:'line:5.start',in:'hidden'}]},
   {id:'money',kind:'money',in:'world',at:add(PLACES.COAST_WALL,[-6.5,0,3.2]),keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[-6.5,0,3.2])},{t:'line:5.start',in:'hidden'}]},
@@ -103,8 +103,8 @@ export default {
   {id:'coins',kind:'coins',in:'world',at:COINS,keys:[{t:0,in:'hidden'},{t:'line:6.word:10',drop:{from:[2,19.5,-17.5],v0:[.6,2.2,0],g:9.8,ground:17.55,hide:true}}]},
   {id:'blueprint',kind:'blueprint',in:'world',at:BLUEPRINT,keys:[{t:0,at:BLUEPRINT,lineY:1,pin:0},{t:'line:8.word:6',lineY:.62,ease:.5},{t:'line:8.word:8',lineY:1,ease:.3},{t:'line:8.word:8',pin:1}]},
   {id:'mocksign',kind:'sign',in:'world',at:MOCKSIGN,text:'أغبى مشروع',w:4.2,h:1.3,bg:'#9a7047',fg:'#f5e9d0',post:0,rot:[4,0,-2],keys:[{t:0,in:'hidden'},{t:'line:10.start',in:'world',at:MOCKSIGN,rot:[4,0,-2]}]},
-  {id:'sunorb',kind:'orb',in:'world',at:SUNORB,color:'#ffd27a',r:1.7,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:9.end',in:'hidden'},{t:'line:9.start',cx:-15,cy:8},{t:25.75,cx:0,cy:18,ease:.66},{t:26.40,cx:15,cy:8,ease:.65},{t:27.05,cx:15,cy:-5,ease:.65},{t:27.45,cx:-15,cy:9,ease:.27}]},
-  {id:'moonorb',kind:'orb',in:'world',at:SUNORB,color:'#dfe8ff',r:1.3,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:9.end',in:'hidden'},{t:'line:9.start',cx:-15,cy:-5},{t:27.05,cx:-8,cy:14,ease:.65},{t:27.45,cx:6,cy:-5,ease:.27}]}
+  {id:'sunorb',kind:'orb',in:'world',at:SUNORB,color:'#ffd27a',r:1.7,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:8},{t:25.75,cx:0,cy:18,ease:.66},{t:26.40,cx:15,cy:8,ease:.65},{t:27.05,cx:15,cy:-5,ease:.65},{t:27.45,cx:-15,cy:9,ease:.27}]},
+  {id:'moonorb',kind:'orb',in:'world',at:SUNORB,color:'#dfe8ff',r:1.3,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:-5},{t:27.05,cx:-8,cy:14,ease:.65},{t:27.45,cx:6,cy:-5,ease:.27}]}
  ],
  handovers:[],
  shots:[
