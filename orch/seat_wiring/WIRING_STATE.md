@@ -38,12 +38,14 @@ Desk verification (worktree server on port 18912; the 18911 real-test server was
 
 Blockers for the live CONNECTED proof, by name:
 
-- **B-EGRESS** — the helper's Chromium cannot reach gemini.google.com from the desk VM:
-  `net::ERR_TUNNEL_CONNECTION_FAILED` through the ambient egress proxy; direct egress is closed;
-  curl direct / ambient proxy / :3130 tunnel all fail from the shell. The desk-verified "opens signed
-  in" happened in the parent's browser harness, which has a different egress path. A fix (proxy
-  configuration for the driver, or running the seat where egress works) is a code/ops decision —
-  the code half is **BLOCKED-BY-SEAT-LIMIT**.
+- **B-EGRESS — RESOLVED IN CODE** — when an environment proxy is configured, the driver now starts
+  an ephemeral `127.0.0.1` CONNECT relay. Chromium uses that relay; Node connects to the upstream
+  proxy and forwards CONNECT with `Proxy-Authorization: Basic` from URL credentials when present.
+  The relayed Chromium context enables `ignoreHTTPSErrors` because the proxy's MITM CA is trusted by
+  the system store but not Chromium's bundled root store. Direct no-proxy launch behavior is unchanged.
+  Live probe in this restricted workspace could not validate the route: Node returned
+  `listen EPERM: operation not permitted 127.0.0.1` before Chromium launch. Re-run `node
+  server/gemini_seat.mjs probe` in the desk execution context to confirm `ok:true`.
 - **B-SIGNIN** — the program profile has never been signed in. Sign-in is the owner's own step in
   the Connect Gemini window (or a browser-capable agent's); this driver cannot perform it.
 - **B-SELECTORS** — the helper's Gemini UI selectors (account button, Chat/Task mode control,
@@ -81,7 +83,7 @@ repo's declared Playwright cannot launch.
 
 - Opus + GLM hunts over this round's delta (AGENTS.md delivery discipline) — not run: any finding
   would have no author to loop back to while the seat is down.
-- Code fixes for B-EGRESS, B-SELECTORS, and the connect error-label wart.
+- B-SELECTORS and the connect error-label wart.
 - The live Gemini proof artifact (one bounded Task-mode session started from inside the program) —
   depends on B-EGRESS + B-SIGNIN, then on the seat for any selector fix.
 
