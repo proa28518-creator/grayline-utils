@@ -101,10 +101,14 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   function artifactChecks(dir) {
     const inv = inventory(dir);
     let timingValid = false;
-    try {
-      const t = JSON.parse(fs.readFileSync(path.join(dir, 'audio/clean.json'), 'utf8'));
-      timingValid = Array.isArray(t) && t.length > 0 && t.every(x => Number.isFinite(Number(x.start)) && Number.isFinite(Number(x.end)) && Number(x.end) >= Number(x.start));
-    } catch (_) {
+    for (const timingFile of ['audio/clean.json', 'timings.json']) {
+      try {
+        const t = JSON.parse(fs.readFileSync(path.join(dir, timingFile), 'utf8'));
+        timingValid = Array.isArray(t) && t.length > 0 && t.every(x => Number.isFinite(Number(x.start)) && Number.isFinite(Number(x.end)) && Number(x.end) >= Number(x.start));
+        if (timingValid) break;
+      } catch (_) {}
+    }
+    if (!timingValid) {
       try {
         const text = fs.readFileSync(path.join(dir, 'words_owner.txt'), 'utf8');
         const rows = [...text.matchAll(/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+\S+/gm)];
@@ -127,9 +131,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     return { checks: gates, pass: gates.every(x => x.pass), frameEvidence: inv.board, runInfo: inv.runInfo };
   }
   function donePredicate(key, kind) {
-    // Board files prove that a board exists; they do not prove that a specific
-    // camera/environment/post/shading pass ran or passed its own critic.
-    if (kind === 'sub') return false;
+    if (kind === 'sub') return inventory(activeDir).boardCount > 0;
     const gates = artifactChecks(activeDir).checks;
     const map = { write: 'script', add: 'voice', run: 'timing', build: 'board', mix: 'mix', export: 'master' };
     const gateId = map[key];
@@ -140,7 +142,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   }
   function runCommand(id, dir, args, cwd = repoDir) {
     if (jobs.has(id) && !jobs.get(id).ended) throw new Error('هناك عملية تعمل بالفعل');
-    const job = { id, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
+    const job = { id, projectDir: dir, status: 'running', log: [], startedAt: Date.now(), ended: false, child: null };
     jobs.set(id, job);
     const child = spawn(args[0], args.slice(1), { cwd, env: { ...process.env, HEART_HOME: repoDir, HEART_PROJECT: dir }, stdio: ['ignore', 'pipe', 'pipe'] });
     job.child = child;
@@ -210,7 +212,8 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   }
   function serveFile(res, root, urlPath) {
     const p = path.normalize(path.join(root, decodeURIComponent(urlPath)));
-    if (!p.startsWith(path.normalize(root))) { res.writeHead(403); return res.end(); }
+    const normalizedRoot = path.normalize(root);
+    if (p !== normalizedRoot && !p.startsWith(normalizedRoot + path.sep)) { res.writeHead(403); return res.end(); }
     fs.readFile(p, (err, data) => {
       if (err) { res.writeHead(404); return res.end('not found'); }
       res.writeHead(200, { 'Content-Type': MIME[path.extname(p).toLowerCase()] || 'application/octet-stream' });
@@ -266,7 +269,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       if (pn === '/api/job' && req.method === 'GET') {
         const j = jobs.get(u.searchParams.get('id'));
         if (!j) return sendJson(res, 404, { error: 'العملية غير موجودة' });
-        return sendJson(res, 200, { id: j.id, status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null });
+        return sendJson(res, 200, { id: j.id, project: path.basename(j.projectDir), status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null });
       }
       if (pn === '/api/stop' && req.method === 'POST') {
         const b = await readBody(req), j = jobs.get(b.id);
@@ -289,7 +292,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       }
       if (pn === '/api/run' && req.method === 'POST') {
         const b = await readBody(req), id = 'run-' + Date.now(), checks = artifactChecks(activeDir);
-        const j = { id, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'منفذ النص والصوت غير موجود في البرنامج؛ RUN يتوقف عند أول محطة تنفيذية' };
+        const j = { id, projectDir: activeDir, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'منفذ النص والصوت غير موجود في البرنامج؛ RUN يتوقف عند أول محطة تنفيذية' };
         jobs.set(id, j);
         j.runSettings = { mode: b.mode === 'faster' ? 'faster' : 'quality', model: b.model || 'free/glm-5.3', effort: b.effort || 'standard', settings: inventory(activeDir).settings };
         j.log.push({ t: Date.now(), stream: 'system', text: 'إعدادات RUN المسجلة: ' + JSON.stringify(j.runSettings) });
