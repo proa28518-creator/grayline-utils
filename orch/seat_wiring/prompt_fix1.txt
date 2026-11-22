@@ -1,0 +1,9 @@
+Fix turn — one defect in server/gemini_seat.mjs, found by desk review. Touch ONLY that file.
+
+In the `ask` command, two spots use `page.querySelectorAll(...)` and then `.click()` on the results (`const fresh = [...page.querySelectorAll(...)]` and the `modeControl` lookups). Playwright's Page has no querySelectorAll DOM API — those lines throw at runtime (only reachable after sign-in, so fix them now). Replace them with evaluate-based find-and-click helpers consistent with the file's existing detect() style:
+- Add a helper `clickExactText(page, texts, { roles } = {})` that runs page.evaluate: scan `button,[role="button"],[role="option"],[role="menuitem"]`, find the first whose trimmed innerText case-insensitively equals one of `texts`, call its .click(), return true; return false when absent.
+- New chat: `await clickExactText(page, ['New chat'])` — but the New chat control may carry extra label text; match by aria-label OR innerText containing 'new chat' (case-insensitive) for this one only. If absent, continue without failing (a fresh page load is already a new chat).
+- Mode control: current mode = page.evaluate returning the trimmed innerText of the button whose text is exactly 'Chat' or 'Task' (case-insensitive), or null. If null → emit gemini_task_mode_unavailable. If it reads 'Chat' → clickExactText(['Chat']) to open the control, then clickExactText(['Task']) among option/menuitem/button elements. Afterwards re-read the mode the same way; unless it now reads exactly 'Task' → emit gemini_task_mode_unavailable. Never type the prompt unless the verified mode is Task.
+- Composer robustness: wrap `composer.fill(prompt)` in try/catch; on failure fall back to `composer.click()` then `page.keyboard.insertText(prompt)`.
+
+Preserve all command names, JSON output shapes, named errors, timeouts, and the single-JSON-line stdout contract. End with a one-line summary.

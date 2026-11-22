@@ -109,6 +109,9 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
 
   const jobs = new Map();
   let connectionCache = null;
+  let geminiConnectChild = null;
+  const geminiProofFile = path.join(process.env.HOME || require('os').homedir(), '.config', 'heart-studio', 'gemini-proof.json');
+  const readGeminiProof = () => { try { return JSON.parse(fs.readFileSync(geminiProofFile, 'utf8')); } catch (_) { return null; } };
   const connectionNames = ['GPT','Gemini','Opus','GLM'];
   const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
   const timed = () => new Date().toISOString();
@@ -128,20 +131,14 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     results.push(gpt);
     let gem={name:'Gemini',probed:true,checkedAt:timed(),status:'unknown'};
     try {
-      const db=path.join(home,'.config/gemini-desktop/Cookies');if(!fs.existsSync(db))throw new Error('Gemini Cookies database not found');
-      const os=require('os'),{spawnSync}=require('child_process');
-      const query="SELECT name FROM cookies WHERE host_key LIKE '%google.%' OR host_key LIKE '%.google.com';";
-      const readNames=file=>spawnSync('sqlite3',[`file:${file}?immutable=1`,query],{encoding:'utf8',timeout:10000});
-      let r=readNames(db);
-      if(r.status!==0){
-        const dir=fs.mkdtempSync(path.join(os.tmpdir(),'heart-gem-'));
-        try { const copy=path.join(dir,'Cookies');fs.copyFileSync(db,copy);r=spawnSync('sqlite3',[copy,query],{encoding:'utf8',timeout:10000}); }
-        finally { fs.rmSync(dir,{recursive:true,force:true}); }
-      }
-      if(r.status!==0)throw new Error(r.stderr||'sqlite read failed');
-      const names=r.stdout.split(/\r?\n/);const found=names.some(n=>['__Secure-1PSID','__Secure-3PSID','SID'].includes(n));gem.status=found?'connected':'dead';gem.state=found?'connected':'awaiting_owner_signin';if(!found)gem.reason='سجّل دخول المالك في تطبيق Gemini desktop على هذا الجهاز';
-    }
-    catch(e){gem.status='unknown';gem.reason='تعذر قراءة قاعدة جلسة Gemini: '+String(e.message).slice(0,180);}results.push(gem);
+      const helperPath=path.join(repoDir,'server','gemini_seat.mjs');
+      const r=await runNode([helperPath,'probe'],{timeout:120000,cwd:repoDir});
+      const parsed=JSON.parse(r.out.trim().split(/\r?\n/).filter(Boolean).at(-1)||'{}');
+      if(parsed.ok&&parsed.signedIn){gem.status='connected';gem.state='connected';gem.account=parsed.email||parsed.account;gem.model=parsed.model||null;}
+      else if(parsed.error==='gemini_driver_unavailable'){gem.status='unknown';gem.reason=`Gemini seat probe failed: ${parsed.error}`;}
+      else {gem.status='dead';gem.state='awaiting_owner_signin';gem.reason='Sign in through Connect Gemini in this program (seat account araby0401@gmail.com)';}
+    } catch(e){gem.status='unknown';gem.reason='Gemini seat probe failed: '+String(e.message).slice(0,180);}
+    const proof=readGeminiProof();if(proof)gem.proof=proof;results.push(gem);
     let opus={name:'Opus',probed:true,checkedAt:timed(),status:'dead'};
     try { const helper=path.join(home,'workspace/tools/opus_call.py'), envFile=path.join(home,'workspace/user/files/llmsrelay.env');let key='';const contents=fs.readFileSync(envFile,'utf8');const m=contents.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(m)key=m[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('LLMSRELAY_API_KEY is missing');const dir=fs.mkdtempSync(path.join(require('os').tmpdir(),'heart-opus-probe-'));const prompt=path.join(dir,'prompt.txt'),out=path.join(dir,'out.txt');fs.writeFileSync(prompt,'Reply with exactly: OK');const r=await safeRun('python3',[helper,prompt,out,'32'],{env:{...process.env,LLMS_KEY:key},timeout:45000});const answer=fs.existsSync(out)?fs.readFileSync(out,'utf8'):r.out;opus.status=r.code===0&&answer.startsWith('OK')?'connected':'dead';if(opus.status==='dead')opus.reason='Opus ping did not return OK';fs.rmSync(dir,{recursive:true,force:true}); }
     catch(e){opus.reason='Opus probe failed: '+String(e.message).slice(0,180);}results.push(opus);
@@ -553,7 +550,22 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         let currentStyle=DEFAULT_STYLE_ID;try{currentStyle=projectStyle(activeDir);}catch(_){}
         return sendJson(res,200,{defaultStyle:DEFAULT_STYLE_ID,currentStyle,styles:styleRegistry()});
       }
-      if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+      if (pn === '/api/connections' && req.method === 'GET') { const data=connectionCache||{checkedAt:null,connections:connectionEmpty()}; const proof=readGeminiProof(); const connections=data.connections.map(row=>row.name==='Gemini'?{...row,...(proof?{proof}:{})}:row); return sendJson(res,200,{...data,connections}); }
+      if (pn === '/api/connections/gemini/connect' && req.method === 'POST') {
+        if(geminiConnectChild&&!geminiConnectChild.killed)return sendJson(res,200,{started:false,note:'connect window already open'});
+        const helperPath=path.join(repoDir,'server','gemini_seat.mjs'),child=spawn(process.execPath,[helperPath,'connect'],{detached:true,stdio:'ignore',env:process.env});geminiConnectChild=child;child.once('exit',()=>{if(geminiConnectChild===child)geminiConnectChild=null;});child.unref();return sendJson(res,200,{started:true,state:'awaiting_owner_signin'});
+      }
+      if (pn === '/api/connections/gemini/ask' && req.method === 'POST') {
+        const b=await readBody(req),prompt=String(b.prompt||'')||'In one sentence, describe how you would plan the shots for a 60-second vertical short about a mayor whose seawall saves his village.';
+        if(prompt.length>2000)return sendJson(res,400,{error:'gemini_prompt_too_long'});
+        const helperPath=path.join(repoDir,'server','gemini_seat.mjs'),r=await runCaptured(process.execPath,[helperPath,'ask'],{cwd:repoDir},300000,()=>{},child=>child.stdin.end(prompt));
+        let answer={};try{answer=JSON.parse(r.out.trim().split(/\r?\n/).filter(Boolean).at(-1)||'{}');}catch(_){}
+        if(answer.ok){const at=timed(),proof={at,account:answer.email||answer.account,model:answer.model,mode:answer.mode,prompt,text:answer.text,elapsedMs:answer.elapsedMs};fs.mkdirSync(path.dirname(geminiProofFile),{recursive:true});fs.writeFileSync(geminiProofFile,JSON.stringify(proof,null,2)+'\n');if(connectionCache){const row=connectionCache.connections.find(x=>x.name==='Gemini');if(row)Object.assign(row,{proof,account:proof.account,model:proof.model,status:'connected',state:'connected'});}return sendJson(res,200,{ok:true,text:answer.text,account:proof.account,model:proof.model,mode:proof.mode,elapsedMs:proof.elapsedMs,at});}
+        return sendJson(res,200,{ok:false,error:answer.error||'gemini_ask_failed'});
+      }
+      if (pn === '/api/colab-leg' && req.method === 'GET') {
+        try { const leg=JSON.parse(fs.readFileSync(path.join(repoDir,'fleet','colab_leg.json'),'utf8'));let queueEntries=0;try{const queue=JSON.parse(fs.readFileSync(path.join(activeDir,'out','colab_queue.json'),'utf8'));queueEntries=Array.isArray(queue)?queue.length:Array.isArray(queue.entries)?queue.entries.length:0;}catch(_){}return sendJson(res,200,{...leg,queueEntries}); } catch (_) { return sendJson(res,200,{state:'not_recorded',error:'colab_leg_not_recorded'}); }
+      }
       if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>{const row={...p,...passModule.getState(activeDir,p.id),style:passModule.getState(activeDir,p.id).style||projectStyle(activeDir)};try{row.propGate=JSON.parse(fs.readFileSync(path.join(path.dirname(passModule.stateFile(activeDir,p.id)),'prop_gate.json'),'utf8'));}catch(_){row.propGate=null;}return row;}));
       if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
       if(pn==='/api/passes/run'&&req.method==='POST'){

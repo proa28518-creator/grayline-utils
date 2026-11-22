@@ -1,0 +1,1 @@
+{"ok":false,"error":"gemini_driver_unavailable","detail":"page.goto: net::ERR_TUNNEL_CONNECTION_FAILED at https://gemini.google.com/\nCall log:\n  - navigating to \"https://gemini.google.com/\", waiting until \"domcontentloaded\"\n"}
