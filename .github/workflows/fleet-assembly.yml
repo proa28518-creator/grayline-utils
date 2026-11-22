@@ -1,0 +1,60 @@
+name: Fleet Assembly
+on:
+  workflow_dispatch:
+    inputs:
+      project: { description: Project name, required: true, default: demo-ring, type: string }
+      frames_artifact: { description: Artifact name from fleet render, required: false, default: '', type: string }
+      frames_run_id: { description: Fleet render workflow run id, required: false, default: '', type: string }
+      fps: { description: Output frame rate, required: true, default: '30', type: choice, options: ['24','30'] }
+      mix_rel: { description: Mix WAV path inside project, required: false, default: '', type: string }
+      mode: { description: Assembly mode, required: true, default: assemble, type: choice, options: [assemble, selftest] }
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Obtain or generate frames
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FRAMES_RUN_ID: ${{ inputs.frames_run_id }}
+          FRAMES_ARTIFACT: ${{ inputs.frames_artifact }}
+          MODE: ${{ inputs.mode }}
+          FPS: ${{ inputs.fps }}
+        run: |
+          mkdir -p assembly-input/frames
+          if [ "$MODE" = selftest ]; then
+            for i in $(seq -w 1 12); do ffmpeg -hide_banner -loglevel error -f lavfi -i "color=c=0x243447:s=1080x1920:d=0.1" -vf "drawbox=x=0:y=$((10#$i*100)):w=1080:h=80:color=0xe9b949:t=fill" -frames:v 1 "assembly-input/frames/frame_000${i}.png"; done
+            ffmpeg -hide_banner -loglevel error -y -f lavfi -i sine=frequency=440:duration=2 -c:a pcm_s16le assembly-input/tone.wav
+          elif [ -n "$FRAMES_ARTIFACT" ]; then
+            source_run="$FRAMES_RUN_ID"
+            if [ -z "$source_run" ]; then
+              source_run=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" | jq -r --arg n "$FRAMES_ARTIFACT" '.artifacts[] | select(.name == $n) | .workflow_run.id' | head -1)
+            fi
+            [ -n "$source_run" ] || { echo "GATE frames_source: artifact not found: $FRAMES_ARTIFACT" >&2; exit 1; }
+            gh run download "$source_run" --name "$FRAMES_ARTIFACT" -D assembly-input/source
+            find assembly-input/source -type f -name '*.tar.gz' -exec tar -xzf {} -C assembly-input/frames \;
+            find assembly-input/source -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} assembly-input/frames/ \;
+          elif [ -n "$FRAMES_RUN_ID" ]; then
+            gh run download "$FRAMES_RUN_ID" -D assembly-input/source
+            find assembly-input/source -type f -name '*.tar.gz' -exec tar -xzf {} -C assembly-input/frames \;
+            find assembly-input/source -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} assembly-input/frames/ \;
+          else echo 'GATE frames_source: frames_artifact or frames_run_id required' >&2; exit 1; fi
+      - name: Assemble and verify
+        env:
+          PROJECT_NAME: ${{ inputs.project }}
+          MODE: ${{ inputs.mode }}
+          FPS: ${{ inputs.fps }}
+          MIX_REL: ${{ inputs.mix_rel }}
+        run: |
+          audio=""
+          if [ "$MODE" = selftest ]; then audio=assembly-input/tone.wav
+          elif [ -n "$MIX_REL" ]; then audio="projects/${PROJECT_NAME}/${MIX_REL}"; fi
+          fleet/assemble.sh assembly-input/frames "$FPS" "$audio" assembly-output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.mode == 'selftest' && format('fleet-assembly-selftest-{0}', github.run_id) || format('fleet-master-{0}-{1}', inputs.project, github.run_id) }}
+          path: assembly-output/
+          if-no-files-found: error
+          retention-days: 30
