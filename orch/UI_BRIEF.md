@@ -463,3 +463,6 @@ Drawn from the Creatorize capability map + our own gap audit; they join the spec
 
 ## Owner scope 2026-11-22 ~08:20 — the mounted-renderer version is a STUDY build
 «اعتبر النسخه اللي هتثبتيها وهتعمليها بالواجهه بتاعته مجرد بس دراسه»: the version mounted with Russell's own interface is a STUDY build — its purpose is to learn, by running his interface on our side, exactly what it asks, expects and does on its contracts. It is not the production product and does not replace the production line; its findings feed the production program, which is built informed by the study.
+
+## Owner sequence 2026-11-22 ~08:21 — mount, map, add, then skin
+The order is fixed by the owner: (1) mount his interface as-is (study build, pristine backup kept); (2) learn the code map from the running study — where the style code is, where each feature's code is; (3) add OUR features onto the mounted interface; (4) change the style at leisure, once the map is known. Building from zero while holding the original is rejected («شايلين دماغنا وحاطين جزمه»). Additions come BEFORE skinning.
