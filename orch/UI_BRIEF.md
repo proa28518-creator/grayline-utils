@@ -472,3 +472,6 @@ The order is fixed by the owner: (1) mount his interface as-is (study build, pri
 
 ## Owner quick solution 2026-11-22 ~09:03 — convert the same program as-is to Linux first
 «هنحول نفس البرنامج زي ما هو لينكس الاول»: alongside the current work, the direct route is a Linux conversion of Russell's actual app as-is — the app is Electron (its body is JS), so run the whole unpacked app (main + renderer + resources) under a Linux Electron runtime. The study's job is to surface every Windows-specific dependency by name (win32 native modules, bundled .exe/.dll helpers, path/shell assumptions). This conversion study precedes additions and skinning, per the mount → map → add → skin sequence.
+
+## Owner step 2026-11-22 ~09:04 — after the Linux install, remove the registration face
+«بعد التثبيت نطلب ازاله وجه التسجيل عشان نعرف نجري تعديلاتنا»: after the converted app boots on Linux, the app's registration/member gate screen is removed in our study copy so it stops blocking our modifications. Distinction recorded: the member/registration gate is Russell's door; the SEAT sign-ins (Connect Claude/Gemini/GPT) are operating wiring the machinery runs on — removing those would disable the seats, so they stay.
