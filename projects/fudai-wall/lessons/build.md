@@ -14,6 +14,17 @@ The opening set includes a continuous shore/ground, apron and gate practicals, t
 - Later places have anchor silhouettes only; full dressing is outstanding.
 - The opening has not been rendered or visually reviewed. No renderer was run for this authoring pass.
 
+## Chunk 2 — SH04–SH12
+
+Extended `scenes/film.js` with the mayor's later walks and face/look beats, three mockers, six villagers, the construction/sign/measurement props, and shots SH04–SH12. The nine new film-local prop kinds were already present in `scenes/props/` and were not changed. Added timed `states` to COAST_WALL and SEA for SH11; their final state explicitly restores base sky, ground, fog, and sun values under the rig's cumulative merge semantics. The storeys diagram hides at L3 start.
+
+## Known gaps
+
+- SH13+ are not written.
+- Digit-1 occlusion at F45/F60 is a Camera-pass item, not this chunk.
+- The grey mayor is parked inside the town hall at t≈27; the next chunk must not double him when mayor_old exits.
+- No renderer was run for this authoring pass.
+
 ## HANDOVER
 
-Build pass opening files are ready for the requested syntax and source audit. The next pass should verify loading and measured placement bounds, then review SH01 frame 0 and the SH02/SH03 framing before extending the film.
+Chunk 2 authoring is ready after syntax and source audit. The next pass should take SH13 onward, keep the grey mayor parked indoors when mayor_old exits, and handle digit-1 occlusion at F45/F60 in the Camera pass.

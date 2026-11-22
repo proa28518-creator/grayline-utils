@@ -5,7 +5,7 @@ import { createRigShade } from '../world/look/rigshade.js';
 import { THREE, flat, basic, part, rng } from '../engine/props/_kit.js';
 
 export const PLACES = {
-  COAST_WALL: { at:[0,0,-16], bounds:{x:[-40,40],z:[-20,-12]}, sky:[.48,.59,.76], ground:[.42,.38,.31], fog:{color:'#c9d8df',density:.0035}, ao:{floor:0,h:1.8,amt:.28}, lights:[
+  COAST_WALL: { at:[0,0,-16], bounds:{x:[-40,40],z:[-20,-12]}, sky:[.48,.59,.76], ground:[.42,.38,.31], fog:{color:'#c9d8df',density:.0035}, ao:{floor:0,h:1.8,amt:.28}, states:[{from:25.09,sky:[.52,.60,.74],lights:{sun:{power:.85,dir:[-.85,.28,.45],color:[1,.80,.55]}}},{from:25.75,sky:[.42,.58,.80],lights:{sun:{power:1.20,dir:[-.20,.85,.40],color:[1,.90,.70]}}},{from:26.40,sky:[.78,.52,.38],ground:[.45,.36,.28],lights:{sun:{power:.65,dir:[.80,.18,.40],color:[1,.55,.30]}}},{from:27.05,sky:[.07,.10,.22],ground:[.10,.12,.18],fog:{color:'#1c2733',density:.0040},lights:{sun:{power:.14,dir:[.30,.60,.30],color:[.65,.75,1.00]}}},{from:27.45,sky:[.55,.58,.70],ground:[.42,.38,.31],fog:{color:'#c9d8df',density:.0035},lights:{sun:{power:.80,dir:[-.85,.25,.45],color:[1,.75,.50]}}},{from:27.72,sky:[.48,.59,.76],ground:[.42,.38,.31],fog:{color:'#c9d8df',density:.0035},lights:{sun:{power:1.05,dir:[-.48,.35,.82],color:[1,.78,.52]}}}], lights:[
     {id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1.05,wrap:.32},
     {id:'gate_l',kind:'point',pos:[-3.8,7.5,-14.6],color:[1,.62,.28],power:.9,fall:.08,range:15,wrap:.25},
     {id:'gate_r',kind:'point',pos:[3.8,7.5,-14.6],color:[1,.62,.28],power:.9,fall:.08,range:15,wrap:.25},
@@ -15,7 +15,7 @@ export const PLACES = {
     {id:'windows',kind:'point',pos:[-7,2.1,1],color:[1,.67,.34],power:.35,fall:.12,range:12,wrap:.2},
     {id:'harbour',kind:'point',pos:[9,2.8,-5],color:[1,.7,.4],power:.45,fall:.1,range:16,wrap:.2},
   ]},
-  SEA:{at:[0,0,-44],bounds:{x:[-60,60],z:[-70,-18]},sky:[.40,.56,.72],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},ao:{floor:0,h:1,amt:.12},lights:[
+  SEA:{at:[0,0,-44],bounds:{x:[-60,60],z:[-70,-18]},sky:[.40,.56,.72],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},ao:{floor:0,h:1,amt:.12},states:[{from:25.09,sky:[.46,.58,.72],lights:{sun:{power:.85,dir:[-.85,.28,.45],color:[1,.80,.55]}}},{from:25.75,sky:[.36,.56,.78],lights:{sun:{power:1.15,dir:[-.20,.85,.40],color:[1,.90,.70]}}},{from:26.40,sky:[.62,.44,.34],ground:[.20,.30,.40],lights:{sun:{power:.60,dir:[.80,.18,.40],color:[1,.55,.30]}}},{from:27.05,sky:[.05,.08,.18],ground:[.04,.08,.16],fog:{color:'#16202c',density:.0030},lights:{sun:{power:.12,dir:[.30,.60,.30],color:[.65,.75,1.00]}}},{from:27.45,sky:[.48,.56,.68],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},lights:{sun:{power:.80,dir:[-.85,.25,.45],color:[1,.75,.50]}}},{from:27.72,sky:[.40,.56,.72],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},lights:{sun:{power:1.00,dir:[-.48,.35,.82],color:[1,.78,.52]}}}],lights:[
     {id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1.0,wrap:.3},
     {id:'glitter',kind:'point',pos:[0,5,-42],color:[.55,.82,1],power:.75,fall:.025,range:45,wrap:.2},
   ]},
