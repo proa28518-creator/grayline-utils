@@ -1,4 +1,4 @@
-rt { u as useApp, r as reactExports, cf as useMoveToChannel, cg as fold, j as jsxRuntimeExports, q as Plus, ch as I, M as Search, ci as ChannelFilter, E as Empty, cj as Video, ck as VideoCard, a8 as FolderOpen, d as api, b as Trash, cl as ChannelChip, ax as Modal, a4 as isMac } from "./index-wX7YC2th.js";
+import { u as useApp, r as reactExports, cf as useMoveToChannel, cg as fold, j as jsxRuntimeExports, q as Plus, ch as I, M as Search, ci as ChannelFilter, E as Empty, cj as Video, ck as VideoCard, a8 as FolderOpen, d as api, b as Trash, cl as ChannelChip, ax as Modal, a4 as isMac } from "./index-wX7YC2th.js";
 const TRASH = isMac ? "Trash" : "Recycle Bin";
 function Videos() {
   const { projects, refreshProjects, go, setNewProject, toast, projectId, channels, listChannel: channel, setListChannel: setChannel } = useApp();
@@ -87,4 +87,3 @@ function Videos() {
 export {
   Videos as default
 };
-‰PNG

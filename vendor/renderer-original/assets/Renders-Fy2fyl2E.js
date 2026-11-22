@@ -1,4 +1,4 @@
-rt { u as useApp, r as reactExports, j as jsxRuntimeExports, ac as Busy, E as Empty, z as Film, a8 as FolderOpen, d as api, a4 as isMac, D as ago, ad as StatusBadge, aa as Play } from "./index-wX7YC2th.js";
+import { u as useApp, r as reactExports, j as jsxRuntimeExports, ac as Busy, E as Empty, z as Film, a8 as FolderOpen, d as api, a4 as isMac, D as ago, ad as StatusBadge, aa as Play } from "./index-wX7YC2th.js";
 function Renders() {
   const { go, brand, allProjects } = useApp();
   const personal = brand === "personal", kindOf = new Map(allProjects.map((p) => [p.id, p.kind ?? "faceless"]));
@@ -91,4 +91,3 @@ function Renders() {
 export {
   Renders as default
 };
-impo

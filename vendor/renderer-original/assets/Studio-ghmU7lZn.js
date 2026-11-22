@@ -1,4 +1,4 @@
-rt { c as createLucideIcon, u as useApp, j as jsxRuntimeExports, r as reactExports, ae as Clock, af as useStyleKit, ag as useClockTime, ah as usePlaying, d as api, o as on, T as TriangleAlert, S as Spinner, ai as ArrowLeft, aj as Repeat, ak as Gauge, R as React, C as Check, n as Lock, a9 as Square, al as Info, am as Boxes, an as FOLDER_APP, a8 as FolderOpen, ao as Preview, ac as Busy, ap as Pin, X, aq as Pause, aa as Play, a5 as ShieldCheck, A as Asterisk, W as WandSparkles, ar as RefreshCw, w as Save, as as ChevronRight, at as CircleCheck, au as RefsPanel, i as isStandard, a as usePlan, g as isOwnStyle, av as ImagePlus, z as Film, aw as RefButton, ax as Modal, q as Plus, ay as Undo2, p as premiumMsg } from "./index-wX7YC2th.js";
+import { c as createLucideIcon, u as useApp, j as jsxRuntimeExports, r as reactExports, ae as Clock, af as useStyleKit, ag as useClockTime, ah as usePlaying, d as api, o as on, T as TriangleAlert, S as Spinner, ai as ArrowLeft, aj as Repeat, ak as Gauge, R as React, C as Check, n as Lock, a9 as Square, al as Info, am as Boxes, an as FOLDER_APP, a8 as FolderOpen, ao as Preview, ac as Busy, ap as Pin, X, aq as Pause, aa as Play, a5 as ShieldCheck, A as Asterisk, W as WandSparkles, ar as RefreshCw, w as Save, as as ChevronRight, at as CircleCheck, au as RefsPanel, i as isStandard, a as usePlan, g as isOwnStyle, av as ImagePlus, z as Film, aw as RefButton, ax as Modal, q as Plus, ay as Undo2, p as premiumMsg } from "./index-wX7YC2th.js";
 import { C as ClaudePanel, M as Md } from "./ClaudePanel-D3_P-Q-D.js";
 import { s as selLabel, S as STYLES_MOVED } from "./Editor-DZrg__Oz.js";
 import { s as studioCanBuildOn } from "./stylePackage-BmzKskVp.js";
@@ -2062,4 +2062,3 @@ export {
   aspectsOf,
   Studio as default
 };
-impo

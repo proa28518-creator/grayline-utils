@@ -1,4 +1,4 @@
-rt { u as useApp, r as reactExports, bV as startChannel, d as api, j as jsxRuntimeExports, ax as Modal, bW as ChannelField, bX as ChannelLessons, X, av as ImagePlus, S as Spinner } from "./index-wX7YC2th.js";
+import { u as useApp, r as reactExports, bV as startChannel, d as api, j as jsxRuntimeExports, ax as Modal, bW as ChannelField, bX as ChannelLessons, X, av as ImagePlus, S as Spinner } from "./index-wX7YC2th.js";
 const IMG = /\.(png|jpe?g|webp)$/i;
 function NewVideo({ onClose }) {
   const { go, refreshProjects, toast, newPrefill, channel, listChannel, page, channels } = useApp();
@@ -100,4 +100,3 @@ function NewVideo({ onClose }) {
 export {
   NewVideo as default
 };
-impo

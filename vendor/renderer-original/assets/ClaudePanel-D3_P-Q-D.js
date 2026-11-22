@@ -1,4 +1,4 @@
-rt { c as createLucideIcon, r as reactExports, d as api, o as on, j as jsxRuntimeExports, c1 as modelName, q as Plus, u as useApp, S as Spinner, a9 as Square, cq as Mic, as as ChevronRight, C as Check, b_ as useGoogleState, b$ as useCodexState, dv as PROJECT_MODEL_EVENT, b9 as lang, d1 as engineOf, c6 as usableModel, T as TriangleAlert, c7 as LogIn, X, B as Brain, A as Asterisk, ad as StatusBadge, c8 as secs, dw as money, ay as Undo2, aD as Redo2, J as Sprout, dx as effortName, D as ago, cV as RotateCcw, c5 as runsWithoutClaude, aa as Play, ac as Busy, c9 as workingText, ca as withEngine, dy as hideTimeLimit, dz as openYoutubeText, $ as AudioLines, dA as MentionField, dB as addDropped, aw as RefButton, dC as RefsUsed, au as RefsPanel, dD as CircleQuestionMark, cb as Wrench, ds as ModelPicker, c0 as reactDomExports, ax as Modal, dE as claudeOnlyText, dF as ChevronLeft, aG as Maximize2, aL as cartoonStep, cv as docStep } from "./index-wX7YC2th.js";
+import { c as createLucideIcon, r as reactExports, d as api, o as on, j as jsxRuntimeExports, c1 as modelName, q as Plus, u as useApp, S as Spinner, a9 as Square, cq as Mic, as as ChevronRight, C as Check, b_ as useGoogleState, b$ as useCodexState, dv as PROJECT_MODEL_EVENT, b9 as lang, d1 as engineOf, c6 as usableModel, T as TriangleAlert, c7 as LogIn, X, B as Brain, A as Asterisk, ad as StatusBadge, c8 as secs, dw as money, ay as Undo2, aD as Redo2, J as Sprout, dx as effortName, D as ago, cV as RotateCcw, c5 as runsWithoutClaude, aa as Play, ac as Busy, c9 as workingText, ca as withEngine, dy as hideTimeLimit, dz as openYoutubeText, $ as AudioLines, dA as MentionField, dB as addDropped, aw as RefButton, dC as RefsUsed, au as RefsPanel, dD as CircleQuestionMark, cb as Wrench, ds as ModelPicker, c0 as reactDomExports, ax as Modal, dE as claudeOnlyText, dF as ChevronLeft, aG as Maximize2, aL as cartoonStep, cv as docStep } from "./index-wX7YC2th.js";
 import { r as requestLibraryInbox } from "./libraryNav-De0opIcL.js";
 const __iconData$7 = {
   name: "circle-x",
@@ -1781,4 +1781,3 @@ export {
   ContextMeter as a,
   rxStep as r
 };
-impo

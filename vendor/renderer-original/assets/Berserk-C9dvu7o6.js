@@ -1,4 +1,4 @@
-rt { u as useApp, r as reactExports, d as api, o as on, j as jsxRuntimeExports, q as Plus, D as ago, S as Spinner, b as Trash, Y as Clapperboard, dq as Flame, aR as FasterBuilds, ac as Busy, X, dr as Paperclip, ds as ModelPicker, bv as Picker, k as Palette, a9 as Square, e as confirmAsk, dt as CircleAlert, aa as Play, z as Film, a8 as FolderOpen, Q as ListChecks, C as Check, a1 as Image, du as File } from "./index-wX7YC2th.js";
+import { u as useApp, r as reactExports, d as api, o as on, j as jsxRuntimeExports, q as Plus, D as ago, S as Spinner, b as Trash, Y as Clapperboard, dq as Flame, aR as FasterBuilds, ac as Busy, X, dr as Paperclip, ds as ModelPicker, bv as Picker, k as Palette, a9 as Square, e as confirmAsk, dt as CircleAlert, aa as Play, z as Film, a8 as FolderOpen, Q as ListChecks, C as Check, a1 as Image, du as File } from "./index-wX7YC2th.js";
 import { S as SendHorizontal, M as Md, T as ToolGroup, F as FileHeadphone } from "./ClaudePanel-D3_P-Q-D.js";
 import "./libraryNav-De0opIcL.js";
 const fileKindOf = (p) => /\.(png|jpe?g|webp|gif|bmp|tiff?|avif|heic)$/i.test(p) ? "img" : /\.(mp4|mov|webm|mkv|avi|m4v|wmv|mpe?g)$/i.test(p) ? "vid" : /\.(wav|mp3|m4a|aac|flac|ogg|opus|aiff?|wma)$/i.test(p) ? "audio" : "file";
@@ -541,4 +541,3 @@ function Berserk() {
 export {
   Berserk as default
 };
-impo

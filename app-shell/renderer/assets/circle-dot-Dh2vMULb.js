@@ -1,0 +1,14 @@
+import { c as createLucideIcon } from "./index-wX7YC2th.js";
+const __iconData = {
+  name: "circle-dot",
+  size: 24,
+  node: [
+    ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+  ]
+};
+__iconData.node;
+const CircleDot = createLucideIcon(__iconData);
+export {
+  CircleDot as C
+};

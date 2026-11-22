@@ -1,4 +1,4 @@
-nter-cyrillic-ext-400-normal */
+/* inter-cyrillic-ext-400-normal */
 @font-face {
   font-family: 'Inter';
   font-style: normal;
@@ -4523,4 +4523,3 @@ body:has([aria-modal="true"]) .ed-top { -webkit-app-region: no-drag; }
 .faster-builds [data-faster-line] { margin: 0 0 2px; }
 .settings-row .faster-builds { margin: 0; }
 .bz-mode { width: min(440px, 100%); margin: 6px auto 14px; text-align: left; }
-cons

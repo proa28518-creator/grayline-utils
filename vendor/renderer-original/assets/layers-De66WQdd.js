@@ -1,4 +1,4 @@
-rt { c as createLucideIcon } from "./index-wX7YC2th.js";
+import { c as createLucideIcon } from "./index-wX7YC2th.js";
 const __iconData = {
   name: "layers",
   size: 24,
@@ -32,4 +32,3 @@ const Layers = createLucideIcon(__iconData);
 export {
   Layers as L
 };
-‰PNG

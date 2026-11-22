@@ -1,4 +1,4 @@
-inbox = false;
+let inbox = false;
 const requestLibraryInbox = () => {
   inbox = true;
 };
@@ -11,4 +11,3 @@ export {
   requestLibraryInbox as r,
   takeLibraryInbox as t
 };
-‰PNG
