@@ -41,6 +41,7 @@ jobs:
             find assembly-input/source -type f -name '*.tar.gz' -exec tar -xzf {} -C assembly-input/frames \;
             find assembly-input/source -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} assembly-input/frames/ \;
           else echo 'GATE frames_source: frames_artifact or frames_run_id required' >&2; exit 1; fi
+          find assembly-input/frames -mindepth 2 -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} assembly-input/frames/ \;
       - name: Assemble and verify
         env:
           PROJECT_NAME: ${{ inputs.project }}
