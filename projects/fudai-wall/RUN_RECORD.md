@@ -163,6 +163,73 @@ render → Colab after board approval) applied to this run, correcting the local
 - **Next dispatch (armed):** the moment Seat 2's opening `film.js` (SH01–SH03) lands with
   D1+D2 gate outputs filed → push → dispatch the opening probe frames on the fleet →
   download to `out/board/` → Seat 4 zooms → Seat 3 opening critic round.
+
+## Opening build — Codex seat → D1/D2 → fleet probes (night shift, 2026-11-22 ~23:00–23:14 EET)
+- **Authored via the Codex seat** (bounded in-project session, brief `CODEX_OPENING_BRIEF.md`;
+  87,257 tokens): `scenes/set.js` (ONE exported PLACES table, 7 places), `scenes/cast/` (9
+  JSONs: mayor / mayor_old / mayor_young / mocker_a,b,c / villagers / child / workers),
+  `scenes/props/` (`seawall`, `storeys`, `boat`), `scenes/film.js` (opening SH01–SH03 only;
+  all 24 voice lines verbatim), `scenes/post.js` + `scenes/shade.js` (CALM day look),
+  `lessons/build.md` (started by the seat; moved by the driver to project-root `lessons/`
+  per RULES §9).
+- **D1/D2 audits — PASS** (`tools/audit_d1_d2.mjs`, driver harness): props ARRAY schema +
+  purity (no Math.random/Date) + format locks (30 fps, 1080×1920, voice_owner.wav, 24 lines);
+  all 7 PLACES declared with anchors + bounds; every prop/cast/camera target inside a
+  declared place's bounds. No belongings-box prop yet (opening stage — `fetch: true` check
+  arms when it lands in SH13).
+- **Two defects caught and fixed, both on the record:**
+  1. `set.js` world imports used `../../world/` (resolved outside the project) — the seat's
+     follow-up sessions could NOT apply the 3-line fix: 5 genuine attempts failed, verbatim:
+     (a) stdin hang (600 s timeout, nothing written); (b) «the shell failed because `bwrap`
+     is unavailable, and the workspace-backed Node tool requires approval»; (c) «the edit
+     tool couldn't match the specified import lines»; (d) resumed session read-only;
+     (e) «MCP tool call requires approval, but approval policy is never». The driver applied
+     the mechanical 3-line path correction itself (NOT silent — recorded here); the seat
+     authored the film, the driver corrected only the import prefix.
+  2. Boot smoke failed fast: `boot failed: character: .../project/src/headTrack.json (404)` —
+     the fudai chassis copy was missing the `src/` character-track files. Restored from
+     demo-ring (`src/` = cap/face/head/limb/torsoTrack.json, md5-identical to demo-ring's);
+     chassis completion, not engine editing.
+- **GUARD FLAG — CORRECTED DEPARTURE (guard, 21:10 UTC / 23:10 EET):** the boot smoke was
+  run LOCALLY — `node tools/board.cjs F000:0` produced `out/board/F000.png` with no fleet
+  dispatch at that time. That violates the owner's standing condition (heavy work on the
+  GitHub fleet, never on the desk VM — controller + QC eyes only), now audited by the guard
+  every minute. **Corrected and standing from this entry: NO local rendering of any kind,
+  including boot-smoke renders. Verification goes through the fleet too.** The flagged
+  still is kept (delete nothing); it is not used as evidence — the fleet frame 0 below is.
+- **Pushed:** commit **`f65f890c7d6b47b74f0a39ab6e93219781d41973`** on `ui/unified-interface`
+  (24 files; remote == local HEAD verified).
+- **Fleet probe batch — 6/6 SUCCESS** (`fleet-render.yml`, one dispatch per frame, parallel):
+  | frame | t (s) | shot / probe | run |
+  |---|---|---|---|
+  | 0 | 0.00 | SH01 frame 0 — mayor face | 45070760738 |
+  | 3 | 0.10 | SH01 mayor face (verification sheet) | 45070764611 |
+  | 45 | 1.50 | SH01 tilt-up — wall + gate | 45070768249 |
+  | 60 | 2.00 | SH01/SH02 — storeys diagram | 45070772019 |
+  | 105 | 3.50 | SH02 crane pull-back wide | 45070775218 |
+  | 165 | 5.50 | SH03 sea glide — boat | 45070777972 |
+  Every run: `framesCaptured: 1, framesNull: 0, bootError: null, errors: []`. Stills:
+  `out/board/fleet/<run>/frames/frame_NNNN.png` (+ `manifest.json`, `run-info.json`,
+  `page-console.log` beside each).
+- **Eye-verdicts on the fleet stills (driver, looked at all six — QC eyes only):**
+  - F0: the mayor IS front-facing in his dark suit, but his head is CROPPED at the top edge
+    (eyes half out of frame) — violates RULES §4 «never cut by the edge» and the Build exit
+    (frame 0 = expressive face). **Biggest gap #1 — SH01 `from` camera.**
+  - F3 (t=0.10): the full face reads (deadpan, grey hair, caption «بنى سور») — the crop is
+    frame-0-specific; the push already eases it by t=0.10.
+  - F45/F60: wall + gate braces read, captions legible («بطول عمارة», «خمس أدوار»), blue sky —
+    but the storeys diagram is NOT visible in either frame (out of frame / behind the wall
+    face) and the wall face reads flat grey. **Biggest gap #2 — diagram missing; #3 — wall
+    detail density (set-bar risk).**
+  - F105 (SH02 pull-back): the wide works — wall + gate + lanterns + shore + houses; the
+    mayor reads correctly TINY at the wall base (a speck under the «صيد صغيرة» caption).
+  - F165 (SH03): boat present on mirror water (hull + mast + lantern glow), caption
+    «هادي زي» — but the wall fills the top 2/3 of the frame and the sail reads as a plain
+    grey slab. **Gap #4 — glide composition / sail.**
+- **NOT board-ready.** No board assembled, no render. Next (per BUILD_CALL step 3):
+  Seat 3 opening critic round on these six fleet stills (blind mix per its protocol), then
+  fix ONLY the biggest gap at its cause through the Codex seat, re-probe on the fleet.
+  SH04–SH26 authoring follows the opening critic YES.
 - Compute home: THE FLEET (owner's correction 22:43 EET — see Fleet move below).
 
 ## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
