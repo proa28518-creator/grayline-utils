@@ -1,0 +1,21 @@
+{
+ "source": "source.wav",
+ "kept_pauses": 0,
+ "median_gap_s": 0.143,
+ "duration_in": 51.96,
+ "duration_out": 50.14,
+ "pauses_tightened": 10,
+ "removed_s": 1.82,
+ "click_check": {
+  "max_jump_near_joins": 0.0024,
+  "file_p99_9": 0.2978,
+  "ok": true
+ },
+ "cuts_with_energy_above_-55dB": [
+  [
+   46.16,
+   -51.9
+  ]
+ ],
+ "note": "cuts_with_energy entries are usually breaths/room tone mid-pause; spot-check a few with the overview if any word might be affected."
+}

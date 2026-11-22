@@ -1,0 +1,1 @@
+Acceptance film: the opening of Story 6 — the chocolate melts in the microwave while the engineer watches the radar. Built from the template scene; narration is the owner's own Story 6 recording, first 5.88 seconds, used exactly as provided.
