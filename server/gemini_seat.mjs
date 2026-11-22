@@ -42,7 +42,33 @@ async function clickNewChat(page) {
   });
 }
 async function readMode(page) {
-  return page.evaluate(() => [...document.querySelectorAll('button')].find(x => /^(chat|task)$/i.test((x.innerText || '').trim()))?.innerText.trim() || null);
+  return page.evaluate(() => {
+    const segments = [...document.querySelectorAll('gem-segmented-button')];
+    for (const name of ['Chat', 'Task']) {
+      const host = segments.find(x => (x.querySelector('button')?.innerText || '').trim() === name);
+      const button = host?.querySelector('button');
+      if (button?.getAttribute('aria-pressed') === 'true' || host?.classList.contains('gem-segmented-button-selected')) return name;
+    }
+    return null;
+  });
+}
+async function waitForModeControl(page, timeout = 60000) {
+  const end = Date.now() + timeout;
+  while (Date.now() < end) {
+    const present = await page.evaluate(() => !!document.querySelector('gem-segmented-button') || [...document.querySelectorAll('button')].some(x => /^(chat|task)$/i.test((x.innerText || '').trim())));
+    if (present) return true;
+    await sleep(500);
+  }
+  return false;
+}
+async function selectTaskMode(page) {
+  return page.evaluate(() => {
+    const host = [...document.querySelectorAll('gem-segmented-button')].find(x => (x.querySelector('button')?.innerText || '').trim() === 'Task');
+    const button = host?.querySelector('button') || [...document.querySelectorAll('button')].find(x => (x.innerText || '').trim() === 'Task');
+    if (!button) return false;
+    button.click();
+    return true;
+  });
 }
 const proxyUrl = process.env.HTTPS_PROXY || process.env.https_proxy || process.env.ALL_PROXY || process.env.all_proxy || process.env.HTTP_PROXY || process.env.http_proxy;
 async function startRelay(value) {
@@ -120,12 +146,18 @@ try {
   } else if (command === 'ask') {
     let prompt = ''; for await (const chunk of process.stdin) prompt += chunk;
     let context;
-    try { try { context = await launch(false); } catch (_) { context = await launch(true); } const page = await open(context); const state = await detect(page); if (!state.signedIn) { emit({ ok: false, error: 'gemini_seat_not_signed_in' }); } else {
+    try { try { context = await launch(false); } catch (_) { context = await launch(true); } const page = await open(context); let state = await detect(page); if (!state.signedIn) { emit({ ok: false, error: 'gemini_seat_not_signed_in' }); } else {
       if (await clickNewChat(page)) await sleep(700);
-      let mode = await readMode(page);
-      if (!mode) { emit({ ok: false, error: 'gemini_task_mode_unavailable' }); } else {
-        if (/^chat$/i.test(mode)) { await clickExactText(page, ['Chat']); await sleep(300); await clickExactText(page, ['Task']); await sleep(300); }
+      if (!await waitForModeControl(page)) { emit({ ok: false, error: 'gemini_task_mode_unavailable' }); } else {
+        let mode = await readMode(page);
+        if (mode !== 'Task') {
+          if (await selectTaskMode(page)) {
+            const end = Date.now() + 10000;
+            while (Date.now() < end && (mode = await readMode(page)) !== 'Task') await sleep(500);
+          }
+        }
         mode = await readMode(page);
+        state = await detect(page);
         if (!/^task$/i.test(mode || '')) emit({ ok: false, error: 'gemini_task_mode_unavailable' }); else {
           const composer = page.locator('div[contenteditable="true"],rich-textarea [contenteditable="true"]').first(); try { await composer.fill(prompt); } catch (_) { await composer.click(); await page.keyboard.insertText(prompt); } const started = Date.now(); await composer.press('Enter'); let previous = '', stable = 0, answer = '', done = false;
           for (let i=0; i<90; i++) { await sleep(2000); answer = await page.locator('model-response').last().innerText().catch(() => ''); const stopping = await page.getByRole('button', { name: /stop/i }).count().catch(() => 0); if (answer && !stopping && answer === previous) stable++; else stable=0; if (stable >= 2) { done=true; break; } previous=answer; }
