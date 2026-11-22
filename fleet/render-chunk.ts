@@ -32,6 +32,8 @@ const FPS = 30;
 const BATCH = 10;
 const TRACK_CHUNK = 20; // frames per page.evaluate call in track mode
 const DEADLINE_MS = 165 * 60 * 1000; // job cap is 180 min incl. setup (owner raised the limit 2026-11-19: fleet renders ~31-57s/frame, a 120-frame chunk needs ~2h)
+const BOOT_STEP_MS = 180000; // per-step boot allowance: any observed boot progress restarts this clock (Creatorize 0.28.3 rxhost pattern, adopted 2026-11-22)
+const BOOT_CEILING_MS = 15 * 60 * 1000; // overall boot ceiling, however much progress is seen (0.28.3: ~3 min per load step, at most ~15 min in all)
 
 type Mode = "render" | "track";
 interface ModeSpec {
@@ -200,16 +202,69 @@ async function main(): Promise<void> {
     page.on("console", (m) => consoleLog.push(`[${m.type()}] ${m.text()}`));
     page.on("pageerror", (e) => consoleLog.push(`[pageerror] ${e.message}`));
 
-    await page.goto(url, { waitUntil: "load", timeout: 60000 });
+    await page.goto(url, { waitUntil: "load", timeout: BOOT_STEP_MS });
     // Poll from Node: waitForFunction trips the host page CSP (Run 1 finding).
+    // Progress-aware boot wait (Creatorize 0.28.3 rxhost pattern, adopted
+    // 2026-11-22): the old flat 180 s deadline killed slow-but-alive boots —
+    // in the app, a heavy first shot on a slower card took longer than the
+    // flat limit and the render page was killed as stuck. Our cartoon host
+    // (chost.js) exposes no window.loadProgress — its only sign of life is a
+    // parent-posted heartbeat, invisible from Node — so progress here is any
+    // change in the page's boot signature (loadProgress if a host ever
+    // exposes it, window.E / window.F appearing, the suite error count
+    // growing) or new console output captured on the Node side. Each progress
+    // change restarts the per-step clock (BOOT_STEP_MS); BOOT_CEILING_MS caps
+    // the whole boot however alive it looks.
     {
-      const deadline = Date.now() + 180000;
+      const bootStartedAt = Date.now();
+      let lastProgressAt = bootStartedAt;
+      let lastSignature = "";
+      let lastConsoleLen = consoleLog.length;
+      let bootProgress: unknown = null;
       for (;;) {
         const st = await page
-          .evaluate(() => ({ ready: (window as any).ready === true, bootError: (window as any).bootError || null }))
-          .catch(() => ({ ready: false, bootError: null as string | null }));
-        if (st.ready) break;
-        if (Date.now() > deadline) throw new Error("boot timeout (window.ready never set)");
+          .evaluate(() => {
+            const w = window as unknown as Record<string, unknown>;
+            let suiteErrors = -1;
+            try {
+              const suite = w.suite as { errors?: () => unknown[] } | undefined;
+              if (suite && typeof suite.errors === "function") suiteErrors = suite.errors().length;
+            } catch { /* suite not up yet */ }
+            return {
+              ready: w.ready === true,
+              bootError: (w.bootError as string | null) || null,
+              loadProgress: (w.loadProgress as unknown) ?? null,
+              hasEngine: !!w.E,
+              hasFilm: !!w.F,
+              suiteErrors,
+            };
+          })
+          .catch(() => null);
+        if (st && st.ready) {
+          runInfo.bootWaitMs = Date.now() - bootStartedAt;
+          runInfo.bootProgress = bootProgress;
+          break;
+        }
+        const now = Date.now();
+        const signature = st
+          ? JSON.stringify({ lp: st.loadProgress, e: st.hasEngine, f: st.hasFilm, errs: st.suiteErrors })
+          : "";
+        if ((signature && signature !== lastSignature) || consoleLog.length !== lastConsoleLen) {
+          lastProgressAt = now;
+          lastSignature = signature;
+          lastConsoleLen = consoleLog.length;
+          if (st) bootProgress = st.loadProgress ?? { engine: st.hasEngine, film: st.hasFilm, suiteErrors: st.suiteErrors };
+        }
+        if (now - bootStartedAt > BOOT_CEILING_MS) {
+          throw new Error(
+            `boot ceiling (${BOOT_CEILING_MS}ms) exceeded: window.ready never set; last progress ${JSON.stringify(bootProgress)}`,
+          );
+        }
+        if (now - lastProgressAt > BOOT_STEP_MS) {
+          throw new Error(
+            `boot timeout: no boot progress for ${BOOT_STEP_MS}ms (window.ready never set); last progress ${JSON.stringify(bootProgress)}`,
+          );
+        }
         await new Promise((r) => setTimeout(r, 1000));
       }
     }

@@ -136,13 +136,22 @@ async function cmdStill(arg, tArg, out) {
       return m.result && m.result.result ? m.result.result.value : undefined;
     };
     await cdp('Runtime.enable');
-    // wait for the engine boot (harness pattern)
-    const deadline = Date.now() + 240000;
+    // wait for the engine boot (harness pattern) — progress-aware (Creatorize
+    // 0.28.3 rxhost pattern, adopted 2026-11-22, same fix as
+    // fleet/render-chunk.ts): the old flat 240 s deadline killed slow-but-
+    // alive boots. Any change in the boot signature (loadProgress if a host
+    // exposes it, window.E/F appearing, suite error count) restarts a 180 s
+    // per-step clock; 15 min overall ceiling.
+    const bootStartedAt = Date.now();
+    let lastProgressAt = bootStartedAt, lastSignature = '';
     for (;;) {
-      const st = await evaluate('({ ready: window.ready === true, err: window.bootError || null })').catch(() => ({ ready: false }));
+      const st = await evaluate('({ ready: window.ready === true, err: window.bootError || null, lp: window.loadProgress || null, e: !!window.E, f: !!window.F, errs: (window.suite && window.suite.errors) ? window.suite.errors().length : -1 })').catch(() => ({ ready: false }));
       if (st && st.ready) break;
       if (st && st.err) throw new Error('خطأ إقلاع المحرك: ' + st.err);
-      if (Date.now() > deadline) throw new Error('انتهت مهلة إقلاع المحرك');
+      const signature = st ? JSON.stringify({ lp: st.lp, e: st.e, f: st.f, errs: st.errs }) : '';
+      if (signature && signature !== lastSignature) { lastSignature = signature; lastProgressAt = Date.now(); }
+      if (Date.now() - bootStartedAt > 15 * 60 * 1000) throw new Error('انتهت مهلة إقلاع المحرك (السقف الكلي)');
+      if (Date.now() - lastProgressAt > 180000) throw new Error('انتهت مهلة إقلاع المحرك (لا تقدم)');
       await sleep(1000);
     }
     // warm-up rule: first stills() call is throwaway, then settle
