@@ -16,10 +16,10 @@ function resolveProject(value) {
     throw new Error(`Project directory not found: ${absolute}`);
   }
   const named = path.resolve(projectsDir, input);
-  if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;
+  if (named.startsWith(projectsPrefix) && isDirectory(named)) return named;
   const relative = path.resolve(repo, input);
-  if ((relative === projectsDir || relative.startsWith(projectsPrefix)) && isDirectory(relative)) return relative;
-  throw new Error(`Project directory not found: ${named}`);
+  if (relative.startsWith(projectsPrefix) && isDirectory(relative)) return relative;
+  throw new Error(`Project must be a project name or path under projects/: ${input}`);
 }
 let server;
 async function startServer() {

@@ -1,0 +1,31 @@
+F8 — server/server.js (CLI-invocation sites)
+Severity: Medium defect. The added `nodeSpawnEnv` and `runNode` unconditionally set `ELECTRON_RUN_AS_NODE: '1'`. But `runCommand` is used to spawn `[process.execPath, bin/heart, ...]` with env spread `{...env}`, while `runNode` is used for probe paths (`heart models`, POST `/api/projects/new`, `/api/slice`, builder checks). There is no centralized guarantee that *only* CLI-under-Electron spawns get the flag. Worse, if any caller passes `env` containing other keys, those are merged alongside `ELECTRON_RUN_AS_NODE` into `runNode`, which is fine, but `runCommand`-spawned CLI invocations (preview/timing/sound/mix/models) receive `ELECTRON_RUN_AS_NODE: '1'` directly in `env` — correct for them — while `safeRun`-based `heart models` inside `probeConnections` uses `runNode`, also correct. The real problem: the Electron-main spawner (not shown) and `runCommand` consumers outside this diff may still spawn the Electron binary without the flag. Within this diff, the F8 intent is satisfied for the touched sites.
+
+F9 — server/server.js: probeConnections and project create/slice/still/dispatch sites
+Severity: Low, but incomplete regression surface. The intent (replace `heart-cjs-runner.cjs` CJS eval with direct ESM `bin/heart` via `process.execPath`) is applied consistently across all `server.js` sites in this diff. `process.execPath` under Electron will point to the Electron binary; every site now passes `ELECTRON_RUN_AS_NODE: '1'` either via `runNode` or via `runCommand`'s env, so the ESM shim should load. Finding: correct for the shown call sites; any remaining `heart-cjs-runner.cjs` references elsewhere in the codebase would now be dead code but are not part of this diff.
+
+F10 — bin/heart (skip logic) + server/server.js (POST /api/projects/new)
+Severity: High defect in `bin/heart`. The skip predicate returns `true` for *any file* whose `rel` starts with `audio/` and whose basename is in `templateAudioState` — but it never skips directories under `audio/`. If the template contains subdirectories (e.g. `audio/ambience/`, `audio/fx/`), those directories and all their contents are copied verbatim, violating the intent to exclude template production-state audio artifacts. Also, `clean.json` etc. at the `audio/` root are skipped, which matches intent.
+Severity: Medium defect in `server/server.js`. The timings parser regex `^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$` requires a space before and after `-`. A canonical line like `[00:10.50 - 00:12.30] word` (single spaces around the dash) matches, but any deviation (tabs, no spaces, bracketed `who`) is silently skipped. When nothing parses, `entries` is empty and `clean.json` is removed only if it already exists — correct per intent. However, `who` is hardcoded to `null`, discarding speaker info if the format ever includes it; not a regression for the stated intent but a data loss edge case.
+Failure scenario: user uploads `words_owner.txt` with lines `[00:10.50-00:12.30]word` (no spaces); `clean.json` is deleted/absent, downstream stages expecting `{start,end,line,who,word}` fail or produce silent empty audio alignment.
+
+F11 — server/dispatch.js
+Severity: Low defect (mostly correct). Timeout raised to 30 minutes, and the error message prefers `dl.stderr`, then `dl.error?.message`, then exit/signal. One gap: if the spawn itself fails (e.g. `gh` not found), `dl.status` is `null`, `!== 0` is true, `dl.stderr` is `''`, `dl.error?.message` is used — good. If `gh` returns non-zero with empty stderr, falls to `exit ${dl.status} signal ${dl.signal}` — good. The 30-minute timeout is not enforced by `spawnSync` itself (Node's `spawnSync` `timeout` kills the process but `status` may be `null` and `signal` set); the error text captures signal. Acceptable.
+
+F2b — app/main.js `resolveProject`
+Severity: Medium path-resolution defect. The function first checks `path.isAbsolute(input)` and returns/throws immediately. For non-absolute input, it computes `named = path.resolve(projectsDir, input)`. If `input` contains `..` escapes (e.g. `../../etc`), `named` can fall outside `projectsDir`; the prefix check rejects it. Then it computes `relative = path.resolve(repo, input)` and applies the same prefix check. The vulnerability: `path.resolve(repo, input)` for input like `projects/../secret` yields `repo/secret`, which fails the `projectsPrefix` check and is rejected. However, an input like `projects/name/../../../etc` resolves under `repo` but outside `projectsDir` — rejected. So traversal is blocked.
+Real defect: the second branch `relative = path.resolve(repo, input)` is redundant and can mask the intended behavior. If `input` is `foo` and `projects/foo` doesn't exist but `repo/foo` is a directory *under projects/*? Impossible — `repo/foo` under `projectsPrefix` only if `foo` starts with `projects/`. The branch can never succeed where `named` failed, because `path.resolve(projectsDir, input)` and `path.resolve(repo, input)` differ only if `input` is absolute (handled earlier) or if `projectsDir` isn't under `repo` (it is). So `relative` is dead code. Not a security bug, but dead logic.
+Failure scenario: none for traversal; the dead `relative` branch adds confusion but no functional defect.
+
+Other observations:
+- `bin/heart` error message contains Arabic text ('المشروع موجود بالفعل...') — encoding consistency issue, not a defect per se.
+- `server/server.js` `runCommand` env spread allows callers to override `HEART_HOME`/`HEART_PROJECT`, but `ELECTRON_RUN_AS_NODE` is passed explicitly in call sites.
+
+VERDICT: FINDINGS
+
+Primary defects:
+1. `bin/heart` copyDir skip predicate does not skip directories under `audio/`, so nested template audio content is copied (contradicts F10 intent).
+2. `server/server.js` POST `/api/projects/new` timings parser is strict about spaces around `-`; malformed canonical lines silently produce no entries and `clean.json` is removed/absent.
+3. `app/main.js` `resolveProject` retains a dead second `relative` resolution branch that can never succeed where the `named` branch failed.
+
+This is GLM, a model from Zhipu AI.

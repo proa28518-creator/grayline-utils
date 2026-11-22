@@ -1,0 +1,240 @@
+I'll analyze each fix systematically for defects.
+
+## F8 Analysis (ELECTRON_RUN_AS_NODE isolation)
+
+**server/server.js changes:**
+- Added `nodeSpawnEnv(extra)` helper that spreads `process.env`, merges extra, then sets `ELECTRON_RUN_AS_NODE: '1'`
+- Added `runNode(args, opts={})` wrapper that calls `safeRun` with `nodeSpawnEnv(opts.env)`
+- Applied to GLM probe, all `/api/projects/slice` calls, builder checks, preview/timing/sound/mix/models commands
+
+**DEFECT 1: HIGH severity, server.js:75 nodeSpawnEnv**
+The function unconditionally sets `ELECTRON_RUN_AS_NODE: '1'` in the returned environment object. Per F8's stated intent: "other child processes must NOT get that env." But `safeRun` and `runCaptured` spawn many non-CLI processes (ffprobe, python3, tar, git, codex) that now inherit this environment variable because they use the same `process.env` base.
+
+**Concrete failure:** Line 103-105 (Opus probe) spawns `python3 [...]/opus_call.py`. If the parent is Electron, Python now runs with `ELECTRON_RUN_AS_NODE=1` in its environment. While Python ignores this, any Node.js child spawned by that Python script (or by ffprobe wrappers, etc.) will inherit it, potentially breaking tools that detect Electron.
+
+**DEFECT 2: MEDIUM severity, server.js:396 runCommand call**
+```javascript
+const j = runCommand(id, activeDir, [process.execPath, path.join(repoDir, 'bin', 'heart'), 'still', ...], repoDir, { ELECTRON_RUN_AS_NODE: '1' });
+```
+`runCommand` now accepts an `env` parameter (line 197) that merges with `{ ...process.env, HEART_HOME, HEART_PROJECT, ...env }`. The explicit `ELECTRON_RUN_AS_NODE: '1'` here is correct for the CLI spawn. However, line 290-291 (projects/new) and 314 (projects/slice) call `runNode` which **already sets** `ELECTRON_RUN_AS_NODE`, so those are safe. But lines 399, 401, 439, 448 directly call `runCommand` with the explicit env flag—**inconsistent pattern** but not a bug since all these spawn the CLI.
+
+Actually, reviewing lines 399/401/439/448: all spawn `bin/heart` (the CLI), so explicit `ELECTRON_RUN_AS_NODE: '1'` is correct.
+
+**Wait—checking line 107 (GLM probe):**
+```javascript
+const r=await runNode([path.join(repoDir,'bin','heart'),'models']);
+```
+This uses `runNode`, which calls `safeRun` with `nodeSpawnEnv`. `safeRun` spawns with `...options` merged in, and `nodeSpawnEnv` returns `{ ...process.env, ...extra, ELECTRON_RUN_AS_NODE: '1' }`. So the spawn gets the modified env. ✓ Correct.
+
+**Re-examining DEFECT 1:** The `runNode` wrapper is only called for `bin/heart` invocations (lines 107, 290, 314, 335). Other spawns (python3, ffprobe, tar, git, codex) use `safeRun` or `runCaptured` directly with `process.env` or `{...process.env, ...}`, **not** through `nodeSpawnEnv`. So they don't get `ELECTRON_RUN_AS_NODE`. **DEFECT 1 is invalid—no leak occurs.**
+
+**Verifying runCommand calls:**
+- Line 396: spawns `bin/heart still` with explicit `ELECTRON_RUN_AS_NODE: '1'` ✓
+- Line 399: spawns `bin/heart timing/sound/mix` with explicit flag ✓
+- Line 401: spawns `bin/heart models` with explicit flag ✓
+- Line 439: spawns `bin/heart timing` with explicit flag ✓
+- Line 448: spawns `bin/heart sound/mix` with explicit flag ✓
+
+All correct. **F8 is CLEAN.**
+
+---
+
+## F9 Analysis (direct ESM CLI spawn)
+
+**Changes:**
+- Line 107: `runNode([.../bin/heart, 'models'])` instead of `heart-cjs-runner.cjs`
+- Lines 290, 314, 335, 396, 399, 401, 439, 448: same pattern
+
+**DEFECT 3: MEDIUM severity, server.js:107,290,314,335,396,399,401,439,448**
+The fix assumes `bin/heart` is executable and has a valid shebang. The diff shows `bin/heart` (no extension), implying a Unix executable. On Windows, `spawn(process.execPath, ['bin/heart', ...])` will fail unless `bin/heart` is a .js file or Node can resolve it. The old `heart-cjs-runner.cjs` was explicitly a `.cjs` file, guaranteed parseable.
+
+**Concrete failure:** On Windows under Electron, `spawn(process.execPath, ['C:\\repo\\bin\\heart', 'models'], {env: {ELECTRON_RUN_AS_NODE: '1'}})` fails with ENOENT or "cannot find module" because Windows doesn't honor the `#!/usr/bin/env node` shebang. Node's module resolution treats `bin/heart` (no extension) as a directory lookup or fails.
+
+**Counter-argument:** If `bin/heart` is in PATH or the spawn uses shell: true, it works. But `safeRun` and `runCommand` use `spawn(..., {stdio: [...]})` without `shell: true`, so the shebang is ignored on Windows.
+
+**Mitigation check:** The original code used `process.execPath` with a `.cjs` file, suggesting the environment is Node-aware. If the repo runs on Windows, `bin/heart` must be `bin/heart.js` or the spawns will fail. The diff shows `path.join(repoDir,'bin','heart')` without extension, which is Unix-style.
+
+**Verdict:** This is a **Windows portability regression**. On Unix (where shebangs work when the file is executable), this works. On Windows, this breaks unless `bin/heart` is `bin/heart.js` or `bin/heart.cmd` wrapper exists.
+
+---
+
+## F10 Analysis (template filtering + clean.json seeding)
+
+**bin/heart changes:**
+- Line 50-62: `copyDir` now passes `relative` path and `skip` function receives `(name, rel, isDirectory)`
+- Line 69-77: skip `out` dirs, `panel_state.json`, `critic_verdict*.md`, and audio state files listed in `templateAudioState`
+
+**DEFECT 4: LOW severity, bin/heart:75-76**
+The skip logic:
+```javascript
+if (!isDirectory && (name === 'panel_state.json' || /^critic_verdict.*\.md$/.test(name))) return true;
+return !isDirectory && rel.startsWith('audio/') && templateAudioState.has(name);
+```
+Line 76 checks `rel.startsWith('audio/')` but `rel` is built with `path.join(relative, item.name)` (line 56) and then split by `path.sep` and rejoined with `/` (line 75). On Windows, `path.join('', 'audio')` returns `'audio'` (no leading separator), and `'audio'.split('\\').join('/')` is `'audio'`, so `'audio/clean.json'.startsWith('audio/')` works. But the initial `relative = ''` (line 50) means first-level items have `rel = item.name`. For `audio/clean.json`, the recursion has `relative='audio'`, then `rel='audio/clean.json'`, split to `['audio','clean.json']`, joined to `'audio/clean.json'`. ✓ Logic is correct.
+
+**However:** Line 75 does `relative.split(path.sep).join('/')`. On first call, `relative=''`, so `rel = path.join('', 'audio') = 'audio'`. Then `'audio'.split(path.sep).join('/') = 'audio'` (no slash). Then for a file inside, `relative='audio'`, `rel=path.join('audio','clean.json')`. On Unix, that's `'audio/clean.json'`. On Windows, it's `'audio\\clean.json'`, split by `\\`, joined to `'audio/clean.json'`. ✓ Works.
+
+But wait—line 75 does:
+```javascript
+const rel = relative.split(path.sep).join('/');
+```
+This normalizes `relative` (the accumulated path), not the full `path.join(relative, item.name)`. Then line 76 checks `rel.startsWith('audio/')`. But `rel` here is the **normalized parent path**, not the file's full path. The file `item.name` is checked separately. So for a file `audio/clean.json`:
+- First iteration: `relative=''`, `item.name='audio'`, `isDirectory=true`, `rel=''`, skip checks `name==='out'` → false (wrong! 'audio'≠'out'), so we recurse.
+- Second iteration: `relative='audio'`, `item.name='clean.json'`, `isDirectory=false`, `rel='audio'` (normalized), line 76 checks `'audio'.startsWith('audio/')` → **FALSE**. Then checks `templateAudioState.has('clean.json')` → true. So line 76 returns `false && true = false`. **File is NOT skipped!**
+
+**DEFECT CONFIRMED: HIGH severity, bin/heart:76**
+The condition is:
+```javascript
+return !isDirectory && rel.startsWith('audio/') && templateAudioState.has(name);
+```
+For `audio/clean.json`, `rel='audio'` (the parent directory after normalization), which does NOT start with `'audio/'`. The intent was to skip files **inside** `audio/`, but the code checks if the **parent path** starts with `'audio/'`. This only works for files in subdirectories like `audio/subfolder/file.wav`, where `rel='audio/subfolder'` starts with `'audio/'`.
+
+**Concrete failure:** When running `heart new myproject demo-ring`, the template's `audio/clean.json` (and all other `templateAudioState` files) are copied, despite the intent to skip them. This contradicts F10's stated goal: "must not copy template production-state files (listed audio artifacts...)".
+
+**server/server.js changes (clean.json seeding):**
+- Lines 292-302: after `heart new`, if `timingsPath` is provided, parse it, extract entries, write to `audio/clean.json` if entries exist, else delete the file.
+
+**DEFECT 5: MEDIUM severity, server.js:299-300**
+```javascript
+entries.push({start:Number(match[1])*60+Number(match[2]),end:Number(match[3])*60+Number(match[4]),line:entries.length+1,who:null,word:match[5]});
+```
+The `line` field is set to `entries.length+1`, which is 1-indexed and increments with each entry. However, if the input has non-matching lines (blank lines, comments), those are skipped (line 300: `if(!match)continue`), but the line number still increments because it's based on `entries.length`, not the source line number. This is likely intended (sequential numbering of valid entries), but the field name `line` is misleading—it's really `entryIndex`.
+
+Not a correctness bug, but a **potential semantic mismatch** if consumers expect `line` to map to the source file's line number. Since the format is internal and the intent is to create a clean timeline, this is acceptable.
+
+**DEFECT 6: LOW severity, server.js:296-297**
+```javascript
+const cleanFile=path.join(dest,'audio','clean.json');
+if(b.timingsPath){
+```
+If `b.timingsPath` is not provided, `cleanFile` is defined but never used. If the template had `audio/clean.json` (due to DEFECT 4), it remains in the new project. The intent (line 10 of F10 description) is "removes it when nothing parses." But if `timingsPath` is absent, the code doesn't touch `cleanFile` at all.
+
+**However:** F10 states "seeds audio/clean.json from the owner's timings file [...] or removes it when nothing parses." The "removes it when nothing parses" clause applies when `timingsPath` **is** provided but parsing yields zero entries (line 301: `else if(fs.existsSync(cleanFile))fs.unlinkSync(cleanFile)`). If `timingsPath` is not provided, the logic doesn't specify removal, and the template's `audio/clean.json` (if copied due to DEFECT 4) remains. This might be intentional (user wants the template's timing), but F10's wording "must not copy template production-state files" suggests it should never be there.
+
+**Conclusion:** DEFECT 4 (skip logic broken) makes the seeding logic irrelevant because the template's files are copied anyway. If DEFECT 4 is fixed, then the seeding logic is correct: if `timingsPath` provided, parse and seed or remove; if not provided, `clean.json` won't exist (because the template's copy was skipped).
+
+---
+
+## F11 Analysis (artifact download timeout + error logging)
+
+**server/dispatch.js line 37:**
+```javascript
+const dl=gh(['run','download',runId,'-D',dest],{timeout:30*60*1000});if(dl.status!==0){const error=(dl.stderr||'').trim()||dl.error?.message||`exit ${dl.status} signal ${dl.signal}`;job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub(error)});break;}
+```
+
+**DEFECT 7: MEDIUM severity, dispatch.js:37**
+The `gh` function is presumably a wrapper around `spawnSync` (common pattern). `spawnSync` returns `{status, signal, stdout, stderr, error}`. The code constructs:
+```javascript
+const error=(dl.stderr||'').trim()||dl.error?.message||`exit ${dl.status} signal ${dl.signal}`;
+```
+If `dl.stderr` is an empty string after trim, it's falsy, so fallback to `dl.error?.message`. But if `dl.stderr` is non-empty whitespace that trims to `''`, the `||` chain proceeds to `dl.error?.message`. This is correct.
+
+However, the template string at the end: `` `exit ${dl.status} signal ${dl.signal}` ``. If the process exits with code 1 and no signal, `dl.signal` is `null`, and the message becomes `"exit 1 signal null"`, which is clunky. Better would be:
+```javascript
+`exit ${dl.status}${dl.signal ? ' signal '+dl.signal : ''}`
+```
+But this is a **cosmetic issue**, not a defect—the error is logged.
+
+**DEFECT 8: LOW severity, dispatch.js:37 timeout handling**
+`spawnSync` with `{timeout: 1800000}` (30 minutes) will send SIGTERM after the timeout, then wait for the process to exit. If it doesn't exit within `killSignal` delay (default behavior), Node kills it with SIGKILL. The `spawnSync` result will have `status=null` and `signal='SIGTERM'` (or 'SIGKILL'). The error message becomes `"exit null signal SIGTERM"`, which is correct but could be clearer (e.g., "download timed out after 30 minutes"). However, the user can infer from the 30-minute job duration and the signal that it timed out. **Not a bug, just suboptimal messaging.**
+
+**Checking the `gh` helper definition:** Not visible in the diff. Assuming it's a wrapper like:
+```javascript
+function gh(args, opts={}) { return spawnSync('gh', args, {encoding:'utf8', ...opts}); }
+```
+The `timeout` option is passed through. ✓ Correct.
+
+**Edge case:** If `gh` is not in PATH or the spawn fails immediately (ENOENT), `dl.error` is set, `dl.status` is typically `null` or `undefined`, and `dl.stderr` is empty. The error message becomes `dl.error.message` (e.g., "spawn gh ENOENT"). ✓ Handled.
+
+**F11 is CLEAN** (minor cosmetic issues, no correctness bugs).
+
+---
+
+## F2b Analysis (resolveProject logic)
+
+**app/main.js lines 8-22:**
+```javascript
+function resolveProject(value) {
+  const input = value || 'projects/story6-microwave';
+  const projectsDir = path.join(repo, 'projects');
+  const projectsPrefix = projectsDir + path.sep;
+  const isDirectory = p => { try { return fs.statSync(p).isDirectory(); } catch (_) { return false; } };
+  if (path.isAbsolute(input)) {
+    const absolute = path.resolve(input);
+    if (isDirectory(absolute)) return absolute;
+    throw new Error(`Project directory not found: ${absolute}`);
+  }
+  const named = path.resolve(projectsDir, input);
+  if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;
+  const relative = path.resolve(repo, input);
+  if ((relative === projectsDir || relative.startsWith(projectsPrefix)) && isDirectory(relative)) return relative;
+  throw new Error(`Project directory not found: ${named}`);
+}
+```
+
+**DEFECT 9: MEDIUM severity, main.js:18**
+Line 18: `if ((named === projectsDir || named.startsWith(projectsPrefix)) && isDirectory(named)) return named;`
+
+The condition `named === projectsDir` allows the **projects directory itself** to be returned as a valid project. If `input='.'` (relative to `projectsDir`), then `named = path.resolve(projectsDir, '.') = projectsDir`. The old code (line 11 in the old diff context) checked `!p.startsWith(projects)`, which would reject the projects directory itself (since `projects/` would require a trailing separator, and `projects` doesn't end with one). But the new code explicitly allows `named === projectsDir`.
+
+**Concrete failure:** If the user passes `--project projects`, the function resolves to the `projects/` directory itself, not a project inside it. The server then tries to read `projects/project.json`, which doesn't exist (projects are subdirectories like `projects/story6-microwave/`). This causes a crash or invalid state.
+
+**Checking the stated intent:** "resolveProject accepts bare project names under projects/ and existing absolute directories." Accepting `projects/` itself is not a "bare project name"—it's the parent directory. This is likely a bug.
+
+**Checking line 20:** Same issue with `relative === projectsDir`.
+
+**DEFECT 10: LOW severity, main.js:21**
+The final `throw new Error(\`Project directory not found: ${named}\`)` uses `named`, not `relative` or `input`. If the function reaches line 20 and `relative` exists but is outside `projects/`, it still throws with `named` in the error message, which is misleading (the user provided `input`, which was tried as `relative`, but the error shows `named`). Should be:
+```javascript
+throw new Error(`Project directory not found: ${input}`);
+```
+
+**DEFECT 11: MEDIUM severity, main.js:18,20 path traversal**
+Lines 18 and 20 check `startsWith(projectsPrefix)`, where `projectsPrefix = projectsDir + path.sep`. On Unix, this is `/repo/projects/`. If `input='../../../etc'`, then:
+- Line 17: `named = path.resolve(projectsDir, '../../../etc') = '/etc'` (assuming `/repo/projects`).
+- Line 18: `'/etc'.startsWith('/repo/projects/')` → false.
+- Line 19: `relative = path.resolve(repo, '../../../etc') = '/etc'`.
+- Line 20: `'/etc'.startsWith('/repo/projects/')` → false.
+- Line 21: Throws error. ✓ Safe.
+
+However, if `input='projects'` (bare name):
+- Line 17: `named = path.resolve(projectsDir, 'projects') = /repo/projects/projects`.
+- Line 18: `'/repo/projects/projects'.startsWith('/repo/projects/')` → true. If that directory exists, it's returned. ✓ Correct (it's a valid project folder named `projects` inside `projects/`).
+
+**Edge case:** If `input='.'`:
+- Line 17: `named = path.resolve(projectsDir, '.') = /repo/projects`.
+- Line 18: `/repo/projects === /repo/projects` → true. Returns `/repo/projects` itself. **BUG** (DEFECT 9).
+
+**Edge case:** If `input='..'`:
+- Line 17: `named = path.resolve(projectsDir, '..') = /repo`.
+- Line 18: `/repo === /repo/projects` → false, `/repo.startsWith('/repo/projects/')` → false.
+- Line 19: `relative = path.resolve(repo, '..') = /`.
+- Line 20: `/ === /repo/projects` → false, `/.startsWith('/repo/projects/')` → false.
+- Line 21: Throws. ✓ Safe.
+
+**Conclusion:** DEFECT 9 (allowing `projectsDir` itself) is the main issue. The equality checks should be removed:
+```javascript
+if (named.startsWith(projectsPrefix) && isDirectory(named)) return named;
+```
+
+---
+
+## SUMMARY OF FINDINGS
+
+### HIGH Severity
+- **DEFECT 4** (bin/heart:76): The skip logic for `templateAudioState` files is broken. It checks `rel.startsWith('audio/')`, but `rel` is the parent directory path, which is `'audio'` for direct children of `audio/`, not `'audio/'`. This causes template production files (`audio/clean.json`, `audio/clean.wav`, etc.) to be copied despite F10's intent to skip them.
+  - **Failure scenario:** `heart new myproject demo-ring` copies the template's `audio/clean.json` into the new project, contradicting the stated intent.
+
+### MEDIUM Severity
+- **DEFECT 3** (server.js multiple lines): Spawning `bin/heart` (no extension) via `process.execPath` fails on Windows because the shebang is not honored by `spawn` without `shell: true`. The old `heart-cjs-runner.cjs` was a `.cjs` file, directly parseable by Node.
+  - **Failure scenario:** On Windows under Electron, all CLI commands (models, timing, sound, mix, still, slice, new) fail with ENOENT or "cannot find module".
+
+- **DEFECT 9** (main.js:18,20): The condition `named === projectsDir || named.startsWith(projectsPrefix)` allows the `projects/` directory itself to be accepted as a valid project when input is `'.'` or `'projects'`.
+  - **Failure scenario:** User runs Electron with `--project .` (intending the default), but the function returns `/repo/projects`, causing the server to look for `/repo/projects/project.json`, which doesn't exist, crashing the app.
+
+### LOW Severity
+- **DEFECT 10** (main.js:21): The final error message uses `${named}` instead of `${input}`, potentially confusing users when the relative path was tried but failed.
+
+---
+
+**VERDICT: FINDINGS**
