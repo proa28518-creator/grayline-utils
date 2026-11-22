@@ -127,7 +127,42 @@ GitHub fleet per the owner's route (Seat 7 watches for the dispatch).
 - Build pass: IN PROGRESS — `scenes/BIBLE.md` DONE (Seat 1, 22:16 EET; 24 lines, PLACES,
   cast, colour script, staging rulings). `BUILD_CALL.md` issued to Seat 2 (22:17 EET) with the
   format contract, 26-shot plan, D1/D2 gates sequenced, opening-first order. Seat 2 executes.
+  **State verified from disk 22:45 EET: NO scene code exists yet** — `scenes/` holds only
+  `BIBLE.md`; `scenes/cast/` and `scenes/props/` are empty; no `film.js`/`set.js`. Seat 2's
+  filings are prep-only (checklists + verification sheet). Authoring has not started.
 - Board: not yet. Render: FORBIDDEN before owner approval.
+
+## Fleet move — execution OFF the desk VM (owner's live direction, 22:43 EET)
+Owner, in the live call: local execution "takes time on your machine"; standing doctrine
+2026-11-19 (all production on the fleet) + tonight's route order (stills → GitHub fleet,
+render → Colab after board approval) applied to this run, correcting the local drift.
+- **Pushed:** the full current project state committed and pushed to
+  `proa28518-creator/grayline-utils`, branch `ui/unified-interface`, commit
+  **`f971ce5c229ad6b5d26557e4ee94e6bdd77fad9d`** (1,119 files; `out/` gitignored per repo
+  convention; demo-ring/story6 carry their chassis the same way). Remote verified ==
+  local HEAD (`git ls-remote`). Note: the push reported a ref race — a parallel desk push
+  landed the same commit first; end state verified identical, nothing forced.
+- **Fleet route PROVEN for this project:** `fleet-render.yml` run **45068369238**
+  (https://github.com/proa28518-creator/grayline-utils/actions/runs/45068369238),
+  spec `render:0:1` — checkout of f971ce5 ✓, `npm ci` ✓, Playwright Chromium ✓, project
+  booted on the runner, `suite.info()` answered with THIS project (title «السور اللي وقف
+  الموجة — Fudai (owner voice)», end 68.08, size [1080, 1920], kind cartoon, errors []).
+- **Smoke frame result — the named blocker:** frame 0 returned null; run exit 1 by design
+  (any null frame exits 1 after packaging). `run-info.json` verbatim: `"placeholder": true`,
+  `"film": null`, layout issue `{ "t": 0, "type": "no film", "what": "the film", "detail":
+  "There is no film yet (scenes/film.js): press Build first." }`, framesCaptured 0 /
+  framesNull 1. This is a route smoke, NOT a board probe — no probe batch can exist before
+  Seat 2 authors the film and the D1/D2 gates pass (BUILD_CALL sequence).
+- **New execution split (standing from 22:43 EET):** EXECUTION on the GitHub fleet —
+  stills/probes via `fleet-render.yml` (`render:START:END` renders frames via
+  `suite.stills`; `track:` for prop-guard data), frames landing in `out/board/` via the
+  server dispatch stills layout. Desk VM = controller + QC eyes only; the local
+  ≈5 min/still route is retired for production probes. Office judgment stays with the
+  seats: D1/D2 audits, Seat 4 zoom verification, Seat 3 critic rounds. **Colab final
+  render: still LOCKED until the owner's board approval.**
+- **Next dispatch (armed):** the moment Seat 2's opening `film.js` (SH01–SH03) lands with
+  D1+D2 gate outputs filed → push → dispatch the opening probe frames on the fleet →
+  download to `out/board/` → Seat 4 zooms → Seat 3 opening critic round.
 - Compute home: THE FLEET (owner's correction 22:43 EET — see Fleet move below).
 
 ## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
