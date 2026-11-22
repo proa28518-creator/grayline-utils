@@ -34,7 +34,8 @@ async function monitor(job, {runId,projectDir,kind,settingsSent,repoDir}) {
       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
       if(data.conclusion!=='success'){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:'Workflow concluded: '+data.conclusion});break;}
       const dest=kind==='stills'?path.join(projectDir,'out','fleet',runId):path.join(projectDir,'out','github-master',runId);fs.mkdirSync(dest,{recursive:true});
-      const dl=gh(['run','download',runId,'-D',dest],{timeout:30*60*1000});if(dl.status!==0){const error=(dl.stderr||'').trim()||dl.error?.message||`exit ${dl.status} signal ${dl.signal}`;job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub(error)});break;}
+      const stagingDir=path.join(repoDir,'.heart-tmp');fs.mkdirSync(stagingDir,{recursive:true});
+      const dl=gh(['run','download',runId,'-D',dest],{timeout:30*60*1000,env:{...process.env,TMPDIR:stagingDir}});if(dl.status!==0){const error=(dl.stderr||'').trim()||dl.error?.message||`exit ${dl.status} signal ${dl.signal}`;job.status='failed';job.log.push({t:Date.now(),stream:'err',text:scrub(error)});break;}
       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
       for(const f of fs.readdirSync(dest,{recursive:true})){if(String(f).endsWith('.tar.gz')){const ar=path.join(dest,String(f));const u=spawnSync('tar',['--no-same-owner','-xzf',ar,'-C',dest],{encoding:'utf8'});if(u.status!==0)throw new Error('artifact_unpack_failed: '+scrub(u.stderr));}}
       if(kind==='stills'){
