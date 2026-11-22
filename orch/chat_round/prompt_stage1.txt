@@ -1,0 +1,23 @@
+You are the Codex build seat for Heart Studio, working in this repository (branch ui/unified-interface — stay on it). This is ONE continuous conversation: this session will carry the whole round, so keep your state in files as you go.
+
+FIRST, read in full, in this order:
+1. AGENTS.md (repo root) — standing direction, binding. Where it conflicts with anything below, AGENTS.md and orch/UI_BRIEF.md win.
+2. orch/CHAT_ROUND_BRIEF.md — this round's brief: assemble ALL the pieces, in the same conversation. The owner-defined REAL TEST in section D is the round's acceptance.
+3. orch/PARTS_INVENTORY.md — every piece, where it lives, its state, where it fits.
+The attached image is the original Creatorize Berserk NEW-CONVERSATION screen — the shape the director chat must mirror (same capabilities and flow, our own code and skin).
+
+STAGE 1 of this session (do this now, completely):
+
+(1) INVENTORY CHECK. Verify PARTS_INVENTORY.md against the actual repo, the teardown maps (orch/APP_UI_STRUCTURE_FROM_BUNDLE.md, orch/APP_CAPABILITY_MAP_FROM_VIDEO.md) and orch/HEART_GAP_AUDIT.md. Search for pieces that exist but are NOT in the inventory, and pieces listed whose real state differs. Write the result to orch/chat_round/INVENTORY_CHECK.md: discrepancies by name, each with file evidence. Do not silently fix the inventory doc itself; report, then proceed.
+
+(2) BUILD THE DIRECTOR CHAT (inventory A4 — the missing organ).
+- Renderer (app/renderer/): the Berserk screen now OPENS on a new-conversation chat mirroring the original's screen: one message box where the user says what video they want and can attach/paste the narration audio path, the story text, and what matters most; model / effort / shot-plan controls under the box like the original. The existing run-control panel remains reachable on the same screen as the supervision view (tab or section) — do not delete it.
+- Server (server/): a chat API (create/list conversations, post message, poll thread) plus an in-program DIRECTOR. The director is a BOUNDED model seat per the AGENTS.md control law: it calls one of the program's existing connected seat routes (the same server-side model-call path the run/pass machinery already uses — find it and reuse it; no new external session, no free-roaming agent) with a defined tool surface implemented as server functions, at minimum: create_project (from conversation inputs, through the existing project-creation path), write_brief (writes the project brief from the story + priorities), start_pass, start_run, job_status, list_board_frames. The director, inside the SAME conversation thread: sets up the project, writes the brief, starts passes/run on the user's go, posts progress + board frames into the thread as the job feed advances, answers questions about the run from real job state, accepts mid-run steering (route it to the existing steering mechanism), and when the export leg's artifact predicate passes, posts the master (path + link) into the thread.
+- Conversation + director state must persist on disk (survive server restart) and a thread must be resumable from the UI.
+- Honesty rules: fps choices 24/30 only; anything you cannot wire gets the existing "not wired yet" badge treatment in the UI and is named in your summary.
+
+(3) VERIFY LOCALLY. Start the server (node server/server.js with an existing project, e.g. projects/accept-s6slice, on a free port) and prove with curl: conversation create → post a message asking to set up a small test project → director creates it via the tool surface → thread shows the director's working messages. Record commands + outputs in orch/chat_round/STAGE1_VERIFY.md. Stop the test server when done. Do not touch projects/story6-microwave or projects/accept-s6slice content; any test project you create for verification goes under projects/ with a name starting "chat-test-" and is named in your summary.
+
+(4) COMMIT your own new/changed files on ui/unified-interface with clear messages (docs under orch/chat_round/ included). Do NOT stage or touch unrelated working-tree changes (projects/accept-s6slice modifications, other orch/ files). Do not modify vendor/renderer-original/ or anything under ~/workspace/creatorize-teardown. Do not rewrite engine/ or fleet/ render logic.
+
+END your turn with a summary: inventory discrepancies found (by name), what the chat does end-to-end, the exact endpoints added, how the director calls the model (which existing path you reused), what is marked not-wired, the stage-1 verification evidence, and commit hashes. The session continues after this — later stages will wire ASR + the annotation loop + the remaining passes, add the prop-truth gate, and run the REAL TEST through this chat.

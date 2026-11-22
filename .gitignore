@@ -12,3 +12,5 @@ mcp/server.log
 __pycache__/
 projects/*/.heart-git/
 .heart-tmp/
+.heart-conversations.json
+.heart-conversations.json.tmp

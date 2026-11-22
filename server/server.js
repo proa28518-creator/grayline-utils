@@ -137,6 +137,67 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     }
     return { name: path.basename(dir), title: (() => { try { return JSON.parse(fs.readFileSync(path.join(dir, 'project.json'), 'utf8')).title || path.basename(dir); } catch (_) { return path.basename(dir); } })(), script, voice, timing, boardCount: board.length, board: board.slice(0, 24), master, masterMetadata, baseSettings, settings, runInfo };
   }
+  const conversationsDir = repoDir;
+  const conversationFile = path.join(conversationsDir, '.heart-conversations.json');
+  function readConversations() { try { return JSON.parse(fs.readFileSync(conversationFile, 'utf8')); } catch (_) { return {}; } }
+  function saveConversations(rows) { fs.mkdirSync(conversationsDir, { recursive: true }); const tmp = conversationFile + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(rows, null, 2) + '\n'); fs.renameSync(tmp, conversationFile); }
+  function addMessage(thread, role, text, extra = {}) { const m = { id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7), role, text: String(text || ''), at: new Date().toISOString(), ...extra }; thread.messages.push(m); return m; }
+  function boundedCodex(prompt) {
+    return new Promise(resolve => {
+      const home = process.env.HOME || '', codex = process.env.CODEX_BIN && fs.existsSync(process.env.CODEX_BIN) ? process.env.CODEX_BIN : ['/usr/lib/chatgpt/resources/codex', path.join(home, 'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex'), '/opt/hatch-image/bin/codex'].find(fs.existsSync);
+      if (!codex) return resolve({ ok: false, text: 'Codex seat unavailable: binary not found.' });
+      runCaptured(codex, ['exec', '-m', 'gpt-6-luna', '-s', 'read-only', '--ephemeral', '-C', repoDir], { cwd: repoDir }, 120000, () => {}, p => p.stdin.end(prompt)).then(r => resolve({ ok: !r.timedOut && r.code === 0, text: String(r.out + '\n' + r.err).trim().split(/\r?\n/).slice(-30).join('\n') || '(no output)' }));
+    });
+  }
+  async function createProjectTool(input, thread) {
+    const b = { ...thread.inputs, ...input };
+    if (!/^[a-zA-Z0-9_-]+$/.test(String(b.name || ''))) throw new Error('create_project needs a valid project name');
+    if (!b.audioPath || !fs.existsSync(b.audioPath) || !fs.statSync(b.audioPath).isFile()) throw new Error('Attach an existing narration audio file before project setup.');
+    const dest = path.join(projectsDir, b.name); if (fs.existsSync(dest)) throw new Error('Project already exists: ' + b.name);
+    const created = await runNode([path.join(repoDir, 'bin', 'heart'), 'new', b.name, b.template || 'demo-ring'], { cwd: repoDir });
+    if (created.code !== 0) throw new Error((created.err || created.out || 'heart new failed').trim());
+    fs.copyFileSync(b.audioPath, path.join(dest, 'voice_owner.wav'));
+    const brief = String(b.story || b.brief || thread.inputs.story || thread.inputs.brief || '');
+    const priorities = String(b.priorities || thread.inputs.priorities || '');
+    const fullBrief = `Story / request:\n${brief}\n\nWhat matters most:\n${priorities}\n`;
+    fs.writeFileSync(path.join(dest, 'brief.md'), fullBrief); fs.writeFileSync(path.join(dest, 'script.txt'), brief);
+    const pf = path.join(dest, 'project.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')); pj.settings = { fps: [24,30].includes(Number(thread.inputs.fps)) ? Number(thread.inputs.fps) : 30, captions: { on: true }, ...(pj.settings || {}) }; if (![24, 30].includes(Number(pj.settings.fps))) pj.settings.fps = 30; fs.writeFileSync(pf, JSON.stringify(pj, null, 2) + '\n');
+    const git = args => require('child_process').spawnSync('git', ['-C', dest, ...args], { encoding: 'utf8' });
+    git(['add', '-A']); const snap = git(['-c', 'user.name=Heart Studio', '-c', 'user.email=heart@localhost', 'commit', '-m', 'snapshot: brief + voice attached']); if (snap.status !== 0) throw new Error('project snapshot failed: ' + snap.stderr);
+    fs.renameSync(path.join(dest, '.git'), path.join(dest, '.heart-git'));
+    thread.project = b.name; activeDir = dest; stateFile = path.join(activeDir, 'panel_state.json'); try { state = JSON.parse(fs.readFileSync(stateFile, 'utf8')); } catch (_) { state = defaultState(activeDir); }
+    return { project: b.name, path: path.relative(repoDir, dest), brief: 'brief.md', voice: 'voice_owner.wav' };
+  }
+  const directorTools = {
+    create_project: (args, thread) => createProjectTool(args, thread),
+    write_brief: async (args, thread) => { const name = args.project || thread.project; const dir = safeProject(name); if (!dir) throw new Error('No project has been set up in this conversation.'); const brief = `Story / request:\n${args.story || thread.inputs.story || ''}\n\nWhat matters most:\n${args.priorities || thread.inputs.priorities || ''}\n`; fs.writeFileSync(path.join(dir, 'brief.md'), brief); fs.writeFileSync(path.join(dir, 'script.txt'), String(args.story || thread.inputs.story || '')); return { project: name, path: `projects/${name}/brief.md` }; },
+    start_pass: async args => { const p = passModule.passes.find(x => x.id === args.pass); if (!p) throw new Error('Unknown pass'); const idx = passModule.passes.indexOf(p); if (idx && passModule.getState(activeDir, passModule.passes[idx - 1].id).state !== 'checkpointed') throw new Error('Pass order gate: previous pass is not checkpointed'); const r = await fetch(`http://127.0.0.1:${server.address().port}/api/passes/run`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pass: args.pass, mode: args.mode || 'quality' }) }); const d = await r.json(); if (!r.ok) throw new Error(d.error || `pass start failed (${r.status})`); return d; },
+    start_run: async args => { const r = await fetch(`http://127.0.0.1:${server.address().port}/api/run`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mode: args.mode || 'quality', model: args.model || 'free/glm-5.3-flashx', effort: args.effort || 'standard', spec: args.spec || 'render:0:30', dispatchStills: !!args.dispatchStills }) }); const d = await r.json(); if (!r.ok) throw new Error(d.error || `run start failed (${r.status})`); return d; },
+    job_status: async args => { const j = jobs.get(args.id); return j ? { id: j.id, status: j.status, waitingOn: j.waitingOn || 'nothing', verification: j.verification || null } : { status: 'no active job' }; },
+    list_board_frames: async (args, thread) => { const dir = safeProject(args.project || thread.project); return dir ? inventory(dir).board : []; }
+  };
+  async function runDirector(thread, all) {
+    const latest = thread.messages.at(-1)?.text || '';
+    addMessage(thread, 'assistant', 'I’m checking the request and available project state before taking a bounded action.', { kind: 'working' }); saveConversations(all);
+    const statusJob=thread.activeJob&&jobs.get(thread.activeJob);
+    if (statusJob && /\b(status|progress|how is|where are we|what happened)\b/i.test(latest)) { const result=await directorTools.job_status({id:thread.activeJob}); addMessage(thread,'assistant',`Live job status: ${JSON.stringify(result)}`,{kind:'job_status',result}); saveConversations(all); return; }
+    const toolNames = Object.keys(directorTools);
+    const prompt = `You are Heart Studio's bounded director. Do not write files or execute commands. Return ONE JSON object only: {"tool":"<one of ${toolNames.join(', ')}>","arguments":{...},"reply":"..."}. Use only those server tools. For setup/create requests choose create_project; for story/priority edits choose write_brief; never start a run/pass unless the latest user message explicitly says go/start/run. Conversation inputs: ${JSON.stringify(thread.inputs)}. Project: ${thread.project || 'none'}. Latest user message: ${latest}`;
+    const answer = await boundedCodex(prompt); thread.director = { seat: 'Codex via existing bounded codex exec pass-runner path', model: 'gpt-6-luna', lastCallAt: new Date().toISOString(), available: answer.ok };
+    let decision; try { decision = JSON.parse(answer.text.match(/\{[\s\S]*\}/)?.[0] || ''); } catch (_) {}
+    // Keep setup usable even when the seat returns prose: intent is still restricted
+    // to this fixed tool surface and every operation is validated by its function.
+    if (!decision || !directorTools[decision.tool]) {
+      if (/\b(set up|setup|create|start a project|new project)\b/i.test(latest) && thread.inputs.audioPath) decision = { tool: 'create_project', arguments: { name: thread.inputs.name }, reply: 'I will set up the requested project from this conversation.' };
+      else if (/\b(start|run)\b/i.test(latest) && /\b(build|camera|environment|post|shading)\b/i.test(latest)) { const pass=latest.match(/\b(build|camera|environment|post|shading)\b/i)?.[1].toLowerCase(); decision={tool:'start_pass',arguments:{pass:pass==='build'?'build':pass},reply:'I will start the requested pass through the existing pass runner.'}; }
+      else decision = { tool: null, reply: answer.ok ? answer.text : 'The director seat is unavailable. Attach the narration and ask me to set up the project, or resume when the seat is connected.' };
+    }
+    if (['start_pass','start_run'].includes(decision.tool) && !/\b(go|start|run it|begin|launch)\b/i.test(latest)) decision = { tool: null, reply: 'I’m ready to start when you explicitly say go, start, or run.' };
+    if (decision.tool) { try { const result = await directorTools[decision.tool](decision.arguments || {}, thread); addMessage(thread, 'assistant', `${decision.reply || 'Completed the requested action.'}\n\n${decision.tool}: ${JSON.stringify(result)}`, { kind: 'tool_result', tool: decision.tool, result }); }
+      catch (e) { addMessage(thread, 'assistant', `I could not complete ${decision.tool}: ${e.message}`, { kind: 'error', tool: decision.tool }); }
+    } else addMessage(thread, 'assistant', decision.reply || 'Tell me what you want to make, what matters most, and attach the narration file path.', { kind: 'reply' });
+    saveConversations(all);
+  }
   function projectGitDir(dir) {
     if (fs.existsSync(path.join(dir, '.git'))) return '.git';
     if (fs.existsSync(path.join(dir, '.heart-git'))) return '.heart-git';
@@ -279,6 +340,34 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     const u = new URL(req.url, 'http://x');
     const pn = u.pathname;
     try {
+      if (pn === '/api/conversations' && req.method === 'POST') {
+        const b = await readBody(req), all = readConversations(), id = 'chat-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+        const thread = { id, title: String(b.title || 'New conversation'), project: b.project || null, inputs: { name: b.name || '', audioPath: b.audioPath || '', story: b.story || '', priorities: b.priorities || '', model: b.model || 'gpt-6-luna', effort: b.effort || 'high', exactShotPlan: b.exactShotPlan !== false, fps: [24,30].includes(Number(b.fps)) ? Number(b.fps) : 30 }, messages: [], jobCursor: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+        all[id] = thread; saveConversations(all); return sendJson(res, 201, thread);
+      }
+      if (pn === '/api/conversations' && req.method === 'GET') { const all = readConversations(); return sendJson(res, 200, Object.values(all).map(t => ({ id:t.id,title:t.title,project:t.project,updatedAt:t.updatedAt,messages:t.messages.length }))); }
+      const chatMatch = pn.match(/^\/api\/conversations\/([a-zA-Z0-9_-]+)(?:\/(messages))?$/);
+      if (chatMatch && req.method === 'GET' && !chatMatch[2]) {
+        const all = readConversations(), thread = all[chatMatch[1]]; if (!thread) return sendJson(res,404,{error:'conversation not found'});
+        const related = Array.from(jobs.values()).filter(j => j.projectDir === (safeProject(thread.project) || activeDir)).sort((a,b)=>b.startedAt-a.startedAt)[0];
+        if (related) { const fresh=(related.log||[]).slice(thread.jobCursor||0); for (const line of fresh) addMessage(thread,'assistant',line.text,{kind:'job_feed',stream:line.stream,jobId:related.id}); thread.jobCursor=(thread.jobCursor||0)+fresh.length; thread.activeJob=related.id;
+          const dir=safeProject(thread.project); if (dir) { const inv=inventory(dir),oldBoard=thread.board||[]; thread.board=inv.board; if (inv.board.length && JSON.stringify(oldBoard)!==JSON.stringify(inv.board)) addMessage(thread,'assistant',`Board frames are available (${inv.board.length}). Review the frames before asking me to continue.`,{kind:'board',frames:inv.board}); if (inv.master && artifactChecks(dir).checks.find(x=>x.id==='master')?.pass && !thread.masterPosted) { const rel=path.relative(repoDir,path.join(dir,inv.master)); addMessage(thread,'assistant',`Master ready: ${rel}\nhttp://127.0.0.1:${server.address().port}/project/${inv.master.split(path.sep).join('/')}`,{kind:'master',path:rel}); thread.masterPosted=true; } }
+        }
+        thread.updatedAt=new Date().toISOString(); saveConversations(all); return sendJson(res,200,thread);
+      }
+      if (chatMatch && req.method === 'POST' && chatMatch[2]) {
+        const all=readConversations(),thread=all[chatMatch[1]]; if(!thread)return sendJson(res,404,{error:'conversation not found'});
+        const b=await readBody(req),text=String(b.text||'').trim(); if(!text)return sendJson(res,400,{error:'message text is required'});
+        addMessage(thread,'user',text); thread.updatedAt=new Date().toISOString();
+        if (b.audioPath) thread.inputs.audioPath=String(b.audioPath); if (b.name) thread.inputs.name=String(b.name);
+        const rawBrief=String(b.story||text), split=rawBrief.match(/(?:what matters most|priorities|أهم ما يهمني|ما يهمني)\s*[:：-]\s*([\s\S]*)/i);
+        thread.inputs.story=split?rawBrief.slice(0,split.index).trim():rawBrief;
+        thread.inputs.priorities=split?split[1].trim():String(b.priorities||thread.inputs.priorities||'');
+        const active=thread.activeJob&&jobs.get(thread.activeJob); if(active&&!active.ended&&/\b(steer|instead|adjust|fix|while it works|change (?:the|this|that|shot)|make (?:the|this|that|it))\b/i.test(text)) { const r=await fetch(`http://127.0.0.1:${server.address().port}/api/steer`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:active.id,text})}); const d=await r.json(); if(r.ok)addMessage(thread,'assistant','Steering sent to the active run.',{kind:'steering',jobId:active.id});else addMessage(thread,'assistant',d.error||'Steering could not be sent.',{kind:'error'}); saveConversations(all);return sendJson(res,201,thread); }
+        if (/\b(go|start|run)\b/i.test(text) && /\b(build|camera|environment|post|shading)\b/i.test(text) && /\bpass\b/i.test(text) && thread.project) { try { const pass=text.match(/\b(build|camera|environment|post|shading)\b/i)[1].toLowerCase(); const d=await directorTools.start_pass({pass,mode:thread.inputs.mode||'quality'}); thread.activeJob=d.id; addMessage(thread,'assistant',`Pass started through the existing pass runner (${d.id}).`,{kind:'job_start',jobId:d.id}); } catch(e) { addMessage(thread,'assistant',`Pass could not start: ${e.message}`,{kind:'error'}); } saveConversations(all); return sendJson(res,201,thread); }
+        if (/\b(go|start the run|run it|begin the run|launch the run)\b/i.test(text) && thread.project) { try { const d=await directorTools.start_run({model:thread.inputs.model,effort:thread.inputs.effort,mode:thread.inputs.mode||'quality',dispatchStills:true}); thread.activeJob=d.id; addMessage(thread,'assistant',`Run started through the existing run controller (${d.id}).`,{kind:'job_start',jobId:d.id}); } catch(e) { addMessage(thread,'assistant',`Run could not start: ${e.message}`,{kind:'error'}); } saveConversations(all); return sendJson(res,201,thread); }
+        await runDirector(thread,all); return sendJson(res,201,thread);
+      }
       if (pn === '/api/projects' && req.method === 'GET') {
         const names = fs.readdirSync(projectsDir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => inventory(path.join(projectsDir, e.name)));
         return sendJson(res, 200, names);
