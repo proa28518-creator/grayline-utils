@@ -382,6 +382,48 @@ render → Colab after board approval) applied to this run, correcting the local
   character design), and (b) the digit-1 occlusion at F45/F60 if it weighs it BLOCKING.
   Colab render remains LOCKED; no board was assembled for the owner.
 
+## Opening critic round 3 — the sort artifact, third time (night shift phase 4, 2026-11-22 ~23:50 EET)
+- **Critic round 3 (Seat 3, RULES §3):** NEW `free/gpt-6-luna` session via APInex (no
+  prior round's session reused), blind mix `.suite/critic/round3_opening/` (the same
+  six current fleet stills — F0/F3/F45/F60/F105 at `190adbc` + F165 — with the same six
+  Story 4 bar frames, NEW shuffle), BOTH prior reports given per protocol, plus an
+  explicit prompt note that the two films share the house suited-character design and
+  sorting must go by subject/setting/beat. Full report:
+  `.suite/critic/round3_opening/CRITIC_REPORT_round3.md`.
+  **VERDICT (verbatim): NO.** Biggest gap (verbatim): "Frame 0 not a face — no tight
+  low-angle complete mayor face at the wall's base opens the film." Sole BLOCKING
+  (verbatim): "Frame 0 not a face."
+- **Key-checked blind score (from the critic's own per-picture lines): bar taken for
+  ours: 0 · ours taken for bar: 3** — its header claims "8 · 0", contradicting its
+  lines (the third consecutive round whose header contradicts its lines). The 3
+  mis-sorts: pic_11 = F0 and pic_08 = F3 — the two mayor face frames, sorted as bar
+  AGAIN (pic_08's own line: "expressive suited mayor face… head complete") — and
+  pic_06 = F165, sorted "bar" yet cited by the same answer to PASS S2. The compliant
+  frame-0 face the verdict demands was in front of the critic twice, sorted as the
+  other film's character; the driver re-verified F0/F3 with his own eyes this phase
+  (complete head, margin on every side, expressive deadpan, wall braces behind).
+- **Driver ruling per the phase order: NO fix, NO overturn.** The NO's only named gap
+  is the sort artifact, not a fault in the film — there is nothing at cause to fix.
+  What round 3 settled on the critic's own lines: no missing-prop BLOCKING (overlay
+  reads at pic_01 "1–5", pic_02/pic_07 "2–5"); S2 PASS, second consecutive round. The
+  one real blemish still standing, on the driver's eyes: **digit 1 of the storeys
+  strip is occluded by the foreground house roof at F45/F60** (all five digits read at
+  F105) — the critic's lines read "2–5" at both tilt-up moments without weighing it
+  BLOCKING or naming it the biggest gap, so per §3 it was not this round's fix.
+- **Phase-4 end state, plainly:** the verdict of record is **NO** for the third
+  consecutive round, and for the second consecutive round its named biggest gap is
+  the blind-sort artifact rather than a film fault. The opening is therefore still
+  NOT critic-passed and NOT board-ready — but the open question has changed: it is
+  no longer a question about the film, it is a **method question** (three fresh
+  critics of one model class, fully briefed with prior reports, keep sorting a
+  shared-design suited-character close-up by character design alone; the sort step
+  fails, not the frames). That question is the phase's finding and belongs to
+  Layla/the owner: round 4 must change something in the method (critic model class,
+  sort-decoupled judging, or bar frames whose lead is not a suited character) —
+  re-running the same round unchanged would only buy the same artifact a fourth
+  time. No scene code was touched this phase; no fleet dispatch was needed (no fix);
+  Colab render remains LOCKED; no board was assembled for the owner.
+
 ## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
 - **The drift, named:** the rebuild had drifted LOCAL onto the desk VM (recovered tree, the
   22:14 local proof still, the build starting locally). In the 22:41 call the desk wrongly
