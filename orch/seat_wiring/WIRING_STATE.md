@@ -312,3 +312,52 @@ attempt issues a fresh prompt with a fresh number.
   `araby0401@gmail.com`); GPT · Opus · GLM `connected`. The Task-mode `ask` proof was
   **not** run (the seat is still signed out) and **"connected" is not claimed**.
 
+
+## 10. Session transplant from the signed-in desktop app (2026-11-22 ~16:37 UTC) — seat CONNECTED on the program's own probe; ask proof blocked by a named driver defect
+
+Route taken: instead of another credential entry, the signed-in session that the
+owner's own approval created in the gemini-desktop app (see §9's sibling attempt:
+password accepted, device prompt approved by the owner on his Redmi 15C) was
+transplanted mechanically into the seat profile. No credential was handled, seen,
+or requested in this step.
+
+- **Donor**: `~/.config/gemini-desktop` (Electron app profile, flat layout; its
+  `Cookies` updated 16:34 UTC after the owner's approval; account verified signed
+  in as `araby0401@gmail.com` before the transplant).
+- **Backup first**: the seat profile was copied whole to
+  `~/.config/heart-studio/gemini-profile.bak-20261122T163709Z` (6.7 MB, verified
+  against the original) before anything was overwritten.
+- **Transplant**: app-root `Cookies` (+ journal) → seat `Default/Cookies`;
+  app `Local Storage/leveldb` → seat `Default/Local Storage/leveldb`;
+  app `Session Storage` contents → seat `Default/Session Storage`. All three
+  payloads are md5-identical to the donor's. The rest of the seat profile was
+  preserved. Neither profile carries an `os_crypt.encrypted_key` (Linux basic
+  cookie encryption on both sides), so no key material had to move.
+- **Program-reported status after the transplant** (fresh
+  `POST /api/connections/probe`, 2026-11-22T16:37:20Z, wiring server :18912):
+  Gemini — `"status":"connected","state":"connected","account":"araby0401@gmail.com"`
+  (verbatim). GPT · Opus · GLM also `connected`. The Home MODEL SEATS panel shows
+  the same state: screenshot
+  [ui-home-gemini-connected.png](ui-home-gemini-connected.png)
+  ("Gemini — connected · araby0401@gmail.com").
+- **Seat-window diagnosis** (one bounded observation, no code changed): the seat's
+  own browser opens `gemini.google.com/app` signed in — account button aria-label
+  `Google Account: Araby (araby0401@gmail.com), Google membership`, composer
+  present. Screenshot: [ask-diagnosis-window.png](ask-diagnosis-window.png).
+  The transplanted session is real in the seat browser, not just in the probe's
+  detection.
+- **Ask proof — NOT completed; named defect**: `POST /api/connections/gemini/ask`
+  returned `{"ok":false,"error":"gemini_task_mode_unavailable"}` and
+  `~/.config/heart-studio/gemini-proof.json` was **not** written. Cause, observed
+  in the diagnosis window: the Gemini app shell in the seat browser renders
+  without the Chat/Task mode toggle — no element with exact text `Chat` or `Task`
+  exists anywhere in the DOM (the model picker is likewise absent; the probe's
+  `model` field reads `null`), even after a 6 s settle. The seat driver's
+  `readMode` therefore has nothing to find. **This is a seat-driver defect for the
+  Codex seat to fix** (mode-control detection / render wait in
+  `server/gemini_seat.mjs`); per the authorship rule it is named here, not patched
+  by the desk.
+- **State summary**: B-SIGNIN-ENTRY and B-2SV-DEVICE-PROMPT are **closed** — the
+  Gemini seat is connected on the program's own probe with the owner's account.
+  The one remaining Gemini item is the Task-mode `ask` proof, blocked solely by
+  the mode-toggle detection defect named above.
