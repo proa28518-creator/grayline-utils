@@ -91,3 +91,31 @@ repo's declared Playwright cannot launch.
 
 Worktree server left running on port 18912 (Xvfb :99). Relaunch: `orch/seat_wiring/run_server.sh`.
 Stop: kill the node process listening on 18912.
+
+## 4. Egress fix verification + connect window (2026-11-22, later session)
+
+- Codex seat (session 01a203e1, one batched turn) implemented the loopback CONNECT relay in
+  `server/gemini_seat.mjs`; desk committed it as `a400342` (the seat sandbox has .git read-only)
+  and pushed `ui/seat-wiring`.
+- Desk verification, all through the program's own doors (wiring server on port 18912, restarted
+  on the fixed code; the 18911 real-test server was never touched):
+  - `node server/gemini_seat.mjs probe` → `{"ok":true,"signedIn":false,...}` — the driver reaches
+    gemini.google.com (was `gemini_driver_unavailable` / ERR_TUNNEL_CONNECTION_FAILED).
+  - `POST /api/connections/probe` → GPT connected · Opus connected · GLM connected · Gemini
+    `dead` with the truthful reason "Sign in through Connect Gemini in this program (seat account
+    araby0401@gmail.com)".
+  - `POST /api/connections/gemini/connect` → `{started:true, state:"awaiting_owner_signin"}`;
+    the program's own window renders the real signed-out Gemini app at gemini.google.com/app
+    (screenshot: connect-window.png). The egress path is proven end-to-end inside the program.
+- **The one remaining step, by name: the Google sign-in itself inside that Connect Gemini
+  window** — email + password (and any Google verification) for araby0401@gmail.com, typed into
+  the program's own Chromium profile (`~/.config/heart-studio/gemini-profile`). Per AGENTS.md
+  the owner does all sign-ins himself; no agent at this desk holds a route to type into that
+  window. The window waits up to 10 minutes per Connect press, then closes itself.
+- After that sign-in lands: `POST /api/connections/gemini/ask` runs the bounded Task-mode proof
+  and writes `~/.config/heart-studio/gemini-proof.json`; B-SELECTORS verification happens on
+  that first live ask. Neither has run yet — the proof is NOT claimed.
+- Still owed from §3: Opus + GLM hunts over the seat-wiring delta (now including the egress fix).
+- Branch state: `ui/seat-wiring` left unmerged per this round's discipline; `ui/unified-interface`
+  has advanced past the base (real-test commits), so the eventual merge is a real merge, not a
+  fast-forward.
