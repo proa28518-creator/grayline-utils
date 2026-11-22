@@ -8,7 +8,8 @@ const MAYOR_HEAD=[MAYOR[0],1.55,MAYOR[2]];
 const WALLTOP=add(PLACES.COAST_WALL,[0,17,0]);
 const BOAT=add(PLACES.SEA,[0,.25,14]);
 const CLOSE_POS=add(PLACES.COAST_WALL,[.7,.9,12]);
-const TILT_POS=add(PLACES.COAST_WALL,[3.5,9,17]);
+const TILT_POS=add(PLACES.COAST_WALL,[8,9,28]);
+const TILT_TARGET=add(PLACES.COAST_WALL,[5,9,0]);
 const WIDE_POS=add(PLACES.COAST_VILLAGE,[12,26,30]);
 const WIDE_TARGET=add(PLACES.COAST_WALL,[0,6,6]);
 const SEA_FROM=add(PLACES.SEA,[-16,3.5,6]);
@@ -50,13 +51,13 @@ export default {
  }},
  props:[
   {id:'seawall',kind:'seawall',in:'world',at:PLACES.COAST_WALL.at,w:90,h:18,gateW:7,keys:[{t:0,at:PLACES.COAST_WALL.at}]},
-  {id:'storeys',kind:'storeys',in:'world',at:add(PLACES.COAST_WALL,[14,0,0]),h:17.4,floors:5,keys:[{t:0,at:add(PLACES.COAST_WALL,[14,0,0])}]},
+  {id:'storeys',kind:'storeys',in:'world',at:add(PLACES.COAST_WALL,[6.5,0,2.5]),h:17.4,floors:5,keys:[{t:0,at:add(PLACES.COAST_WALL,[6.5,0,2.5])}]},
   {id:'boat',kind:'boat',in:'world',at:BOAT,keys:[{t:0,at:BOAT},{t:'line:2.end',at:add(PLACES.SEA,[.12,.25,14.08])}]}
  ],
  handovers:[],
  shots:[
-  {id:'SH01',t0:0,t1:2.6,camera:{move:'push',from:{pos:CLOSE_POS,target:MAYOR_HEAD,fov:34},to:{pos:TILT_POS,target:WALLTOP,fov:38}}},
-  {id:'SH02',t0:2.6,t1:'line:1.end',camera:{move:'push',from:{pos:TILT_POS,target:WALLTOP,fov:38},to:{pos:WIDE_POS,target:WIDE_TARGET,fov:48}}},
+  {id:'SH01',t0:0,t1:2.6,camera:{move:'push',from:{pos:CLOSE_POS,target:MAYOR_HEAD,fov:34},to:{pos:TILT_POS,target:TILT_TARGET,fov:38}}},
+  {id:'SH02',t0:2.6,t1:'line:1.end',camera:{move:'push',from:{pos:TILT_POS,target:TILT_TARGET,fov:38},to:{pos:WIDE_POS,target:WIDE_TARGET,fov:48}}},
   {id:'SH03',t0:'line:2.start',t1:'line:2.end',camera:{move:'push',from:{pos:SEA_FROM,target:BOAT,fov:42},to:{pos:SEA_TO,target:BOAT,fov:42}}}
  ],
  captions:'words'
