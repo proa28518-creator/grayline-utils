@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "engine": "faster-whisper/small/ar",
+  "language": "ar",
+  "source": "voice_owner.wav",
+  "words": 179,
+  "aligned_words": 186,
+  "reference_words": null,
+  "accuracy": null,
+  "alignment": {
+    "script_words": 186,
+    "matched": 94,
+    "substituted": 84,
+    "inserted_interpolated": 8,
+    "dropped_asr_words": 1,
+    "aligned_fraction": 0.956989247311828
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "source": "audio/clean.json",
+  "provenance": "run-produced",
+  "entries": 186,
+  "firstStart": 0,
+  "lastEnd": 67.86,
+  "voiceDurationSec": 68.08,
+  "voiceCheck": {
+    "name": "voice_duration",
+    "state": "pass",
+    "detail": "voice_owner.wav 68.08s"
+  },
+  "ok": true,
+  "failures": []
+}
