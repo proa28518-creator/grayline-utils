@@ -8,8 +8,8 @@ const MAYOR_HEAD=[MAYOR[0],1.55,MAYOR[2]];
 const WALLTOP=add(PLACES.COAST_WALL,[0,17,0]);
 const BOAT=add(PLACES.SEA,[0,.25,14]);
 const CLOSE_POS=add(PLACES.COAST_WALL,[.7,.9,12]);
-const TILT_POS=add(PLACES.COAST_WALL,[8,9,28]);
-const TILT_TARGET=add(PLACES.COAST_WALL,[5,9,0]);
+const TILT_POS=add(PLACES.COAST_WALL,[8,9,38]);
+const TILT_TARGET=add(PLACES.COAST_WALL,[4.5,9,0]);
 const WIDE_POS=add(PLACES.COAST_VILLAGE,[12,26,30]);
 const WIDE_TARGET=add(PLACES.COAST_WALL,[0,6,6]);
 const SEA_FROM=add(PLACES.SEA,[-16,3.5,6]);
@@ -51,7 +51,7 @@ export default {
  }},
  props:[
   {id:'seawall',kind:'seawall',in:'world',at:PLACES.COAST_WALL.at,w:90,h:18,gateW:7,keys:[{t:0,at:PLACES.COAST_WALL.at}]},
-  {id:'storeys',kind:'storeys',in:'world',at:add(PLACES.COAST_WALL,[6.5,0,2.5]),h:17.4,floors:5,keys:[{t:0,at:add(PLACES.COAST_WALL,[6.5,0,2.5])}]},
+  {id:'storeys',kind:'storeys',in:'world',at:add(PLACES.COAST_WALL,[4.5,0,2.5]),h:17.4,floors:5,keys:[{t:0,at:add(PLACES.COAST_WALL,[4.5,0,2.5])}]},
   {id:'boat',kind:'boat',in:'world',at:BOAT,keys:[{t:0,at:BOAT},{t:'line:2.end',at:add(PLACES.SEA,[.12,.25,14.08])}]}
  ],
  handovers:[],
