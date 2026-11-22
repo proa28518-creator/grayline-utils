@@ -19,3 +19,11 @@ itself takes it: the **render range** (frames 0..176 at 30 fps = 0–5.88 s) and
 the **mix** (first 5.88 s of the owner's voice + the program-generated bed).
 The sound lanes (audio/events|beds|timeline.json) ARE slice-scoped (0–5.88 s),
 translated from the film's own finishing plan cue sheet.
+
+## PROOF RESULT — 2026-11-22 (end-to-end through the program)
+- Final RUN run-1795332947076: status done, waitingOn «لا شيء» — script ✓ verified, voice ✓ verified, timing ✓ executed (167 entries), board ✓ verified (30 stills via GitHub run 44993117181), sound ✓ executed (audio/sfx_bed.wav), gates ✓ ALL PASS, export ✓ verified.
+- Full-slice render: GitHub run 44994044987 (fleet-render, render:0:177, settings fps 30 + captions recorded in run-info) — success.
+- Assembly: GitHub run 44998645890 (fleet-assembly) — success; gates: pts_audit 177 sequential ✓, encode H.264 30fps + AAC ✓, SSIM mean 0.9923 ✓, filmGrade null (honest).
+- Mini master: out/master.mp4 — 1080x1920, 30 fps, 5.90 s, H.264 + AAC, 2,230,872 bytes.
+- Program defects found by this proof and fixed (Codex-authored, Opus+GLM hunts): (1) dispatch monitor tar unpack died on runner uid ownership (c9d93c7); (2) sound_design.py's sfxlib dependency was never vendored into the repo (78b6e8e, byte-identical copy); (3) dispatch monitor died on a single transient poll network error — retry tolerance added, hunts CLEAN (468b786); (4) assembly obtain-step missed the tar's frames/ prefix — flatten line added, hunts CLEAN (f6602c6).
+- Manual/prep steps (named, not hidden): project slicing/data prep; sound-lane translation from Story 6's finishing plan into events/beds/timeline JSON; the mixdown itself (no program mix verb exists — sliced voice + program sfx_bed, sidechain duck, loudnorm -16 LUFS); copying the program-downloaded master into out/master.mp4.
