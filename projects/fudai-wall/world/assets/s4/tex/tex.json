@@ -1,0 +1,294 @@
+{
+ "note": "tile = D covered by one repeat of the texture. Decals multiply: surface * mix(1, rgb, a * instance alpha). What exists right now is what is listed here.",
+ "files": {
+  "plate_riveted.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "hull_riveted.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "hull_wreck.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "steel_paint.jpg": {
+   "tile": [
+    3,
+    3
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "ship_paint.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "deck_wood.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "deck_steel.jpg": {
+   "tile": [
+    2,
+    2
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "sand.jpg": {
+   "tile": [
+    12,
+    12
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "rock.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "sea.jpg": {
+   "tile": [
+    13,
+    13
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "sky_storm.jpg": {
+   "wraps": "x only",
+   "source": "flow",
+   "note": "bottom edge = horizon haze, top edge = high sky"
+  },
+  "sky_dawn.jpg": {
+   "wraps": "x only",
+   "source": "flow",
+   "note": "bottom edge = horizon haze, top edge = high sky"
+  },
+  "decals.png": {
+   "grid": [
+    6,
+    6
+   ],
+   "cellOrder": "row by row, top-left first: cell c is at column c % 6, row floor(c / 6)",
+   "blend": "multiply",
+   "source": "flow",
+   "rust_streak": "cells 0-5 have their heavy end at the cell top: keep spin near 0 so they run down",
+   "made": [
+    "barnacle",
+    "growth",
+    "oil_grime",
+    "rust_streak",
+    "ship_wear"
+   ]
+  }
+ },
+ "decals": [
+  {
+   "cell": 0,
+   "name": "streak_a",
+   "kind": "rust_streak"
+  },
+  {
+   "cell": 1,
+   "name": "streak_b",
+   "kind": "rust_streak"
+  },
+  {
+   "cell": 2,
+   "name": "streak_c",
+   "kind": "rust_streak"
+  },
+  {
+   "cell": 3,
+   "name": "streak_d",
+   "kind": "rust_streak"
+  },
+  {
+   "cell": 4,
+   "name": "streak_e",
+   "kind": "rust_streak"
+  },
+  {
+   "cell": 5,
+   "name": "streak_f",
+   "kind": "rust_streak"
+  },
+  {
+   "cell": 6,
+   "name": "patch_a",
+   "kind": "rust_patch"
+  },
+  {
+   "cell": 7,
+   "name": "patch_b",
+   "kind": "rust_patch"
+  },
+  {
+   "cell": 8,
+   "name": "patch_c",
+   "kind": "rust_patch"
+  },
+  {
+   "cell": 9,
+   "name": "patch_d",
+   "kind": "rust_patch"
+  },
+  {
+   "cell": 10,
+   "name": "patch_e",
+   "kind": "rust_patch"
+  },
+  {
+   "cell": 11,
+   "name": "patch_f",
+   "kind": "rust_patch"
+  },
+  {
+   "cell": 12,
+   "name": "spill",
+   "kind": "oil_grime"
+  },
+  {
+   "cell": 13,
+   "name": "drips",
+   "kind": "oil_grime"
+  },
+  {
+   "cell": 14,
+   "name": "smear",
+   "kind": "oil_grime"
+  },
+  {
+   "cell": 15,
+   "name": "grime",
+   "kind": "oil_grime"
+  },
+  {
+   "cell": 16,
+   "name": "oil_run",
+   "kind": "oil_grime"
+  },
+  {
+   "cell": 17,
+   "name": "oil_ring",
+   "kind": "oil_grime"
+  },
+  {
+   "cell": 18,
+   "name": "barn_a",
+   "kind": "barnacle"
+  },
+  {
+   "cell": 19,
+   "name": "barn_b",
+   "kind": "barnacle"
+  },
+  {
+   "cell": 20,
+   "name": "barn_c",
+   "kind": "barnacle"
+  },
+  {
+   "cell": 21,
+   "name": "barn_d",
+   "kind": "barnacle"
+  },
+  {
+   "cell": 22,
+   "name": "barn_e",
+   "kind": "barnacle"
+  },
+  {
+   "cell": 23,
+   "name": "barn_f",
+   "kind": "barnacle"
+  },
+  {
+   "cell": 24,
+   "name": "band",
+   "kind": "growth"
+  },
+  {
+   "cell": 25,
+   "name": "bloom",
+   "kind": "growth"
+  },
+  {
+   "cell": 26,
+   "name": "clump_a",
+   "kind": "growth"
+  },
+  {
+   "cell": 27,
+   "name": "drip_and_clump",
+   "kind": "growth"
+  },
+  {
+   "cell": 28,
+   "name": "clump_b",
+   "kind": "growth"
+  },
+  {
+   "cell": 29,
+   "name": "clump_c",
+   "kind": "growth"
+  },
+  {
+   "cell": 30,
+   "name": "scrape",
+   "kind": "ship_wear"
+  },
+  {
+   "cell": 31,
+   "name": "weep",
+   "kind": "ship_wear"
+  },
+  {
+   "cell": 32,
+   "name": "tide_line",
+   "kind": "ship_wear"
+  },
+  {
+   "cell": 33,
+   "name": "dent",
+   "kind": "ship_wear"
+  },
+  {
+   "cell": 34,
+   "name": "chips",
+   "kind": "ship_wear"
+  },
+  {
+   "cell": 35,
+   "name": "gouge",
+   "kind": "ship_wear"
+  }
+ ]
+}

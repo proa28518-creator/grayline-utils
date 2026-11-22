@@ -1,0 +1,356 @@
+{
+ "note": "Flat cut-out billboards. height = D from anchor edge to the other end (a character is about 3.2 D). width = height * aspect. anchor bottom: stands on the bottom edge of the image. anchor top: hangs from the top edge at the ceiling.",
+ "sprites": [
+  {
+   "name": "oil_drum",
+   "file": "oil_drum.png",
+   "height": 1.8,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.6339,
+   "sheet": "sheet_sub_clutter"
+  },
+  {
+   "name": "sea_chest",
+   "file": "sea_chest.png",
+   "height": 1.1,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.2783,
+   "sheet": "sheet_sub_clutter"
+  },
+  {
+   "name": "rag_bucket",
+   "file": "rag_bucket.png",
+   "height": 0.9,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.8118,
+   "sheet": "sheet_sub_clutter"
+  },
+  {
+   "name": "hammock_roll",
+   "file": "hammock_roll.png",
+   "height": 0.8,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.4601,
+   "sheet": "sheet_sub_clutter"
+  },
+  {
+   "name": "valve_heap",
+   "file": "valve_heap.png",
+   "height": 0.7,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.3047,
+   "sheet": "sheet_sub_clutter"
+  },
+  {
+   "name": "hose_coil",
+   "file": "hose_coil.png",
+   "height": 0.5,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.3977,
+   "sheet": "sheet_sub_clutter"
+  },
+  {
+   "name": "kelp_tall",
+   "file": "kelp_tall.png",
+   "height": 4.2,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.1387,
+   "sheet": "sheet_seabed"
+  },
+  {
+   "name": "kelp_clump",
+   "file": "kelp_clump.png",
+   "height": 2.2,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.6863,
+   "sheet": "sheet_seabed"
+  },
+  {
+   "name": "weed_tuft",
+   "file": "weed_tuft.png",
+   "height": 0.8,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.0481,
+   "sheet": "sheet_seabed"
+  },
+  {
+   "name": "fish_skeleton",
+   "file": "fish_skeleton.png",
+   "height": 0.5,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 2.0924,
+   "sheet": "sheet_seabed"
+  },
+  {
+   "name": "anemone_rock",
+   "file": "anemone_rock.png",
+   "height": 1.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.0063,
+   "sheet": "sheet_seabed"
+  },
+  {
+   "name": "mussel_rock",
+   "file": "mussel_rock.png",
+   "height": 0.9,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.1859,
+   "sheet": "sheet_seabed"
+  },
+  {
+   "name": "broken_spar",
+   "file": "broken_spar.png",
+   "height": 3.4,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.8981,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "bent_plate",
+   "file": "bent_plate.png",
+   "height": 1.3,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.4139,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "half_anchor",
+   "file": "half_anchor.png",
+   "height": 2.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.9331,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "torn_net",
+   "file": "torn_net.png",
+   "height": 2.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.0527,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "sunk_bottle",
+   "file": "sunk_bottle.png",
+   "height": 0.35,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.2872,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "twisted_pipe",
+   "file": "twisted_pipe.png",
+   "height": 0.8,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 2.0939,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "torn_net_b",
+   "file": "torn_net_b.png",
+   "height": 2.2,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.9825,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "sunk_bottle_b",
+   "file": "sunk_bottle_b.png",
+   "height": 0.32,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.6404,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "twisted_pipe_b",
+   "file": "twisted_pipe_b.png",
+   "height": 0.9,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.6558,
+   "sheet": "sheet_wreck"
+  },
+  {
+   "name": "rope_coil",
+   "file": "rope_coil.png",
+   "height": 0.8,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.3859,
+   "sheet": "sheet_ship_deck"
+  },
+  {
+   "name": "life_ring",
+   "file": "life_ring.png",
+   "height": 1.3,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.9115,
+   "sheet": "sheet_ship_deck"
+  },
+  {
+   "name": "dive_helmet",
+   "file": "dive_helmet.png",
+   "height": 1.0,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.7704,
+   "sheet": "sheet_ship_deck"
+  },
+  {
+   "name": "air_pump",
+   "file": "air_pump.png",
+   "height": 1.4,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.4801,
+   "sheet": "sheet_ship_deck"
+  },
+  {
+   "name": "air_hose_coil",
+   "file": "air_hose_coil.png",
+   "height": 0.7,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.3286,
+   "sheet": "sheet_ship_deck"
+  },
+  {
+   "name": "block_tackle",
+   "file": "block_tackle.png",
+   "height": 0.8,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 2.2727,
+   "sheet": "sheet_ship_deck"
+  },
+  {
+   "name": "whiskey_crate",
+   "file": "whiskey_crate.png",
+   "height": 1.1,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.529,
+   "sheet": "sheet_rum"
+  },
+  {
+   "name": "crate_stack",
+   "file": "crate_stack.png",
+   "height": 2.4,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.5178,
+   "sheet": "sheet_rum"
+  },
+  {
+   "name": "crate_bottles",
+   "file": "crate_bottles.png",
+   "height": 1.2,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.0896,
+   "sheet": "sheet_rum"
+  },
+  {
+   "name": "whiskey_bottle",
+   "file": "whiskey_bottle.png",
+   "height": 0.6,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.3894,
+   "sheet": "sheet_rum"
+  },
+  {
+   "name": "barrel",
+   "file": "barrel.png",
+   "height": 1.5,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 0.7671,
+   "sheet": "sheet_rum"
+  },
+  {
+   "name": "tarp_heap",
+   "file": "tarp_heap.png",
+   "height": 1.6,
+   "kind": "floor",
+   "anchor": "bottom",
+   "aspect": 1.2749,
+   "sheet": "sheet_rum"
+  },
+  {
+   "name": "hook_chain",
+   "file": "hook_chain.png",
+   "height": 1.0,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.2004,
+   "sheet": "sheet_sub_hanging"
+  },
+  {
+   "name": "oilskin_coat",
+   "file": "oilskin_coat.png",
+   "height": 1.7,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.3187,
+   "sheet": "sheet_sub_hanging"
+  },
+  {
+   "name": "cable_bundle",
+   "file": "cable_bundle.png",
+   "height": 1.0,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.1417,
+   "sheet": "sheet_sub_hanging"
+  },
+  {
+   "name": "tin_mugs",
+   "file": "tin_mugs.png",
+   "height": 0.8,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.1711,
+   "sheet": "sheet_sub_hanging"
+  },
+  {
+   "name": "wet_rag",
+   "file": "wet_rag.png",
+   "height": 0.6,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.2041,
+   "sheet": "sheet_sub_hanging"
+  },
+  {
+   "name": "loose_wire",
+   "file": "loose_wire.png",
+   "height": 0.9,
+   "kind": "hanging",
+   "anchor": "top",
+   "aspect": 0.1074,
+   "sheet": "sheet_sub_hanging"
+  }
+ ]
+}
