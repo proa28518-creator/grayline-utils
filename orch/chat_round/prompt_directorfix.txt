@@ -1,0 +1,13 @@
+DIRECTOR FIX — same conversation, continue. The desk is mid-REAL-TEST and found a live defect in the stage-1 director path (not stage 4). Evidence, from test thread chat-mwrygobp-lnxgt on project real-test-watchmaker:
+
+1. Message "Write the brief … seed the key props" → the seat returned a decision whose arguments echoed the whole Arabic story; the thread recorded it as kind:"reply" with the raw JSON as text. write_brief never executed.
+2. Retry with a compact message → the seat returned a SHORT, VALID decision: {"tool":"write_brief","arguments":{"keyProps":["pocket watch","magnifying lens","brass gears","mainspring"]},"reply":"Seeded the key props only."} — and it STILL landed as kind:"reply", with codex CLI banner lines ("Reading prompt from stdin...", "OpenAI Codex v0.171.0-alpha.13", workdir/model lines) trailing inside the recorded message text. props.json remained empty.
+
+Root cause (desk-read of server/server.js): boundedCodex() returns the last 30 lines of combined codex exec stdout+stderr; runDirector then JSON.parse()s a GREEDY /\{[\s\S]*\}/ match across that whole tail — banner/log braces make the span unparseable, so decision is undefined and the deterministic fallbacks (setup / pass patterns) mask the failure for those intents. Only tool decisions without a deterministic shortcut (write_brief) expose it. Setup succeeded earlier only via the fallback.
+
+Fix, surgically, in server/server.js only:
+1. Make the director's decision capture clean: capture the model's final message itself (e.g. codex exec --output-last-message to a temp file the server owns, read + delete it) OR extract the last brace-balanced object in the output that parses AND has a string "tool" field. Either way: banner/log noise must never reach the parser, and an unparseable seat answer must degrade to the existing fallbacks exactly as today.
+2. Do not change the deterministic shortcuts, the tool surface, or any other behavior. The recorded assistant message for an executed decision must be the existing tool_result shape (no CLI banner text in thread messages).
+3. Static checks: node --check server/server.js, git diff --check.
+
+Write orch/chat_round/DIRECTOR_FIX_VERIFY.md: root cause in one paragraph, the mechanism you chose, and the exact desk re-check (re-send the seed-props message on thread chat-mwrygobp-lnxgt; expected: a tool_result message naming write_brief, props.json listing the four props, brief.md story/priorities unchanged). Do not attempt commits or server binds. End with the changed-files list.

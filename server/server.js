@@ -218,6 +218,20 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     });
   }
   function extractModelJson(text) { const s=String(text||'');const start=s.indexOf('{'),end=s.lastIndexOf('}');if(start<0||end<start)return null;try{return JSON.parse(s.slice(start,end+1));}catch(_){return null;} }
+  function extractDirectorDecision(text) {
+    const s=String(text||'');let selected=null;
+    for(let start=0;start<s.length;start++){
+      if(s[start]!=='{')continue;
+      let depth=0,inString=false,escaped=false;
+      for(let i=start;i<s.length;i++){
+        const c=s[i];
+        if(inString){if(escaped)escaped=false;else if(c==='\\')escaped=true;else if(c==='"')inString=false;continue;}
+        if(c==='"'){inString=true;continue;}
+        if(c==='{')depth++;else if(c==='}'&&--depth===0){try{const value=JSON.parse(s.slice(start,i+1));if(value&&typeof value==='object'&&!Array.isArray(value)&&typeof value.tool==='string')selected=value;}catch(_){}break;}
+      }
+    }
+    return selected;
+  }
   async function boundedVision(imagePath, prompt) {
     const home=process.env.HOME||'',codex=process.env.CODEX_BIN&&fs.existsSync(process.env.CODEX_BIN)?process.env.CODEX_BIN:['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex'),'/opt/hatch-image/bin/codex'].find(fs.existsSync);
     if(!codex)return{ok:false,error:'Codex vision seat binary unavailable'};
@@ -303,7 +317,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     const toolNames = Object.keys(directorTools);
     const prompt = `You are Heart Studio's bounded director. Do not write files or execute commands. Return ONE JSON object only: {"tool":"<one of ${toolNames.join(', ')}>","arguments":{...},"reply":"..."}. Use only those server tools. For setup/create requests choose create_project; for story/priority edits choose write_brief; include arguments.keyProps as an array of concrete story-critical object names when the story names them; never start a run/pass unless the latest user message explicitly says go/start/run. Conversation inputs: ${JSON.stringify(thread.inputs)}. Project: ${thread.project || 'none'}. Latest user message: ${latest}`;
     const answer = await boundedCodex(prompt); thread.director = { seat: 'Codex via existing bounded codex exec pass-runner path', model: 'gpt-6-luna', lastCallAt: new Date().toISOString(), available: answer.ok };
-    let decision; try { decision = JSON.parse(answer.text.match(/\{[\s\S]*\}/)?.[0] || ''); } catch (_) {}
+    let decision=extractDirectorDecision(answer.text);
     // Keep setup usable even when the seat returns prose: intent is still restricted
     // to this fixed tool surface and every operation is validated by its function.
     if (!decision || !directorTools[decision.tool]) {
