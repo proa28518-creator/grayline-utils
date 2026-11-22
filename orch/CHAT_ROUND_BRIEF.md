@@ -16,6 +16,11 @@ Owner's order, verbatim sense: «توصلي مع GPT وقوليلو يركب ج�
 
 ## What "all the pieces" means
 
+**The pieces are described in `orch/PARTS_INVENTORY.md`** — every piece, where it
+lives, its state, where it fits. Work from that list. **If a piece is not in the
+list, SEARCH for it** (repo · teardown · bundle maps · audits) and report the
+discrepancy before building (owner's word: «او يبحث عنها»).
+
 ### A. The director chat (the missing organ — owner's verdict: «يبقا البرنامج ناقص»)
 - Berserk opens on a NEW-CONVERSATION chat like the original: one message box where
   the user says what video they want and adds/pastes the narration file, the story,
