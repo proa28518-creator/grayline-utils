@@ -429,3 +429,7 @@ Its real layout (verify against disk, do not assume):
 - The program carries a **Connect Gemini** action inside the interface (Home/Settings), exactly mirroring how Creatorize connects Claude: one sign-in with the owner's Gmail/Google account (the subscription account), performed by the owner himself; the program then detects the stored session, shows a "Gemini connected" status, and drives Gemini sessions ONLY from inside the program (bounded tasks, the program's tool surface, measured checks as the gate).
 - Antigravity is NOT the Gemini route anymore (owner's word 2026-11-22 ~06:43: «مش هنستخدم بقى انتي جرافيتي — هنستخدم جيميناي على طول»). Gemini is used directly, Task mode for model work.
 - Seat pattern for every model in the program: a signed-in subscription (Gemini ↔ Gmail sign-in; Claude ↔ Claude sign-in; GPT ↔ ChatGPT sign-in, already live via the Codex seat).
+
+## Owner addition 2026-11-22 ~06:48 — Connect GPT joins Connect Gemini
+- The interface's connections row carries **Connect GPT** beside Connect Gemini, same pattern: sign-in with the owner's ChatGPT account from inside the program, connected-status shown, sessions driven only from inside with bounded tasks and measured checks.
+- Note: this seat is already live on the desk VM (the Codex seat, signed in as araby0401@gmail.com, which built this interface) — the UI work is surfacing and governing that existing connection, not creating it. Russell's bundle embeds the Codex SDK the same way, so the pattern is proven on both sides.
