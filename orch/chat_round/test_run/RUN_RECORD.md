@@ -96,3 +96,72 @@ per the seat's own error)
   3D toon sets; the program's cartoon-shorts style builds its own 3D
   characters. The bible went in as direction verbatim; how far the builder
   followed it can only be judged from frames — and no frames exist yet.
+
+---
+
+# RESUME on the new GPT seat + OWNER HOLD (2026-11-22, ~17:49–18:03 EET)
+
+**Outcome: the named no-frame defect is FIXED and the film builds; the Build
+pass then failed at the prop-truth gate + a GLM dead door, and the build is
+now HELD by the owner's seat-roles reversal (see the end). No render, no
+board — the owner's eye gate is still not reached.**
+
+## What happened, in order
+1. **Seat**: owner entered the fresh device code; desk-verified
+   `Logged in using ChatGPT — nooaar343@gmail.com`. Desk server on 18911,
+   project selected = fudai-wall.
+2. **Desk diagnosis (QC, no seat spend)** — reproduced the defect with the
+   program's own `heart still` (t=30): «المحرك لم يُرجع لقطة» (engine returned
+   no still). A CDP read of `window.suite.errors()` named the root cause
+   verbatim: `boot failed: MAKE_FILM FAILED: prop "box" key at t 30.52 (f916)
+   makes the prop APPEAR in hand:R inside a shot (it pops into the hand): …
+   or have a hand take it on screen (pick_up / a hand-over) and mark the key
+   fetch: true`. MAKE_FILM failing at boot ⇒ stills empty at every t.
+3. **Resume through the program only**: one message in the SAME conversation
+   `chat-mwrzndmp-6cqnw` — "Go, start the Build pass now." → job
+   `pass-1795362692387`; the verbatim engine error was sent to the job via
+   `/api/steer` (the program's own steering door) and is recorded in the job
+   log ("Steering appended to fix prompt").
+4. **Round 0** builder ran; checks failed (prop gate: no probe stills —
+   the film still did not build). **Fix round 1** builder (63,935 tokens)
+   fixed the defect exactly as the engine prescribed: `fetch: true` on the
+   retirement box key, `scenes/film.js:88`; its prop-ownership check passes
+   at 30.52 s. **The film now builds.**
+5. **Checks after the fix**: probe-1/2/3 rendered, 1080×1920, dimension
+   checks PASS; pass contracts PASS. **Prop-truth gate: FAILED — 16/16
+   props NO-MATCH** (`prop_gate_build_resume.json`). Desk QC of the probes
+   (copies: `build_probe-1/2/3.png`) shows why: the frames contain sky /
+   ground / black bands + the caption layer only — **no set, no cast, no
+   props in frame** (probe-1 t≈6.8 s, the seawall hero beat: empty sky and
+   ground; probe-2 t≈34 s: black frame + caption «السور»). The dimension
+   check passes on empty frames; the prop gate is what caught the
+   emptiness. The leftover scan returned zero objects on all 3 probes and
+   raised no template-leftover failures. Root problem for the next builder:
+   shot cameras do not frame the set/cast (the previous seat's mid-edit
+   zone relocations in set.js — blocks at x=800/1200/1600 — vs the shot
+   framing), then cropBoxes need re-aiming against the real composition.
+6. **Terminal failure**: after the gate, the pass died on
+   **"GLM critic dead door: unparseable verdict"** (pass state history,
+   verbatim). No fix round 2 ran; no fresh critic; no checkpoint. Build
+   pass state: **failed, rounds 1** (`build_pass_state.json`).
+
+## OWNER HOLD — seat roles reversed (owner's word, live call ~18:00)
+«هنعمل العكس: GPT خلي المهام قليلة، الفحص والكلام ده، وخلي Gemini هو المسؤول
+عن البناء» — **Gemini = builder seat; GPT = light tasks only.** The
+in-flight job above was already past its last builder turn when the word
+arrived; it ran its bounded course to the failure above and nothing further
+was started on GPT. **The build now waits for (a) the Gemini-builder
+configuration to land in the program (the call-side team is applying it in
+settings) and (b) the owner's in-program Gemini sign-in (still pending —
+seat state `awaiting_owner_signin`).** Evidence the builder role cannot
+route to Gemini yet: this job's builder sessions ran on the Codex seat
+(job log: "Starting bounded Codex builder", model gpt-6-luna /
+provider openai).
+
+## Remaining (for the Gemini builder, in order)
+- Build pass restart: fix shot framing so the set/cast actually appear in
+  the probes → re-aim all 16 prop cropBoxes → prop-truth gate → GLM critic
+  → fixes → fresh Opus critic → checkpoint. (Watch the GLM dead door:
+  the critic step died once on an unparseable verdict.)
+- Camera → Environment → Post → Shading passes, same discipline.
+- Board stills for the owner's eye (STOP point — still no render, no master).

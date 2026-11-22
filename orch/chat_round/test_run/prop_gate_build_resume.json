@@ -1,0 +1,296 @@
+{
+  "status": "failed",
+  "ok": false,
+  "props": [
+    {
+      "name": "giant concrete seawall with steel flood gate",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-01-giant-concrete-seawall-with-stee.png",
+      "seen": "Flat blue-gray sky above a tan ground, with a black lower area and overlaid Arabic text; no seawall or flood gate is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "five-storey transparent height diagram",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-02-five-storey-transparent-height-d.png",
+      "seen": "Blue-gray sky over a tan horizontal band and black lower area, with cropped Arabic lettering at the bottom left; no height diagram is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "15.5M gate measuring line",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-03-15-5M-gate-measuring-line.png",
+      "seen": "Flat color bands with large, partially cropped text at the bottom; no measuring line is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "3,000 population sign",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-04-3-000-population-sign.png",
+      "seen": "A pale blue-gray sky with no visible object.",
+      "matchesProp": false
+    },
+    {
+      "name": "$30M money sign",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-05--30M-money-sign.png",
+      "seen": "Arabic lettering on a black base; no money sign is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "$30M stacked coin piles",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-06--30M-stacked-coin-piles.png",
+      "seen": "Arabic text on a black band beneath a beige background; no coins are visible",
+      "matchesProp": false
+    },
+    {
+      "name": "12 years calendar",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-07-12-years-calendar.png",
+      "seen": "Arabic text reading “قدامه” against a beige and black background; no calendar is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "neighbor 10M seawall",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-08-neighbor-10M-seawall.png",
+      "seen": "A black angular shape against a pale background, with a round-headed figure and Arabic text in front.",
+      "matchesProp": false
+    },
+    {
+      "name": "engraved high-water rock mark",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-09-engraved-high-water-rock-mark.png",
+      "seen": "A round, dark-rimmed object with a pale jagged diagonal area; it obscures most of a figure. No clearly visible engraved rock mark.",
+      "matchesProp": false
+    },
+    {
+      "name": "childhood pencil height mark",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-10-childhood-pencil-height-mark.png",
+      "seen": "A stylized dark-haired character with large Arabic text in front; no pencil height mark is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "15M tsunami wave",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-11-15M-tsunami-wave.png",
+      "seen": "A dark suited figure with a large round, split-color head; no visible tsunami wave.",
+      "matchesProp": false
+    },
+    {
+      "name": "mayor gravestone",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-12-mayor-gravestone.png",
+      "seen": "Arabic text reading \"السور\" on a black background.",
+      "matchesProp": false
+    },
+    {
+      "name": "retirement belongings box",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-13-retirement-belongings-box.png",
+      "seen": "Arabic text on a black background",
+      "matchesProp": false
+    },
+    {
+      "name": "mocking wooden sign",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-14-mocking-wooden-sign.png",
+      "seen": "Black image with no visible object.",
+      "matchesProp": false
+    },
+    {
+      "name": "blueprint and ruler",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-15-blueprint-and-ruler.png",
+      "seen": "Arabic text on a black background",
+      "matchesProp": false
+    },
+    {
+      "name": "flowers at the grave",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-16-flowers-at-the-grave.png",
+      "seen": "A cartoon person with large Arabic text overlaid; no flowers or grave are visible.",
+      "matchesProp": false
+    }
+  ],
+  "crops": [
+    {
+      "name": "giant concrete seawall with steel flood gate",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-01-giant-concrete-seawall-with-stee.png",
+      "seen": "Flat blue-gray sky above a tan ground, with a black lower area and overlaid Arabic text; no seawall or flood gate is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "five-storey transparent height diagram",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-02-five-storey-transparent-height-d.png",
+      "seen": "Blue-gray sky over a tan horizontal band and black lower area, with cropped Arabic lettering at the bottom left; no height diagram is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "15.5M gate measuring line",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-03-15-5M-gate-measuring-line.png",
+      "seen": "Flat color bands with large, partially cropped text at the bottom; no measuring line is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "3,000 population sign",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-04-3-000-population-sign.png",
+      "seen": "A pale blue-gray sky with no visible object.",
+      "matchesProp": false
+    },
+    {
+      "name": "$30M money sign",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-05--30M-money-sign.png",
+      "seen": "Arabic lettering on a black base; no money sign is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "$30M stacked coin piles",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-06--30M-stacked-coin-piles.png",
+      "seen": "Arabic text on a black band beneath a beige background; no coins are visible",
+      "matchesProp": false
+    },
+    {
+      "name": "12 years calendar",
+      "appearsAt": 0.1,
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-07-12-years-calendar.png",
+      "seen": "Arabic text reading “قدامه” against a beige and black background; no calendar is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "neighbor 10M seawall",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-08-neighbor-10M-seawall.png",
+      "seen": "A black angular shape against a pale background, with a round-headed figure and Arabic text in front.",
+      "matchesProp": false
+    },
+    {
+      "name": "engraved high-water rock mark",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-09-engraved-high-water-rock-mark.png",
+      "seen": "A round, dark-rimmed object with a pale jagged diagonal area; it obscures most of a figure. No clearly visible engraved rock mark.",
+      "matchesProp": false
+    },
+    {
+      "name": "childhood pencil height mark",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-10-childhood-pencil-height-mark.png",
+      "seen": "A stylized dark-haired character with large Arabic text in front; no pencil height mark is visible.",
+      "matchesProp": false
+    },
+    {
+      "name": "15M tsunami wave",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-11-15M-tsunami-wave.png",
+      "seen": "A dark suited figure with a large round, split-color head; no visible tsunami wave.",
+      "matchesProp": false
+    },
+    {
+      "name": "mayor gravestone",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-12-mayor-gravestone.png",
+      "seen": "Arabic text reading \"السور\" on a black background.",
+      "matchesProp": false
+    },
+    {
+      "name": "retirement belongings box",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-13-retirement-belongings-box.png",
+      "seen": "Arabic text on a black background",
+      "matchesProp": false
+    },
+    {
+      "name": "mocking wooden sign",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-14-mocking-wooden-sign.png",
+      "seen": "Black image with no visible object.",
+      "matchesProp": false
+    },
+    {
+      "name": "blueprint and ruler",
+      "appearsAt": 0.5,
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-15-blueprint-and-ruler.png",
+      "seen": "Arabic text on a black background",
+      "matchesProp": false
+    },
+    {
+      "name": "flowers at the grave",
+      "appearsAt": 0.9,
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "crop": "projects/fudai-wall/out/passes/build/prop-16-flowers-at-the-grave.png",
+      "seen": "A cartoon person with large Arabic text overlaid; no flowers or grave are visible.",
+      "matchesProp": false
+    }
+  ],
+  "frames": [
+    {
+      "probe": "projects/fudai-wall/out/passes/build/probe-1.png",
+      "objects": []
+    },
+    {
+      "probe": "projects/fudai-wall/out/passes/build/probe-2.png",
+      "objects": []
+    },
+    {
+      "probe": "projects/fudai-wall/out/passes/build/probe-3.png",
+      "objects": []
+    }
+  ],
+  "failures": [
+    "prop_truth: giant concrete seawall with steel flood gate seen as Flat blue-gray sky above a tan ground, with a black lower area and overlaid Arabic text; no seawall or flood gate is visible. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: five-storey transparent height diagram seen as Blue-gray sky over a tan horizontal band and black lower area, with cropped Arabic lettering at the bottom left; no height diagram is visible. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: 15.5M gate measuring line seen as Flat color bands with large, partially cropped text at the bottom; no measuring line is visible. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: 3,000 population sign seen as A pale blue-gray sky with no visible object.",
+    "prop_truth: $30M money sign seen as Arabic lettering on a black base; no money sign is visible. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: $30M stacked coin piles seen as Arabic text on a black band beneath a beige background; no coins are visible (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: 12 years calendar seen as Arabic text reading “قدامه” against a beige and black background; no calendar is visible. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: neighbor 10M seawall seen as A black angular shape against a pale background, with a round-headed figure and Arabic text in front. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: engraved high-water rock mark seen as A round, dark-rimmed object with a pale jagged diagonal area; it obscures most of a figure. No clearly visible engraved rock mark.",
+    "prop_truth: childhood pencil height mark seen as A stylized dark-haired character with large Arabic text in front; no pencil height mark is visible. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: 15M tsunami wave seen as A dark suited figure with a large round, split-color head; no visible tsunami wave.",
+    "prop_truth: mayor gravestone seen as Arabic text reading \"السور\" on a black background. (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: retirement belongings box seen as Arabic text on a black background (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: mocking wooden sign seen as Black image with no visible object.",
+    "prop_truth: blueprint and ruler seen as Arabic text on a black background (possible stale cropBox: re-aim the box against the current probe composition)",
+    "prop_truth: flowers at the grave seen as A cartoon person with large Arabic text overlaid; no flowers or grave are visible. (possible stale cropBox: re-aim the box against the current probe composition)"
+  ]
+}
