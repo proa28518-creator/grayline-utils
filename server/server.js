@@ -8,6 +8,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const dispatchLayer = require('./dispatch');
+const appDir = path.join(__dirname, '..', 'app', 'renderer');
+const passModule = require('./passes');
 
 const STEPS = ['write', 'add', 'run', 'build', 'mix', 'export'];
 const SUBSTEPS = ['camera', 'environment', 'post', 'shading'];
@@ -193,7 +195,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       job.exitCode = code;
       if (code !== 0) job.status = 'failed';
       else if (job.outputArtifact) {
-        try { const stat=fs.statSync(job.outputArtifact);let ok=stat.isFile()&&stat.size>0;const fresh=stat.mtimeMs>=job.startedAt-2000;if(!fresh){ok=false;job.verification='artifact freshness failed: mtime predates job start';}if(job.action==='timing'&&ok){const report=JSON.parse(fs.readFileSync(job.outputArtifact,'utf8'));ok=report.ok===true;job.verification=ok?'timing report ok; '+report.entries+' entries':'timing report failed: '+(report.failures||[]).map(x=>x.name).join(', ');} else if(fresh)job.verification=ok?'artifact exists and is non-empty':'artifact predicate failed'; job.status = ok ? 'done' : 'failed'; }
+        try { const stat=fs.statSync(job.outputArtifact);let ok=stat.isFile()&&stat.size>0;const fresh=stat.mtimeMs>=job.startedAt-2000;if(!fresh){ok=false;job.verification='artifact freshness failed: mtime predates job start';}if(['timing','mix'].includes(job.action)&&ok){const report=JSON.parse(fs.readFileSync(job.outputArtifact,'utf8'));ok=report.ok===true;job.verification=ok?`${job.action} report ok`:`${job.action} report failed: ${(report.failures||[]).map(x=>x.name).join(', ')||'ok was not true'}`;} else if(fresh)job.verification=ok?'artifact exists and is non-empty':'artifact predicate failed'; job.status = ok ? 'done' : 'failed'; }
         catch (_) { job.status = 'failed'; job.verification = 'artifact predicate failed'; }
       } else job.status = 'done';
       job.ended = true; job.finishedAt = Date.now();
@@ -269,7 +271,36 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         const names = fs.readdirSync(projectsDir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => inventory(path.join(projectsDir, e.name)));
         return sendJson(res, 200, names);
       }
+      if (pn === '/api/projects/new' && req.method === 'POST') {
+        const b=await readBody(req); if(!/^[a-zA-Z0-9_-]+$/.test(String(b.name||'')))return sendJson(res,400,{error:'invalid project name'});
+        const dest=path.join(projectsDir,b.name);if(fs.existsSync(dest))return sendJson(res,409,{error:'project already exists'});
+        if(typeof b.audioPath!=='string'||!fs.existsSync(b.audioPath)||!fs.statSync(b.audioPath).isFile())return sendJson(res,400,{error:'audioPath must be an existing file'});
+        const created=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'new',b.name,b.template||'demo-ring'],{cwd:repoDir});if(created.code!==0)return sendJson(res,500,{error:created.err||created.out||'heart new failed'});
+        fs.copyFileSync(b.audioPath,path.join(dest,'voice_owner.wav'));if(b.timingsPath){if(!fs.existsSync(b.timingsPath)||!fs.statSync(b.timingsPath).isFile())return sendJson(res,400,{error:'timingsPath must be an existing file'});fs.copyFileSync(b.timingsPath,path.join(dest,'words_owner.txt'));}
+        fs.writeFileSync(path.join(dest,'brief.md'),String(b.idea||''));fs.writeFileSync(path.join(dest,'script.txt'),String(b.idea||''));
+        const pf=path.join(dest,'project.json'),pj=JSON.parse(fs.readFileSync(pf,'utf8'));pj.settings={fps:30,captions:{on:true},...(pj.settings||{})};fs.writeFileSync(pf,JSON.stringify(pj,null,2)+'\n');
+        const git=(args,cwd=repoDir)=>require('child_process').spawnSync('git',['-C',cwd,...args],{encoding:'utf8'});
+        git(['add','-A'],dest);const pc=git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','snapshot: brief + voice attached'],dest);if(pc.status!==0)return sendJson(res,500,{error:'project snapshot failed: '+pc.stderr});
+        let pushed=false,pushError;const add=git(['add','projects/'+b.name]);const commit=add.status===0?git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m',`project: ${b.name} created via interface`]):add;
+        if(commit.status!==0){pushError=(commit.stderr||commit.stdout||'repo commit failed').trim();}else{const branch=git(['branch','--show-current']);const push=branch.status===0?git(['push','origin',branch.stdout.trim()]):branch; pushed=push.status===0;if(!pushed)pushError=(push.stderr||push.stdout||'push failed').trim();}
+        return sendJson(res,200,{ok:true,project:inventory(dest),pushed,...(pushError?{pushError}: {})});
+      }
+      if (pn === '/api/projects/slice' && req.method === 'POST') {
+        const b=await readBody(req),dir=safeProject(b.project),seconds=Number(b.seconds);if(!dir)return sendJson(res,400,{error:'project invalid or missing'});if(!(seconds>0&&seconds<=600))return sendJson(res,400,{error:'seconds must be > 0 and <= 600'});
+        const out=path.join(dir,'out',`slice-${seconds}s`),r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'slice',dir,String(seconds),out],{cwd:repoDir});if(r.code!==0)return sendJson(res,500,{error:(r.err||r.out).trim()});
+        const files={voice:path.relative(repoDir,path.join(out,'voice_slice.wav')),words:fs.existsSync(path.join(out,'words_slice.txt'))?path.relative(repoDir,path.join(out,'words_slice.txt')):null,clean:fs.existsSync(path.join(out,'clean_slice.json'))?path.relative(repoDir,path.join(out,'clean_slice.json')):null};return sendJson(res,200,{ok:true,dir:path.relative(repoDir,out),files});
+      }
+      if(pn==='/app'||pn.startsWith('/app/'))return serveFile(res,appDir,pn==='/app'?'/index.html':pn.slice(4));
       if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>({...p,...passModule.getState(activeDir,p.id)})));
+      if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
+      if(pn==='/api/passes/run'&&req.method==='POST'){
+        const b=await readBody(req),def=passModule.passes.find(x=>x.id===b.pass);if(!def)return sendJson(res,400,{error:'unknown pass'});
+        const ix=passModule.passes.indexOf(def);if(passModule.passes.slice(0,ix).some(p=>passModule.getState(activeDir,p.id).state!=='checkpointed'))return sendJson(res,409,{error:'earlier pass is not checkpointed'});
+        const id='pass-'+Date.now(),j={id,kind:'pass',projectDir:activeDir,status:'running',startedAt:Date.now(),ended:false,log:[],steering:[]};jobs.set(id,j);const sf=passModule.stateFile(activeDir,def.id);fs.mkdirSync(path.dirname(sf),{recursive:true});const ps=passModule.getState(activeDir,def.id);ps.state='running';ps.updatedAt=new Date().toISOString();ps.history.push({t:Date.now(),event:'started',detail:'Builder dispatched'});fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');
+        (async()=>{try{const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\nAnnotations: ${JSON.stringify(state.annotations||[])}\nSteering: ${j.steering.map(x=>x.text).join('\n')}\nEnd with a summary of changes.`;fs.writeFileSync(path.join(path.dirname(sf),'brief.md'),brief);j.log.push({t:Date.now(),stream:'builder',text:'Pass brief written. Codex builder dispatch is not available from this server process.'});throw new Error('codex builder dispatch unavailable');}catch(e){ps.state='failed';ps.updatedAt=new Date().toISOString();ps.history.push({t:Date.now(),event:'failed',detail:e.message});fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');j.status='failed';j.waitingOn=e.message;j.ended=true;j.finishedAt=Date.now();j.log.push({t:Date.now(),stream:'fail',text:e.message});}})();return sendJson(res,202,{id,status:j.status});
+      }
+      if(pn==='/api/passes/rollback'&&req.method==='POST')return sendJson(res,501,{error:'rollback not wired'});
       if (pn === '/api/connections/probe' && req.method === 'POST') return sendJson(res,200,await probeConnections());
       if (pn === '/api/project' && req.method === 'GET') return sendJson(res, 200, { ...inventory(activeDir, true), path: path.relative(repoDir, activeDir), gates: artifactChecks(activeDir), history: projectGit(activeDir) });
       if (pn === '/api/select' && req.method === 'POST') {
@@ -311,7 +342,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       if (pn === '/api/job' && req.method === 'GET') {
         const j = jobs.get(u.searchParams.get('id'));
         if (!j) return sendJson(res, 404, { error: 'العملية غير موجودة' });
-        return sendJson(res, 200, { id: j.id, project: path.basename(j.projectDir), status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null, runId:j.runId||null,legs:j.runSettings?.legs||null });
+        return sendJson(res, 200, { id: j.id, project: path.basename(j.projectDir), status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, steering:j.steering||[], waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null, runId:j.runId||null,legs:j.runSettings?.legs||null });
       }
       if (pn === '/api/stop' && req.method === 'POST') {
         const b = await readBody(req), j = jobs.get(b.id);
@@ -332,7 +363,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
           j.action='preview'; const effective=inventory(activeDir).settings;
           return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
         }
-        if (['timing','sound'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
+        if (['timing','sound','mix'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):b.action==='mix'?path.join(activeDir,'out/mix_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
         if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
         return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
       }
