@@ -50,3 +50,18 @@ git diff --check
 ```
 
 All three commands exited 0 with no output. These checks establish JavaScript parse and whitespace validity only; they do not substitute for the blocked curl flow.
+
+## Desk-side live verification (coordinator, outside the seat sandbox) — 2026-11-22
+
+The seat sandbox blocks localhost listen; the desk ran the same server directly:
+`node server/server.js projects/accept-s6slice 18911` — up, /api/project OK.
+- POST /api/conversations with name/audioPath/story/priorities → 201, thread persisted.
+- POST message "Please set up the project from this conversation." → director
+  (bounded Codex decision) chose create_project → project `chat-test-verify`
+  created via the existing heart-new path; voice_owner.wav byte-identical to the
+  source (md5 af9bb2cd6ff66dfa5468f8e750e357e1 both); .heart-git snapshot present;
+  thread shows working + tool_result messages. **Chat flow LIVE-PROVEN at the desk.**
+- DEFECT found by the desk: brief.md "Story / request" contains the command text
+  ("Please set up the project from this conversation.") instead of the story —
+  posting a message overwrites thread.inputs.story with the message text.
+  Routed to the session as a stage-2 fix. Test project deleted after evidence.
