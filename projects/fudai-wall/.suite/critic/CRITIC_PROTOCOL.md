@@ -197,3 +197,47 @@ Applied from round 4 onward:
   the director's review never replaces critic rounds; the driver never overturns a
   critic — a verdict resting on a factual error about the frames is recorded precisely
   and reported, not silently corrected.
+
+## 7.1 AMENDMENT — critic seat change + API route retired (owner's rulings, 2026-11-23 ~00:58 and ~01:00 EET)
+
+The owner ruled, verbatim (~00:58):
+
+> «انقلي الناقد لـ Gemini Pro بحسابك»
+> ("Move the critic to Gemini Pro, on your account.")
+
+And at ~01:00, resolving the account question and retiring the API route, verbatim:
+
+> «تمم» — run the critic on the signed-in account as it stands.
+> «بلاش بعد كده api google studio عشان ده اضعف حلقه»
+> ("No more Google AI Studio API after this — it is the weakest link.")
+
+Applied from round 7 onward:
+
+- **Critic seat = Gemini Pro via the owner's own signed-in account, in the browser**
+  (gemini.google.com), Gemini used directly, **TASK mode only**. Rounds 4–6's seat —
+  `gemini-3.5-flash` via the desk's API connector (`custom.gemini-api`, a Google AI
+  Studio key) — is superseded. Configuration (verified 2026-11-23 ~00:59): mode = Task
+  (مهمة); model = «تحليل أعمق 4 Neon» (Neon, the deepest-analysis option in the picker —
+  there is no model literally named "Pro"); thinking level = High (مرتفع).
+- **Account:** the browser seat as it stands is signed in as **nooaar343@gmail.com**
+  (AI Pro); the owner ruled «تمم» — run on that account as it stands.
+- **The Google AI Studio API route is RETIRED entirely.** No `custom.gemini-api` calls
+  for anything from now on — no critic, no checks, **no fallback**. All Gemini work =
+  the owner's signed-in account, direct, Task mode only. If the browser critic seat
+  fails at the critic step, STOP and report the blocker; there is no API fallback.
+- **The §7 method is unchanged:** blind sort = score only (Step A); the verdict is
+  judged on our frames directly against the spec (Step B); both steps run as separate
+  fresh Task-mode sessions on the browser seat.
+- **Critic skill (owner's order, installed 2026-11-23 ~01:14, verified in the signed-in
+  account under Customize > Skills > Installed):** a skill named `fudai-wall-critic`
+  carries the full critic discipline (two-step method, BLOCKING list, per-scene spec,
+  set bar, fixed verdict form). From round 7 on, the critic runs through this skill
+  on the browser seat (invoke the skill in the session; Neon / deepest analysis;
+  Task mode where the skill session allows it — if the skill session cannot combine
+  with Task mode, run it as the skill presents and note that fact in the round report).
+  The round report records that the critic ran via the installed skill.
+- **Guard flag 01:03 — bundled fix departed §3; corrected to one cause, one change,
+  one re-judgement per round.** (Phase-7 driver bundled all of round 6's BLOCKING list
+  into one seat fix; the bundle was halted, its fleet runs cancelled, and its scene
+  changes reverted to 7c9d2ae the same minute. Fix #1 — camera lines clear of
+  buildings — is the only fix that round's method produced.)

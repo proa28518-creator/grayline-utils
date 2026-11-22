@@ -31,3 +31,8 @@ Round-5 fix: film.js carries endFrame:false — the loader's endFraming otherwis
 ## HANDOVER
 
 Chunk 2 authoring is ready after syntax and source audit. The next pass should take SH13 onward, keep the grey mayor parked indoors when mayor_old exits, and handle digit-1 occlusion at F45/F60 in the Camera pass.
+
+## Phase-7 lessons
+- D2-CLEAR (tools/audit_d1_d2.mjs): camera paths are audited against building solids — town hall + 10 village houses + 3 neighbour houses at MAXIMUM dims. SH01–SH03 are exempt (frozen/critic-passed; their paths were fleet-probe-verified, and the max-dim box overstates the town-hall cone). A path clearing the conservative boxes clears the real buildings.
+- RULES §3, guard-enforced: one cause, one change, one re-judgement per round. Bundling the whole BLOCKING list into one fix is itself a departure, however correct its items — the guard caught it at 01:03 and the bundle was reverted the same minute (commits a427e74 → 9616ab6 → e88a113).
+- Calendar page observation (eye-verdict, phase 7): at F345/F414 the calendar board's big digit reads "1" while the page keys should be ~7/~12 — the page flip is not advancing visually. A prop-behaviour fault, not a camera fault; for the critic to judge / a later round.
