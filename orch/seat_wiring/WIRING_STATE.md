@@ -361,3 +361,90 @@ or requested in this step.
   Gemini seat is connected on the program's own probe with the owner's account.
   The one remaining Gemini item is the Task-mode `ask` proof, blocked solely by
   the mode-toggle detection defect named above.
+
+## 11. Task-mode ask proof — FIXED and proven through the program's doors (2026-11-22 ~16:40–16:52 UTC)
+
+The §10 defect is closed. The Gemini seat now completes the bounded Task-mode
+`ask` and the proof record exists on disk.
+
+- **True cause, from live DOM evidence (desk diagnosis, seat's own profile)** —
+  two defects, both in `server/gemini_seat.mjs`:
+  1. **Late render vs a fixed wait.** The Chat/Task control is a pair of
+     `gem-segmented-button` custom elements (host `data-value` "0" = Chat,
+     "40" = Task; each host wraps one inner `<button>` with exact text
+     "Chat"/"Task"). It is absent from the DOM at 3 s and at 8–10 s after
+     navigation and appears at ~14 s (measured 13,996 ms in one run; ranges
+     8–16 s headless, 10–25 s headed). The model picker ("Open mode picker,
+     currently Hydrogen") renders on the same late schedule. The driver's
+     `open()` waited a fixed 3 s after `domcontentloaded` and `ask` read the
+     mode exactly once → `null` → `gemini_task_mode_unavailable`. The probe's
+     `model: null` in §10 has this same root cause.
+  2. **Selection-state bug (latent).** The old `readMode` returned the
+     innerText of the FIRST button matching /^(chat|task)$/i in DOM order —
+     always "Chat", whatever is selected. Selection is actually carried by
+     `aria-pressed="true"` on the selected segment's inner button plus the
+     `gem-segmented-button-selected` class on its host (row
+     `--gem-active-index` 0→1). Default selected mode on load is Chat, so
+     even a waited read would have failed the Task check forever.
+  Desk also verified the interaction directly: a click on the Task segment's
+  inner button flips `aria-pressed` to Task and the composer switches to
+  "Describe a task" (task suggestions replace the chat greeting). The toggle
+  genuinely exists in this account's UI — it was a timing + selection-read
+  defect, not a missing feature.
+- **Fix — authored by the Codex seat** (one bounded session, brief
+  `orch/seat_wiring/prompt_fix_mode.txt`, log `orch/seat_wiring/fix_mode.log`;
+  desk committed as `c55d154`; only `server/gemini_seat.mjs` changed):
+  `waitForModeControl` polls every 500 ms up to 60 s for the mode control
+  (called in `ask` AFTER `clickNewChat`, which can re-render the shell);
+  `readMode` now returns the segment reporting selected (`aria-pressed="true"`
+  or the selected host class); `selectTaskMode` clicks the Task segment's
+  inner button and `ask` polls up to 10 s until the verified selected mode is
+  Task; the old click-"Chat"-first step is removed; `detect()` is re-run
+  after the wait. The Task-only guard is unchanged and absolute: the composer
+  is never filled or submitted unless the verified selected mode is Task,
+  and every named failure (`gemini_task_mode_unavailable`,
+  `gemini_seat_not_signed_in`, `gemini_response_timeout`,
+  `gemini_ask_failed`) is preserved. Changed regions: lines 42–73 (helpers)
+  and the `ask` flow (~lines 146–163). The seat's own in-sandbox self-verify
+  could not run the live browser (the Codex sandbox blocks the loopback
+  relay's `listen` with EPERM and Chromium's sandbox host check — the same
+  known sandbox limit recorded in §1/§4), so verification was done by the
+  desk in the desk execution context, per this round's established pattern.
+- **Verification — through the program's own doors (wiring server :18912)**:
+  - Driver probe: `{"ok":true,"signedIn":true,"account":"Araby","email":"araby0401@gmail.com","model":null}`.
+  - `POST /api/connections/probe` (2026-11-22T16:45:12Z): Gemini
+    `"status":"connected","state":"connected","account":"araby0401@gmail.com"`;
+    GPT · Opus · GLM also `connected`.
+  - `POST /api/connections/gemini/ask` → **`{"ok":true,"mode":"Task","account":"araby0401@gmail.com","elapsedMs":16234,"at":"2026-11-22T16:50:18.180Z"}`**
+    with the Task-mode agent answer to the default proof prompt (mayor /
+    seawall): "I'd open with a tight vertical hook of the mayor standing
+    against a towering wave, then cut through quick medium shots of skeptical
+    villagers mocking his plans, rapid construction angles of the seawall
+    rising along the coast, a tense low-angle climax as the surge slams into
+    the barrier, and a final aerial pull-back revealing the intact village
+    behind it." The answer carries Task mode's agent trace lines ("Drafted a
+    cinematic shot sequence… / Assessing the requirements… / Complete /
+    Gemini said / …"), not a plain chat reply. The server round-trip took
+    ~5 min end-to-end (late-render wait + Task agent run + the driver's
+    response-stability loop), inside the endpoint's 300 s helper budget.
+  - **Proof record written**: `~/.config/heart-studio/gemini-proof.json`
+    (at / account / model / mode "Task" / prompt / text / elapsedMs).
+  - A second, driver-level `ask` immediately after also returned
+    `ok:true, mode:"Task"` — the fix reproduces (2/2).
+  - Screenshot: [ask-task-mode-window.png](ask-task-mode-window.png) — the
+    seat window with **Task selected** (Task pill highlighted, Chat not),
+    composer placeholder "Describe a task", Hydrogen picker in the composer,
+    account "Araby / Pro"; the sidebar lists the two proof conversations
+    ("Vertical Short Shot Planning", "Mayor Seawall Vertical Short").
+- **Named remnant (cosmetic, not blocking)**: the proof's `model` field is
+  `null`. `detect()`'s model heuristic looks for a Hydrogen/Gemini button
+  positioned AFTER the composer element; in the Task-mode layout the picker
+  sits inside the composer bar, so the heuristic misses it. The picker itself
+  is present and reads **Hydrogen** (screenshot). Mode, account, and answer
+  text are all measured; nothing was backfilled by hand. Fixing the heuristic
+  is a future one-line seat turn, not part of this proof.
+- **State summary**: the Gemini seat is connected AND its bounded Task-mode
+  ask proof is complete — `~/.config/heart-studio/gemini-proof.json` exists,
+  written by the program itself. No Gemini seat item remains open in this
+  round; the §3 hunts over the full seat-wiring delta are still owed before
+  merge.
