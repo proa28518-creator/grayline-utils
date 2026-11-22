@@ -475,3 +475,6 @@ The order is fixed by the owner: (1) mount his interface as-is (study build, pri
 
 ## Owner step 2026-11-22 ~09:04 — after the Linux install, remove the registration face
 «بعد التثبيت نطلب ازاله وجه التسجيل عشان نعرف نجري تعديلاتنا»: after the converted app boots on Linux, the app's registration/member gate screen is removed in our study copy so it stops blocking our modifications. Distinction recorded: the member/registration gate is Russell's door; the SEAT sign-ins (Connect Claude/Gemini/GPT) are operating wiring the machinery runs on — removing those would disable the seats, so they stay.
+
+## Owner word 2026-11-22 ~09:16 — English labels are fine
+«لو عيزاها بنفس الانجليزيه اومي»: the interface may keep the original's English labels as-is; Arabic is not required. Default: original English screen names/labels (less work, fewer surprises); Arabic joins only if the owner asks during the skin phase.
