@@ -1,0 +1,79 @@
+# AGENTS.md — Heart Studio standing direction
+
+Binding rules for every agent session (Codex seat included) working in this repo.
+The full spec lives in `orch/UI_BRIEF.md`; this file is its concise, always-on form.
+Where this file and a task brief conflict, the owner's latest word in `orch/UI_BRIEF.md` wins.
+
+## The acceptance bar (owner's direct word)
+
+- **«لازم كل حاجه تشتغل زي الاصلي» — everything in the interface must actually WORK
+  like the original.** No decorative controls. A control either executes the real
+  program action or is visibly marked **"not wired yet"** in the UI and named as
+  unwired in the delivery report. Never present unwired as working.
+- **Zero known errors is the bar.** Every delivery passes independent Opus + GLM
+  hunts; findings loop back to the author; nothing ships with a known defect.
+
+## Control law
+
+- Layla controls the program; **the interface is the ONLY door** to it.
+- Models are called **only from inside the program, via API**, each with a bounded
+  task, a defined tool surface, and the program's measured checks waiting for the
+  output: program → API → model (bounded) → measured checks → next step.
+- **No free-roaming external model session may be a step of a run.** A leg that
+  cannot be expressed as a bounded in-program call is marked not-yet-wired /
+  not-yet-dispatchable — never improvised around.
+- Seats run off signed-in subscriptions, driven only from inside: GPT via the
+  Codex seat, Opus via LLMsRelay, GLM via APInex #2, Gemini via the owner's
+  Google sign-in (owner does all sign-ins himself). Gemini work is Task mode only.
+
+## Closed system
+
+- Everything happens inside the program on this machine. Heavy work leaves ONLY
+  through the program's own dispatch layer: stills/passes → GitHub Actions API;
+  film render → Colab on-demand queue worker (never a standing session);
+  assembly/finishing → GitHub Actions workflow. Desk VM = controller + QC eyes.
+- A run leg that silently needs a manual action outside the program is a failed build.
+
+## Production rules
+
+- **Frame rate is 24/30 fps only.** 60 fps was cancelled by the owner (2026-11-22);
+  never offer or emit it as a going-forward option.
+- **Voice is law:** the owner's narration file is used exactly as-is — no trimming,
+  no cleaning; the film is exactly as long as the file. The program transcribes/
+  aligns it inside the run for word timings.
+- **Stills before renders. Gates before export.** The five passes run in strict
+  order — Build → Camera angles → Environment overhaul → Post-processing →
+  Shading — each a checkpoint: builder → programmatic checks → critic → fixes →
+  FRESH second critic → hand-over.
+- **Gates are programmatic measured checks** returning a named failure + a fix
+  instruction. Model critics are a second layer; their verdicts never open or
+  close a gate. A station shows "done" only when its artifact predicate passes
+  on disk.
+- Settings edited in the interface are persisted to `project.json` AND actually
+  sent to the renderer/dispatch (`?settings=` / workflow inputs) and recorded
+  with the run.
+
+## Authorship and verification
+
+- **Code authorship is by the Codex seat** (signed in as the owner's ChatGPT
+  account). Local agents drive it, apply its code, run and QC — they do not
+  author program code themselves.
+- Cross-verify every delivery with independent Opus + GLM hunts before reporting.
+
+## Untouched ground
+
+- `vendor/renderer-original/` (pristine backup, checksum-verified) and
+  `~/workspace/creatorize-teardown/` are **never modified**. Russell's files are
+  study material: our interface is **our own code** — never modify or ship his.
+- Do not rewrite `engine/` or `fleet/` render logic; the interface reads state
+  and invokes actions through `bin/heart`, repo scripts, and the dispatch layer.
+- Commit only your own files, on the branch named by the task brief. The working
+  tree may carry unrelated changes — do not stage, revert, or touch them.
+
+## Form
+
+- The interface is a **desktop app with its own window** (Electron shell on
+  Linux), screens/flows mirroring the original's structure with its English
+  labels (owner: English is fine); only the skin is ours.
+- **Production over looks** (owner's word): weight machinery — executors, checks,
+  dispatch, assembly — over visual polish in every round.
