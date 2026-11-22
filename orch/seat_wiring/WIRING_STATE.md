@@ -199,3 +199,54 @@ the program's own doors and re-verified the mechanism audit of §5 from primary 
   run and NOT claimed** — `ask` refuses while signed out, by design. The moment B-SIGNIN-ENTRY
   lands, the next steps are the §5 pair: probe → expect `connected`, then the bounded
   Task-mode `ask` → `~/.config/heart-studio/gemini-proof.json`.
+
+## 7. Re-point pursuit (2026-11-22 ~16:20 UTC) — paths A and B both stop at named blockers
+
+Owner's standing order «شوفي طريقة» + his §6 authorization. Pursuit: re-point the seat to a
+browser session that is ALREADY signed in (the ~17:26 Cairo verification found
+gemini.google.com opening signed in as `araby0401@gmail.com`, AI Pro, Hydrogen, Chat/Task) —
+no credential typing anywhere. No raw credential was retrieved, seen, or handled in this
+session either; cookie inspection was host/name metadata only.
+
+- **Path A (attach/adopt that session) — IMPOSSIBLE, reason named: B-SESSION-UNREACHABLE.**
+  That verification ran in the platform's live browser, which the host's `browser-broker`
+  routes to **leased VMVM browsers** (separate micro-VMs). The broker's own help text states
+  the design: its socket dir is "DELIBERATELY not bind-mounted into the runtime cell: the
+  cell has NO path to the broker. The sole client is the host daemon… to close the
+  HiTL-consent bypass." Verified in-cell: `/run/hatch/browser-broker/` does not exist here.
+  The signed-in profile therefore lives in the host-side shared profile store, outside this
+  VM. Census of everything the seat's Playwright could possibly reach on this VM:
+  - every live browser process's `--user-data-dir`: only the seat's own
+    `~/.config/heart-studio/gemini-profile` (signed out; 6 cookies, hosts metadata only)
+    and a headless Chrome-for-Testing scoped temp profile;
+  - the only CDP listener, `127.0.0.1:9225`, is the desk's app-screenshot Chrome — its sole
+    page is `http://127.0.0.1:18911/app/` (Heart Studio), no Gemini tab, no Google session;
+  - every other Google-capable profile on disk (full filesystem census of Cookies files
+    under /home, /root, /var, /opt, /srv, /tmp): `~/.config/gemini-desktop` (stale, last
+    cookie write Nov 21 22:44, 2 cookies — not signed in), `/tmp/gemtest-profile*` (eleven
+    throwaway profiles from 15:51–15:54 UTC experiments, 0 cookies each), and
+    `/tmp/cdp-profile` (written 15:26:54 UTC — an app-QC profile whose History holds only
+    `http://127.0.0.1:18911/app/`, 0 Google cookies); the rest of the census is old
+    Remotion/puppeteer temp profiles from Nov 7–16, none Google-signed-in;
+  - no `~/.config/google-chrome`, no other profile dir under `~/.config`, `~/.cache`,
+    `~/.local`, `/tmp` touched today.
+  With no local profile, no CDP endpoint, and no broker socket, the seat can neither
+  `connectOverCDP` to that session nor adopt its profile (copy-on-write or otherwise).
+- **Path B (seat drives the signed-in browser via the browser-task bridge) — NOT BUILT,
+  blocker named: B-BRIDGE.** The seat is a program running inside this cell; driving a
+  browser task requires a client route to the broker/host daemon, which does not exist
+  in-cell by the same platform design above. The only remaining "bridge" would be an agent
+  launching free-roaming browser tasks as a step of the program — forbidden by this repo's
+  control law (AGENTS.md: no free-roaming external model session may be a step of a run;
+  never improvised around) and not invocable by the program at all. Per the pursuit's own
+  condition (build B only if clean inside the probe/connect/ask seat contract), B stops here
+  rather than being improvised.
+- **Seat status, program-reported (cached probe, 15:57 UTC; a fresh probe was not forced
+  while the connect child holds the profile):** Gemini `dead` / `awaiting_owner_signin`;
+  GPT · Opus · GLM `connected`. **Task-mode proof still NOT run, NOT claimed.**
+- **The single remaining unblock, one sentence:** a signed-in Google session must exist in a
+  browser this desk's program can own — i.e. B-SIGNIN-ENTRY completed inside the seat's own
+  profile by whoever can type into a window on a machine the owner reaches (his own
+  install's Connect Gemini, or a future supported vault-fill route into a Playwright
+  window) — because the already-signed-in platform browser is architecturally unreachable
+  from this cell.
