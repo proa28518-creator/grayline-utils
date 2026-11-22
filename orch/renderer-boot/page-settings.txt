@@ -1,0 +1,6 @@
+Something broke in this view
+
+Cannot read properties of undefined (reading 'undefined')
+
+Try again
+Report this problem

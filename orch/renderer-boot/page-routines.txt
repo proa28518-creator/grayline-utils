@@ -1,0 +1,55 @@
+Creatorize
+Suite
+Faceless Brand
+Personal Brand
+Faceless Brand
+Search or run…
+Ctrl K
+Home
+Berserk
+Projects
+Channels
+Editor
+Workspace
+Styles
+Library
+Memory
+Thumbnails
+Routines
+Renders
+YouTube
+New project
+Ctrl N
+Help
+Settings
+Premiumall unlocked
+Claude not signed in
+Open settings to connect · Premium
+Routines
+New
+No routines yet.
+Make videos end to end, by themselves
+
+A chain of steps from topic to published video. Run it with one click, on a schedule, or in bulk from a list of topics (up to 3 videos at the same time). Pick a template:
+
+Next video for my channel
+Claude studies your channel, finds a new topic, then script → voice → build → check → sound → render → thumbnail.
+Use
+Explainer from a topic
+Topic → script → voice → build → check → sound → render → thumbnail.
+Use
+Batch: topic list to videos
+Bulk: one finished video per line of a list, up to 3 at the same time (Routine settings > Videos at the same time).
+Use
+Daily Short for my channel
+Every day: Claude finds a new topic for the channel and makes a 9:16 Flat video of it.
+Use
+My script to finished video
+Your script → voice → build → check → sound → render.
+Use
+Full channel autopilot
+Claude finds ideas, makes the videos, waits for your approval, uploads them privately.
+Use
+Or start an empty routine
+New in this version: a smoother editor, dictation, time limits in every style and more.
+Take the tour

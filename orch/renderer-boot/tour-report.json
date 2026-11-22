@@ -1,0 +1,100 @@
+{
+  "electron": "45.4.1",
+  "rendererVersion": "0.28.2 (teardown)",
+  "startedAt": "2026-11-22T06:40:38.391Z",
+  "screens": [
+    {
+      "screen": "home (boot)",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nChecking Claude…\nHome\nNew project\nGetting started\n0 of 6\nConnect Claude\nUses your own Claude Code login: your account, model, skills and memory.\nSign in\nCheck your tools\nCheckin",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Projects",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nProjects\nNo projects yet\n\nStart from a voiceover or a topic.\n\nNew project\nImport folder\nImport .zip\nO",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Channels",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nChannels\nAll channels\nNo channel\n\nOne board per YouTube channel you run.\n\nMake your first channel\nAll",
+      "consoleErrors": []
+    },
+    {
+      "screen": "YouTube",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nYouTube\nSee how your videos do\n\nSign in with Google for watch time and where viewers come from, or fo",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Routines",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nRoutines\nNew\nNo routines yet.\nMake videos end to end, by themselves\n\nA chain of steps from topic to p",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Berserk",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nNew conversation\nBerserk\n\nSay what video you want and add your audio, music or references. It sets up",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Library",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nLibrary\nModels, code, materials, recipes and fixes Claude reuses.\nAll\nAssets\nScenes\nKnow-how\nLoading ",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Styles",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nStyles\nBuilt-in\nCustom\nNew in this version: a smoother editor, dictation, time limits in every style ",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Memory",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nMemory\nLearn from my edits\nNew rule\nAll videos\nOne project\nOne style\nOne channel\nAdd rule\nNo rules ye",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Thumbnails",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nCanvas\nPrompt\nHiggsfield key for thumbnails\nSomething went wrong inside Creatorize. Try again. If it ",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Workspace",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nHome\nNew project\nGetting started\n0 of 6\nConnect Claude\nUses your own Claude Code login: your account,",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Renders",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nRenders\nNo exports yet\n\nExports land here with Play and Show in folder. Open a project and press Expo",
+      "consoleErrors": []
+    },
+    {
+      "screen": "Settings",
+      "found": true,
+      "textHead": "Something broke in this view\n\nCannot read properties of undefined (reading 'undefined')\n\nTry again\nReport this problem",
+      "consoleErrors": [
+        "TypeError: Cannot read properties of undefined (reading 'undefined')"
+      ]
+    },
+    {
+      "screen": "Help",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nHome\nNew project\nGetting started\n0 of 6\nConnect Claude\nUses your own Claude Code login: your account,",
+      "consoleErrors": []
+    },
+    {
+      "screen": "New project",
+      "found": true,
+      "textHead": "Creatorize\nSuite\nFaceless Brand\nPersonal Brand\nFaceless Brand\nSearch or run…\nCtrl K\nHome\nBerserk\nProjects\nChannels\nEditor\nWorkspace\nStyles\nLibrary\nMemory\nThumbnails\nRoutines\nRenders\nYouTube\nNew project\nCtrl N\nHelp\nSettings\nPremiumall unlocked\nClaude not signed in\nOpen settings to connect · Premium\nHome\nNew project\nGetting started\n0 of 6\nConnect Claude\nUses your own Claude Code login: your account,",
+      "consoleErrors": []
+    }
+  ],
+  "finishedAt": "2026-11-22T06:41:56.039Z"
+}

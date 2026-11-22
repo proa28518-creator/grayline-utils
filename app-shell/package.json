@@ -1,0 +1,10 @@
+{
+  "name": "heart-study-shell",
+  "version": "0.0.1",
+  "private": true,
+  "description": "STUDY shell: boots Russell's original renderer untouched, answers its host contract with honest neutral stubs. Not the product.",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^45.4.1"
+  }
+}

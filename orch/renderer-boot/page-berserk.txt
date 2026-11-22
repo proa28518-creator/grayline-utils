@@ -1,0 +1,47 @@
+Creatorize
+Suite
+Faceless Brand
+Personal Brand
+Faceless Brand
+Search or run…
+Ctrl K
+Home
+Berserk
+Projects
+Channels
+Editor
+Workspace
+Styles
+Library
+Memory
+Thumbnails
+Routines
+Renders
+YouTube
+New project
+Ctrl N
+Help
+Settings
+Premiumall unlocked
+Claude not signed in
+Open settings to connect · Premium
+New conversation
+Berserk
+
+Say what video you want and add your audio, music or references. It sets up the project, directs the Claude that builds the video, checks the frames, mixes the sound and exports. It uses more of your Claude plan than a normal build, because a second Claude is directing.
+
+Faster builds
+Trades some quality for a sooner video. 
+
+Quality mode: no time limit. Claude works until the style's checks pass; the app stops it only if nothing moves for 30 minutes.
+
+Make me a 1 minute 3D cartoon short from this audio, and use this track as music
+Write and make a 2 minute flat explainer about why cats purr
+Look at my last video, tell me what you would fix, then fix it
+Account default
+Medium
+Exact shot plan
+Style: Automatic
+Send
+New in this version: a smoother editor, dictation, time limits in every style and more.
+Take the tour
