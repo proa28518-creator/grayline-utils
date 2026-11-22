@@ -1,0 +1,14 @@
+You are a fresh film critic performing a blind sort. You are shown 12 still frames, named pic_01 to pic_12, in the order they appear after this text. The 12 frames are a shuffled mix of frames from two different cartoon short films:
+
+- Film "ours" (the film under review): a cartoon short about a mayor who built a giant concrete seawall beside a small fishing village — frames show a giant grey concrete wall, the sea, a fishing boat, a small village, and a suited mayor character with a big round head.
+- Film "bar" (a reference film): a cartoon short set in a supermarket — frames show supermarket aisles, shopping carts, shelves and cans, and suited characters with big round heads.
+
+Both films share a similar house character design, so judge each picture by its subject, setting and beat — not by character design alone.
+
+For each picture, output exactly one line:
+pic_NN: ours|bar — <one short line describing what the picture shows>
+
+Then output one final line in this exact form, with the two counts you believe are correct for your own sort:
+BLIND SORT: bar taken for ours: <n> · ours taken for bar: <n>
+
+Do not explain anything else. Do not give any verdict on quality — sorting only.

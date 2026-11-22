@@ -1,0 +1,2 @@
+{"attempt": 1, "status": 200, "latency_ms": 24066}
+{"usage": {"promptTokenCount": 13528, "candidatesTokenCount": 311, "totalTokenCount": 15110, "promptTokensDetails": [{"modality": "TEXT", "tokenCount": 328}, {"modality": "IMAGE", "tokenCount": 13200}], "thoughtsTokenCount": 1271, "serviceTier": "standard"}}

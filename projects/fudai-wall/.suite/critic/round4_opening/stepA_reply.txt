@@ -1,0 +1,13 @@
+pic_01: ours — A small wooden fishing boat floating on the blue sea near a wall.
+pic_02: bar — A character in a red jacket pushing a shopping cart down a supermarket aisle.
+pic_03: ours — The mayor character in a dark suit standing in front of a wall.
+pic_04: ours — A high-angle view of the small village, mayor, and giant elevator built against a concrete wall.
+pic_05: ours — The five-story glass elevator structure attached to the wall beside a small village house.
+pic_06: bar — A character in a red jacket with a shopping cart surrounded by flying soup cans in a supermarket.
+pic_07: ours — A view of the multi-story elevator next to a small house and wall.
+pic_08: bar — A character riding a speeding shopping cart down a supermarket aisle past spilled cans.
+pic_09: bar — A character in a red jacket with a shopping cart next to wooden crates labeled FRESH in a supermarket.
+pic_10: ours — The mayor character standing in front of the grey concrete wall.
+pic_11: bar — A character pushing a shopping cart in a supermarket while a woman holds a milk carton.
+pic_12: bar — A character riding a shopping cart in a supermarket aisle with another character behind him.
+BLIND SORT: bar taken for ours: 0 · ours taken for bar: 0

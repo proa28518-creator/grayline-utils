@@ -158,3 +158,42 @@ Filed 2026-11-22 (Seat 3 standing appointment) before the board exists: `out/boa
 empty, `.suite/critic/` held no prior reports for this run. I am standing by; when the
 board stills land I judge them in the form above and return the verdict verbatim into the
 run record. Until then there is no verdict — from anyone.
+
+## 7. AMENDMENT — the owner's method ruling (2026-11-23 ~00:00 EET, his direct word)
+
+After rounds 1–3 (all `free/gpt-6-luna`, blind mix) returned VERDICT: NO — rounds 2 and 3
+resting on a documented blind-sort artifact (the critic sorted this film's mayor-face
+frames as the bar film's character, both films sharing the house suited-character design,
+then faulted the face's absence) — the owner ruled, verbatim:
+
+> «الاتنين: ناقد جديد + فصل الفرز عن الحكم»
+> ("Both: a new critic + decoupling the sort from the verdict.")
+
+Applied from round 4 onward:
+
+- **(a) New critic, different model class.** Each round's critic comes from a different
+  model class than the round before. Round 4's critic is **Gemini** (`gemini-3.5-flash`)
+  via the desk's own API connector (`custom.gemini-api`). The critic is **fresh**: no
+  build history and **no prior rounds' reports or verdicts are fed to it** (this suspends
+  §1's "same moments + my last report" for round 4; freshness under the ruling governs).
+- **(b) The blind sort is decoupled from the verdict.** A round now runs in two separate
+  fresh calls:
+  - **Step A — blind sort, SCORE ONLY.** The same blind mix (our frames + bar frames,
+    same size, shuffled, neutral names; key held by the driver) is sorted by the critic.
+    The driver key-checks the score from the critic's per-picture lines and records it
+    (header-vs-lines discrepancies recorded honestly, as in rounds 1–3). The sort is a
+    number in the record — **it can no longer produce, support, or contaminate a
+    verdict**: a sort slip can never again invent a missing element.
+  - **Step B — the verdict, judged directly.** In a separate fresh call the critic
+    receives **our frames only, labelled as the film under review** (no bar frames),
+    plus the pass exit spec (§2 standing BLOCKING checks + §3.2/§3.3 for the round's
+    scope), and answers in the fixed form of §5 (minus the BLIND SORT line, which now
+    lives in Step A). BIGGEST GAP / BLOCKING / VERDICT rest solely on what is visibly in
+    our frames measured against the spec.
+- **What stands unchanged (RULES §3):** a NEW critic every round; fix only the BIGGEST
+  GAP, at its cause, one cause one change; a BLOCKING one-line fix may ride along; the
+  pass is done only when its exit list is true AND the critic answers `VERDICT: YES`
+  with no BLOCKING fault; the same fault twice means change the method, not the amount;
+  the director's review never replaces critic rounds; the driver never overturns a
+  critic — a verdict resting on a factual error about the frames is recorded precisely
+  and reported, not silently corrected.

@@ -424,6 +424,52 @@ render → Colab after board approval) applied to this run, correcting the local
   time. No scene code was touched this phase; no fleet dispatch was needed (no fix);
   Colab render remains LOCKED; no board was assembled for the owner.
 
+## Opening critic round 4 — the owner's new method: VERDICT YES (night shift phase 5, 2026-11-23 ~00:00–00:10 EET)
+- **The owner's method ruling (2026-11-23 ~00:00 EET, his direct word, recorded
+  verbatim in `CRITIC_PROTOCOL.md` §7):** «الاتنين: ناقد جديد + فصل الفرز عن الحكم» —
+  critic rounds change method: (a) a NEW critic from a different model class, and
+  (b) the blind sort is decoupled from the verdict — the sort remains as a score
+  only; the verdict (BIGGEST GAP / BLOCKING / VERDICT) is judged on our frames
+  directly against the spec, so a sort slip can never again invent a missing
+  element. RULES §3 discipline otherwise stands (fresh critic, biggest gap only,
+  verdict gates the pass). Protocol amended this phase and pushed with the round's
+  records.
+- **Critic:** Gemini `gemini-3.5-flash` via the desk's own API connector
+  (`custom.gemini-api`) — a different model class from rounds 1–3 (Luna via
+  APInex). Fresh: no build history, no prior verdicts fed to either call. Key
+  health verified first (models list HTTP 200, metadata). Both generation calls
+  HTTP 200 on attempt 1; logged in WATCH_LOG (counter rows 2–4; generation calls
+  this build now 2 of the 250/day free-tier cap).
+- **Step A — blind sort, SCORE ONLY:** the same 12-picture mix (6 current fleet
+  stills + 6 Story 4 bar frames), new shuffle, `.suite/critic/round4_opening/`,
+  key driver-held. **Key-checked score from the critic's own lines: bar taken for
+  ours: 0 · ours taken for bar: 0 — 12/12 correct**, both face frames sorted
+  "ours". **Its header agrees with its lines (0·0)** — the first round in four
+  with no header/lines contradiction. The score is a record number only; it
+  played no part in the verdict.
+- **Step B — the verdict, decoupled:** a separate fresh Gemini call judged OUR
+  six stills only (labelled by frame/time, full-resolution PNGs) against the
+  Build-pass exit spec. **VERDICT (verbatim): YES.** BIGGEST GAP: none ·
+  BLOCKING: none · S1 PASS · S2 sea-glide beat PASS · line coherence: all
+  windows match. Full report (both steps verbatim):
+  `.suite/critic/round4_opening/CRITIC_REPORT_round4.md`.
+- **Driver eye-verdicts (this phase):** F0 complete expressive face, margin on
+  every side ✓ · F45/F60 tower center-frame, digits 5-4-3-2 large and legible ✓ ·
+  F105 all five digits 5-4-3-2-1 legible, mayor tiny at base ✓ · F3/F165 as
+  verified in phases 2–4 (frames unchanged). **Standing observation:** digit 1
+  remains occluded by the foreground house roof at the two tilt-up moments
+  (F45/F60); the fresh critic, judging the frames directly, named no gap and no
+  BLOCKING fault. Per §3 the driver does not overturn a critic in either
+  direction — the blemish stays recorded as non-blocking, carried to the Camera
+  pass; it is not a fix round, because the verdict is YES.
+- **Phase-5 end state, plainly:** the opening's Build pass (SH01–SH03 scope) is
+  **CRITIC-PASSED** — exit list true AND a fresh critic's `VERDICT: YES` with no
+  BLOCKING fault (RULES §3), the run's first YES, obtained under the owner's new
+  method on the first round that used it. No scene code was touched this phase;
+  no fleet dispatch was needed (no fix); SH04+ authoring is a later phase, NOT
+  started here. Colab render remains LOCKED; no board was assembled for the
+  owner.
+
 ## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
 - **The drift, named:** the rebuild had drifted LOCAL onto the desk VM (recovered tree, the
   22:14 local proof still, the build starting locally). In the 22:41 call the desk wrongly
