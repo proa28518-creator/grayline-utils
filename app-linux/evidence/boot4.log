@@ -1,0 +1,18 @@
+[19231:1122/070838.207194:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[19231:1122/070838.836300:WARNING:net/proxy_resolution/proxy_config_service_linux.cc:97] Proxy authentication parameters ignored, see bug 16709
+[19231:1122/070838.837006:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[19231:1122/070838.837176:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[19231:1122/070838.837206:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[19231:1122/070838.847276:WARNING:net/proxy_resolution/proxy_config_service_linux.cc:97] Proxy authentication parameters ignored, see bug 16709
+2026-11-22T07:08:38.859Z --- Creatorize Suite 0.28.2 linux electron 45.4.1 ---
+[19231:1122/070838.937630:ERROR:dbus/object_proxy.cc:589] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+[19231:1122/070838.937746:WARNING:device/bluetooth/dbus/bluez_dbus_manager.cc:209] Floss manager service not available, cannot set Floss enable/disable.
+[19231:1122/070838.938340:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[19231:1122/070838.976807:ERROR:dbus/object_proxy.cc:589] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+[19231:1122/070839.099639:WARNING:net/proxy_resolution/proxy_config_service_linux.cc:97] Proxy authentication parameters ignored, see bug 16709
+[19260:1122/070839.289871:WARNING:media/gpu/vaapi/vaapi_wrapper.cc:1655] drmGetDevices2() has not found any devices
+[19260:1122/070839.297392:WARNING:sandbox/policy/linux/sandbox_linux.cc:405] InitializeSandbox() called with multiple threads in process gpu-process.
+[19260:1122/070839.333801:WARNING:ui/gfx/linux/gbm_support_x11.cc:48] dri3 extension not supported.
+2026-11-22T07:08:41.934Z sign-in window: drew (window 1)
+2026-11-22T07:08:59.183Z skool check no clear answer (timeout) no answer from Skool in 20 s
+2026-11-22T07:09:28.718Z quitting

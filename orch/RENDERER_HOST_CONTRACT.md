@@ -818,3 +818,88 @@ The two bare channels are `health` and `stats`.
 | `workspace:progress` | index-wX7YC2th.js | 1 |
 | `youtube:changed` | index-wX7YC2th.js | 3 |
 | `youtube:sync` | index-wX7YC2th.js | 1 |
+
+---
+
+# Part II — Linux conversion map (the whole app, as-is)
+
+**Owner pivot:** convert the same program as-is to Linux first. Method: run the whole
+unpacked app — original main process + renderer + win/resources content — under a Linux
+Electron runtime, in the packaged layout the app expects
+(`resourcesDir() = app.isPackaged ? process.resourcesPath : app.getAppPath()`;
+`templatesDir = resourcesDir/templates`). The run tree (`app-linux/run/`, scripts in
+`app-linux/`) holds: the Linux Electron 45.4.1 dist, **`resources/app.asar` — the original
+file, byte-identical (sha256 `373b1e46c0585cb140882a3fdd4c7e0300afd21952e8ebd860afa184a52cae60`)** —
+plus `resources/templates/`, `resources/resources/`, `app-update.yml` copied from the
+Windows distribution. The app was not modified in any way. Evidence: `app-linux/evidence/`.
+
+## II.1 Windows-dependency census
+
+| Surface | Finding |
+|---|---|
+| `app.asar` (2,437 files, 32.1 MB) | **Zero native binaries**: no `.node`, `.exe`, `.dll`, `.bat`, `.cmd`, `.ps1` anywhere. Dependencies are all JS (`@anthropic-ai/claude-agent-sdk`, `@anthropic-ai/sdk`, `@modelcontextprotocol/sdk`, `@openai/codex-sdk`, `electron-updater`, `zod`). No entry is even marked `unpacked`. |
+| Database | `node:sqlite` (built into Electron's Node) + `suite.db` — no native module to port. |
+| `win/resources/templates/` (8,107 files, 744 MB) | **Zero Windows binaries.** Media (jpg/mp3/png/webp/ogg), 709 `.glb`, JS, JSON, 525 `.py`. `templates/blender/` holds assets/engine/film code — **Blender itself is not shipped**; the app installs it at runtime (`blender:install`). |
+| `win/resources/` root | The distribution's only Windows binary is `elevate.exe` (108 KB) — the NSIS installer's elevation helper. **Not part of the running app.** |
+| Pipeline scripts | Python (`pipeline-scripts/*.py` in the asar; 525 `.py` in templates) — cross-platform by nature; the app's own tool defaults are POSIX-aware (`python: win32 ? "python" : "python3"`). |
+| Main bundle platform surface | 204 `process.platform` refs; `=== "win32"` ×73, `=== "darwin"` ×68, `=== "linux"` ×5; 385 `.exe` literals — overwhelmingly **name selection with a POSIX form** (`WIN ? "Creatorize Launcher.exe" : "Creatorize Launcher"`); 285 spawn/exec calls, **0 with `shell: true`** (argv arrays throughout). Core paths carry explicit POSIX branches (process kill: `taskkill.exe` on win32, `/bin/kill` + SIGTERM elsewhere; path compare: case-insensitive only on win32). |
+
+**Windows-only pockets — by name, all feature-scoped and platform-guarded:**
+1. `powershell.exe` — (a) persisting the `CZ_NO_UPDATE` user env var for the updater
+   (Windows `SetEnvironmentVariable`); (b) one process-listing implementation
+   (`Get-Process` → JSON) used by the updater's restart logic; a POSIX variant exists alongside.
+2. `reg.exe query … /v Path` — reading the registry PATH to discover tools
+   (`registryPath()`); failure falls back to `[]` via `.catch`.
+3. `LOCALAPPDATA\Programs\creatorize-launcher\Creatorize Launcher.exe` — the **Creatorize
+   Launcher** companion app's install location. The Launcher is a separate Windows/macOS
+   companion; on Linux its features can only report "no launcher".
+4. `electron-updater` — on Linux it serves AppImage builds only; an unpackaged run
+   self-reports "not an installed copy" and skips updates (the code checks
+   `installedCopy()` and the presence of `app-update.yml`, whose GitHub owner/repo it parses).
+
+## II.2 Boot attempts (this VM, Xvfb, Electron 45.4.1)
+
+| Run | Outcome |
+|---|---|
+| boot1 | Environment failure, not the app: display :99 was still held by a stuck process from the earlier study-shell debug session. Cleared. |
+| boot2 | **The app booted on Linux.** Its own log: `--- Creatorize Suite 0.28.2 linux electron 45.4.1 ---`, then `sign-in window: drew (window 1)`. The Skool check failed `ERR_CERT_AUTHORITY_INVALID` loading `https://www.skool.com/creatorize`; the app's window showed its own **"Can't reach Skool"** state and the process stayed resident until stopped (clean `quitting` on SIGTERM). |
+| boot3 | Same cert failure. Root cause isolated: this VM's `~/.pki` is a **read-only filesystem** — Chromium's NSS DB (`~/.pki/nssdb`, error -8126) is frozen with the egress CA present but at insufficient trust (`C,,`, not trusted for SSL server auth), and `certutil` gets `SEC_ERROR_READ_ONLY`. An environment property, not an app or Linux problem. |
+| boot4 | With a writable study HOME whose NSS DB trusts the egress CA (`CT,C,c`): **TLS verifies — no cert error, no NSS error.** The Skool check advanced to its second verdict: `skool check no clear answer (timeout) no answer from Skool in 20 s`; window: **"Skool didn't answer"**. Through this VM's egress proxy, Skool (Cloudflare-guarded; `curl` gets 403) does not produce the page state the check waits for within the app's 20 s. |
+
+**The gate, precisely** (from the main bundle): before the main window, the app loads
+`https://www.skool.com/creatorize` in a `persist:skool` session partition and reads the
+signed-in/member state off the page (role/plan fields), with verdicts *can't reach /
+didn't answer / signed out / not a member / member+plan*. Member + plan opens the app
+(and feeds `plan:get`). A test override exists (`CZ_SKOOL_BASE`, test runs only).
+**Passing the gate requires the owner's own Skool membership sign-in — his step, like
+every sign-in in this program.**
+
+## II.3 Blocker list (by name)
+
+- **B1 — Skool membership gate (by design).** The app will not open its main window
+  without a signed-in Skool member with a plan. Not a defect and not a Linux issue;
+  it is the app's license door, and the sign-in is the owner's.
+- **B2 — This VM's egress proxy vs Skool/Cloudflare.** The group page does not answer
+  within the app's 20 s through the proxy (boot4). On an ordinary network connection
+  this check is the app's normal path. Environment, not platform.
+- **B3 — This VM's read-only `~/.pki`.** Chromium's NSS trust store is frozen
+  (boot2/boot3); worked around for the study with a writable HOME + a correctly
+  trusted CA. Invisible on a normal Linux install (e.g. the owner's Kali), where
+  `~/.pki` is writable.
+- **B4 — Creatorize Launcher companion (latent, feature-scoped).** Windows/macOS
+  binary paths only; on Linux, launcher-backed features report it absent
+  (the UI already has a `launcher:gone` flow).
+- **B5 — Updater channel (latent).** `electron-updater` on Linux = AppImage only;
+  unpackaged runs skip updates by the app's own design.
+- **B6 — Windows tool-discovery helpers (latent, degraded-not-fatal).** `reg.exe` PATH
+  reads and the PowerShell process lister have POSIX fallbacks or `.catch` guards.
+- **Non-blockers observed:** dbus absence, GPU/VAAPI/dri3 warnings under Xvfb,
+  proxy-auth warnings — all noise; the app ran through them.
+
+**Conversion verdict:** the program's body is platform-clean JavaScript end to end —
+no native module, no bundled Windows binary, no shell-string spawning — and its startup
+path (main init → sign-in window → membership check) already executes on a Linux
+Electron runtime, unmodified. What stands between this app and a Linux desktop is not
+its code: it is the Skool account door (B1) and, on this particular VM, the network/TLS
+environment (B2/B3). The feature-scoped pockets (B4–B6) only matter if those specific
+features are wanted on Linux.

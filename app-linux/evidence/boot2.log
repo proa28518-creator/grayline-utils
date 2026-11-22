@@ -1,0 +1,24 @@
+[17941:1122/070545.169442:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[17941:1122/070545.169571:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[17941:1122/070545.898725:WARNING:net/proxy_resolution/proxy_config_service_linux.cc:97] Proxy authentication parameters ignored, see bug 16709
+[17941:1122/070545.899192:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[17941:1122/070545.899249:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[17941:1122/070545.927919:WARNING:net/proxy_resolution/proxy_config_service_linux.cc:97] Proxy authentication parameters ignored, see bug 16709
+2026-11-22T07:05:46.007Z --- Creatorize Suite 0.28.2 linux electron 45.4.1 ---
+[17941:1122/070546.091682:ERROR:dbus/object_proxy.cc:589] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+[17941:1122/070546.091879:WARNING:device/bluetooth/dbus/bluez_dbus_manager.cc:209] Floss manager service not available, cannot set Floss enable/disable.
+[17941:1122/070546.095943:ERROR:dbus/bus.cc:406] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[17941:1122/070546.114028:ERROR:dbus/object_proxy.cc:589] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+[17941:1122/070546.249641:WARNING:net/proxy_resolution/proxy_config_service_linux.cc:97] Proxy authentication parameters ignored, see bug 16709
+[17972:1122/070546.335570:WARNING:media/gpu/vaapi/vaapi_wrapper.cc:1655] drmGetDevices2() has not found any devices
+[17972:1122/070546.339979:WARNING:sandbox/policy/linux/sandbox_linux.cc:405] InitializeSandbox() called with multiple threads in process gpu-process.
+[17972:1122/070546.351707:WARNING:ui/gfx/linux/gbm_support_x11.cc:48] dri3 extension not supported.
+[17941:1122/070546.997258:ERROR:crypto/nss_util.cc:256] Error initializing NSS with a persistent database (sql:/home/hatch/.pki/nssdb): NSS error code: -8126
+[17978:1122/070547.003169:ERROR:net/socket/ssl_client_socket_impl.cc:949] handshake failed; returned -1, SSL error code 1, net_error -202
+(node:17941) electron: Failed to load URL: https://www.skool.com/creatorize with error: ERR_CERT_AUTHORITY_INVALID
+(Use `electron --trace-warnings ...` to show where the warning was created)
+2026-11-22T07:05:49.025Z sign-in window: drew (window 1)
+[17978:1122/070550.782336:ERROR:net/socket/ssl_client_socket_impl.cc:949] handshake failed; returned -1, SSL error code 1, net_error -202
+(node:17941) electron: Failed to load URL: https://www.skool.com/creatorize with error: ERR_CERT_AUTHORITY_INVALID
+2026-11-22T07:05:52.297Z skool check no clear answer (blocked) ERR_CERT_AUTHORITY_INVALID (-202) loading 'https://www.skool.com/creatorize'
+2026-11-22T07:06:30.203Z quitting
