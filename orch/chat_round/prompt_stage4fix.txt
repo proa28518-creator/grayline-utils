@@ -1,0 +1,13 @@
+STAGE 4 FIX — same conversation, continue. The desk ran your STAGE4_VERIFY live sequence against the restarted server (stage-4 code). Registry (A) PASSED exactly as specified, and the chat setup flow PASSED: the thread's create_project tool result carries style:"cartoon-shorts" + styleLabel, and project.json settings.style agrees.
+
+DEFECT found in sequence C (unwired-style pass), with evidence:
+- Scratch project chat-test-style-unwired, project.json style flipped to pixel-explainer-video (your prescribed fixture step), POST /api/passes/run {pass:"build"} → job pass-1795358872984 failed in 1 ms with: "Cannot access 'styleId' before initialization".
+- state.json DID record style:"pixel-explainer-video" and runSettings.style agrees — the recording works. But the failure is a TDZ code defect, NOT the designed named failure. Expected per your own verify doc: failure naming style_step_missing (skills/pixel-explainer-video/steps/build.md), and NO builder dispatch.
+- Also misleading: state history event "started" says "Builder dispatched with style pixel-explainer-video" although no builder was or should be dispatched when style validation fails.
+
+Fix, surgically, in server/server.js only (plus the verify note):
+1. Find and fix the use-before-initialization of styleId in the pass-run path (the pass handler declares it around the job creation; a nested builder-round scope re-declares/references it — make the ordering sound). Audit ALL stage-4 style code paths (pass handler, builder-round function, /api/run handler) for the same pattern; the wired cartoon-shorts path must also start cleanly.
+2. Style validation (registered → wired → step file exists) must complete BEFORE any builder dispatch and before any history/log line claims a dispatch. On validation failure the job and pass state must fail with the designed named error (style_not_registered / style_not_wired / style_step_missing) and the started-history must describe the validation failure, not a dispatch.
+3. Keep every other stage-4 behavior identical (A1–A8, registry, composer, settings flow).
+
+Run the static checks (node --check server/server.js, git diff --check) and write orch/chat_round/STAGE4_FIX_VERIFY.md: root cause in one paragraph, what changed, and the exact desk re-check (sequence C commands + the expected job/state output, plus one line confirming the wired path's first validation step). Do not attempt commits or server binds. End with the changed-files list.

@@ -30,6 +30,33 @@ def engine_name() -> str | None:
         return None
 
 
+def model_cached(engine: str | None, model: str, model_dir: Path) -> bool:
+    if not engine:
+        return False
+    if engine == "faster-whisper":
+        snapshots = model_dir / f"models--Systran--faster-whisper-{model}" / "snapshots"
+        if not snapshots.is_dir():
+            return False
+        return any((snapshot / "model.bin").is_file() for snapshot in snapshots.iterdir() if snapshot.is_dir())
+    if engine == "openai-whisper":
+        return (model_dir / f"{model}.pt").is_file()
+    return False
+
+
+def atomic_copy(source: Path, target: Path) -> None:
+    fd, temp_name = tempfile.mkstemp(prefix=target.name + ".tmp.", dir=target.parent)
+    os.close(fd)
+    try:
+        shutil.copyfile(source, temp_name)
+        os.replace(temp_name, target)
+    except Exception:
+        try:
+            os.unlink(temp_name)
+        except FileNotFoundError:
+            pass
+        raise
+
+
 def normalize(text: str) -> list[str]:
     text = unicodedata.normalize("NFKC", text or "")
     text = re.sub(r"[\u064b-\u065f\u0670\u0640]", "", text)
@@ -115,7 +142,7 @@ def main() -> int:
         engine = engine_name()
         model = os.environ.get("HEART_ASR_MODEL", "small")
         model_dir = Path(os.environ.get("HEART_ASR_MODEL_DIR") or Path.home() / "workspace" / "tools" / "whisper-models")
-        cached = (model_dir / model).is_dir() or any(model_dir.rglob("*.bin")) or any(model_dir.rglob("*.pt")) if model_dir.is_dir() else False
+        cached = model_cached(engine, model, model_dir)
         print(json.dumps({"available": bool(engine and cached), "engine": engine, "model": model, "error": None if engine and cached else ("asr_engine_unavailable" if not engine else "asr_model_unavailable: model weights are not cached locally")}))
         return 0
     project = args.project.resolve()
@@ -136,7 +163,7 @@ def main() -> int:
         report = {"ok": True, "engine": engine, "language": os.environ.get("HEART_ASR_LANGUAGE", "ar"), "source": str(voice.relative_to(project)), "words": len(entries), "reference_words": len(reference) if reference else None, "accuracy": accuracy, "transcript": transcript}
         clean_path, clean_voice, transcript_path, report_path = project / "audio" / "clean.json", project / "audio" / "clean.wav", project / "transcript.txt", project / "out" / "transcribe_report.json"
         clean_path.parent.mkdir(parents=True, exist_ok=True); report_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(voice, clean_voice)  # Keep the exact owner audio bytes for the existing renderer contract.
+        atomic_copy(voice, clean_voice)  # Keep the exact owner audio bytes for the existing renderer contract.
         for output, content in ((clean_path, json.dumps(entries, ensure_ascii=False, indent=2) + "\n"), (transcript_path, transcript + "\n"), (report_path, json.dumps(report, ensure_ascii=False, indent=2) + "\n")):
             fd, temp_name = tempfile.mkstemp(prefix=output.name + ".tmp.", dir=output.parent)
             with os.fdopen(fd, "w", encoding="utf-8") as stream: stream.write(content)

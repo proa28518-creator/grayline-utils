@@ -43,6 +43,47 @@ function defaultState(projectDir) {
 function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   const repoDir = path.resolve(__dirname, '..');
   const projectsDir = path.join(repoDir, 'projects');
+  const skillsDir = path.join(repoDir, 'skills');
+  const DEFAULT_STYLE_ID = 'cartoon-shorts';
+  const REQUIRED_STYLE_STEPS = ['build', 'camera', 'environment', 'post', 'shading'];
+  function styleRegistry() {
+    const rows = [];
+    for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true }).filter(x => x.isDirectory())) {
+      const id = entry.name, dir = path.join(skillsDir, id), stepsDir = path.join(dir, 'steps');
+      let skillText = ''; try { skillText = fs.readFileSync(path.join(dir, 'SKILL.md'), 'utf8'); } catch (_) {}
+      const title = id === 'cartoon-shorts' ? '3D Cartoon Shorts' : skillText.match(/^#\s+(.+)$/m)?.[1]?.replace(/\s*\(New\)\s*$/, '').trim() || id.split(/[-_]/).map(x => x[0]?.toUpperCase() + x.slice(1)).join(' ');
+      const missing = REQUIRED_STYLE_STEPS.filter(pass => !fs.existsSync(path.join(stepsDir, `${pass}.md`)));
+      const available = [];
+      const walk = d => { if (!fs.existsSync(d)) return; for (const child of fs.readdirSync(d, { withFileTypes: true })) { const full = path.join(d, child.name); if (child.isDirectory()) walk(full); else available.push(path.relative(dir, full).split(path.sep).join('/')); } };
+      walk(dir);
+      let reason = missing.length ? `Missing production pass step files: ${missing.map(x => `steps/${x}.md`).join(', ')}.` : 'All five production pass step files are available.';
+      if (id === 'pixel-explainer-video' && missing.length) reason = `Not wired: this pack contains only an SFX script (${available.filter(x => x.startsWith('scripts/')).join(', ') || 'scripts only'}); it has no production pass step files.`;
+      rows.push({ id, label: title, wired: missing.length === 0, reason, missingSteps: missing.map(x => `steps/${x}.md`) });
+    }
+    if (!rows.some(x => x.id === 'cinematic')) rows.push({ id: 'cinematic', label: 'Cinematic', wired: false, reason: 'Not wired: Heart Studio has no Cinematic style pack; this is the original app label only.', missingSteps: REQUIRED_STYLE_STEPS.map(x => `steps/${x}.md`) });
+    return rows;
+  }
+  function projectStyle(projectDir, persistDefault = false) {
+    const file = path.join(projectDir, 'project.json'), pj = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const style = String(pj.settings?.style || DEFAULT_STYLE_ID);
+    if (persistDefault && !pj.settings?.style) { pj.settings = { ...(pj.settings || {}), style }; fs.writeFileSync(file, JSON.stringify(pj, null, 2) + '\n'); }
+    return style;
+  }
+  function styleById(id) { return styleRegistry().find(x => x.id === id) || null; }
+  function requireWiredStyle(id) {
+    const row = styleById(id);
+    if (!row) throw new Error(`style_not_registered: ${id}`);
+    if (!row.wired) throw new Error(`style_not_wired: ${id}: ${row.reason}`);
+    return row;
+  }
+  function setProjectStyle(projectDir, id) {
+    requireWiredStyle(id);
+    const file = path.join(projectDir, 'project.json'), pj = JSON.parse(fs.readFileSync(file, 'utf8'));
+    pj.settings = { ...(pj.settings || {}), style: id };
+    fs.writeFileSync(file, JSON.stringify(pj, null, 2) + '\n');
+    return pj.settings;
+  }
+
   let activeDir = projectDir;
   let stateFile = path.join(activeDir, 'panel_state.json');
   let state;
@@ -129,7 +170,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     let baseSettings = {};
     try { baseSettings = JSON.parse(fs.readFileSync(path.join(dir, 'project.json'), 'utf8')).settings || {}; } catch (_) {}
     const captionsSetting = baseSettings.captions;
-    const settings = { ...baseSettings, captions: { on: typeof captionsSetting === 'object' ? captionsSetting.on !== false : captionsSetting !== false }, fps: Number(baseSettings.fps) === 24 ? 24 : 30 };
+    const settings = { ...baseSettings, captions: { on: typeof captionsSetting === 'object' ? captionsSetting.on !== false : captionsSetting !== false }, fps: Number(baseSettings.fps) === 24 ? 24 : 30, style: String(baseSettings.style || DEFAULT_STYLE_ID) };
     let masterMetadata = null;
     if (master && includeMetadata) {
       const r = require('child_process').spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate,width,height', '-of', 'json', path.join(dir, master)], { encoding: 'utf8', timeout: 5000 });
@@ -140,8 +181,35 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   const conversationsDir = repoDir;
   const conversationFile = path.join(conversationsDir, '.heart-conversations.json');
   function readConversations() { try { return JSON.parse(fs.readFileSync(conversationFile, 'utf8')); } catch (_) { return {}; } }
-  function saveConversations(rows) { fs.mkdirSync(conversationsDir, { recursive: true }); const tmp = conversationFile + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(rows, null, 2) + '\n'); fs.renameSync(tmp, conversationFile); }
-  function addMessage(thread, role, text, extra = {}) { const m = { id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7), role, text: String(text || ''), at: new Date().toISOString(), ...extra }; thread.messages.push(m); return m; }
+  const MAX_CONVERSATION_MESSAGES = 300;
+  function capThreadMessages(thread) {
+    thread.messages = Array.isArray(thread.messages) ? thread.messages : [];
+    while (thread.messages.length > MAX_CONVERSATION_MESSAGES) {
+      let index = thread.messages.findIndex(m => m.kind === 'job_feed');
+      if (index < 0) throw new Error(`conversation_message_limit_reached: ${MAX_CONVERSATION_MESSAGES} protected messages retained; start a new conversation`);
+      thread.messages.splice(index, 1);
+    }
+  }
+  function saveConversations(rows) {
+    fs.mkdirSync(conversationsDir, { recursive: true });
+    const disk = readConversations(), merged = { ...disk };
+    for (const [id, candidate] of Object.entries(rows || {})) {
+      const current = disk[id], candidateTime = Date.parse(candidate.updatedAt || candidate.createdAt || 0) || 0, currentTime = Date.parse(current?.updatedAt || current?.createdAt || 0) || 0;
+      if (!current || candidateTime >= currentTime) merged[id] = candidate;
+      else merged[id] = current;
+      if (current) {
+        const winner = merged[id], messages = new Map([...(current.messages || []), ...(candidate.messages || [])].map(m => [m.id, m]));
+        winner.messages = [...messages.values()].sort((a, b) => Date.parse(a.at || 0) - Date.parse(b.at || 0));
+        winner.jobCursor = Math.max(Number(current.jobCursor) || 0, Number(candidate.jobCursor) || 0);
+      }
+      capThreadMessages(merged[id]);
+    }
+    const tmp = conversationFile + `.tmp.${process.pid}.${Math.random().toString(36).slice(2, 8)}`;
+    fs.writeFileSync(tmp, JSON.stringify(merged, null, 2) + '\n'); fs.renameSync(tmp, conversationFile);
+    return merged;
+  }
+  function touchThread(thread) { const prior = Date.parse(thread.updatedAt || '') || 0; thread.updatedAt = new Date(Math.max(Date.now(), prior + 1)).toISOString(); }
+  function addMessage(thread, role, text, extra = {}) { const m = { id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7), role, text: String(text || ''), at: new Date().toISOString(), ...extra }; thread.messages.push(m); try { capThreadMessages(thread); } catch (e) { thread.messages.pop(); throw e; } return m; }
   function boundedCodex(prompt) {
     return new Promise(resolve => {
       const home = process.env.HOME || '', codex = process.env.CODEX_BIN && fs.existsSync(process.env.CODEX_BIN) ? process.env.CODEX_BIN : ['/usr/lib/chatgpt/resources/codex', path.join(home, 'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex'), '/opt/hatch-image/bin/codex'].find(fs.existsSync);
@@ -157,17 +225,19 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     return{ok:!r.timedOut&&r.code===0,text:String(r.out||'').trim(),error:r.timedOut?'vision seat timeout':String(r.err||'').trim()};
   }
   function parseAppearance(value, ratios, duration) {
-    if(typeof value==='number'&&Number.isFinite(value)){const target=value>=0&&value<=1?value:duration>0?value/duration:value;return ratios.reduce((a,b)=>Math.abs(a-target)<Math.abs(b-target)?a:b,ratios[0]);}
+    if(typeof value==='number'&&Number.isFinite(value)){if(value>=0&&value<=1)return ratios.find(r=>Math.abs(r-value)<=0.005)??null;const target=duration>0?value/duration:value;return ratios.reduce((a,b)=>Math.abs(a-target)<Math.abs(b-target)?a:b,ratios[0]);}
     if(typeof value==='string') { const p=value.match(/probe[-_ ]?([123])/i);if(p)return ratios[Number(p[1])-1]; const clock=value.match(/^(\d+):(\d+(?:\.\d+)?)$/);const t=clock?Number(clock[1])*60+Number(clock[2]):Number(value.replace(/s$/i,''));if(Number.isFinite(t)&&duration>0)return ratios.reduce((a,b)=>Math.abs(duration*b-t)<Math.abs(duration*a-t)?b:a,ratios[0]); }
-    if(value&&typeof value==='object'){if(Number.isFinite(Number(value.fraction)))return parseAppearance(Number(value.fraction),ratios,duration);if(Number.isFinite(Number(value.time)))return parseAppearance(Number(value.time),ratios,duration);if(value.probe)return parseAppearance(String(value.probe),ratios,duration);if(value.shot)return parseAppearance(String(value.shot),ratios,duration);}
+    if(value&&typeof value==='object'){if(typeof value.fraction==='number'&&Number.isFinite(value.fraction))return parseAppearance(value.fraction,ratios,duration);if(typeof value.time==='number'&&Number.isFinite(value.time))return parseAppearance(value.time,ratios,duration);if(value.probe)return parseAppearance(String(value.probe),ratios,duration);if(value.shot)return parseAppearance(String(value.shot),ratios,duration);}
     return null;
   }
+  function numericAppearanceFraction(value) { if(typeof value==='number'&&Number.isFinite(value)&&value<=1)return value;if(value&&typeof value==='object'&&typeof value.fraction==='number'&&Number.isFinite(value.fraction)&&value.fraction<=1)return value.fraction;return null; }
   async function runPropTruthGate(projectDir, evidenceDir, probes, duration) {
     const gate={status:'running',ok:false,props:[],crops:[],frames:[],failures:[]},file=path.join(projectDir,'props.json');
     let propDoc,props=[];try{propDoc=JSON.parse(fs.readFileSync(file,'utf8'));if(Array.isArray(propDoc))props=propDoc;else if(propDoc&&typeof propDoc==='object'&&Array.isArray(propDoc.props))props=propDoc.props;else throw new Error('expected an array or {props,setDressing} object');}catch(e){gate.failures.push(`prop_truth: props.json missing or invalid (${e.message})`);gate.status='failed';fs.writeFileSync(path.join(evidenceDir,'prop_gate.json'),JSON.stringify(gate,null,2)+'\n');return gate;}
     const ratios=[.1,.5,.9],brief=fs.existsSync(path.join(projectDir,'brief.md'))?fs.readFileSync(path.join(projectDir,'brief.md'),'utf8'):'',allowLine=brief.match(/^\s*Set dressing allowance\s*:\s*(.*)$/im),briefAllowances=(allowLine?.[1]||'').split(/[,;|]/).map(s=>s.trim()).filter(Boolean),propAllowances=Array.isArray(propDoc?.setDressing)?propDoc.setDressing:[],allowances=[...new Set([...propAllowances,...briefAllowances].map(s=>String(s||'').trim()).filter(Boolean))],declared=props.map(p=>String(p?.name||'').trim()).filter(Boolean),normalize=s=>String(s||'').toLocaleLowerCase().replace(/[\s_\-.,!?]+/g,' ').trim().split(/\s+/).filter(Boolean).map(word=>word.endsWith('ies')&&word.length>4?word.slice(0,-3)+'y':/(ches|shes|xes|zes)$/.test(word)?word.slice(0,-2):word.endsWith('s')&&!/(ss|us|is)$/.test(word)?word.slice(0,-1):word).join(' '),known=new Set([...declared,...allowances].map(normalize));
     for(let i=0;i<props.length;i++){
-      const prop=props[i],name=String(prop?.name||`unnamed-${i+1}`).trim(),fraction=parseAppearance(prop?.appearsAt,ratios,duration),box=prop?.cropBox;
+      const prop=props[i],name=String(prop?.name||`unnamed-${i+1}`).trim(),fraction=parseAppearance(prop?.appearsAt,ratios,duration),box=prop?.cropBox,numericFraction=numericAppearanceFraction(prop?.appearsAt),validProbeFractions=ratios.join(', ');
+      if(numericFraction!==null&&!ratios.some(r=>Math.abs(r-numericFraction)<=0.005)){gate.failures.push(`prop_truth: ${name} invalid_declaration: numeric appearsAt fraction ${numericFraction} must match one of [${validProbeFractions}] within 0.005; time/clock values may snap to the nearest probe`);gate.props.push({name,status:'invalid_declaration'});continue;}
       if(!name||fraction===null||!box||![box.x,box.y,box.w,box.h].every(n=>Number.isFinite(Number(n)))||Number(box.x)<0||Number(box.y)<0||Number(box.w)<=0||Number(box.h)<=0||Number(box.x)+Number(box.w)>1||Number(box.y)+Number(box.h)>1){gate.failures.push(`prop_truth: ${name} has invalid appearsAt or normalized cropBox; fix props.json`);gate.props.push({name,status:'invalid_declaration'});continue;}
       const probe=probes.find(p=>Math.abs(p.ratio-fraction)<.0001);if(!probe||!probe.file){gate.failures.push(`prop_truth: ${name} has no matching probe still; render the declared probe fraction`);gate.props.push({name,status:'probe_missing'});continue;}
       const meta=await safeRun('ffprobe',['-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','json',probe.file]);let width=0,height=0;try{const s=JSON.parse(meta.out).streams[0];width=s.width;height=s.height;}catch(_){}
@@ -182,7 +252,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     }
     if(gate.status!=='not_run_seat_unavailable') for(const probe of probes){
       if(!probe.file)continue;
-      const prompt=`Inspect the attached full storyboard frame. Return JSON only: {"objects":["one short name for each distinct visible concrete object"]}. Declared props: ${JSON.stringify(declared)}. Allowed set dressing: ${JSON.stringify(allowances)}. For a visible declared prop or allowed set-dressing item, use its exact declared name; otherwise name the visible object plainly. List props, furniture, signs and background objects; omit people, shadows, light, and generic material surfaces. Do not infer objects outside the frame.`;
+      const prompt=`Inspect the attached full storyboard frame. Return JSON only: {"objects":["one short name for each distinct visible concrete object"]}. Declared props: ${JSON.stringify(declared)}. Allowed set dressing: ${JSON.stringify(allowances)}. For a visible declared prop or allowed set-dressing item, use its exact declared name; otherwise name the visible object plainly. List props, furniture, signs and background objects; omit people, shadows, light, generic material surfaces, the film's own captions, subtitles, and on-screen text overlays. Do not infer objects outside the frame.`;
       const review=await boundedVision(probe.file,prompt),verdict=review.ok?extractModelJson(review.text):null;
       if(!review.ok){gate.status='not_run_seat_unavailable';gate.failures.push(`template_leftover: vision seat unavailable for ${path.basename(probe.file)}: ${review.error}`);break;}
       if(!Array.isArray(verdict?.objects)){gate.failures.push(`template_leftover: object scan returned invalid JSON for ${path.basename(probe.file)}`);continue;}
@@ -194,7 +264,11 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   async function createProjectTool(input, thread) {
     const b = { ...thread.inputs, ...input };
     if (!/^[a-zA-Z0-9_-]+$/.test(String(b.name || ''))) throw new Error('create_project needs a valid project name');
-    if (!b.audioPath || !fs.existsSync(b.audioPath) || !fs.statSync(b.audioPath).isFile()) throw new Error('Attach an existing narration audio file before project setup.');
+    if (!b.audioPath || !fs.existsSync(b.audioPath) || !fs.statSync(b.audioPath).isFile()) throw new Error('create_project_audio_invalid: attach an existing narration audio file before project setup.');
+    const audioProbe = require('child_process').spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'a', '-show_entries', 'stream=codec_type', '-of', 'json', b.audioPath], { encoding: 'utf8', timeout: 10000 });
+    let hasAudioStream = false; try { hasAudioStream = audioProbe.status === 0 && (JSON.parse(audioProbe.stdout).streams || []).some(x => x.codec_type === 'audio'); } catch (_) {}
+    if (!hasAudioStream) throw new Error(`create_project_audio_invalid: narration must probe as audio (ffprobe exit ${audioProbe.status ?? 'error'}: ${(audioProbe.stderr || audioProbe.error?.message || 'no audio stream').trim()})`);
+    const styleId = String(thread.inputs.style || DEFAULT_STYLE_ID); requireWiredStyle(styleId);
     const dest = path.join(projectsDir, b.name); if (fs.existsSync(dest)) throw new Error('Project already exists: ' + b.name);
     const created = await runNode([path.join(repoDir, 'bin', 'heart'), 'new', b.name, b.template || 'demo-ring'], { cwd: repoDir });
     if (created.code !== 0) throw new Error((created.err || created.out || 'heart new failed').trim());
@@ -204,12 +278,12 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     const fullBrief = `Story / request:\n${brief}\n\nWhat matters most:\n${priorities}\n`;
     fs.writeFileSync(path.join(dest, 'brief.md'), fullBrief); fs.writeFileSync(path.join(dest, 'script.txt'), brief);
     const keyProps=seedProps(input.keyProps||thread.inputs.keyProps||[]);fs.writeFileSync(path.join(dest,'props.json'),JSON.stringify({props:keyProps,setDressing:[]},null,2)+'\n');
-    const pf = path.join(dest, 'project.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')); pj.settings = { fps: [24,30].includes(Number(thread.inputs.fps)) ? Number(thread.inputs.fps) : 30, captions: { on: true }, ...(pj.settings || {}) }; if (![24, 30].includes(Number(pj.settings.fps))) pj.settings.fps = 30; fs.writeFileSync(pf, JSON.stringify(pj, null, 2) + '\n');
+    const pf = path.join(dest, 'project.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')); pj.settings = { ...(pj.settings || {}), fps: [24,30].includes(Number(thread.inputs.fps)) ? Number(thread.inputs.fps) : 30, captions: { on: true }, style: styleId }; if (![24, 30].includes(Number(pj.settings.fps))) pj.settings.fps = 30; fs.writeFileSync(pf, JSON.stringify(pj, null, 2) + '\n');
     const git = args => require('child_process').spawnSync('git', ['-C', dest, ...args], { encoding: 'utf8' });
     git(['add', '-A']); const snap = git(['-c', 'user.name=Heart Studio', '-c', 'user.email=heart@localhost', 'commit', '-m', 'snapshot: brief + voice attached']); if (snap.status !== 0) throw new Error('project snapshot failed: ' + snap.stderr);
     fs.renameSync(path.join(dest, '.git'), path.join(dest, '.heart-git'));
     thread.project = b.name; activeDir = dest; stateFile = path.join(activeDir, 'panel_state.json'); try { state = JSON.parse(fs.readFileSync(stateFile, 'utf8')); } catch (_) { state = defaultState(activeDir); }
-    return { project: b.name, path: path.relative(repoDir, dest), brief: 'brief.md', voice: 'voice_owner.wav' };
+    return { project: b.name, path: path.relative(repoDir, dest), brief: 'brief.md', voice: 'voice_owner.wav', style: styleId, styleLabel: styleById(styleId)?.label };
   }
   function seedProps(entries) { if(!Array.isArray(entries))return[];const seen=new Set(),out=[];for(const entry of entries){const value=typeof entry==='string'?{name:entry}:entry||{},name=String(value.name||'').trim();if(!name||seen.has(name.toLocaleLowerCase()))continue;seen.add(name.toLocaleLowerCase());out.push({name,appearsAt:value.appearsAt??null,cropBox:value.cropBox??null});}return out; }
   function propDocument(entries, previous) { const old=Array.isArray(previous)?{}:previous&&typeof previous==='object'?previous:{},setDressing=Array.isArray(old.setDressing)?old.setDressing:[];return{props:seedProps(entries),setDressing:[...new Set(setDressing.map(x=>String(x||'').trim()).filter(Boolean))]}; }
@@ -387,7 +461,11 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     try {
       if (pn === '/api/conversations' && req.method === 'POST') {
         const b = await readBody(req), all = readConversations(), id = 'chat-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
-        const thread = { id, title: String(b.title || 'New conversation'), project: b.project || null, inputs: { name: b.name || '', audioPath: b.audioPath || '', story: b.story || '', priorities: b.priorities || '', model: b.model || 'gpt-6-luna', effort: b.effort || 'high', exactShotPlan: b.exactShotPlan !== false, fps: [24,30].includes(Number(b.fps)) ? Number(b.fps) : 30 }, messages: [], jobCursor: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+        const chosenStyle = String(b.style || DEFAULT_STYLE_ID), style = styleById(chosenStyle);
+        if (!style) return sendJson(res, 400, { error: `style_not_registered: ${chosenStyle}` });
+        if (!style.wired) return sendJson(res, 400, { error: `style_not_wired: ${chosenStyle}: ${style.reason}` });
+        const now = new Date().toISOString();
+        const thread = { id, title: String(b.title || 'New conversation'), project: b.project || null, inputs: { name: b.name || '', audioPath: b.audioPath || '', story: b.story || '', priorities: b.priorities || '', model: b.model || 'gpt-6-luna', effort: b.effort || 'high', exactShotPlan: b.exactShotPlan !== false, fps: [24,30].includes(Number(b.fps)) ? Number(b.fps) : 30, style: chosenStyle }, messages: [], jobCursor: 0, createdAt: now, updatedAt: now };
         all[id] = thread; saveConversations(all); return sendJson(res, 201, thread);
       }
       if (pn === '/api/conversations' && req.method === 'GET') { const all = readConversations(); return sendJson(res, 200, Object.values(all).map(t => ({ id:t.id,title:t.title,project:t.project,updatedAt:t.updatedAt,messages:t.messages.length }))); }
@@ -398,12 +476,13 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         if (related) { const fresh=(related.log||[]).slice(thread.jobCursor||0); for (const line of fresh) addMessage(thread,'assistant',line.text,{kind:'job_feed',stream:line.stream,jobId:related.id}); thread.jobCursor=(thread.jobCursor||0)+fresh.length; thread.activeJob=related.id;
           const dir=safeProject(thread.project); if (dir) { const inv=inventory(dir),oldBoard=thread.board||[]; thread.board=inv.board; if (inv.board.length && JSON.stringify(oldBoard)!==JSON.stringify(inv.board)) addMessage(thread,'assistant',`Board frames are available (${inv.board.length}). Review the frames before asking me to continue.`,{kind:'board',frames:inv.board}); if (inv.master && artifactChecks(dir).checks.find(x=>x.id==='master')?.pass && !thread.masterPosted) { const rel=path.relative(repoDir,path.join(dir,inv.master)); addMessage(thread,'assistant',`Master ready: ${rel}\nhttp://127.0.0.1:${server.address().port}/project/${inv.master.split(path.sep).join('/')}`,{kind:'master',path:rel}); thread.masterPosted=true; } }
         }
-        thread.updatedAt=new Date().toISOString(); saveConversations(all); return sendJson(res,200,thread);
+        touchThread(thread); saveConversations(all); return sendJson(res,200,thread);
       }
       if (chatMatch && req.method === 'POST' && chatMatch[2]) {
         const all=readConversations(),thread=all[chatMatch[1]]; if(!thread)return sendJson(res,404,{error:'conversation not found'});
         const b=await readBody(req),text=String(b.text||'').trim(); if(!text)return sendJson(res,400,{error:'message text is required'});
-        addMessage(thread,'user',text); thread.updatedAt=new Date().toISOString();
+        if (b.style !== undefined) { const style=styleById(String(b.style)); if(!style)return sendJson(res,400,{error:`style_not_registered: ${b.style}`});if(!style.wired)return sendJson(res,400,{error:`style_not_wired: ${b.style}: ${style.reason}`});thread.inputs.style=style.id;if(thread.project){const styledProject=safeProject(thread.project);if(!styledProject)return sendJson(res,404,{error:'conversation_project_missing'});setProjectStyle(styledProject,style.id);} }
+        addMessage(thread,'user',text); touchThread(thread);
         if (b.audioPath) thread.inputs.audioPath=String(b.audioPath); if (b.name) thread.inputs.name=String(b.name);
         // Chat commands are context, never replacements for the project brief.
         // Story changes require explicit storyUpdate/prioritiesUpdate fields.
@@ -456,14 +535,21 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         if(!py)return sendJson(res,200,{available:false,error:'asr_python_unavailable'});
         const r=await safeRun(py,[path.join(repoDir,'tools/transcribe.py'),activeDir,'--probe']);let status;try{status=JSON.parse(r.out)}catch(_){status={available:false,error:'asr_probe_failed'}};return sendJson(res,200,status);
       }
+      if (pn === '/api/styles' && req.method === 'GET') {
+        let currentStyle=DEFAULT_STYLE_ID;try{currentStyle=projectStyle(activeDir);}catch(_){}
+        return sendJson(res,200,{defaultStyle:DEFAULT_STYLE_ID,currentStyle,styles:styleRegistry()});
+      }
       if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
-      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>{const row={...p,...passModule.getState(activeDir,p.id)};try{row.propGate=JSON.parse(fs.readFileSync(path.join(path.dirname(passModule.stateFile(activeDir,p.id)),'prop_gate.json'),'utf8'));}catch(_){row.propGate=null;}return row;}));
+      if(pn==='/api/passes'&&req.method==='GET')return sendJson(res,200,passModule.passes.map(p=>{const row={...p,...passModule.getState(activeDir,p.id),style:passModule.getState(activeDir,p.id).style||projectStyle(activeDir)};try{row.propGate=JSON.parse(fs.readFileSync(path.join(path.dirname(passModule.stateFile(activeDir,p.id)),'prop_gate.json'),'utf8'));}catch(_){row.propGate=null;}return row;}));
       if(pn==='/api/steer'&&req.method==='POST'){const b=await readBody(req),j=jobs.get(b.id);if(!j||j.ended)return sendJson(res,409,{error:'job missing or ended'});j.steering=j.steering||[];const item={t:Date.now(),text:String(b.text||'')};j.steering.push(item);j.log.push({...item,stream:'steer'});return sendJson(res,200,{ok:true});}
       if(pn==='/api/passes/run'&&req.method==='POST'){
         const activeRun=Array.from(jobs.values()).find(job=>job.kind==='run'&&!job.ended&&job.projectDir===activeDir);if(activeRun)return sendJson(res,409,{error:`توجد عملية تشغيل جارية: ${activeRun.id}`});
         const b=await readBody(req),def=passModule.passes.find(x=>x.id===b.pass);if(!def)return sendJson(res,400,{error:'unknown pass'});
         const ix=passModule.passes.indexOf(def);if(passModule.passes.slice(0,ix).some(p=>passModule.getState(activeDir,p.id).state!=='checkpointed'))return sendJson(res,409,{error:'earlier pass is not checkpointed'});
-        const id='pass-'+Date.now(),j={id,kind:'pass',projectDir:activeDir,status:'running',startedAt:Date.now(),ended:false,log:[],steering:[]};jobs.set(id,j);const sf=passModule.stateFile(activeDir,def.id);fs.mkdirSync(path.dirname(sf),{recursive:true});const ps=passModule.getState(activeDir,def.id);ps.state='running';ps.updatedAt=new Date().toISOString();ps.history.push({t:Date.now(),event:'started',detail:'Builder dispatched'});fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');
+        const styleId=projectStyle(activeDir,true),selectedStyle=styleById(styleId),selectedStep=path.join(repoDir,'skills',styleId,'steps',`${def.id}.md`),styleFailure=!selectedStyle?`style_not_registered: ${styleId}`:!fs.existsSync(selectedStep)?`style_step_missing: style ${styleId} has no required pass file skills/${styleId}/steps/${def.id}.md`:!selectedStyle.wired?`style_not_wired: ${styleId}: ${selectedStyle.reason}`:null;
+        const id='pass-'+Date.now(),j={id,kind:'pass',projectDir:activeDir,status:styleFailure?'failed':'running',startedAt:Date.now(),ended:!!styleFailure,log:[],steering:[],runSettings:{style:styleId}};jobs.set(id,j);
+        const sf=passModule.stateFile(activeDir,def.id);fs.mkdirSync(path.dirname(sf),{recursive:true});const ps=passModule.getState(activeDir,def.id);ps.style=styleId;ps.state=styleFailure?'failed':'running';ps.updatedAt=new Date().toISOString();ps.history=Array.isArray(ps.history)?ps.history:[];if(styleFailure)ps.history=ps.history.filter(item=>!(item.event==='started'&&/Builder dispatched with style /.test(item.detail||'')));ps.history.push({t:Date.now(),event:styleFailure?'validation_failed':'started',detail:styleFailure||`Style validation passed (${styleId}); preparing pass runner`});fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');
+        if(styleFailure){j.waitingOn=styleFailure;j.finishedAt=Date.now();j.log.push({t:Date.now(),stream:'fail',text:styleFailure});return sendJson(res,202,{id,status:j.status,waitingOn:j.waitingOn});}
         (async()=>{const save=()=>{ps.updatedAt=new Date().toISOString();fs.writeFileSync(sf,JSON.stringify(ps,null,2)+'\n');};const log=(stream,text)=>j.log.push({t:Date.now(),stream,text:String(text)});const tail=s=>String(s||'').trim().split(/\r?\n/).slice(-30).join('\n')||'(no output)';let failure='';try{
           if(!projectGitDir(activeDir)){const gd=path.join(activeDir,'.heart-git'),init=require('child_process').spawnSync('git',['--git-dir',gd,'--work-tree',activeDir,'init'],{encoding:'utf8',cwd:activeDir});if(init.status!==0)throw new Error('project git init failed: '+(init.stderr||init.stdout));let baseline=gitInProject(activeDir,['add','-A']);if(baseline.status!==0)throw new Error('baseline git add failed: '+baseline.stderr);baseline=gitInProject(activeDir,['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','snapshot: pass baseline']);if(baseline.status!==0)throw new Error('baseline snapshot failed: '+(baseline.stderr||baseline.stdout));log('git','Initialized .heart-git and committed snapshot: pass baseline');}
           if(projectGitDir(activeDir)){const gitignore=path.join(activeDir,'.gitignore'),existing=fs.existsSync(gitignore)?fs.readFileSync(gitignore,'utf8'):'',lines=existing.split(/\r?\n/);let updated=existing;for(const entry of ['out/','.heart-git/'])if(!lines.includes(entry)){if(updated&&!updated.endsWith('\n'))updated+='\n';updated+=entry+'\n';}if(updated!==existing)fs.writeFileSync(gitignore,updated);}
@@ -471,7 +557,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
           const projectStatus=()=>gitInProject(activeDir,['status','--porcelain']);const projectBeforeResult=projectStatus();if(projectBeforeResult.status!==0)throw new Error('project status failed: '+projectBeforeResult.stderr);const projectBefore=new Set(projectBeforeResult.stdout.split(/\r?\n/).filter(Boolean));
           const repoStatus=()=>require('child_process').spawnSync('git',['-C',repoDir,'status','--porcelain'],{encoding:'utf8'});const repoBeforeResult=repoStatus();if(repoBeforeResult.status!==0)throw new Error('repo status failed: '+repoBeforeResult.stderr);const repoBefore=new Set(repoBeforeResult.stdout.split(/\r?\n/).filter(Boolean));
           const enforceScope=stage=>{const violations=[];const status=projectStatus();if(status.status!==0)throw new Error(`scope check ${stage}: git status failed: ${status.stderr}`);for(const line of status.stdout.split(/\r?\n/).filter(Boolean)){if(projectBefore.has(line))continue;let p=line.slice(3);if(p.includes(' -> '))p=p.split(' -> ').pop();p=p.replace(/^"|"$/g,'');if(!def.allowedPaths.some(a=>p.startsWith(a)))violations.push(`project:${p}`);}const outside=repoStatus();if(outside.status!==0)throw new Error(`scope check ${stage}: repo status failed: ${outside.stderr}`);for(const line of outside.stdout.split(/\r?\n/).filter(Boolean)){if(repoBefore.has(line))continue;let p=line.slice(3);if(p.includes(' -> '))p=p.split(' -> ').pop();p=p.replace(/^"|"$/g,'');if(!p.startsWith(`projects/${path.basename(activeDir)}/`))violations.push(`repo:${p}`);}if(violations.length){const message=`scope violation after ${stage}: ${violations.join(', ')}`;ps.history.push({t:Date.now(),event:'scope_violation',detail:message});log('fail',message);throw new Error(message);}};
-          const dir=path.dirname(sf),briefFile=path.join(dir,'brief.md'),instructionFile=path.join(repoDir,'skills','cartoon-shorts','steps',`${def.id}.md`),instructionText=fs.existsSync(instructionFile)?fs.readFileSync(instructionFile,'utf8'):'No authored instruction file found.';const openAnnotations=(state.annotations||[]).filter(a=>a.project===path.basename(activeDir)&&!['addressed','closed'].includes(a.status));const annotationContract=openAnnotations.length?`OPEN FRAME ANNOTATIONS — implement each request verbatim in this pass, scoped to its cited frame.\n${openAnnotations.map(a=>`Frame: ${a.frame}\nRequested change (verbatim): ${JSON.stringify(a.change)}`).join('\n---\n')}\n`:'No open frame annotations for this project.';const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nPass-specific instruction set (${def.id}.md):\n${instructionText}\nAvailable program checks are the measured checks described in this task; do not claim unavailable suite tools or spawn helper agents.\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\n${annotationContract}\nKEY PROP CONTRACT: create or refresh projects/${path.basename(activeDir)}/props.json as {"props":[{"name":"prop name","appearsAt":0.1,"cropBox":{"x":0,"y":0,"w":0.1,"h":0.1}}],"setDressing":["allowed visible object names"]}; legacy top-level arrays are readable but write the object form. Every key prop needs a normalized cropBox against the current probe composition and a probe fraction/time where it appears. Keep existing declared props unless the story explicitly removes them. Re-aim every cropBox after any change to camera or framing. Seed setDressing only with scene objects that are actually present; include wall, floor, ceiling, counter, and table when they occur.\nRUNNER-OWNED PROBES: the program renders probe stills after each builder round and stores them under out/passes/${def.id}/probe-*.png. Inspect those files from a previous round when available and use the current round crops/frames when the runner produces them. Never invoke the heart still command, start a local server, or run any command that starts a server; this builder seat cannot bind local ports.\nEnd with a summary of changes.`;fs.writeFileSync(briefFile,brief);save();
+          const stylePack=selectedStyle,dir=path.dirname(sf),briefFile=path.join(dir,'brief.md'),instructionFile=selectedStep,instructionText=fs.readFileSync(instructionFile,'utf8');const openAnnotations=(state.annotations||[]).filter(a=>a.project===path.basename(activeDir)&&!['addressed','closed'].includes(a.status));const annotationContract=openAnnotations.length?`OPEN FRAME ANNOTATIONS — implement each request verbatim in this pass, scoped to its cited frame.\n${openAnnotations.map(a=>`Frame: ${JSON.stringify(a.frame)}\nRequested change (verbatim): ${JSON.stringify(a.change)}`).join('\n---\n')}\n`:'No open frame annotations for this project.';const brief=`Work ONLY inside projects/${path.basename(activeDir)}/ and only on these paths: ${def.allowedPaths.join(', ')}.\nPass: ${def.label}\nScope: ${def.scope}\nStyle: ${stylePack.label} (${styleId})\nAllowed paths: ${def.allowedPaths.join(', ')}\nInvariants: ${def.invariants}\nPass-specific instruction set (${def.id}.md from skills/${styleId}/steps):\n${instructionText}\nAvailable program checks are the measured checks described in this task; do not claim unavailable suite tools or spawn helper agents.\nProject brief/script: ${fs.existsSync(path.join(activeDir,'brief.md'))?fs.readFileSync(path.join(activeDir,'brief.md'),'utf8'):fs.readFileSync(path.join(activeDir,'script.txt'),'utf8')}\n${annotationContract}\nKEY PROP CONTRACT: create or refresh projects/${path.basename(activeDir)}/props.json as {"props":[{"name":"prop name","appearsAt":0.1,"cropBox":{"x":0,"y":0,"w":0.1,"h":0.1}}],"setDressing":["allowed visible object names"]}; legacy top-level arrays are readable but write the object form. Every key prop needs a normalized cropBox against the current probe composition and a probe fraction/time where it appears. Numeric fractions MUST be one of [0.1, 0.5, 0.9] within 0.005; use a time in seconds or a clock string when an intermediate moment is intended (those time/clock values snap to the nearest probe). Keep existing declared props unless the story explicitly removes them. Re-aim every cropBox after any change to camera or framing. Seed setDressing only with scene objects that are actually present; include wall, floor, ceiling, counter, and table when they occur.\nRUNNER-OWNED PROBES: the program renders probe stills after each builder round and stores them under out/passes/${def.id}/probe-*.png. Inspect those files from a previous round when available and use the current round crops/frames when the runner produces them. Never invoke the heart still command, start a local server, or run any command that starts a server; this builder seat cannot bind local ports.\nEnd with a summary of changes.`;fs.writeFileSync(briefFile,brief);save();
           const home=process.env.HOME||'',codex=process.env.CODEX_BIN&&fs.existsSync(process.env.CODEX_BIN)?process.env.CODEX_BIN:['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);if(!codex)throw new Error('Codex binary not found (CODEX_BIN, /usr/lib/chatgpt/resources/codex, or extracted workspace binary)');
           const builder=async prompt=>{log('builder','Starting bounded Codex builder');const r=await runCaptured(codex,['exec','-m','gpt-6-luna','-s','workspace-write','-C',repoDir],{cwd:repoDir},1200000,(s,c)=>log('builder',`${s}: ${String(c).trim()}`),p=>{j.child=p;p.stdin.end(prompt)});j.child=null;if(r.timedOut||r.code!==0)throw new Error(`builder failed${r.timedOut?' (20-minute timeout)':''}: ${tail(r.err+'\n'+r.out)}`);return tail(r.out);};
           const checks=async()=>{
@@ -520,9 +606,10 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       }
       if (pn === '/api/settings' && req.method === 'POST') {
         const b = await readBody(req);
-        if (typeof b.captions !== 'boolean' || ![24, 30].includes(Number(b.fps))) return sendJson(res, 400, { error: 'الإعدادات المقبولة: captions و24/30 fps' });
+        if ((b.captions !== undefined && typeof b.captions !== 'boolean') || (b.fps !== undefined && ![24, 30].includes(Number(b.fps)))) return sendJson(res, 400, { error: 'الإعدادات المقبولة: captions و24/30 fps وwired style id' });
         const file = path.join(activeDir, 'project.json'), pj = JSON.parse(fs.readFileSync(file, 'utf8'));
-        pj.settings = { ...(pj.settings || {}), captions: { ...(typeof pj.settings?.captions === 'object' ? pj.settings.captions : {}), on: b.captions }, fps: Number(b.fps) };
+        if (b.style !== undefined) { const style=styleById(String(b.style));if(!style)return sendJson(res,400,{error:`style_not_registered: ${b.style}`});if(!style.wired)return sendJson(res,400,{error:`style_not_wired: ${b.style}: ${style.reason}`}); }
+        pj.settings = { ...(pj.settings || {}), ...(b.captions !== undefined ? { captions: { ...(typeof pj.settings?.captions === 'object' ? pj.settings.captions : {}), on: b.captions } } : {}), ...(b.fps !== undefined ? { fps: Number(b.fps) } : {}), ...(b.style !== undefined ? { style: String(b.style) } : {}) };
         fs.writeFileSync(file, JSON.stringify(pj, null, 2) + '\n');
         return sendJson(res, 200, { ok: true, settings: pj.settings, note: 'الإعدادات محفوظة في project.json وسيتم تمريرها إلى heart still وGitHub Actions.' });
       }
@@ -540,6 +627,8 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       if (pn === '/api/annotations' && req.method === 'POST') {
         const b = await readBody(req);
         if (typeof b.frame !== 'string' || typeof b.change !== 'string' || !b.change.trim()) return sendJson(res, 400, { error: 'تحتاج الملاحظة إلى إطار ووصف تغيير' });
+        if (b.frame.length > 200) return sendJson(res, 400, { error: 'annotation_frame_too_long: frame must be at most 200 characters' });
+        if (b.change.length > 2000) return sendJson(res, 400, { error: 'annotation_change_too_long: change must be at most 2000 characters' });
         const a = { id: 'fix-' + Date.now(), project: path.basename(activeDir), frame: b.frame, change: b.change.trim(), status: 'open', t: Date.now() };
         state.annotations = state.annotations || []; state.annotations.push(a);
         await persist();
@@ -592,13 +681,15 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         const activePass=Array.from(jobs.values()).find(job=>job.kind==='pass'&&!job.ended&&job.projectDir===activeDir);if(activePass)return sendJson(res,409,{error:`توجد مرحلة جارية: ${activePass.id}`});
         const activeRun=Array.from(jobs.values()).find(job=>job.kind==='run'&&!job.ended&&job.projectDir===activeDir);
         if(activeRun)return sendJson(res,409,{error:`توجد عملية تشغيل جارية: ${activeRun.id}`});
-        const b = await readBody(req), id = 'run-' + Date.now();
+        const b = await readBody(req), styleId=projectStyle(activeDir,true), id = 'run-' + Date.now();
         const j = { id, kind: 'run', projectDir: activeDir, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'لا شيء' };
         jobs.set(id, j);
-        j.runSettings={mode:b.mode==='faster'?'faster':'quality',model:b.model||'free/glm-5.3-flashx',effort:b.effort||'standard',settings:inventory(activeDir).settings,legs:[]};
+        j.runSettings={mode:b.mode==='faster'?'faster':'quality',model:b.model||'free/glm-5.3-flashx',effort:b.effort||'standard',style:styleId,settings:inventory(activeDir).settings,legs:[]};
+        const runRecordFile=path.join(activeDir,'out','runs',`${id}.json`),saveRunRecord=()=>{fs.mkdirSync(path.dirname(runRecordFile),{recursive:true});const data={id,kind:'run',project:path.basename(activeDir),startedAt:j.startedAt,finishedAt:j.finishedAt||null,status:j.status,style:styleId,runSettings:j.runSettings};fs.writeFileSync(runRecordFile,JSON.stringify(data,null,2)+'\n');};saveRunRecord();
         j.steerLogged=0;const leg=(id,state,detail)=>{while(j.steerLogged<(j.steering||[]).length){const s=j.steering[j.steerLogged++];j.log.push({t:Date.now(),stream:'steer',text:'steering received: '+s.text});}const x={id,state,detail};j.runSettings.legs.push(x);j.log.push({t:Date.now(),stream:state==='failed'?'fail':state==='blocked'?'handoff':'pass',text:`${id}: ${state} — ${detail}`});return x;};
         const exists=p=>fs.existsSync(path.join(activeDir,p));
         (async()=>{
+          const selectedStyle=styleById(styleId);if(!selectedStyle)throw new Error(`style_not_registered: ${styleId}`);if(!selectedStyle.wired)throw new Error(`style_not_wired: ${styleId}: ${selectedStyle.reason}`);
           const script=inventory(activeDir).script,voice=inventory(activeDir).voice;
           if(!script){leg('script','blocked','ملف النص غير موجود');j.status='blocked';j.waitingOn='script: ملف النص غير موجود';}
           else leg('script','verified',script+' موجود');
@@ -620,8 +711,8 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
           }
           if(j.status==='running'){const checks=artifactChecks(activeDir),gates=checks.checks.filter(c=>c.id!=='master');checks.checks.filter(c=>c.id==='master').forEach(c=>j.log.push({t:Date.now(),stream:'info',text:'master — pending export'}));gates.forEach(c=>j.log.push({t:Date.now(),stream:c.pass?'pass':'fail',text:`${c.pass?'PASS':'FAIL'} ${c.id} — ${c.evidence}`}));if(gates.some(c=>!c.pass)){const bad=gates.filter(c=>!c.pass).map(c=>c.id);leg('gates','failed',bad.join(', '));j.status='failed';j.waitingOn='gates: '+bad.join(', ');}else leg('gates','verified','all non-master artifact checks passed');}
           if(j.status==='running'){const master=inventory(activeDir).master;if(master)leg('export','verified',master+' موجود');else if(!j.framesRunId){leg('export','blocked','master missing and no framesRunId');j.status='blocked';j.waitingOn='export: master missing and no framesRunId';}else{try{const git=(args)=>require('child_process').spawnSync('git',['-C',repoDir,...args],{encoding:'utf8'});let gr=git(['add','projects/'+path.basename(activeDir)+'/audio/final_mix.wav','projects/'+path.basename(activeDir)+'/project.json']);if(gr.status!==0)throw new Error('git add: '+(gr.stderr||gr.stdout));gr=git(['diff','--cached','--quiet']);if(gr.status===1){gr=git(['-c','user.name=Heart Studio','-c','user.email=heart@localhost','commit','-m','run: mix for assembly']);if(gr.status!==0)throw new Error('git commit: '+(gr.stderr||gr.stdout));}else if(gr.status!==0)throw new Error('git diff --cached failed');const br=git(['branch','--show-current']);if(br.status!==0||!br.stdout.trim())throw new Error('could not resolve current branch');gr=git(['push','origin',br.stdout.trim()]);if(gr.status!==0)throw new Error('git push failed: '+(gr.stderr||gr.stdout));const assembly={id:id+'-assembly',kind:'assembly',projectDir:activeDir,status:'dispatched',startedAt:Date.now(),ended:false,log:[]};jobs.set(assembly.id,assembly);const arid=await dispatchLayer.dispatchAsync('fleet-assembly.yml',{project:path.basename(activeDir),frames_run_id:j.framesRunId,fps:String(inventory(activeDir).settings.fps),mix_rel:'audio/final_mix.wav',mode:'assemble'});await dispatchLayer.monitor(assembly,{runId:arid,projectDir:activeDir,kind:'assembly',repoDir});assembly.log.forEach(x=>j.log.push({...x,text:'assembly: '+x.text}));if(assembly.status!=='done')throw new Error(`assembly run ${arid} failed: ${assembly.log.slice(-1)[0]?.text||assembly.status}`);const root=path.join(activeDir,'out','github-master',arid),files=[];const walk=d=>{for(const ent of fs.readdirSync(d,{withFileTypes:true})){const f=path.join(d,ent.name);if(ent.isDirectory())walk(f);else if(ent.name==='master.mp4')files.push(f);}};if(fs.existsSync(root))walk(root);if(!files.length)throw new Error(`assembly run ${arid}: master.mp4 missing`);const dest=path.join(activeDir,'out/master.mp4');fs.copyFileSync(files[0],dest);const probe=await safeRun('ffprobe',['-v','error','-show_entries','stream=codec_type','-of','json',dest]);const streams=probe.code===0?JSON.parse(probe.out).streams||[]:[];if(!streams.some(x=>x.codec_type==='video')||!streams.some(x=>x.codec_type==='audio'))throw new Error(`assembly run ${arid}: master requires video and audio streams`);leg('export','executed',`assembly run ${arid}; master video/audio verified`);}catch(e){leg('export','failed',e.message);j.status='failed';j.waitingOn='export: '+e.message;}}}
-          if(j.status==='running'){j.status='done';j.waitingOn=null;}j.ended=true;j.finishedAt=Date.now();if(!j.waitingOn)j.waitingOn='لا شيء';
-        })().catch(e=>{j.status='failed';j.ended=true;j.finishedAt=Date.now();j.waitingOn=e.message;j.log.push({t:Date.now(),stream:'fail',text:e.message});});
+          if(j.status==='running'){j.status='done';j.waitingOn=null;}j.ended=true;j.finishedAt=Date.now();if(!j.waitingOn)j.waitingOn='لا شيء';saveRunRecord();
+        })().catch(e=>{j.status='failed';j.ended=true;j.finishedAt=Date.now();j.waitingOn=e.message;j.log.push({t:Date.now(),stream:'fail',text:e.message});saveRunRecord();});
         return sendJson(res, 202, { id, status: j.status, waitingOn: j.waitingOn });
       }
       if (pn === '/api/state' && req.method === 'GET') return sendJson(res, 200, state);
