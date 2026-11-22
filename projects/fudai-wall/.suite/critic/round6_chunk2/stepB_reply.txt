@@ -1,0 +1,7 @@
+CRITIC ROUND — fudai-wall — Build (chunk 2: SH04–SH12) — round 6
+BIGGEST GAP: Persistent reliance on black/empty probe frames and unrendered asset placeholders across all main beats.
+BLOCKING: Empty probe frames (241, 570, 590, 639, 798); missing props (cranes, money, calendar, height arrow, coins, ruler); character shown from back (537); head cropped (669).
+PER SCENE: S2 (village/cost/neighbours beats) — FAIL, Missing construction props, height measure, and frame 241 lacks characters. · S3 (mockery) — FAIL, Character facing away, black probe frames, missing coins, and cropped head framing. · S4 (time-passes + sign beats only) — FAIL, Time cycle shot lacks sky/sea environmental detail and sign shot lacks passing villagers. · S1, S5–S7 — NOT IN THIS ROUND
+LINE COHERENCE: all windows match
+SET BAR: Predominantly flat, low-detail environments with multiple empty placeholder panels.
+VERDICT: NO

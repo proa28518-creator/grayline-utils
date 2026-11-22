@@ -513,3 +513,83 @@ render → Colab after board approval) applied to this run, correcting the local
 - **Unchanged locks:** board gate LOCKED until the owner's eye approves; final render =
   Colab L4 after board approval only. The 22:14 local still stands as ROUTE PROOF only —
   its "probes batch in one local boot" plan is SUPERSEDED by this fleet wiring.
+
+## Chunk 2 build — SH04–SH12 (night shift phase 6, 2026-11-23 ~00:15–01:05 EET)
+
+Assignment: author the next nine shots after the passed opening (SH04–SH12: S2 village/cost/neighbours,
+S3 mockery, S4 beats L9–L10), audit D1/D2, fleet-probe 2–3 key frames per shot, eye-verify, critic-judge
+under protocol §7. Colab LOCKED; no board. Digit-1 occlusion = Camera-pass note, not chased.
+
+- **Brief:** `CODEX_CHUNK2_BRIEF.md` written into the project (per-shot beats, PLACES zones, the nine new
+  prop kinds with opts-over-time designs, cast/acts incl. the mayor's three walks, SH11 sky-cycle `states`,
+  per-shot probe frames, continuity rows). SH13's belongings-box `fetch:true` gate is NOT in this chunk.
+- **Seat sessions (Codex CLI, fresh, brief-driven):** (1) full brief — spent its turn reading precedents,
+  changed nothing; split into bounded sessions. (2a) the nine prop kinds written (sign, crane, money,
+  calendar, gateleaf, measure, coins, blueprint, orb); driver review found a sign.js board-height bug
+  (board floated: bottom at leg+h) → fix session corrected it (bottom at leg / 0). (2b) film.js extended
+  (SH04–SH12, 9 new cast entries, 15 new props, mayor walks/face/look, storeys hidden key at line:3.start)
+  + set.js gained ONLY the SH11 `states` arrays on COAST_WALL/SEA (incl. a full-CALM restore state at
+  line:9.end) + lessons/build.md CHUNK 2 section. Seat-noted deviation: laugh mouth 'D' per demo-ring
+  precedent — matches the design. Driver verified the diff: SH01–SH03 entries byte-identical.
+  **D1/D2 audit PASS** (driver re-ran it independently). Commit `e03e4ac`.
+- **First fleet batch (24 runs) ALL FAILED at boot — loader law learned:** `propOwners` (lib/film/resolve.js
+  ~line 210): a prop `in:'hidden'` key must sit within ~1 frame of a shot cut (a shot t0), or carry
+  `stow:true`. Violations: popsign hide at line:3.end (Δ0.15 s from the cut), sun/moon orb hides at
+  line:9.end (Δ0.41 s). Fix session retimed the three hides onto cuts (line:4.start / line:10.start) +
+  the law appended to lessons/build.md. Audit PASS. Commit `ac7265f`.
+- **Second fleet batch: 24/24 SUCCESS** (runs 45077791748…45077898760, frame order F219…F885; stills at
+  ~/workspace/fudai-rebuild/probes/chunk2/stills/). **Driver eye-verdicts — the chunk is NOT in passing
+  shape:** SH04 FAIL (F241 empty probe: the pan line z=12 crosses the town hall box x −3.6..3.6 ×
+  z 11.6..16.4, h 4.8 — camera inside the building; F219 tight crowd, mayor occluded; F258 head half-cut
+  by a roof; '3,000' sign never framed). SH05 FAIL (all frames dominated by the gate leaf; calendar a
+  sliver behind a roof; money/$30M and the 15.5M plate never framed — camera at world z=+6 threads the
+  north house row, targets centre mid-wall). SH06 weak (neighbour wall one flat slab; houses out of frame;
+  the '10M' signs DO read — see the sign-collision note below). SH07 FAIL (mocker_a from BEHIND — cast
+  ry:180 faces him north, away from southern cameras; F570/F590 BLACK: the pull-back path enters the town
+  hall; coins never seen). SH08 FAIL (no laughing face visible anywhere — all mockers face north; F639
+  BLACK inside the town hall's north face). SH09 FAIL (mayor's head cropped at the top edge, worse as the
+  push-in tightens: target MAYOR_HEAD y=1.55 sits below the true head centre ≈1.85–1.95, and the loader's
+  lowCams floor raised the camera). SH10 FAIL (extreme close-up of the blueprint canvas only; the glowing
+  line, hand, ruler, '15.5M' label all out of frame). **SH11/SH12 NEVER RENDERED** — every probe showed
+  SH10's frozen end framing (see the endFraming finding below).
+- **Two engine findings (proven from source + run artifacts):**
+  (1) **endFraming** (lib/film/resolve.js:471 + lib/film/end.js): for a film whose END frame holds no
+  framed head ≥150 px, the loader truncates the resolved shot list to the last "good" shot and extends it
+  to t=99 — for this partially authored film (end t≈68 s sits in un-authored chunk-3 territory) it deleted
+  SH11/SH12 wholesale. run-info.json of the batch proves it: 10 shots, SH10 t1=99.
+  (2) **Prop-kind shadowing** (lib/film/props.js:92,108): resolution order is built-in → engine/props →
+  film props, so the engine's railroad `sign` kind (red serif text + "RED CANYON SHORT LINE" subtitle +
+  pole) SHADOWED the film-local scenes/props/sign.js — all four text signs (3,000 / $30M / 10M / «أغبى
+  مشروع») were built by the engine kind with the foreign subtitle. The other eight new kinds have no
+  engine namesake and worked as designed. Fix for the next round: rename the film-local kind.
+  Also noted: lowCams (lib/film/end.js) raises low push/park cameras to a chest floor unless a shot sets
+  `lowCam:true` — a contributor to SH09's crop.
+- **Critic round 5 (§7, Gemini gemini-3.5-flash, fresh calls; WATCH_LOG rows 5–6):** Step A blind sort
+  18 pics key-checked **0·0 (18/18)**, header agrees. Step B: **VERDICT: NO** — BIGGEST GAP "Extensive use
+  of placeholder graphics and black frames in place of required props and character animations";
+  BLOCKING: empty probes 241/570/590/639; missing props (cranes, money, calendar, coins, ruler, wooden
+  sign); back at 537; cropped head 669. Report: .suite/critic/CRITIC_REPORT_round5.md.
+- **The round's one fix (at the deepest cause — two whole spec beats absent):** film.js gains
+  `endFrame:false` (the API's own opt-out) via the seat; audit PASS; commit `da4711d`. Re-probe (7 runs
+  45078956196…45078981993, all SUCCESS): the resolved scene now carries **12 shots**; F723 control is
+  byte-identical (sha256 ba5c0ebc…) — no SH10 regression. New S4 eye-verdicts: SH11 renders and the light
+  cycle READS (morning grey → dusk warm → night dark) but the camera sits ~17 D off the wall's sea face,
+  so the frame is all wall — no sea, no sky, and the sun/moon orbs (placed at z=−60) are BEHIND this
+  sea-side camera; SH12 renders and the «أغبى مشروع» sign is large and legible in all three frames, but
+  it is the engine sign (pole + "RED CANYON SHORT LINE" subtitle) and the laughing passers-by at the wall
+  base fall below the frame.
+- **Critic round 6 (§7, fresh calls, round-5 report in hand; WATCH_LOG rows 7–8):** Step A key-checked
+  **0·0 (18/18)** again. Step B: **VERDICT: NO** — BIGGEST GAP "Persistent reliance on black/empty probe
+  frames and unrendered asset placeholders across all main beats"; S4's complaint moved from absence to
+  framing ("lacks sky/sea environmental detail", "sign shot lacks passing villagers"); LINE COHERENCE
+  flipped to "all windows match". Report: .suite/critic/CRITIC_REPORT_round6.md.
+- **END STATE (plain): SH04–SH12 are authored, audited (D1/D2 PASS) and pushed, but the chunk is
+  CRITIC-NO after two rounds.** The one permitted fix landed and is verified (SH11/SH12 restored). The
+  next round's agenda, in the critic's own BLOCKING order: (a) redesign the SH04/SH07/SH08 camera lines
+  clear of the village buildings (town hall box + house row are solid geometry on those lines); (b) face
+  the mockers toward the southern cameras (cast ry) so laughing faces read in SH07/SH08; (c) SH09: raise
+  the head target to the true head centre and/or set lowCam:true; (d) reframe SH05 (site props into
+  frame), SH10 (pull back so line/ruler/label read), SH11 (pull the sea-side camera back and put the
+  orbs beyond the wall, z>−16, so sea + sky + cycle read); (e) rename the film-local `sign` kind so the
+  designed boards (no foreign subtitle) render; (f) SH12: widen so the passers-by read below the sign.
+  Colab still LOCKED. No board assembled.

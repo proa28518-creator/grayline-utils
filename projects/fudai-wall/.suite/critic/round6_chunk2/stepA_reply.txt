@@ -1,0 +1,19 @@
+pic_01: bar — Character in a red jacket standing inside a red shopping cart in a supermarket aisle.
+pic_02: ours — View looking up at a massive grey steel gate with light fixtures above rooftops.
+pic_03: ours — Close-up view of the mayor character in a dark suit standing in the village.
+pic_04: bar — Character riding a red supermarket cart with cans scattering in the aisle background.
+pic_05: ours — Completely dark frame with Arabic text overlay.
+pic_06: ours — Villager in an orange hat standing by a blue blueprint board next to a steel wall.
+pic_07: ours — Printed sign reading Red Canyon Short Line posted on a wall.
+pic_08: ours — Tall grey steel gate section equipped with wall lamps.
+pic_09: bar — Supermarket scene with a character in a cart next to a customer holding milk.
+pic_10: ours — View of a tall grey concrete wall against the blue sky with small signs mounted.
+pic_11: bar — Character pushing a red shopping cart through a flurry of falling soup cans.
+pic_12: ours — Mayor and villager in an orange hat gathered by a blue blueprint board.
+pic_13: ours — Nearly blank brown frame featuring numeric Arabic text overlay.
+pic_14: ours — Mayor character standing in the village construction area near the blueprint board.
+pic_15: bar — Character navigating a shopping cart past wooden crates labeled Fresh.
+pic_16: bar — Character pushing a red supermarket cart directly down a store aisle.
+pic_17: ours — Low angle shot of the massive grey steel seawall gate behind village roofs.
+pic_18: ours — Plain dark brown background frame with Arabic subtitle text.
+BLIND SORT: bar taken for ours: 0 · ours taken for bar: 0
