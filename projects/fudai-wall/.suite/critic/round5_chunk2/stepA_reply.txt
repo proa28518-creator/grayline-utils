@@ -1,0 +1,19 @@
+pic_01: bar — Character pushing a red shopping cart while a store clerk holds a milk bottle in a supermarket aisle.
+pic_02: bar — Character in a red jacket smiling while pushing a red shopping cart in a supermarket aisle.
+pic_03: ours — Giant grey steel seawall gate towering behind village rooftops.
+pic_04: ours — Close-up view of the mayor character wearing a dark suit.
+pic_05: ours — High wall baseline and ground in the village setting.
+pic_06: ours — Nearly black dark frame with centered white text.
+pic_07: bar — Character standing inside a red shopping cart surrounded by flying cans in a supermarket.
+pic_08: ours — Villager in an orange hat beside a blue blueprint board by the giant wall.
+pic_09: ours — Close-up of the blue grid blueprint board.
+pic_10: bar — Supermarket scene with a character behind a shopping cart as tomato soup cans float around.
+pic_11: ours — Nearly empty frame displaying ground and dark space with numerical text.
+pic_12: ours — Close-up shot of the blue blueprint grid.
+pic_13: ours — Tall grey steel wall gate with diagonal cross-bracing and lamps.
+pic_14: bar — Character pushing a shopping cart down a supermarket aisle with another character nearby.
+pic_15: bar — Low-angle view of a red shopping cart tilting past wooden "FRESH" display crates.
+pic_16: ours — Suited mayor standing near a villager presenting a blue blueprint board.
+pic_17: ours — Mayor walking in the village square with villagers and a blueprint board behind him.
+pic_18: ours — Full height view of the massive grey steel gate with light fixtures.
+BLIND SORT: bar taken for ours: 0 · ours taken for bar: 0

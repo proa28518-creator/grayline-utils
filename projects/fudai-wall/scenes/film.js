@@ -67,7 +67,7 @@ const lines=[
 'والناس اللي ضحكوا عليه راحوا قبره يشكروه'
 ];
 export default {
- fps:30,size:[1080,1920],
+ fps:30,size:[1080,1920],endFrame:false,
  world:{set:'own',setOpts:{post:{...makePost(),shade:makeShade()}}},
  cast:{mayor:{spec:'cast/mayor.json',at:[MAYOR[0],MAYOR[2]],ry:0},mocker_a:{spec:'cast/mocker_a.json',at:[MOCK_A[0],MOCK_A[2]],ry:180},mocker_b:{spec:'cast/mocker_b.json',at:[MOCK_B[0],MOCK_B[2]],ry:180},mocker_c:{spec:'cast/mocker_c.json',at:[MOCK_C[0],MOCK_C[2]],ry:180},villager_1:{spec:'cast/villagers.json',at:[V1[0],V1[2]],ry:35},villager_2:{spec:'cast/villagers.json',at:[V2[0],V2[2]],ry:-35},villager_3:{spec:'cast/villagers.json',at:[V3[0],V3[2]],ry:20},villager_4:{spec:'cast/villagers.json',at:[V4[0],V4[2]],ry:-20},villager_5:{spec:'cast/villagers.json',at:[V5[0],V5[2]],ry:40},villager_6:{spec:'cast/villagers.json',at:[V6[0],V6[2]],ry:-40}},
  voice:{file:'voice_owner.wav',words:'audio/clean.json',lines:lines.map(text=>({who:null,text}))},

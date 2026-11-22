@@ -19,6 +19,7 @@ The opening set includes a continuous shore/ground, apron and gate practicals, t
 Extended `scenes/film.js` with the mayor's later walks and face/look beats, three mockers, six villagers, the construction/sign/measurement props, and shots SH04–SH12. The nine new film-local prop kinds were already present in `scenes/props/` and were not changed. Added timed `states` to COAST_WALL and SEA for SH11; their final state explicitly restores base sky, ground, fog, and sun values under the rig's cumulative merge semantics. The storeys diagram hides at L3 start.
 
 Loader law (lib/film/resolve.js propOwners): a prop in:'hidden' key must sit within ~1 frame of a shot t0 (on a cut) or carry stow:true — end-of-line hides must be retimed to the NEXT shot's start.
+Round-5 fix: film.js carries endFrame:false — the loader's endFraming otherwise truncates the shot list of a partially-authored film to the last shot whose end frame holds a framed head (it deleted SH11/SH12, extending SH10 to t=99). Revisit when the film's true ending is authored.
 
 ## Known gaps
 

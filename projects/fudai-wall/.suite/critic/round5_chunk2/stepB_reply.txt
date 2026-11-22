@@ -1,0 +1,7 @@
+CRITIC ROUND — fudai-wall — Build (chunk 2: SH04–SH12) — round 5
+BIGGEST GAP: Extensive use of placeholder graphics and black frames in place of required props and character animations.
+BLOCKING: Empty probe frames (241, 570, 590, 639); missing props (cranes, money, calendar, coins, ruler, wooden sign); character back shown (537); cropped head framing (669).
+PER SCENE: S2 (village/cost/neighbours beats) — FAIL, Missing village square crowd, cranes, money piles, flipping calendar, and measurement visuals. · S3 (mockery) — FAIL, Incorrect character orientation, black screens during coin toss, cropped head shot, and missing blueprint hand animation. · S4 (time-passes + sign beats only) — FAIL, Environment time cycle absent and wooden wall sign replaced by a blueprint placeholder. · S1, S5–S7 — NOT IN THIS ROUND
+LINE COHERENCE: Text timing aligns with line windows, but visual beats fail to match spoken content.
+SET BAR: Plain flat backgrounds and persistent blueprint screen overlays lower visual quality (rated 3/7).
+VERDICT: NO
