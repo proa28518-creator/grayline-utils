@@ -469,3 +469,6 @@ The order is fixed by the owner: (1) mount his interface as-is (study build, pri
 
 ## Owner acceptance bar 2026-11-22 ~08:34 — the integrated program must be COMPLETE on the desk
 «بعد ما تخلصي الدمج الكامل يبقى البرنامج بالكامل على جهازك وماشي، يبقى في مستودعات خارجيه بس لازم يكون البرنامج ده كامل»: the integration is done only when the desk holds the COMPLETE program — his interface files, the heart, the executor/dispatch machinery, and every library/body part it needs to run — working end to end on this machine. External repositories are dispatch targets (stills/render/assembly), never storage for missing organs. A copy that arrives somewhere else missing pieces (the 546 MB skeleton symptom) fails this bar.
+
+## Owner quick solution 2026-11-22 ~09:03 — convert the same program as-is to Linux first
+«هنحول نفس البرنامج زي ما هو لينكس الاول»: alongside the current work, the direct route is a Linux conversion of Russell's actual app as-is — the app is Electron (its body is JS), so run the whole unpacked app (main + renderer + resources) under a Linux Electron runtime. The study's job is to surface every Windows-specific dependency by name (win32 native modules, bundled .exe/.dll helpers, path/shell assumptions). This conversion study precedes additions and skinning, per the mount → map → add → skin sequence.
