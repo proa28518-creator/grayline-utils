@@ -448,3 +448,6 @@ Drawn from the Creatorize capability map + our own gap audit; they join the spec
 
 ## Owner priority note 2026-11-22 ~07:46 — production over looks
 «مش مهم الشكل، أهم حاجه الانتاج»: the interface is a tool, not a product. In every remaining round, weight the production machinery (step executors, measured checks, dispatch, assembly) over visual polish. A plain surface that produces films at the bar beats a beautiful one that does not.
+
+## Owner correction 2026-11-22 ~08:09 — the interface FORM is a desktop app, not a browser page
+«الواجهه اللي انا طلبتها واجهه زي ما هو عاملها مش واجهه في متصفح»: the deliverable form is a real desktop application with its own window, like Creatorize (an Electron app), NOT a page opened in a browser tab at 127.0.0.1. The current browser-served page is an interim scaffold for building the machinery. The machinery (server, executor, dispatch, checks) is unchanged by this — it gets packaged into the app shell (Electron wrapper around the same local server, the same way Creatorize itself is built). Shell packaging is part of the professional-interface phase, but the FORM requirement is standing from now: no future round may present the browser page as the finished interface.
