@@ -26,6 +26,9 @@ voice is the same as an example's. This film's camera is written for its own sta
 Only `shots` (and camera-only helpers such as a `shots.js` module, `focus`, `seam`, `hard`) change. Characters, acting, props, voice,
 captions and the set stay exactly as they are. The film still opens on a face.
 
+## Runner-owned prop and probe contract
+Write `props.json` as `{ "props": [{ "name": "…", "appearsAt": 0.1, "cropBox": { "x": 0, "y": 0, "w": 0.1, "h": 0.1 } }], "setDressing": ["…"] }`. Keep key props separate from set dressing. Seed `setDressing` with visible architectural basics and set pieces that actually occur (for example wall, floor, ceiling, counter, table); do not allow absent objects. Because this pass changes framing, you MUST re-aim every prop's normalized cropBox against the CURRENT probe composition before handover. The program renders probes under `out/passes/camera/probe-*.png`; inspect prior-round files when available. Never run `heart still`, start a local server, or invoke a command that starts a server. The pass runner owns still rendering; this builder seat cannot bind local ports.
+
 ## Method
 1. Before you change anything: `film_probe` and `render_frames` on 4-6 key times (the "before"), and read where everyone stands and moves.
 2. Plan the camera in a few lines: the logic of the set for this story, beat by beat on the words, where the flights or cuts go.

@@ -22,6 +22,9 @@ and check your frames against them before you finish. When the project has `exam
 lights as data), the Post part of `references/pitfalls.md`, `lessons/*.md` (every HANDOVER).
 
 ## What must hold
+
+## Runner-owned prop and probe contract
+Write `props.json` as `{ "props": [{ "name": "…", "appearsAt": 0.1, "cropBox": { "x": 0, "y": 0, "w": 0.1, "h": 0.1 } }], "setDressing": ["…"] }`. Keep key props separate from set dressing. Seed `setDressing` with visible architectural basics and set pieces that actually occur (for example wall, floor, ceiling, counter, table); do not allow absent objects. If this pass changes camera/framing, re-aim every prop cropBox against the CURRENT probe composition. The program renders probes under `out/passes/post/probe-*.png`; inspect prior-round files when available. Never run `heart still`, start a local server, or invoke a command that starts a server. The pass runner owns still rendering; this builder seat cannot bind local ports.
 It works on any set and never changes geometry, textures, acting, shots or sound. Pure in t (particles from a seed and t). Light on
 the live preview (`quality: 'auto'`). Post needs `scenes/set.js` with a light rig: if the film still uses a kit set, wrap it in a
 set.js first (post.md).

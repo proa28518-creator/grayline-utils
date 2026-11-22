@@ -24,6 +24,9 @@ Still our characters: every ink line, colour and expression stays theirs; shadin
 Acting, shots, set and post do not change. **No flicker:** he caught shades "flickering too much, like if it's clipping". Pure in t,
 light on the live preview. Shading needs the post pipeline (post.md); if the film has none yet, add a minimal one first.
 
+## Runner-owned prop and probe contract
+Write `props.json` as `{ "props": [{ "name": "…", "appearsAt": 0.1, "cropBox": { "x": 0, "y": 0, "w": 0.1, "h": 0.1 } }], "setDressing": ["…"] }`. Keep key props separate from set dressing. Seed `setDressing` with visible architectural basics and set pieces that actually occur (for example wall, floor, ceiling, counter, table); do not allow absent objects. If this pass changes camera/framing, re-aim every prop cropBox against the CURRENT probe composition. The program renders probes under `out/passes/shading/probe-*.png`; inspect prior-round files when available. Never run `heart still`, start a local server, or invoke a command that starts a server. The pass runner owns still rendering; this builder seat cannot bind local ports.
+
 ## Method
 1. **Before:** `render_frames` at `scale: 1` on faces in every place (and a backlit or moving-light moment), a whole-film
    `film_sheet`. Put the faces next to the bar stills. Per place, write what the light wants (warm key from the lamp side, cold

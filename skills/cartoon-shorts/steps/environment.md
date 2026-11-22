@@ -24,6 +24,9 @@ not set up), `lessons/*.md` (every HANDOVER). When the project has them, the wor
 `examples/s4_shade/set/s4_env.js`, `examples/s4_shade/blender/`, `examples/s4_shade/tex/recipes.json`.
 
 ## What must hold
+
+## Runner-owned prop and probe contract
+Write `props.json` as `{ "props": [{ "name": "…", "appearsAt": 0.1, "cropBox": { "x": 0, "y": 0, "w": 0.1, "h": 0.1 } }], "setDressing": ["…"] }`. Keep key props separate from set dressing. Seed `setDressing` with visible architectural basics and set pieces that actually occur (for example wall, floor, ceiling, counter, table); do not allow absent objects. If this pass changes camera/framing, re-aim every prop cropBox against the CURRENT probe composition. The program renders probes under `out/passes/environment/probe-*.png`; inspect prior-round files when available. Never run `heart still`, start a local server, or invoke a command that starts a server. The pass runner owns still rendering; this builder seat cannot bind local ports.
 Characters, acting, shots, voice and captions do not change. The layout is a contract: walls, doors, lanes and camera flight lines stay
 where the cameras need them. Haze, fog, particles, depth of field and grade are NOT this step (they are Add post processing).
 Pure in t. Everything falls back to the previz while files are missing, so the film always renders.

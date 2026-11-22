@@ -23,6 +23,7 @@ acting table, shots, camera or set, even when the voice is the same as an exampl
 
 ## Read first
 `SKILL.md`, `references/topics.md`, `references/critic.md`, `references/quality-bar.md` (and open the stills in
+
 `references/bar/`), `references/voice-sound.md`, `references/characters.md`, `references/film.md`, `references/camera.md` (the
 grammar section), `references/sets.md`, the Build part of `references/pitfalls.md`, and `lessons/build.md` if it exists. Deep
 names: `references/api/`.
@@ -75,3 +76,6 @@ to finish; anything copied from an example.
 
 ## Report
 Two or three lines: what you made, what differs from the script, what is weakest (the HANDOVER's first open item).
+
+## Runner-owned prop and probe contract
+Write `props.json` as `{ "props": [{ "name": "…", "appearsAt": 0.1, "cropBox": { "x": 0, "y": 0, "w": 0.1, "h": 0.1 } }], "setDressing": ["…"] }`. Keep key props separate from set dressing. Seed `setDressing` with the visible architectural basics and set pieces that actually occur (for example wall, floor, ceiling, counter, table); do not allow objects that are absent. Every declared prop needs a normalized cropBox aimed at the current probe composition. If you change camera/framing, re-aim every prop cropBox before the runner's next gate. The program renders probes under `out/passes/build/probe-*.png`; inspect prior-round files when available. Never run `heart still`, start a local server, or invoke a command that starts a server. The pass runner owns still rendering; this builder seat cannot bind local ports.
