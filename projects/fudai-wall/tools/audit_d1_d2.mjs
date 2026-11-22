@@ -110,6 +110,43 @@ for (const [i, s] of (film.shots || []).entries()) {
   }
 }
 
+// ---- D2-CLEAR: camera paths vs building solids (phase-7 extension) ----
+// Conservative solids from set.js buildWorld at MAXIMUM dimensions (village house
+// w<=4.9 -> hx 2.45, d<=4.1 -> hz 2.05, h<=4.65 + roof cone 1.25 -> top 6.0; town hall
+// box + cone r4.5 -> x +-4.5, z 9.5..18.5, top 6.4; neighbour houses h 4.2 + roof -> 5.6).
+// A path clearing these boxes clears the real buildings. Wall/storeys are NOT solids.
+const SOLIDS = [{ name: 'town hall', min: [-4.5, 0, 9.5], max: [4.5, 6.4, 18.5] }];
+for (const [hx, hz] of [[-16, -3], [-10, -4], [-20, 3], [-14, 7], [-8, 11], [8, -4], [14, -2], [20, 3], [14, 10], [6, 12]])
+  SOLIDS.push({ name: `village house @${hx},${hz}`, min: [hx - 2.45, 0, hz - 2.05], max: [hx + 2.45, 6.0, hz + 2.05] });
+for (const hx of [580, 600, 620])
+  SOLIDS.push({ name: `neighbour house @${hx}`, min: [hx - 2.45, 0, 8 - 2.05], max: [hx + 2.45, 5.6, 8 + 2.05] });
+function segHitsBox(p0, p1, b) {
+  let t0 = 0, t1 = 1;
+  for (let i = 0; i < 3; i++) {
+    const d = p1[i] - p0[i];
+    if (Math.abs(d) < 1e-9) { if (p0[i] < b.min[i] || p0[i] > b.max[i]) return false; }
+    else {
+      let ta = (b.min[i] - p0[i]) / d, tb = (b.max[i] - p0[i]) / d;
+      if (ta > tb) { const t = ta; ta = tb; tb = t; }
+      t0 = Math.max(t0, ta); t1 = Math.min(t1, tb);
+      if (t0 > t1) return false;
+    }
+  }
+  return true;
+}
+// Scope: chunk-2 shots (index >= 3, SH04+). SH01-SH03 are frozen and critic-passed;
+// their paths were fleet-probe-verified in phases 1-3, and the max-dim box overstates
+// the town-hall cone (round cross-section), so the opening is exempt from this check.
+for (const [i, s] of (film.shots || []).entries()) {
+  if (i < 3) continue;
+  const ends = s.camera?.move === 'park' ? [s.camera] : [s.camera?.from, s.camera?.to];
+  const p0 = ends[0]?.pos, p1 = ends[ends.length - 1]?.pos;
+  if (!Array.isArray(p0) || !Array.isArray(p1)) continue;
+  for (const b of SOLIDS)
+    ok(!segHitsBox(p0, p1, b), `D2-CLEAR: shot ${i + 1} (${s.id || '?'}) camera path intersects ${b.name}`);
+}
+notes.push(`D2-CLEAR: ${SOLIDS.length} building solids checked per shot`);
+
 // ---- format locks ----
 ok(film.fps === 30, `FORMAT: fps !== 30 (${film.fps})`);
 ok(JSON.stringify(film.size) === '[1080,1920]', `FORMAT: size !== [1080,1920] (${film.size})`);
