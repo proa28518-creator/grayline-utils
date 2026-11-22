@@ -1,0 +1,6 @@
+   0.84s  chime        synth
+   1.35s  whoosh       synth
+   3.40s  beep         synth
+   4.30s  beep         synth
+   5.20s  beep         synth
+   6.14s  swish        synth

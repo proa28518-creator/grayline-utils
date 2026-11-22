@@ -15,11 +15,6 @@
    "t0": 3.04,
    "cut": true,
    "name": "S03 radar"
-  },
-  {
-   "t0": 6.26,
-   "cut": true,
-   "name": "S04 cold room"
   }
  ],
  "sfx": [
@@ -52,12 +47,6 @@
    "type": "beep",
    "pan": 0.5,
    "gain": -8
-  },
-  {
-   "t": 7.2,
-   "type": "breath",
-   "pan": 0.5,
-   "gain": -4
   }
  ]
 }
