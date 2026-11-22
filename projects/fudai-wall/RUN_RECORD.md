@@ -275,6 +275,39 @@ render → Colab after board approval) applied to this run, correcting the local
   head projects > 300 px with margin on every side, low angle preserved. Driver's check:
   visible height at 5.09 D ≈ 3.1 D → head ≈ 600 px, crown margin ≈ 1 D. D1/D2 audit
   re-run after the edit: **PASS** (schema + purity + zones/frustum + format locks).
+  Pushed in commit `14a665a` (remote == local HEAD verified).
+- **Fleet re-probe — 5/5 SUCCESS** (`fleet-render.yml`, one dispatch per frame, parallel,
+  on commit `14a665a`; every run framesCaptured 1 / framesNull 0 / bootError null):
+  | frame | run | still |
+  |---|---|---|
+  | 0 | 45072521384 | `out/board/fleet/45072521384/frames/frame_0000.png` |
+  | 3 | 45072521265 | `out/board/fleet/45072521265/frames/frame_0003.png` |
+  | 45 | 45072521049 | `out/board/fleet/45072521049/frames/frame_0045.png` |
+  | 60 | 45072521641 | `out/board/fleet/45072521641/frames/frame_0060.png` |
+  | 105 | 45072521411 | `out/board/fleet/45072521411/frames/frame_0105.png` |
+  (https://github.com/proa28518-creator/grayline-utils/actions/runs/<id>)
+- **Before/after eye-verdicts (driver, looked at all five new stills):**
+  - **F0 — FIXED.** Before: the head was cropped at the top edge (crown + top of the eyes
+    cut) — RULES §4 violation, the critic's BLOCKING #1. After: the COMPLETE head is
+    inside the frame with clear margin above the crown; the full expressive deadpan face
+    reads (brows up, dot eyes, tight mouth, grey hair at the crown), head ≈ 600 px tall,
+    low angle at the wall's base preserved, the wall's braced face looming behind him.
+    The biggest gap is closed at its cause.
+  - **F3 — good before, good after** (full face, caption «بنى سور»; the push eases out of
+    the new start cleanly).
+  - **F45 / F60 — unchanged, no regression** (tilt-up lands on the same wall composition;
+    captions legible). The storeys overlay is STILL not visible in either — untouched by
+    this round on purpose (one gap per round, RULES §3).
+  - **F105 — unchanged, no regression** (SH02 path untouched; composition identical).
+- **Phase-2 end state, plainly:** the round-1 verdict of record stands at **NO** — the
+  biggest gap is fixed and re-probe-verified, but the critic's other BLOCKING fault (the
+  missing transparent 1-2-3-4-5 storeys overlay at M3/M4) remains, so the opening is NOT
+  yet critic-passed and NOT board-ready. Per the phase order, no second fix round was
+  looped. **Next round's biggest gap is already named: the storeys overlay** (the prop
+  exists in film.js at COAST_WALL + [14,0,0] — it never enters the tilt-up's frame; a
+  camera/prop-placement fix through the Codex seat), then a NEW critic (round 2, same
+  moments + the round-1 report) per RULES §3. Colab render remains LOCKED; no board was
+  assembled for the owner.
 - Compute home: THE FLEET (owner's correction 22:43 EET — see Fleet move below).
 
 ## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
