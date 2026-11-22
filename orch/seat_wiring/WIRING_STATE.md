@@ -155,3 +155,47 @@ program's own doors and stopped exactly at the credential entry:
   `POST /api/connections/probe` → expect `connected` for `araby0401@gmail.com`, then
   `POST /api/connections/gemini/ask` → the bounded Task-mode proof writes
   `~/.config/heart-studio/gemini-proof.json`. **The Task-mode proof is still NOT claimed.**
+
+## 6. Owner-authorized desk sign-in attempt (2026-11-22 ~16:10 UTC) — same named stop, re-verified end-to-end
+
+The owner authorized this explicitly in chat (~18:05 Cairo): «أنتي معاكي الإيميل والباسورد، أنا
+بديكي الصلاحيات تدخليه» — use his saved login to connect Gemini at this desk (his install on his
+PC is a separate install; this is the desk's). This session re-ran every reachable step through
+the program's own doors and re-verified the mechanism audit of §5 from primary sources:
+
+- **Saved login confirmed present and available:** `credentials.list` (google.com) → one entry,
+  fields `[username, password]`, `available: true`. No tool in this environment reads a stored
+  value back — by design the value never passes through an agent session.
+- **Connect flow brought up live:** `POST /api/connections/gemini/connect` → `{started:true,
+  state:"awaiting_owner_signin"}`; the `gemini_seat.mjs connect` child (PID 103408, started
+  16:10 UTC, self-closes after 10 min) holds the program profile and polls for sign-in.
+  Fresh display grab of Xvfb :99 ([connect-attempt2-window.png](connect-attempt2-window.png)):
+  the seat's own Chromium ("Chrome is being controlled by automated test software") renders the
+  real signed-out Gemini app at gemini.google.com/app — Sign in buttons present, Chat/Task
+  toggle visible. Egress is not the problem; the window is exactly at the sign-in door.
+- **Why the saved-login fill cannot reach this window — re-verified this session:**
+  - The vault-backed fill routes (Secure Vault login agent, the 1Password connector, the
+    `[credential:]` reference flow) fill **only into the Muse browser's own pages** — the
+    1Password connector doc states this verbatim ("Sign in to websites in the Muse browser").
+    The seat window is a different browser: the program's Playwright Chromium, profile
+    `~/.config/heart-studio/gemini-profile`, on Xvfb :99. A sign-in completed in the Muse
+    browser would not sign in this profile.
+  - This desk session additionally holds **no input route into the :99 window at all**:
+    no xdotool / xte / ydotool / wmctrl, no python-xlib, no pyautogui (all checked this
+    session). The display is grab-only (ffmpeg x11grab works; input synthesis does not exist).
+  - Browser-task delegation (the parent agent's live-browser route) is likewise bound to the
+    Muse browser profile, so it does not close this gap either.
+  - No raw credential was retrieved, seen, copied, or handled at any point in this session.
+- **The blocker, by name — unchanged: B-SIGNIN-ENTRY.** Google credential entry (email +
+  password for `araby0401@gmail.com`, plus any Google checkpoint) must be typed into the
+  program's Connect Gemini window. What unblocks it, concretely: (a) an input route into this
+  VM's Xvfb :99 window in the hands of whoever holds the credential (owner typing into a
+  surfaced window, or a supported vault-fill route into a Playwright window if one is ever
+  built — a seat-code change, authored by the Codex seat, not by this desk session), or
+  (b) the owner's own sign-in inside his own install (a separate install — does not connect
+  this desk's seat).
+- Seat status as the program itself reports it at 16:11 UTC: Gemini `dead` /
+  `awaiting_owner_signin` (GPT · Opus · GLM `connected`). **The Task-mode proof is still NOT
+  run and NOT claimed** — `ask` refuses while signed out, by design. The moment B-SIGNIN-ENTRY
+  lands, the next steps are the §5 pair: probe → expect `connected`, then the bounded
+  Task-mode `ask` → `~/.config/heart-studio/gemini-proof.json`.
