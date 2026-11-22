@@ -437,3 +437,11 @@ Its real layout (verify against disk, do not assume):
 ## Owner decision 2026-11-22 ~06:50 — assembly/finishing happens on GitHub
 - «عشان الشغل يكون أدق وأنضف، التجميع يحصل على GitHub»: the final assembly (frames + mix + encode + finish gates) runs as a GitHub Actions workflow on a clean machine every run — NOT on the desk VM. The desk VM is controller/director + QC eyes only.
 - Pipeline shape is now: program dispatches → stills & passes on GitHub → render on Colab (on-demand queue worker) → frames to GitHub → assembly/finishing on GitHub → master out (artifact/Drive). The fleet finish discipline (pts audit, setpts re-encode, SSIM verify, never stream-copy) becomes part of that Actions workflow.
+
+## Layla's proposals — owner approved ALL, 2026-11-22 ~06:54 («ضيفيهم كلهم في المواصفات»)
+Drawn from the Creatorize capability map + our own gap audit; they join the spec for the rounds after round 2:
+1. **New-film conversation entry:** a «فيلم جديد» flow where the owner writes the idea and drops his voice recording; the program creates the project and runs transcribe + align inside the run (no manual file prep to start a film).
+2. **Quality / Faster toggle on every run:** Quality = no step passes until the program's measured checks pass, no time pressure; Faster = draft mode, checks advisory. (Mirrors his Quality mode vs Faster builds.)
+3. **Shared asset library inside the program:** reusable props/scenes/characters with search + propose/get tools (the mcp__suite__library_* pattern), so films stop rebuilding every element from scratch.
+4. **Retention analysis feeding the Write step:** analyze published shorts' audience-retention drop points and feed the findings into story writing (his announced v0.3 direction; serves the owner's viral goal).
+5. **In-program lessons memory:** every film leaves a written lessons record (what failed checks and why); the builder/director sessions read it at the start of the next run — lessons stop living only in Layla's own memory.
