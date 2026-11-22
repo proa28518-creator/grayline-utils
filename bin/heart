@@ -316,6 +316,18 @@ function cmdTiming(arg) {
   console.log(JSON.stringify(report,null,2)); if (!report.ok) { failures.forEach(f=>console.error(f.name+': '+f.detail)); process.exitCode=1; }
 }
 
+function cmdTranscribe(arg) {
+  const dir = resolveProject(arg), home = process.env.HOME || '';
+  const candidates = [process.env.HEART_WHISPER_PYTHON, path.join(home, 'workspace/tools/whisper-venv/bin/python'), 'python3'].filter(Boolean);
+  const python = candidates.find(candidate => candidate === 'python3' || fs.existsSync(candidate));
+  if (!python) { console.error('asr_python_unavailable: configure HEART_WHISPER_PYTHON or install a local whisper environment'); process.exitCode = 2; return; }
+  const script = path.join(HEART_HOME, 'tools', 'transcribe.py');
+  const result = spawnSync(python, [script, dir], { cwd: HEART_HOME, env: process.env, encoding: 'utf8', timeout: 60 * 60 * 1000, maxBuffer: 4 * 1024 * 1024 });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  process.exitCode = result.status === null ? 2 : result.status;
+}
+
 function cmdSound(arg) {
   const dir=resolveProject(arg), required=['audio/events.json','audio/beds.json','audio/timeline.json'];
   const missing=required.filter(p=>!fs.existsSync(path.join(dir,p)));
@@ -415,6 +427,7 @@ function cmdCritic(evidenceFile) {
   else if (cmd === 'serve') await cmdServe(a, b);
   else if (cmd === 'still') await cmdStill(a, b, c);
   else if (cmd === 'timing') cmdTiming(a);
+  else if (cmd === 'transcribe') cmdTranscribe(a);
   else if (cmd === 'sound') cmdSound(a);
   else if (cmd === 'models') cmdModels(a);
   else if (cmd === 'consult') cmdConsult(a, b);
@@ -428,6 +441,7 @@ function cmdCritic(evidenceFile) {
     console.log('  heart serve [project]             تشغيل صفحة التحكم والخادم');
     console.log('  heart still <project> <t> <out>   التقاط لقطة واحدة عند الثانية t');
     console.log('  heart timing <project>            فحص التوقيت وكتابة تقرير');
+    console.log('  heart transcribe <project>        تفريغ محلي للكلام وتوقيت كل كلمة');
     console.log('  heart sound <project>             تنفيذ تصميم الصوت');
     console.log('  heart models [substr]             نماذج APInex المتاحة');
     console.log('  heart consult <model> <file>      استشارة نموذج بملف برومبت');
