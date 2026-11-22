@@ -13,6 +13,11 @@ on:
         required: true
         default: "render:0:30"
         type: string
+      settings:
+        description: "Effective project settings JSON"
+        required: false
+        default: '{}'
+        type: string
 
 jobs:
   render-chunk:
@@ -37,6 +42,7 @@ jobs:
       - name: Render chunk
         env:
           FLEET_PROJECT: projects/${{ inputs.project }}
+          FLEET_SETTINGS: ${{ inputs.settings }}
         run: npx tsx fleet/render-chunk.ts --frame "${{ inputs.spec }}" --out fleet-result.tar.gz
 
       - name: Upload chunk artifact

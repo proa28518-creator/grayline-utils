@@ -158,6 +158,7 @@ const runInfo: Record<string, unknown> = {
   fps: FPS,
   requestedFrames: requested,
   size: [1080, 1920],
+  settings: (() => { try { return JSON.parse(process.env.FLEET_SETTINGS || '{}'); } catch { return {}; } })(),
 };
 let incomplete = false;
 
@@ -184,7 +185,8 @@ async function main(): Promise<void> {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   if (spec.mode === "render") fs.mkdirSync(FRAMES_DIR, { recursive: true });
   const server = await startServer();
-  const url = `http://127.0.0.1:${server.port}/__suite/cartoon.html?mode=render`;
+  const settings = process.env.FLEET_SETTINGS || '{}';
+  const url = `http://127.0.0.1:${server.port}/__suite/cartoon.html?mode=render${settings && settings !== '{}' ? `&settings=${encodeURIComponent(settings)}` : ''}`;
   runInfo.url = url;
 
   const browser = await chromium.launch({

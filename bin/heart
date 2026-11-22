@@ -102,7 +102,10 @@ async function cmdStill(arg, tArg, out) {
   const projectDir = resolveProject(arg);
   const { server, port } = await createHeartServer({ projectDir, uiDir: UI_DIR, port: 0 });
   const dbgPort = 9300 + Math.floor(Math.random() * 500);
-  const pageUrl = 'http://127.0.0.1:' + port + '/project/__suite/cartoon.html?mode=render';
+  let effective = {};
+  try { effective = JSON.parse(fs.readFileSync(path.join(projectDir, 'project.json'), 'utf8')).settings || {}; } catch (_) {}
+  effective = { ...effective, fps: Number(effective.fps) === 24 ? 24 : 30 };
+  const pageUrl = 'http://127.0.0.1:' + port + '/project/__suite/cartoon.html?mode=render&settings=' + encodeURIComponent(JSON.stringify(effective));
   const proc = spawn(chrome, ['--headless=new', '--no-sandbox', '--no-proxy-server',
     '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
     '--ignore-gpu-blocklist', '--disable-dev-shm-usage',
@@ -166,6 +169,57 @@ async function cmdStill(arg, tArg, out) {
     proc.kill('SIGKILL');
     server.close();
   }
+}
+
+function cmdTiming(arg) {
+  const dir = resolveProject(arg), candidates = [['audio/clean.json', 'run-produced'], ['words_owner.txt', 'owner-supplied']];
+  let source = null, provenance = 'owner-supplied', entries = [], failures = [];
+  for (const [rel, prov] of candidates) if (fs.existsSync(path.join(dir, rel))) {
+    source = rel; provenance = prov;
+    try {
+      if (rel.endsWith('.json')) {
+        const data = JSON.parse(fs.readFileSync(path.join(dir, rel), 'utf8'));
+        if (!Array.isArray(data)) throw new Error('expected an array');
+        entries = data.map(x => ({ start: x.start, end: x.end, word: x.word ?? x.text ?? '' }));
+      } else {
+        entries = fs.readFileSync(path.join(dir, rel), 'utf8').split(/\r?\n/).map(line => {
+          const m = line.match(/^\[(\d{2}):(\d{2}\.\d+)\s+-\s+(\d{2}):(\d{2}\.\d+)\]\s+(.+)$/);
+          return m ? { start: Number(m[1]) * 60 + Number(m[2]), end: Number(m[3]) * 60 + Number(m[4]), word: m[5] } : null;
+        }).filter(Boolean);
+      }
+    } catch (e) { failures.push({ name: 'timing_parse', detail: 'تعذر تحليل ' + rel + ': ' + e.message }); }
+    break;
+  }
+  if (!source) failures.push({ name: 'timing_file_missing', detail: 'لم يوجد audio/clean.json أو words_owner.txt' });
+  if (source && !failures.some(f => f.name === 'timing_parse')) {
+    if (!entries.length) failures.push({ name: 'timing_empty', detail: 'لا توجد أي إدخالات توقيت' });
+    for (let i=0;i<entries.length;i++) {
+      const x=entries[i];
+      if (typeof x.start !== 'number' || !Number.isFinite(x.start) || typeof x.end !== 'number' || !Number.isFinite(x.end)) failures.push({ name:'timing_invalid_entry', detail:`إدخال ${i+1}: start/end يجب أن يكونا رقمين` });
+      else if (x.end < x.start) failures.push({ name:'timing_end_before_start', detail:`إدخال ${i+1}: النهاية قبل البداية` });
+      if (i && Number.isFinite(x.start) && x.start < entries[i-1].end) failures.push({ name:'timing_overlap', detail:`إدخال ${i+1}: التوقيت غير رتيب أو متداخل` });
+    }
+  }
+  const voices=['voice_owner.wav','voice_ar.wav','audio/source.wav','audio/clean.wav']; let voice=voices.find(p=>fs.existsSync(path.join(dir,p)))||null, voiceDurationSec=null;
+  let voiceCheck={name:'voice_duration',state:'skipped',detail:'لا يوجد ملف صوت للتحقق من حد المدة'};
+  if (voice) {
+    const probe=spawnSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',path.join(dir,voice)],{encoding:'utf8'});
+    voiceDurationSec=Number(probe.stdout);
+    if (probe.status===0 && Number.isFinite(voiceDurationSec)) {
+      if (entries.length && entries[entries.length-1].end > voiceDurationSec + .5) { failures.push({name:'timing_exceeds_voice',detail:`آخر توقيت ${entries[entries.length-1].end}s يتجاوز الصوت ${voiceDurationSec}s + 0.5s`}); voiceCheck={name:'voice_duration',state:'fail',detail:voice+' '+voiceDurationSec+'s'}; }
+      else voiceCheck={name:'voice_duration',state:'pass',detail:voice+' '+voiceDurationSec+'s'};
+    } else { failures.push({name:'voice_duration_unreadable',detail:'تعذر قياس مدة '+voice+' عبر ffprobe'}); voiceCheck={name:'voice_duration',state:'fail',detail:'ffprobe failed'}; }
+  }
+  const report={source,provenance,entries:entries.length,firstStart:entries.length?entries[0].start:null,lastEnd:entries.length?entries[entries.length-1].end:null,voiceDurationSec,voiceCheck,ok:failures.length===0,failures};
+  const out=path.join(dir,'out','timing_report.json'); fs.mkdirSync(path.dirname(out),{recursive:true}); fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify(report,null,2)); if (!report.ok) { failures.forEach(f=>console.error(f.name+': '+f.detail)); process.exitCode=1; }
+}
+
+function cmdSound(arg) {
+  const dir=resolveProject(arg), required=['audio/events.json','audio/beds.json','audio/timeline.json'];
+  const missing=required.filter(p=>!fs.existsSync(path.join(dir,p)));
+  if(missing.length){missing.forEach(p=>console.error('missing_input: '+p));process.exitCode=1;return;}
+  const r=spawnSync('python3',[path.join(HEART_HOME,'skills/cartoon-shorts/scripts/sound_design.py'),dir],{cwd:HEART_HOME,stdio:'inherit'}); process.exitCode=r.status===null?1:r.status;
 }
 
 /* ---- APInex model API (bundled helper in mcp/) ----
@@ -256,6 +310,8 @@ function cmdCritic(evidenceFile) {
   if (cmd === 'new') cmdNew(a);
   else if (cmd === 'serve') await cmdServe(a, b);
   else if (cmd === 'still') await cmdStill(a, b, c);
+  else if (cmd === 'timing') cmdTiming(a);
+  else if (cmd === 'sound') cmdSound(a);
   else if (cmd === 'models') cmdModels(a);
   else if (cmd === 'consult') cmdConsult(a, b);
   else if (cmd === 'critic') cmdCritic(a);
@@ -264,6 +320,8 @@ function cmdCritic(evidenceFile) {
     console.log('  heart new <name>                  إنشاء مشروع جديد');
     console.log('  heart serve [project]             تشغيل صفحة التحكم والخادم');
     console.log('  heart still <project> <t> <out>   التقاط لقطة واحدة عند الثانية t');
+    console.log('  heart timing <project>            فحص التوقيت وكتابة تقرير');
+    console.log('  heart sound <project>             تنفيذ تصميم الصوت');
     console.log('  heart models [substr]             نماذج APInex المتاحة');
     console.log('  heart consult <model> <file>      استشارة نموذج بملف برومبت');
     console.log('  heart critic <evidence-file>      حكم الناقد (GLM) على أدلة البناء');

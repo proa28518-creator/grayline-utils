@@ -7,6 +7,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
+const dispatchLayer = require('./dispatch');
 
 const STEPS = ['write', 'add', 'run', 'build', 'mix', 'export'];
 const SUBSTEPS = ['camera', 'environment', 'post', 'shading'];
@@ -64,6 +65,45 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
   function log(actor, text) { state.log.push({ t: Date.now(), actor, text }); }
 
   const jobs = new Map();
+  let connectionCache = null;
+  const connectionNames = ['GPT','Gemini','Opus','GLM'];
+  const connectionEmpty = () => connectionNames.map(name => ({name,probed:false,status:'unprobed',checkedAt:null}));
+  const timed = () => new Date().toISOString();
+  function safeRun(bin,args,options={}) { return new Promise(resolve=>{ const p=spawn(bin,args,{...options,stdio:['ignore','pipe','pipe']}); let out='',err='';p.stdout.on('data',x=>out+=x);p.stderr.on('data',x=>err+=x);p.on('error',e=>resolve({code:1,out,err:e.message}));p.on('close',code=>resolve({code,out,err}));}); }
+  async function probeConnections() {
+    const results=[];
+    const home=process.env.HOME||'';
+    // Codex CLI output is inspected without returning auth material.
+    let codex=process.env.CODEX_BIN; if(!codex||!fs.existsSync(codex)) codex=['/usr/lib/chatgpt/resources/codex',path.join(home,'workspace/tools/chatgpt-app/extracted/usr/lib/chatgpt/resources/codex')].find(fs.existsSync);
+    let gpt={name:'GPT',probed:true,checkedAt:timed(),status:'dead',reason:'codex binary not found',authMetadata:null};
+    try { if(codex) { const r=await safeRun(codex,['login','status'],{timeout:15000}); const signed=r.code===0&&/logged in|chatgpt|openai account/i.test(r.out+'\n'+r.err);gpt.status=signed?'connected':'dead';gpt.reason=signed?undefined:(r.code!==0?'Codex login status command failed':'Codex output did not indicate a ChatGPT login'); }
+      const a=JSON.parse(fs.readFileSync(path.join(home,'.codex/auth.json'),'utf8'));gpt.authMetadata={auth_mode:a.auth_mode||null,last_refresh:a.last_refresh||null,has_tokens:Object.prototype.hasOwnProperty.call(a,'tokens')};
+    } catch(e){gpt.metadataError='auth metadata unavailable';}
+    results.push(gpt);
+    let gem={name:'Gemini',probed:true,checkedAt:timed(),status:'unknown'};
+    try {
+      const db=path.join(home,'.config/gemini-desktop/Cookies');if(!fs.existsSync(db))throw new Error('Gemini Cookies database not found');
+      const os=require('os'),{spawnSync}=require('child_process');
+      const query="SELECT name FROM cookies WHERE host_key LIKE '%google.%' OR host_key LIKE '%.google.com';";
+      const readNames=file=>spawnSync('sqlite3',[`file:${file}?immutable=1`,query],{encoding:'utf8',timeout:10000});
+      let r=readNames(db);
+      if(r.status!==0){
+        const dir=fs.mkdtempSync(path.join(os.tmpdir(),'heart-gem-'));
+        try { const copy=path.join(dir,'Cookies');fs.copyFileSync(db,copy);r=spawnSync('sqlite3',[copy,query],{encoding:'utf8',timeout:10000}); }
+        finally { fs.rmSync(dir,{recursive:true,force:true}); }
+      }
+      if(r.status!==0)throw new Error(r.stderr||'sqlite read failed');
+      const names=r.stdout.split(/\r?\n/);const found=names.some(n=>['__Secure-1PSID','__Secure-3PSID','SID'].includes(n));gem.status=found?'connected':'dead';gem.state=found?'connected':'awaiting_owner_signin';if(!found)gem.reason='سجّل دخول المالك في تطبيق Gemini desktop على هذا الجهاز';
+    }
+    catch(e){gem.status='unknown';gem.reason='تعذر قراءة قاعدة جلسة Gemini: '+String(e.message).slice(0,180);}results.push(gem);
+    let opus={name:'Opus',probed:true,checkedAt:timed(),status:'dead'};
+    try { const helper=path.join(home,'workspace/tools/opus_call.py'), envFile=path.join(home,'workspace/user/files/llmsrelay.env');let key='';const contents=fs.readFileSync(envFile,'utf8');const m=contents.match(/^\s*LLMSRELAY_API_KEY\s*=\s*(.*?)\s*$/m);if(m)key=m[1].replace(/^['"]|['"]$/g,'');if(!key)throw new Error('LLMSRELAY_API_KEY is missing');const dir=fs.mkdtempSync(path.join(require('os').tmpdir(),'heart-opus-probe-'));const prompt=path.join(dir,'prompt.txt'),out=path.join(dir,'out.txt');fs.writeFileSync(prompt,'Reply with exactly: OK');const r=await safeRun('python3',[helper,prompt,out,'32'],{env:{...process.env,LLMS_KEY:key},timeout:45000});const answer=fs.existsSync(out)?fs.readFileSync(out,'utf8'):r.out;opus.status=r.code===0&&answer.startsWith('OK')?'connected':'dead';if(opus.status==='dead')opus.reason='Opus ping did not return OK';fs.rmSync(dir,{recursive:true,force:true}); }
+    catch(e){opus.reason='Opus probe failed: '+String(e.message).slice(0,180);}results.push(opus);
+    let glm={name:'GLM',probed:true,checkedAt:timed(),status:'dead',model:'free/glm-5.3-flashx'};
+    try {const r=await safeRun(process.execPath,[path.join(__dirname,'heart-cjs-runner.cjs'),'models']);const has=r.code===0&&(/free\/glm-5\.3\s+متاح:\s+نعم/i.test(r.out)||/has_glm_free["']?\s*:\s*true/i.test(r.out));glm.status=has?'connected':'dead';if(glm.status==='dead')glm.reason='APInex catalog did not report has_glm_free';}
+    catch(e){glm.reason='APInex catalog probe failed: '+String(e.message).slice(0,180);}results.push(glm);
+    connectionCache={checkedAt:timed(),connections:results};return connectionCache;
+  }
   function safeProject(name) {
     if (!/^[a-zA-Z0-9_-]+$/.test(String(name || ''))) return null;
     const dir = path.join(projectsDir, String(name));
@@ -84,7 +124,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     let baseSettings = {};
     try { baseSettings = JSON.parse(fs.readFileSync(path.join(dir, 'project.json'), 'utf8')).settings || {}; } catch (_) {}
     const captionsSetting = baseSettings.captions;
-    const settings = { ...baseSettings, captions: { on: typeof captionsSetting === 'object' ? captionsSetting.on !== false : captionsSetting !== false }, fps: Number(baseSettings.fps) || 30 };
+    const settings = { ...baseSettings, captions: { on: typeof captionsSetting === 'object' ? captionsSetting.on !== false : captionsSetting !== false }, fps: Number(baseSettings.fps) === 24 ? 24 : 30 };
     let masterMetadata = null;
     if (master && includeMetadata) {
       const r = require('child_process').spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate,width,height', '-of', 'json', path.join(dir, master)], { encoding: 'utf8', timeout: 5000 });
@@ -149,11 +189,11 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
     const add = (stream, chunk) => { const lines = String(chunk).split(/\r?\n/).filter(Boolean); for (const line of lines) job.log.push({ t: Date.now(), stream, text: line }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); };
     child.stdout.on('data', c => add('out', c)); child.stderr.on('data', c => add('err', c));
     child.on('error', e => { add('err', e.message); job.status = 'failed'; job.ended = true; job.exitCode = 1; });
-    child.on('close', code => {
+      child.on('close', code => {
       job.exitCode = code;
       if (code !== 0) job.status = 'failed';
       else if (job.outputArtifact) {
-        try { const ok = fs.statSync(job.outputArtifact).isFile() && fs.statSync(job.outputArtifact).size > 0; job.status = ok ? 'done' : 'failed'; job.verification = ok ? 'artifact exists and is non-empty' : 'artifact predicate failed'; }
+        try { const stat=fs.statSync(job.outputArtifact);let ok=stat.isFile()&&stat.size>0;const fresh=stat.mtimeMs>=job.startedAt-2000;if(!fresh){ok=false;job.verification='artifact freshness failed: mtime predates job start';}if(job.action==='timing'&&ok){const report=JSON.parse(fs.readFileSync(job.outputArtifact,'utf8'));ok=report.ok===true;job.verification=ok?'timing report ok; '+report.entries+' entries':'timing report failed: '+(report.failures||[]).map(x=>x.name).join(', ');} else if(fresh)job.verification=ok?'artifact exists and is non-empty':'artifact predicate failed'; job.status = ok ? 'done' : 'failed'; }
         catch (_) { job.status = 'failed'; job.verification = 'artifact predicate failed'; }
       } else job.status = 'done';
       job.ended = true; job.finishedAt = Date.now();
@@ -229,6 +269,8 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         const names = fs.readdirSync(projectsDir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => inventory(path.join(projectsDir, e.name)));
         return sendJson(res, 200, names);
       }
+      if (pn === '/api/connections' && req.method === 'GET') return sendJson(res,200,connectionCache||{checkedAt:null,connections:connectionEmpty()});
+      if (pn === '/api/connections/probe' && req.method === 'POST') return sendJson(res,200,await probeConnections());
       if (pn === '/api/project' && req.method === 'GET') return sendJson(res, 200, { ...inventory(activeDir, true), path: path.relative(repoDir, activeDir), gates: artifactChecks(activeDir), history: projectGit(activeDir) });
       if (pn === '/api/select' && req.method === 'POST') {
         const b = await readBody(req);
@@ -245,7 +287,7 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
         const file = path.join(activeDir, 'project.json'), pj = JSON.parse(fs.readFileSync(file, 'utf8'));
         pj.settings = { ...(pj.settings || {}), captions: { ...(typeof pj.settings?.captions === 'object' ? pj.settings.captions : {}), on: b.captions }, fps: Number(b.fps) };
         fs.writeFileSync(file, JSON.stringify(pj, null, 2) + '\n');
-        return sendJson(res, 200, { ok: true, settings: pj.settings, note: 'تم الحفظ. تمرير الإعدادات إلى fleet/heart still غير موصول بعد.' });
+        return sendJson(res, 200, { ok: true, settings: pj.settings, note: 'الإعدادات محفوظة في project.json وسيتم تمريرها إلى heart still وGitHub Actions.' });
       }
       if (pn === '/api/history' && req.method === 'GET') return sendJson(res, 200, { available: fs.existsSync(path.join(activeDir, '.git')), commits: projectGit(activeDir) });
       if (pn === '/api/history/revert' && req.method === 'POST') {
@@ -269,11 +311,13 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
       if (pn === '/api/job' && req.method === 'GET') {
         const j = jobs.get(u.searchParams.get('id'));
         if (!j) return sendJson(res, 404, { error: 'العملية غير موجودة' });
-        return sendJson(res, 200, { id: j.id, project: path.basename(j.projectDir), status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null });
+        return sendJson(res, 200, { id: j.id, project: path.basename(j.projectDir), status: j.status, startedAt: j.startedAt, finishedAt: j.finishedAt, exitCode: j.exitCode, log: j.log, waitingOn: j.waitingOn || 'لا شيء', runSettings: j.runSettings || null, verification: j.verification || null, runId:j.runId||null,legs:j.runSettings?.legs||null });
       }
       if (pn === '/api/stop' && req.method === 'POST') {
         const b = await readBody(req), j = jobs.get(b.id);
-        if (!j || j.ended || !j.child) return sendJson(res, 409, { error: 'لا توجد عملية تعمل' });
+        if (!j || j.ended) return sendJson(res, 409, { error: 'لا توجد عملية تعمل' });
+        if(j.runId){j.cancelRequested=true;dispatchLayer.gh(['run','cancel',j.runId]);return sendJson(res,200,{ok:true});}
+        if(!j.child)return sendJson(res,409,{error:'لا توجد عملية تعمل'});
         j.status = 'stopping'; j.child.kill('SIGTERM'); setTimeout(() => { if (!j.ended) j.child.kill('SIGKILL'); }, 3000).unref();
         return sendJson(res, 200, { ok: true });
       }
@@ -285,21 +329,61 @@ function createHeartServer({ projectDir, uiDir, port = 8903 }) {
           const seconds = Math.max(0, Math.min(55, Number(b.seconds) || 0));
           const j = runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'still', activeDir, String(seconds), out]);
           j.outputArtifact = out;
-          return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'غير موصول بعد: heart still لا يقبل ?settings=' });
+          j.action='preview'; const effective=inventory(activeDir).settings;
+          return sendJson(res, 202, { id, status: j.status, output: path.relative(repoDir, out), settingsStatus: 'موصول', settings:effective });
         }
+        if (['timing','sound'].includes(b.action)) {const artifact=b.action==='timing'?path.join(activeDir,'out/timing_report.json'):path.join(activeDir,'audio/sfx_bed.wav');const j=runCommand(id,activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),b.action,activeDir]);j.action=b.action;j.outputArtifact=artifact;return sendJson(res,202,{id,status:j.status,output:path.relative(repoDir,artifact)});}
         if (b.action === 'models') return sendJson(res, 202, { id, status: runCommand(id, activeDir, [process.execPath, path.join(__dirname, 'heart-cjs-runner.cjs'), 'models']).status });
         return sendJson(res, 501, { error: 'هذا المنفذ غير موجود: غير موصول بعد' });
       }
+      if(pn==='/api/dispatch/runs'&&req.method==='GET'){
+        const r=dispatchLayer.gh(['run','list','--limit','50','--json','databaseId,workflowName,status,conclusion,createdAt,displayTitle']);if(r.status!==0)return sendJson(res,502,{error:(r.stderr||'gh run list failed').slice(0,500)});
+        const rows=JSON.parse(r.stdout||'[]'),projectName=u.searchParams.get('project');const selected=[];
+        for(const row of rows){if(!/Fleet Render Chunk|fleet-render/i.test(row.workflowName||''))continue;if(projectName){const ar=dispatchLayer.gh(['api',`repos/${'proa28518-creator/grayline-utils'}/actions/runs/${row.databaseId}/artifacts`]);if(ar.status!==0)continue;const artifacts=JSON.parse(ar.stdout||'{}').artifacts||[];if(!artifacts.some(a=>a.name.startsWith('fleet-chunk-'+projectName+'-')))continue;}selected.push(row);}
+        return sendJson(res,200,selected);
+      }
+      if(pn==='/api/colab-queue'&&req.method==='GET'){
+        const file=path.join(activeDir,'out','colab_queue.json');try{return sendJson(res,200,{entries:JSON.parse(fs.readFileSync(file,'utf8'))});}catch(e){if(e.code==='ENOENT')return sendJson(res,200,{entries:[]});return sendJson(res,200,{entries:[],error:'تعذر قراءة colab_queue.json: '+e.message});}
+      }
+      if(pn==='/api/dispatch/stills'&&req.method==='POST'){
+        const b=await readBody(req),dir=b.project?safeProject(b.project):activeDir;if(!dir)return sendJson(res,400,{error:'project غير صالح أو غير موجود'});const settings=b.settings||inventory(dir).settings;if(![24,30].includes(Number(settings.fps)))return sendJson(res,400,{error:'fps يجب أن يكون 24 أو 30'});const job={id:'dispatch-'+Date.now(),projectDir:dir,status:'queued',startedAt:Date.now(),ended:false,log:[],runSettings:{settings,spec:b.spec||'render:0:30'}};jobs.set(job.id,job);(async()=>{try{job.status='dispatched';const runId=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(dir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});await dispatchLayer.monitor(job,{runId,projectDir:dir,kind:'stills',settingsSent:settings,repoDir});}catch(e){job.status='failed';job.ended=true;job.finishedAt=Date.now();job.log.push({t:Date.now(),stream:'err',text:e.message});}})();return sendJson(res,202,{id:job.id,status:job.status});
+      }
+      if(pn==='/api/dispatch/assembly'&&req.method==='POST'){
+        const b=await readBody(req);if(!b.framesRunId&&!b.framesArtifact)return sendJson(res,400,{error:'مطلوب framesRunId أو framesArtifact كمصدر إطارات'});const dir=b.project?safeProject(b.project):activeDir;if(!dir)return sendJson(res,400,{error:'project غير صالح أو غير موجود'});if(![24,30].includes(Number(b.fps)))return sendJson(res,400,{error:'fps يجب أن يكون 24 أو 30'});const job={id:'assembly-'+Date.now(),projectDir:dir,status:'queued',startedAt:Date.now(),ended:false,log:[]};jobs.set(job.id,job);(async()=>{try{job.status='dispatched';const inputs={project:path.basename(dir),frames_artifact:b.framesArtifact||'',frames_run_id:b.framesRunId||'',fps:String(b.fps),mix_rel:b.mixRel||'',mode:'assemble'};const runId=await dispatchLayer.dispatchAsync('fleet-assembly.yml',inputs);await dispatchLayer.monitor(job,{runId,projectDir:dir,kind:'assembly',repoDir});}catch(e){job.status='failed';job.ended=true;job.finishedAt=Date.now();job.log.push({t:Date.now(),stream:'err',text:e.message});}})();return sendJson(res,202,{id:job.id,status:job.status});
+      }
       if (pn === '/api/run' && req.method === 'POST') {
-        const b = await readBody(req), id = 'run-' + Date.now(), checks = artifactChecks(activeDir);
-        const j = { id, projectDir: activeDir, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'منفذ النص والصوت غير موجود في البرنامج؛ RUN يتوقف عند أول محطة تنفيذية' };
+        const activeRun=Array.from(jobs.values()).find(job=>job.kind==='run'&&!job.ended&&job.projectDir===activeDir);
+        if(activeRun)return sendJson(res,409,{error:`توجد عملية تشغيل جارية: ${activeRun.id}`});
+        const b = await readBody(req), id = 'run-' + Date.now();
+        const j = { id, kind: 'run', projectDir: activeDir, status: 'running', startedAt: Date.now(), ended: false, log: [], waitingOn: 'لا شيء' };
         jobs.set(id, j);
-        j.runSettings = { mode: b.mode === 'faster' ? 'faster' : 'quality', model: b.model || 'free/glm-5.3', effort: b.effort || 'standard', settings: inventory(activeDir).settings };
-        j.log.push({ t: Date.now(), stream: 'system', text: 'إعدادات RUN المسجلة: ' + JSON.stringify(j.runSettings) });
-        j.log.push({ t: Date.now(), stream: 'system', text: 'بدأ RUN بوضع ' + j.runSettings.mode + '. يجري فحص أدلة الملفات؛ وجود ملف قديم لا يعني أن هذا التشغيل أعاد تنفيذه.' });
-        checks.checks.forEach(c => j.log.push({ t: Date.now(), stream: c.pass ? 'pass' : 'fail', text: (c.pass ? 'PASS ' : 'FAIL ') + c.label + ' — ' + c.evidence }));
-        j.log.push({ t: Date.now(), stream: 'handoff', text: 'المحطة التنفيذية الأولى: النص والصوت. لا يوجد worker لإنتاج النص أو إدخال narration لهذا المشروع؛ غير موصول بعد، لذلك توقف RUN هنا ولا يتخطى المحطة.' });
-        j.status = 'blocked'; j.ended = true; j.finishedAt = Date.now();
+        j.runSettings={mode:b.mode==='faster'?'faster':'quality',model:b.model||'free/glm-5.3-flashx',effort:b.effort||'standard',settings:inventory(activeDir).settings,legs:[]};
+        const leg=(id,state,detail)=>{const x={id,state,detail};j.runSettings.legs.push(x);j.log.push({t:Date.now(),stream:state==='failed'?'fail':state==='blocked'?'handoff':'pass',text:`${id}: ${state} — ${detail}`});return x;};
+        const exists=p=>fs.existsSync(path.join(activeDir,p));
+        (async()=>{
+          const script=inventory(activeDir).script,voice=inventory(activeDir).voice;
+          if(!script){leg('script','blocked','ملف النص غير موجود');j.status='blocked';j.waitingOn='script: ملف النص غير موجود';}
+          else leg('script','verified',script+' موجود');
+          if(j.status==='running'){if(!voice){leg('voice','blocked','ملف الصوت غير موجود؛ يُستخدم كما هو');j.status='blocked';j.waitingOn='voice: ملف narration الأصلي غير موجود';}else leg('voice','verified',voice+' موجود ويُستخدم كما هو');}
+          if(j.status==='running'){
+            const timing=runCommand(id+'-timing',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'timing',activeDir]);j.child=timing.child;const rp=path.join(activeDir,'out/timing_report.json');timing.outputArtifact=rp;timing.action='timing';await new Promise(resolve=>{const check=()=>timing.ended?resolve():setTimeout(check,100);check();});j.child=null;
+            if(timing.status!=='done'){leg('timing','failed',timing.verification||'heart timing failed');j.status='failed';j.waitingOn='timing: '+(timing.verification||'فشل التحقق');}else leg('timing','executed',timing.verification);
+          }
+          if(j.status==='running'){
+            let inv=inventory(activeDir);if(inv.boardCount){leg('board','verified',inv.boardCount+' صورة موجودة');}
+            else if(b.dispatchStills){j.waitingOn='board: جاري إرسال اللقطات وانتظار GitHub Actions';try{const settings=inventory(activeDir).settings,remote={id:id+'-stills',projectDir:activeDir,status:'dispatched',startedAt:Date.now(),ended:false,log:[]};jobs.set(remote.id,remote);const rid=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(activeDir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});remote.runId=rid;j.runId=rid;await dispatchLayer.monitor(remote,{runId:rid,projectDir:activeDir,kind:'stills',settingsSent:settings,repoDir});if(remote.status==='done'&&inventory(activeDir).boardCount>0)leg('board','executed',`GitHub Actions run ${rid}; ${inventory(activeDir).boardCount} downloaded stills verified`);else{leg('board','failed',`GitHub Actions run ${rid}: ${remote.verification||remote.status}`);j.status='failed';j.waitingOn='board: فشل dispatch أو لم تجتز اللقطات تحقق الملفات';}}catch(e){leg('board','failed','GitHub stills dispatch failed: '+e.message);j.status='failed';j.waitingOn='board: '+e.message;}}
+            else{leg('board','blocked','اللوحة فارغة ولم يُطلب dispatchStills');j.status='blocked';j.waitingOn='board: اللوحة فارغة وطلب إرسال اللقطات غير موجود';}
+          }
+          if(j.status==='running'){
+            const inputs=['audio/events.json','audio/beds.json','audio/timeline.json'],missing=inputs.filter(p=>!exists(p));const mix=['out/mix_stage/audio/final_mix.wav','out/final_mix.wav','out/story6_mix.wav','out/mix.wav'].find(exists);
+            if(!missing.length){const sound=runCommand(id+'-sound',activeDir,[process.execPath,path.join(__dirname,'heart-cjs-runner.cjs'),'sound',activeDir]);j.child=sound.child;sound.outputArtifact=path.join(activeDir,'audio/sfx_bed.wav');await new Promise(resolve=>{const check=()=>sound.ended?resolve():setTimeout(check,100);check();});j.child=null;if(sound.status==='done')leg('sound','executed','audio/sfx_bed.wav verified');else{leg('sound','failed',sound.verification||'heart sound failed');j.status='failed';j.waitingOn='sound: '+(sound.verification||'فشل الصوت');}}
+            else if(mix)leg('sound','verified','mix موجود مسبقاً: '+mix);
+            else{leg('sound','blocked','مدخلات مفقودة: '+missing.join(', '));j.status='blocked';j.waitingOn='sound: المدخلات المفقودة '+missing.join(', ');}
+          }
+          if(j.status==='running'){const checks=artifactChecks(activeDir);checks.checks.forEach(c=>j.log.push({t:Date.now(),stream:c.pass?'pass':'fail',text:`${c.pass?'PASS':'FAIL'} ${c.id} — ${c.evidence}`}));if(!checks.pass){leg('gates','failed',checks.checks.filter(c=>!c.pass).map(c=>c.id).join(', '));j.status='failed';j.waitingOn='gates: '+checks.checks.filter(c=>!c.pass).map(c=>c.id).join(', ');}else leg('gates','verified','كل فحوصات الملفات مرت');}
+          if(j.status==='running'){const master=inventory(activeDir).master;if(master)leg('export','verified',master+' موجود');else{leg('export','blocked','ملف الماستر غير موجود؛ أرسل التجميع إلى GitHub بشكل منفصل');j.status='blocked';j.waitingOn='export: master missing; GitHub assembly is a separate control';}}
+          if(j.status==='running')j.status='done';j.ended=true;j.finishedAt=Date.now();if(!j.waitingOn)j.waitingOn='لا شيء';
+        })().catch(e=>{j.status='failed';j.ended=true;j.finishedAt=Date.now();j.waitingOn=e.message;j.log.push({t:Date.now(),stream:'fail',text:e.message});});
         return sendJson(res, 202, { id, status: j.status, waitingOn: j.waitingOn });
       }
       if (pn === '/api/state' && req.method === 'GET') return sendJson(res, 200, state);

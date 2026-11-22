@@ -1,0 +1,44 @@
+F1 HIGH — server/server.js — secret leakage into job artifacts: probeConnections stores auth metadata read from ~/.codex/auth.json inside gpt.authMetadata (auth_mode, last_refresh, has_tokens) and returns it via /api/connections/probe and /api/connections, potentially exposing authentication details over HTTP.
+"let gpt={name:'GPT',probed:true,checkedAt:timed(),status:'dead',reason:'codex binary not found',authMetadata:null};"
+"const a=JSON.parse(fs.readFileSync(path.join(home,'.codex/auth.json'),'utf8'));gpt.authMetadata={auth_mode:a.auth_mode||null,last_refresh:a.last_refresh||null,has_tokens:Object.prototype.hasOwnProperty.call(a,'tokens')};"
+
+F2 HIGH — server/server.js — unsafe path traversal in dispatch run list: /api/dispatch/runs accepts project from query and uses it in artifact name matching without sanitization, allowing cross-project artifact enumeration.
+"if(projectName){const ar=dispatchLayer.gh(['api',`repos/${'proa28518-creator/grayline-utils'}/actions/runs/${row.databaseId}/artifacts`]);"
+
+F3 MED — server/server.js — command injection in dispatch: /api/dispatch/stills and /api/dispatch/assembly pass user-controlled project and spec values directly into dispatch inputs that reach `gh workflow run ... -f ${k}=${v}`, enabling shell/argument injection through workflow inputs.
+"const runId=await dispatchLayer.dispatchAsync('fleet-render.yml',{project:path.basename(dir),spec:b.spec||'render:0:30',settings:JSON.stringify(settings)});"
+
+F4 HIGH — server/server.js — Gemini connection probes private cookies without sign-in attempt and marks connected based on cookie presence, faking an authenticated connection; no sign-in is attempted by the server as required, but status 'connected' implies real access.
+"const db=path.join(home,'.config/gemini-desktop/Cookies');...const found=names.some(n=>['__Secure-1PSID','__Secure-3PSID','SID'].includes(n));gem.status=found?'connected':'dead';"
+
+F5 HIGH — server/server.js — job close handler uses inconsistent indentation suggesting the artifact verification block may run outside the intended close handler, risking silent status misreporting; regardless, jobs without outputArtifact are marked done with no real execution check.
+"child.on('close', code => {"
+"} else job.status = 'done';"
+
+F6 MED — server/server.js — stop handler returns 200 OK for dispatch-run jobs after setting cancelRequested without waiting for confirmation, falsely reporting success.
+"if(j.runId){j.cancelRequested=true;dispatchLayer.gh(['run','cancel',j.runId]);return sendJson(res,200,{ok:true});}"
+
+F7 MED — server/server.js — RUN assembly path dispatches GitHub and awaits completion inside the HTTP request handler without a client-side timeout, risking request hangs and blocked event loop.
+"await dispatchLayer.monitor(remote,{runId:rid,projectDir:activeDir,kind:'stills',settingsSent:settings,repoDir});"
+
+F8 MED — fleet/render-chunk.ts — URL construction appends raw FLEET_SETTINGS env without validating JSON or whitelisting keys, risking malformed query strings or unintended settings leakage into the browser page.
+"const settings = process.env.FLEET_SETTINGS || '{}';"
+"const url = `http://127.0.0.1:${server.port}/__suite/cartoon.html?mode=render${settings && settings !== '{}' ? `&settings=${encodeURIComponent(settings)}` : ''}`;"
+
+F9 MED — fleet/assemble.sh — PT audit allows both zero-based and one-based sequential names in the same run, letting unsorted or misnumbered frames pass the gate.
+"[[ "$actual" == "$i" || "$actual" == "$((i+1))" ]] || fail pts_audit ..."
+
+F10 MED — fleet/assemble.sh — SSIM comparison uses arbitrary frames 0, mid, last rather than all frames, so downstream corruption can pass the quality gate.
+"for idx in 0 "$mid" "$((count-1))"; do"
+
+CLEAN: FPS restriction — 24/30 enforced in server settings, cmdStill, render-chunk, dispatch UI, fleet-assembly.yml, and assemble.sh.
+
+CLEAN: Gemini sign-in — code reads cookies only and never attempts authentication.
+
+CLEAN: Colab dispatch — UI marks it not dispatchable; queue endpoint is read-only.
+
+CLEAN: Concurrency — jobs Map is single-threaded event loop; monitor loop checks cancelRequested and there are no shared mutable races visible.
+
+CLEAN: Path traversal — safeProject validates project names with /^[a-zA-Z0-9_-]+$/.
+
+VERDICT: ROUND 2 has real defects including secret leakage, faked Gemini connected status, injection paths, weak assembly gates, and questionable job close logic; not safe to ship without fixes.
