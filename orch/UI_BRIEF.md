@@ -445,3 +445,6 @@ Drawn from the Creatorize capability map + our own gap audit; they join the spec
 3. **Shared asset library inside the program:** reusable props/scenes/characters with search + propose/get tools (the mcp__suite__library_* pattern), so films stop rebuilding every element from scratch.
 4. **Retention analysis feeding the Write step:** analyze published shorts' audience-retention drop points and feed the findings into story writing (his announced v0.3 direction; serves the owner's viral goal).
 5. **In-program lessons memory:** every film leaves a written lessons record (what failed checks and why); the builder/director sessions read it at the start of the next run — lessons stop living only in Layla's own memory.
+
+## Owner priority note 2026-11-22 ~07:46 — production over looks
+«مش مهم الشكل، أهم حاجه الانتاج»: the interface is a tool, not a product. In every remaining round, weight the production machinery (step executors, measured checks, dispatch, assembly) over visual polish. A plain surface that produces films at the bar beats a beautiful one that does not.
