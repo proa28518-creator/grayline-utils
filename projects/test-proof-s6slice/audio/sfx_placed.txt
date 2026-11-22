@@ -3,4 +3,3 @@
    3.40s  beep         synth
    4.30s  beep         synth
    5.20s  beep         synth
-   6.14s  swish        synth

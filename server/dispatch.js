@@ -25,10 +25,11 @@ async function dispatchAsync(workflow,inputs){
 function child(args, cwd) { return spawn(args[0],args.slice(1),{cwd,stdio:['ignore','pipe','pipe']}); }
 async function monitor(job, {runId,projectDir,kind,settingsSent,repoDir}) {
   job.runId=runId; job.log.push({t:Date.now(),stream:'system',text:`GitHub Actions run id: ${runId}`});
+  let pollFailures=0;
   while(!job.cancelRequested){
     const r=gh(['run','view',runId,'--json','status,conclusion']);
-    if(r.status!==0){job.log.push({t:Date.now(),stream:'err',text:scrub((r.stderr||'gh run view failed').trim())});job.status='failed';break;}
-    let data;try{data=JSON.parse(r.stdout);}catch(e){throw new Error(scrub(e.message));}job.log.push({t:Date.now(),stream:'system',text:scrub(`${data.status}${data.conclusion?' · '+data.conclusion:''} · run ${runId}`)});
+    if(r.status!==0){pollFailures++;const error=scrub((r.stderr||'gh run view failed').trim());if(pollFailures>=5){job.log.push({t:Date.now(),stream:'err',text:error});job.status='failed';break;}job.log.push({t:Date.now(),stream:'err',text:`poll retry ${pollFailures}/5: ${error}`});await sleep(15000);continue;}
+    let data;try{data=JSON.parse(r.stdout);}catch(e){pollFailures++;const error=scrub(e.message);if(pollFailures>=5){job.log.push({t:Date.now(),stream:'err',text:error});job.status='failed';break;}job.log.push({t:Date.now(),stream:'err',text:`poll retry ${pollFailures}/5: ${error}`});await sleep(15000);continue;}pollFailures=0;job.log.push({t:Date.now(),stream:'system',text:scrub(`${data.status}${data.conclusion?' · '+data.conclusion:''} · run ${runId}`)});
     if(data.status==='completed'){
       if(job.cancelRequested){job.status='stopped';job.log.push({t:Date.now(),stream:'system',text:'Stop honored; artifacts were NOT applied'});break;}
       if(data.conclusion!=='success'){job.status='failed';job.log.push({t:Date.now(),stream:'err',text:'Workflow concluded: '+data.conclusion});break;}
