@@ -433,3 +433,7 @@ Its real layout (verify against disk, do not assume):
 ## Owner addition 2026-11-22 ~06:48 — Connect GPT joins Connect Gemini
 - The interface's connections row carries **Connect GPT** beside Connect Gemini, same pattern: sign-in with the owner's ChatGPT account from inside the program, connected-status shown, sessions driven only from inside with bounded tasks and measured checks.
 - Note: this seat is already live on the desk VM (the Codex seat, signed in as araby0401@gmail.com, which built this interface) — the UI work is surfacing and governing that existing connection, not creating it. Russell's bundle embeds the Codex SDK the same way, so the pattern is proven on both sides.
+
+## Owner decision 2026-11-22 ~06:50 — assembly/finishing happens on GitHub
+- «عشان الشغل يكون أدق وأنضف، التجميع يحصل على GitHub»: the final assembly (frames + mix + encode + finish gates) runs as a GitHub Actions workflow on a clean machine every run — NOT on the desk VM. The desk VM is controller/director + QC eyes only.
+- Pipeline shape is now: program dispatches → stills & passes on GitHub → render on Colab (on-demand queue worker) → frames to GitHub → assembly/finishing on GitHub → master out (artifact/Drive). The fleet finish discipline (pts audit, setpts re-encode, SSIM verify, never stream-copy) becomes part of that Actions workflow.
