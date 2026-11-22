@@ -15,9 +15,11 @@
 ## How to run it (browser seat — the phase-7 driver cannot operate the browser)
 - Account: the signed-in **nooaar343@gmail.com** (AI Pro), as it stands — owner's
   word «تمم» (2026-11-23 ~01:00).
-- Invoke the installed skill **`fudai-wall-critic`** in the session (Customize >
-  Skills > Installed). Model: **Neon («تحليل أعمق 4 Neon»)**, deepest analysis.
-  Thinking level: **High (مرتفع)**.
+- Invoke the installed skill by typing **`@fudai-wall-critic`** in the session
+  (Customize > Skills > Installed). The session shows "Skills: fudai-wall-critic"
+  active. Model: **Neon («تحليل أعمق 4 Neon»)**, deepest analysis. Thinking
+  level: **High (مرتفع)**. Invocation verified 2026-11-23 ~01:16 (role test
+  answered exactly from the saved instructions).
 - **Step A** (fresh session, skill invoked): send `prompt_stepA.txt` + the 18
   pics; record the reply verbatim to `round7_chunk2/stepA_reply.txt`; key-check
   the sort score against `round7_chunk2_KEY.driver.txt` and record it.
@@ -25,9 +27,14 @@
   our 12 frames only (F219/F241/F288/F345/F414/F474/F537/F570/F621/F687/F798/F870),
   labelled as the film under review; record the reply verbatim to
   `round7_chunk2/stepB_reply.txt`.
-- Task mode: use it where the skill session allows it; if the skill session
-  cannot combine with Task mode, run as the skill presents and note that fact in
-  the round report.
+- Mode: the skill session starts in CHAT mode and the Chat/Task switch disappears
+  once the skill is active — that is how the skill runs. Proceed with the skill
+  session as it presents unless Layla sends a contrary ruling (the conflict with
+  the standing Task-mode rule has been surfaced to the owner as-is). Record the
+  mode actually used in the round report.
+- Two candidates: if Gemini returns TWO candidate replies side by side, take the
+  FIRST complete reply matching the fixed form, record that two candidates were
+  offered, and do not cherry-pick between them for a better verdict.
 - **No API fallback:** the Google AI Studio API route is retired by the owner's
   word (2026-11-23 ~01:00). If the browser critic seat fails, STOP and report the
   blocker; do not call `custom.gemini-api`.

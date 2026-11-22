@@ -228,14 +228,24 @@ Applied from round 7 onward:
 - **The §7 method is unchanged:** blind sort = score only (Step A); the verdict is
   judged on our frames directly against the spec (Step B); both steps run as separate
   fresh Task-mode sessions on the browser seat.
-- **Critic skill (owner's order, installed 2026-11-23 ~01:14, verified in the signed-in
-  account under Customize > Skills > Installed):** a skill named `fudai-wall-critic`
-  carries the full critic discipline (two-step method, BLOCKING list, per-scene spec,
-  set bar, fixed verdict form). From round 7 on, the critic runs through this skill
-  on the browser seat (invoke the skill in the session; Neon / deepest analysis;
-  Task mode where the skill session allows it — if the skill session cannot combine
-  with Task mode, run it as the skill presents and note that fact in the round report).
+- **Critic skill (owner's order, installed 2026-11-23 ~01:14, invocation verified
+  ~01:16):** a skill named `fudai-wall-critic` carries the full critic discipline
+  (two-step method, BLOCKING list, per-scene spec, set bar, fixed verdict form).
+  From round 7 on, the critic runs through this skill on the browser seat. Summon
+  it inside any Gemini conversation by typing `@fudai-wall-critic` — the session
+  shows "Skills: fudai-wall-critic" active, runs on model Neon, and answered a role
+  test from its saved instructions exactly (two steps + fixed verdict form verbatim).
   The round report records that the critic ran via the installed skill.
+- **Skill-session mode (verified ~01:16, surfaced to the owner as-is):** the skill
+  session starts in CHAT mode and the Chat/Task switch disappears once the skill is
+  active — that is how the skill runs. This stands against the standing Task-mode
+  rule; Layla surfaced the conflict to the owner and the driver proceeds with the
+  skill session as it presents unless Layla sends a contrary ruling. Record the mode
+  actually used in the round report.
+- **Two-candidate replies:** if Gemini returns TWO candidate replies side by side
+  ("which response was more helpful?"), take the FIRST complete reply that matches
+  the fixed form, record that two candidates were offered, and do not cherry-pick
+  between them for a better verdict.
 - **Guard flag 01:03 — bundled fix departed §3; corrected to one cause, one change,
   one re-judgement per round.** (Phase-7 driver bundled all of round 6's BLOCKING list
   into one seat fix; the bundle was halted, its fleet runs cancelled, and its scene
