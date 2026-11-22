@@ -310,6 +310,78 @@ render → Colab after board approval) applied to this run, correcting the local
   assembled for the owner.
 - Compute home: THE FLEET (owner's correction 22:43 EET — see Fleet move below).
 
+## Opening round 2 — the storeys overlay (night shift phase 3, 2026-11-22 ~23:35–23:55 EET)
+- **The gap (round 1's remaining BLOCKING):** the transparent 1-2-3-4-5 storeys overlay
+  never entered SH01's tilt-up frame — the prop sat at COAST_WALL + [14,0,0] (world
+  (14,0,−16)): 14 D off the camera axis and coplanar with the wall face. Owner's bible S1:
+  the tilt-up "reveals a giant concrete wall, BESIDE WHICH appears a transparent diagram
+  of a 5-storey building (numbers 1-2-3-4-5)".
+- **Seat session 1 (brief `CODEX_FIX_R2_BRIEF.md`) — declined, correctly:** the seat's
+  frustum math proved the brief's placement-only demand impossible (at the old `to`
+  framing the visible span at the wall is ≈11.7 D < the 17.4 D tower). It changed
+  nothing and asked for a revised brief authorizing the camera reframe. Brief v2 issued.
+- **Seat session 2 (brief `CODEX_FIX_R2_BRIEF_V2.md`, fresh session, ~40k tokens):**
+  storeys → COAST_WALL + [6.5,0,2.5]; TILT_POS → [8,9,28]; new TILT_TARGET [5,9,0];
+  `from` key byte-identical; SH02 destination unchanged. D1/D2 audit PASS. Commit
+  `b6ea0d2`. **Fleet re-probe (45073394843/…830/…912/…825/…186, 5/5 green) — driver
+  eye-verdict: FAILED acceptance.** The glass tower entered the frame but overflowed
+  it (top cut, right edge cut) and the digit strip was entirely out of frame — the
+  seat's projections had interpolated the camera z from the RAW TILT_POS offset (28)
+  instead of the world z (−16+28 = 12), placing its model camera ≈16 D too far back.
+  (In the same batch F105 proved the prop itself: tower + digits 5-4-3-2-1 fully
+  legible in the SH02 pull-back; F0/F3 faces unregressed.)
+- **Corrective iteration (brief `CODEX_FIX_R2_BRIEF_V3.md`, fresh session, ~21k tokens)** —
+  same fix round, the seat's own math error corrected with the rendered evidence and the
+  world coordinates of record stated in the brief: storeys → COAST_WALL + [4.5,0,2.5]
+  (world (4.5,0,−13.5)); TILT_POS → [8,9,38] (world z 22); TILT_TARGET → [4.5,9,0].
+  D1/D2 audit PASS. Commit `190adbc` (remote == local HEAD verified).
+- **Fleet re-probe of the corrected fix — 5/5 SUCCESS** (`fleet-render.yml`, parallel,
+  on `190adbc`; every run framesCaptured 1 / framesNull 0 / bootError null):
+  | frame | run | still |
+  |---|---|---|
+  | 0 | 45073807296 | `out/board/fleet/45073807296/frames/frame_0000.png` |
+  | 3 | 45073807624 | `out/board/fleet/45073807624/frames/frame_0003.png` |
+  | 45 | 45073807516 | `out/board/fleet/45073807516/frames/frame_0045.png` |
+  | 60 | 45073807331 | `out/board/fleet/45073807331/frames/frame_0060.png` |
+  | 105 | 45073807215 | `out/board/fleet/45073807215/frames/frame_0105.png` |
+- **Driver eye-verdicts (looked at all five):**
+  - **F45 / F60 — the overlay now READS at the tilt-up moments.** The transparent tower
+    stands center-frame against the wall, full height in frame (base at the shore, top
+    below the wall's top edge), the mayor small at the wall base left, caption legible.
+    The cream digit strip is on the tower's right: digits **5-4-3-2 large and legible**
+    in both frames; digit **1 is occluded by the foreground village house's roof** at
+    both tilt-up moments (it reads fully at F105). At F45 the tower's top slab grazes
+    the frame's top edge; the "5" digit is fully visible.
+  - **F0 / F3 — no regression.** Complete expressive face, margin on every side
+    (identical framing to the verified round-1 fix; `from` key untouched).
+  - **F105 — no regression.** The pull-back wide: wall + gate + tower with ALL FIVE
+    digits legible, mayor tiny at the base, lanterns + village house.
+- **Critic round 2 (Seat 3, RULES §3):** NEW Luna session (round-1 session not reused),
+  blind mix `.suite/critic/round2_opening/` (6 new ours + F165 + the same 6 Story 4 bar
+  frames, new shuffle), round-1 report given to the critic per protocol. Full report:
+  `.suite/critic/round2_opening/CRITIC_REPORT_round2.md`.
+  **VERDICT (verbatim): NO.** Biggest gap (verbatim): "the opening still never lands on
+  the mayor's complete expressive face at frame 0 — no compliant tight low-angle face
+  exists among the pictures."
+  **Key-checked blind score (from the critic's own per-picture lines): bar taken for
+  ours: 0 · ours taken for bar: 2** — its header claims "7 · 0", contradicting its lines
+  (recorded in the report). The 2 mis-sorts are pic_03/pic_04 = F3/F0: the critic read
+  BOTH mayor face frames as the bar film's suited character, so the frame-0 face it
+  demands was in front of it sorted as "bar". On its own lines the round-1 storeys
+  BLOCKING is resolved (pic_06 F45 "numbered storeys 1–5"; pic_08 F105 "overlay 1–5";
+  pic_12 F60 "overlay 2–5") and S2 flipped FAIL → PASS.
+- **Phase-3 end state, plainly:** the storeys gap is fixed at its cause and fleet-verified
+  (the numbered overlay reads at M3/M4; one blemish stands — digit 1 occluded by the
+  foreground roof at the two tilt-up moments only). But the round-2 verdict of record is
+  **NO**, on a biggest gap that the key-check shows is a critic blind-sort error on the
+  face frames. Per §3 the driver does not overturn a critic and does not loop a second
+  fix round in this phase. The opening is therefore still NOT critic-passed and NOT
+  board-ready. **Next round (round 3) is already framed:** a NEW critic, same moments +
+  the round-1 AND round-2 reports; the open questions it must settle are (a) the face
+  frames' sort (mayor vs the bar film's suited character — the two films share the house
+  character design), and (b) the digit-1 occlusion at F45/F60 if it weighs it BLOCKING.
+  Colab render remains LOCKED; no board was assembled for the owner.
+
 ## Fleet move — owner's correction (2026-11-22 ~22:43 EET)
 - **The drift, named:** the rebuild had drifted LOCAL onto the desk VM (recovered tree, the
   22:14 local proof still, the build starting locally). In the 22:41 call the desk wrongly
