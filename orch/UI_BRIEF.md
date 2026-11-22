@@ -466,3 +466,6 @@ Drawn from the Creatorize capability map + our own gap audit; they join the spec
 
 ## Owner sequence 2026-11-22 ~08:21 — mount, map, add, then skin
 The order is fixed by the owner: (1) mount his interface as-is (study build, pristine backup kept); (2) learn the code map from the running study — where the style code is, where each feature's code is; (3) add OUR features onto the mounted interface; (4) change the style at leisure, once the map is known. Building from zero while holding the original is rejected («شايلين دماغنا وحاطين جزمه»). Additions come BEFORE skinning.
+
+## Owner acceptance bar 2026-11-22 ~08:34 — the integrated program must be COMPLETE on the desk
+«بعد ما تخلصي الدمج الكامل يبقى البرنامج بالكامل على جهازك وماشي، يبقى في مستودعات خارجيه بس لازم يكون البرنامج ده كامل»: the integration is done only when the desk holds the COMPLETE program — his interface files, the heart, the executor/dispatch machinery, and every library/body part it needs to run — working end to end on this machine. External repositories are dispatch targets (stills/render/assembly), never storage for missing organs. A copy that arrives somewhere else missing pieces (the 546 MB skeleton symptom) fails this bar.
