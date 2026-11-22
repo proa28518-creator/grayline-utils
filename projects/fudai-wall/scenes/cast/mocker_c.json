@@ -1,0 +1,49 @@
+{
+  "_doc": "Fisher mocker 3; owns warm #dc9b28 hat and contrasting #54724f coat. Expressive mockery, shock, then gratitude.",
+  "face": {
+    "eyeSize": 1.18,
+    "browThick": 1.38,
+    "mouthSize": 1.12,
+    "mouthWidth": 1.08
+  },
+  "hair": {
+    "style": "short",
+    "colour": "#30261e",
+    "seed": 7
+  },
+  "hat": {
+    "kind": "beanie",
+    "crown": "#dc9b28",
+    "cuff": "#b56b35",
+    "pom": false
+  },
+  "limbs": {
+    "armLen": 0.97,
+    "handR": 0.06,
+    "legLen": 1.35,
+    "width": 0.058
+  },
+  "torso": {
+    "body": {
+      "W": 0.8,
+      "build": "medium"
+    },
+    "outfit": {
+      "layers": [
+        {
+          "collar": "pointed",
+          "color": "#d46b3d",
+          "t": "shirt",
+          "collarW": 0.42
+        },
+        {
+          "color": "#54724f",
+          "t": "coat",
+          "lapels": false,
+          "buttons": 3
+        }
+      ],
+      "trousers": "#252a31"
+    }
+  }
+}

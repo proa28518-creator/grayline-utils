@@ -1,0 +1,43 @@
+{
+  "_doc": "Construction worker extras; muted work clothes and varied cap colors.",
+  "face": {
+    "eyeSize": 1.0,
+    "browThick": 1.0
+  },
+  "hair": {
+    "style": "short",
+    "colour": "#41362b",
+    "seed": 7
+  },
+  "hat": {
+    "kind": "ballcap",
+    "crown": "#bd6d35",
+    "bill": "#8d4c2f"
+  },
+  "limbs": {
+    "armLen": 1.0,
+    "handR": 0.06,
+    "legLen": 1.35,
+    "width": 0.06
+  },
+  "torso": {
+    "body": {
+      "W": 0.8,
+      "build": "medium"
+    },
+    "outfit": {
+      "layers": [
+        {
+          "collar": "pointed",
+          "color": "#d3b36a",
+          "t": "shirt"
+        },
+        {
+          "color": "#59656a",
+          "t": "coat"
+        }
+      ],
+      "trousers": "#252a31"
+    }
+  }
+}

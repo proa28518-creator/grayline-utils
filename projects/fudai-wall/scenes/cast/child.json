@@ -1,0 +1,41 @@
+{
+  "_doc": "Child extra; keep head at normal size and shorten limbs to kid proportions.",
+  "face": {
+    "eyeSize": 1.0,
+    "browThick": 0.9
+  },
+  "hair": {
+    "style": "short",
+    "colour": "#493526",
+    "seed": 7
+  },
+  "hat": {
+    "kind": "none"
+  },
+  "limbs": {
+    "armLen": 0.7,
+    "handR": 0.06,
+    "legLen": 0.97,
+    "width": 0.05
+  },
+  "torso": {
+    "body": {
+      "W": 0.8,
+      "build": "medium"
+    },
+    "outfit": {
+      "layers": [
+        {
+          "collar": "point",
+          "color": "#d7b968",
+          "t": "shirt"
+        },
+        {
+          "color": "#496b78",
+          "t": "vest"
+        }
+      ],
+      "trousers": "#252a31"
+    }
+  }
+}

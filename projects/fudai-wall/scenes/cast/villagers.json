@@ -1,0 +1,41 @@
+{
+  "_doc": "Crowd extra: muted fisher clothes with one simple shirt and coat detail.",
+  "face": {
+    "eyeSize": 0.95,
+    "browThick": 0.9
+  },
+  "hair": {
+    "style": "short",
+    "colour": "#55504b",
+    "seed": 7
+  },
+  "hat": {
+    "kind": "none"
+  },
+  "limbs": {
+    "armLen": 0.97,
+    "handR": 0.06,
+    "legLen": 1.35,
+    "width": 0.058
+  },
+  "torso": {
+    "body": {
+      "W": 0.8,
+      "build": "medium"
+    },
+    "outfit": {
+      "layers": [
+        {
+          "collar": "pointed",
+          "color": "#aaa18e",
+          "t": "shirt"
+        },
+        {
+          "color": "#68706a",
+          "t": "coat"
+        }
+      ],
+      "trousers": "#252a31"
+    }
+  }
+}
