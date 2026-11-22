@@ -1,0 +1,16 @@
+ALIGN FIX — same conversation, continue. The REAL TEST (project real-test-watchmaker, brand-new watchmaker story, chat-created) is blocked by a missing pipeline organ. Desk evidence, verbatim from the engine (window.suite.errors() during heart still):
+
+  boot failed: MAKE_FILM FAILED: voice file: line 1 ("في محل صغير قديم، كان عم حسن بيصلّح ساعة جيب وقفت من أربعين سنة.") expects "محل" but words.json has "محلن" at 0.52s (word 2). 0 words matched before it.
+
+Facts established at the desk:
+- heart still works on accept-s6slice (owner-timings project) and fails on the test project even AFTER heart transcribe produced audio/clean.json (87 words, faster-whisper small, Arabic).
+- tools/transcribe.py emits RAW ASR words into clean.json. Its reference (words_owner.txt) is used only to compute an accuracy score; the edit alignment it computes (edit_counts, M/S/D/I ops) is discarded. ASR mis-hears Egyptian dialect throughout (محل→محلن, الزنبرك→الزمبرك, ابتسم→بتسم…), and MAKE_FILM's strict script↔words match aborts the whole film on the first mismatch.
+- The Creatorize pipeline spine this program descends from has an ALIGN step between transcribe and timing (transcribe → align → timing). This program has no align step: that is the missing organ. Owner projects never hit it because they arrive with owner-supplied timings whose words ARE the script's words.
+
+Implement the align step inside the existing transcription path (tools/transcribe.py; touch bin/heart / server only if strictly needed for wiring):
+1. After ASR, align the hypothesis word sequence to the project's script of record (script.txt; if words_owner.txt exists it stays the accuracy reference as today). Use the existing normalize() + edit-alignment machinery.
+2. Emit audio/clean.json entries carrying the SCRIPT's words with timings derived from the aligned ASR words: matched/substituted script words take the ASR word's start/end; script words with no ASR counterpart get times interpolated between their aligned neighbors (monotonic, inside the neighbors' span); ASR-only words are dropped. Preserve the exact entry shape the engine consumes (start, end, line, who, word) — line indices follow the SCRIPT's lines.
+3. The transcribe report gains: alignment stats (script words, matched, substituted, inserted-interpolated, dropped ASR words) and keeps the raw ASR transcript + accuracy fields. If fewer than 80% of script words align (matched+substituted), fail with the named error asr_alignment_failed and do not write a fabricated clean.json.
+4. Voice is law, unchanged: clean.wav remains the byte copy of the original narration; only the word TIMINGS/WORDS file changes (script words on ASR timings — the owner's standing rule: his written text governs wording, ASR is for timing only).
+
+Static checks: python3 -m py_compile tools/transcribe.py; node --check on anything else you touch; git diff --check. Write orch/chat_round/ALIGN_FIX_VERIFY.md: root cause in one paragraph, the alignment rules you implemented, and the exact desk re-check (re-run the transcribe CLI on projects/real-test-watchmaker with the recorded ASR env pins → heart still at t=4.1 must save a frame → Build pass via chat restarts). Do not attempt commits or server binds. End with the changed-files list.
