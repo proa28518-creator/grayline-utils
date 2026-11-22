@@ -1,0 +1,27 @@
+{
+ "music": true,
+ "ambience": true,
+ "beds": [
+  {
+   "from": 0,
+   "to": 7.69,
+   "type": "music",
+   "mood": "mystery",
+   "bpm": 80,
+   "key": "D",
+   "gain": -28
+  },
+  {
+   "from": 0,
+   "to": 7.69,
+   "type": "room",
+   "gain": -45
+  },
+  {
+   "from": 6.26,
+   "to": 7.69,
+   "type": "wind",
+   "gain": -38
+  }
+ ]
+}

@@ -1,0 +1,63 @@
+{
+ "style": "cartoon",
+ "shots": [
+  {
+   "t0": 0.18,
+   "cut": true,
+   "name": "S01 melt"
+  },
+  {
+   "t0": 1.35,
+   "cut": true,
+   "name": "S02 reveal"
+  },
+  {
+   "t0": 3.04,
+   "cut": true,
+   "name": "S03 radar"
+  },
+  {
+   "t0": 6.26,
+   "cut": true,
+   "name": "S04 cold room"
+  }
+ ],
+ "sfx": [
+  {
+   "t": 0.84,
+   "type": "chime",
+   "pan": 0.5,
+   "gain": -6
+  },
+  {
+   "t": 1.35,
+   "type": "whoosh",
+   "pan": 0.5,
+   "gain": 0
+  },
+  {
+   "t": 3.4,
+   "type": "beep",
+   "pan": 0.5,
+   "gain": -8
+  },
+  {
+   "t": 4.3,
+   "type": "beep",
+   "pan": 0.5,
+   "gain": -8
+  },
+  {
+   "t": 5.2,
+   "type": "beep",
+   "pan": 0.5,
+   "gain": -8
+  },
+  {
+   "t": 7.2,
+   "type": "breath",
+   "pan": 0.5,
+   "gain": -4
+  }
+ ]
+}
