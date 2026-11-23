@@ -1,0 +1,16 @@
+HYDROGEN SEAT OUTPUT — SH18 camera (cause 9)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/ff1218aabf423533
+Run by Layla via browser seat, 2026-11-23 14:24–14:29 EET. Brief: P23_QWEN_SH18_BRIEF.md as amended in phase 25 + Layla's live-baseline update (D1/D2 at ZERO lines, must stay zero).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH18','line:16.start','line:16.end','SEA',[[1,.65,5],[1.5,2.2,-20]],[[1.5,.9,4],[1.8,8.8,-20]],[46,50])
+Design: moderates the tilt-up (TO target y 16.5 → 8.8, target x centred 1.5→1.8) so both base centres (wave base, measure) stay inside the frame through fraction 0.917; fov ramp [46,50] unchanged. Composition consequence for the chunk-3 critic round: the tilt-up is gentler than Qwen's original design — the wave still towers from a low camera, but the crest-overflow drama is reduced; the coded gate is the judge at this stage.
+
+PREDICTED READINGS (seat's arithmetic, empirical ease; audit governs):
+- F1257 wave: PASS — 1607.3px IN.
+- F1302 measure_wave: PASS — centre IN, 1660.4px ≥ 200px.
+- F1335 wave: PASS — centre IN, 1631.3px ≥ 500px.
+- D1/D2: ZERO lines; D2-CLEAR 0 hits (segment inside SEA).
+
+(Full arithmetic preserved in the browser report of 2026-11-23 14:29 EET.)
