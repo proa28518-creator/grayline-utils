@@ -1,4 +1,5 @@
 // tools/audit_d1_d2.mjs — Seat 1 driver-side static audits for the Fudai build.
+// Codex seat attribution (2026-11-23): P12_FIX_D1_MATCHER_BRIEF.md — match belongings_box by kind.
 // D1: film.props schema (ARRAY of {id, kind, in:'world', at:[x,y,z], keys:[{t, at}]},
 //     ids unique, keys non-empty; box entry keeps fetch:true when present),
 //     purity scan (no Math.random / no Date in scene sources).
@@ -82,10 +83,10 @@ if (Array.isArray(film.props)) {
     if (Array.isArray(p.at)) ok(inBounds(p.at[0], p.at[2]),
       `D2: prop ${p.id} at [${p.at}] is outside every place's bounds`);
     else notes.push(`prop ${p.id}: no at to zone-check`);
-    if (p.id === 'box' || p.kind === 'box') ok(p.fetch === true, 'D1: belongings box entry lost fetch: true');
+    if (p.kind === 'belongings_box') ok(p.fetch === true, 'D1: belongings box entry lost fetch: true');
   }
-  if (!film.props.some(p => p.id === 'box' || p.kind === 'box'))
-    notes.push('D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)');
+  if (!film.props.some(p => p.kind === 'belongings_box'))
+    notes.push('D1: no belongings_box prop is present; fetch:true check has no entry to validate');
 }
 
 // ---- D2: cast + cameras inside places ----
