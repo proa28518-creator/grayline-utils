@@ -1,0 +1,10 @@
+I'm GLM. Zhipu AI built me.
+
+1. BASELINE RESTATED: SH10 window spans t0 line:8.word:5 = 23.18 to t1 line:8.end = 24.52. Plate box [847,622]–[975,682]; mocker_c head box [605,557]–[847,810], overlapping the plate's left portion so "15.5M" reads as "5M" at F711 and F723. Geometric overlap reads 17%.
+
+2. CHOICE: [4.4,-2.0]. Table head box ≈ [389,526]–[583,720], plate overlap 0%, x-clearance 264px, clear of the glowing line near y800; stands behind the board in the mockers' cluster with ≥0.9 D from mocker_a [4,0] and mocker_b [4,-1].
+
+3. REPLACEMENT TEXT:
+```
+place:[{t:'line:8.word:5',at:[4.4,-2.0]},{t:'line:8.end',at:[6,.5]},{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}]
+```
