@@ -1,0 +1,17 @@
+HYDROGEN SEAT OUTPUT — SH13 camera, corrective round 2 (cause 4)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/a159ac518b826e93
+Run by Layla via browser seat, 2026-11-23 13:35–13:48 EET. Brief: P23_QWEN_SH13R2_BRIEF.md as amended in phase 25 (complete 18-solid set) + Layla's live-baseline update (D1/D2 must return ZERO lines).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[13,5,-9.5],[12,1.5,-6]],[[4.8,5,-8.2],[-4.6,1.9,2.2]],50)
+World: FROM pos [13,5,-7.5] target [12,1.5,-4]; TO pos [4.8,5,-6.2] target [-4.6,1.9,4.2]; fov 50.
+Design: a MOVING camera starting far east (hand side) so F933's hand tip is in frame early in the eased push, drifting west to land 0.2 units from lane B's proven TO state so F942/F969 keep lane B's measured behaviour. Segment stays at z ∈ [-7.5,-6.2], south of all 11 village solids (closest clearance 0.266 units to house @8,-4).
+
+PREDICTED READINGS (seat's arithmetic, checked under BOTH outCubic and the lane-A empirical ease):
+- D2-CLEAR: PASS, 0 hits on all 18 solids; D1/D2 → ZERO lines; target bounds PASS both ends.
+- F933 hand tip: PASS — off-axis 19.05° (horizontal margin +3.82°) under outCubic; 8.60° under empirical ease.
+- F942 box: PASS — 70.8px ≥ 60px (66.8px under empirical ease).
+- F969: PASS — head 144.3px ≥ 120px, sphere margin +9.83°; face angle anchored to lane B's measured 47.9° (the seat showed the raw geometric dot is 105.5° on BOTH its candidate and lane B — the audit's face measure is the keyed-look definition, cf. phase 25's SH16 note: audit 14.2° vs raw-facing 34.67°).
+
+(Full arithmetic preserved in the browser report of 2026-11-23 13:48 EET; the driver's audit run is the judge.)
