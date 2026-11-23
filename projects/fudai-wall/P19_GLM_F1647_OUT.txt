@@ -1,0 +1,11 @@
+1. BASELINE RESTATED: Before the amendment, the F1647 check fails because the generic branch measures the prop's base anchor instead of the declared wall top, reporting "seawall FAIL 315px out of frustum" while the match-cut remains "PASS: 0.062 / 0.060". As a result, Chunk 3 ends with "FAIL (19/40 moments)".
+
+2. REPLACEMENT SEGMENT:
+   else if(frameNo===1647){ // F1647 case amended per dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19): the declared moment (CHUNK3B_HYDROGEN_REPLY.md line 476) is `seawall_hero >= 400 [state: h >= 17.0]` — the hero wall's rising top; the base-anchor point the generic fallback measured was never in the declared moment. Tested point re-pointed to the wall top [at[0], h(t), at[2]], size = h(t), threshold unchanged (400px), h >= 17.0 rider explicit.
+    const top=[center[0],s.h,center[2]],topPx=fr.height(s.h,top),topIn=fr.point(top),pass=!hidden&&topIn&&topPx!=null&&topPx>=threshold&&s.h>=17;checks.push(`${id} ${pass?'PASS':'FAIL'} ${topPx?.toFixed(0)??'n/a'}px wall-top [${top.map(v=>v.toFixed(2)).join(', ')}] ${topIn?'in frustum':'out of frustum'}; state rider h ${s.h.toFixed(2)} >= 17.0 ${s.h>=17?'PASS':'FAIL'}`);}
+   else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
+
+3. HEADER LINE:
+// Phase-19 P19_GLM_F1647_BRIEF.md (GLM seat): F1647 case amended per dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19) — tested point re-pointed to the declared subject (wall top [0, h(t), -16]); threshold 400px unchanged; h >= 17.0 rider explicit.
+
+4. PREDICTED LINES: The F1647 line becomes "CHUNK3 F1647 | 54.90 | SH22 | PASS | seawall PASS 5900px wall-top [0.00, 17.00, -16.00] in frustum; state rider h 17.00 >= 17.0 PASS; SH21→SH22 match-cut NDC_y +0.062 PASS: 0.062 / 0.060 (target +0.062 on both)" and Chunk 3 becomes "FAIL (18/40 moments)". Every other line of the audit output reproduces byte-identical, including Chunk 2.

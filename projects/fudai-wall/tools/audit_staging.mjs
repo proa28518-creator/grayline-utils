@@ -13,6 +13,7 @@
 // Phase-14 P14_GLM_CAUSE7_BRIEF.md (GLM seat): F1197 sea_sheet state rider restored per Qwen's declared moment.
 // Phase-14 P14_GLM_ITEM16_REBRIEF.md (GLM seat): neighbour village widened — seven houses at the wall's foot (set.js + mirrors).
 // Phase-19 P19_GLM_MATCHCUT_BRIEF.md (GLM seat): match-cut block reads the seawall from the resolved prop array (props.find) — h(t0) from the hero keys, restoring the check's documented definition; dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19).
+// Phase-19 P19_GLM_F1647_BRIEF.md (GLM seat): F1647 case amended per dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19) — tested point re-pointed to the declared subject (wall top [0, h(t), -16]); threshold 400px unchanged; h >= 17.0 rider explicit.
 // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
 // houses, three neighbour houses); wall and gateleaf are additional occluders.
 import { readFileSync } from 'node:fs';
@@ -204,6 +205,8 @@ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
   else {const s=propState(p,t),size=CHUNK3_SIZE[id]||[1,1,1],center=s.at,px=fr.height(size[1],center),inFrame=fr.point(center),key=(p.keys||[]).filter(k=>k.t<=t).at(-1)||{},hidden=key.hidden===true||key.in==='hidden';
    if(type==='state') {const field=id==='calendar'?'page':id==='sea_sheet_sh17'?'pull':'h',val=key[field]??s[field]??p[field]??0;checks.push(`${id} state ${val>=threshold?'PASS':'FAIL'} ${field} ${val} >= ${threshold}`);}
    else if(type==='crest'){const w=p,wall=film.props.find(x=>x.id==='seawall'),ws=propState(wall,t),crest=key.crestY??key.h??w.crestY??w.h??0;const top=ws.h??wall.h;const topIn=fr.point([0,top,wall.at[2]]);checks.push(`SH24 crest margin ${crest<=17.5&&top===18&&topIn?'PASS':'FAIL'} wave crest ${crest.toFixed(2)} <= 17.50; wall top ${top.toFixed(2)}; wall-top in frame ${topIn?'yes':'no'}`);}
+   else if(frameNo===1647){ // F1647 case amended per dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19): the declared moment (CHUNK3B_HYDROGEN_REPLY.md line 476) is `seawall_hero >= 400 [state: h >= 17.0]` — the hero wall's rising top; the base-anchor point the generic fallback measured was never in the declared moment. Tested point re-pointed to the wall top [at[0], h(t), at[2]], size = h(t), threshold unchanged (400px), h >= 17.0 rider explicit.
+    const top=[center[0],s.h,center[2]],topPx=fr.height(s.h,top),topIn=fr.point(top),pass=!hidden&&topIn&&topPx!=null&&topPx>=threshold&&s.h>=17;checks.push(`${id} ${pass?'PASS':'FAIL'} ${topPx?.toFixed(0)??'n/a'}px wall-top [${top.map(v=>v.toFixed(2)).join(', ')}] ${topIn?'in frustum':'out of frustum'}; state rider h ${s.h.toFixed(2)} >= 17.0 ${s.h>=17?'PASS':'FAIL'}`);}
    else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
   }
  } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
