@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 export function build(opts = {}) {
   const group = new THREE.Group();
   group.name = opts.id || 'wall';
