@@ -1,0 +1,9 @@
+BASELINE RESTATED: D1/D2 fail with 2 failures; F1197 passes both boat_sh17_a frustum and sea_sheet_sh17 rider pull lines; F1215 fails with boat_sh17_b out of frustum; F1188 remains parked failing; chunk 3 totals 19 of 40 passing.
+
+FILM LINES:
+```
+ {id:'boat_sh17_a',kind:'boat',in:'world',at:p('SEA',[-3.5,.15,4]),rot:[0,0,0],keys:[{t:'line:15.start',at:p('SEA',[-3.5,.15,4]),rot:[0,0,0]},{t:39.90,at:p('SEA',[-3.5,.02,4])},{t:40.10,rot:[0,0,14]}]},
+ {id:'boat_sh17_b',kind:'boat',in:'world',at:p('SEA',[2.5,.15,7]),rot:[0,0,0],keys:[{t:'line:15.start',at:p('SEA',[2.5,.15,7]),rot:[0,0,0]},{t:39.70,at:p('SEA',[2.5,.02,7])},{t:39.95,rot:[0,0,-11]}]},
+```
+
+PREDICTED READINGS: F1197 both lines PASS unchanged; F1215 FAIL unchanged with boat_sh17_b 634px out of frustum; F1188 unchanged FAIL parked; chunk 3 stays 19/40 PASS; D1/D2 unchanged FAIL (2).
