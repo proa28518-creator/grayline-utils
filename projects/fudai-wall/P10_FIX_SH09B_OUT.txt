@@ -1,0 +1,552 @@
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a20669-7a0f-7880-a902-d3bc4157a78b
+--------
+user
+Execute the brief in P10_FIX_SH09B_BRIEF.md in this project directory, exactly as written. Touch only the file it names. When done, paste the complete audit outputs and a diff summary in your reply. Do not commit.
+codex
+I’ll read the named brief and repo guidance first, then make changes only to the file named there. I’ll run the brief’s specified audits and report their full outputs plus a diff summary.
+exec
+/bin/bash -lc "cat P10_FIX_SH09B_BRIEF.md && printf '\\n--- FILES / STATUS ---\\n' && git status --short && printf '\\n--- GUIDANCE FILES ---\\n' && rg --files -g 'AGENTS.md' -g 'UI_BRIEF.md' -g '"'!vendor/renderer-original/**'"'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 0ms:
+# CODEX SEAT — APPLY BRIEF · phase 10 · cause: SH09 HEAD CROP (F669/F687) — Opus escalation value
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md`; RULES.md §3
+(one cause, one change), §4, §5; `lessons/build.md` (read the phase-10
+lessons: the screen-y response sign is measured — do not second-guess the
+direction of this value). This session applies ONE cause: the Opus seat's
+escalation computation (`P10_OPUS_SH09_OUT.md`) for the SH09 head crop,
+derived from two measured probe points (model slope 813/862 px per unit;
+render family offsets −576/−623 px).
+
+APPLY EXACTLY:
+- `scenes/film.js`: `CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,1.55,0])` →
+  `CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0])`. Nothing else.
+
+Then verify: `node --check scenes/film.js`, run
+`node tools/audit_staging.mjs` (full) and `node tools/audit_d1_d2.mjs`, and
+paste their complete outputs in your reply, plus a diff summary. (The
+staging audit is expected to keep failing F669/F687 — its camera model is
+the measured-blind one for this shot; the fleet stills + pixel gate judge
+this cause. Report its rows as they are.) Do NOT commit (the driver
+commits). Do not touch any other file.
+
+--- FILES / STATUS ---
+?? P10_FIX_F474_BRIEF.md
+?? P10_FIX_F711_BRIEF.md
+?? P10_FIX_SH09B_BRIEF.md
+?? P10_FIX_SH09B_OUT.txt
+?? P10_FIX_SH11_BRIEF.md
+?? P10_OPUS_F711_OUT.md
+?? P10_OPUS_F711_PROMPT.md
+
+--- GUIDANCE FILES ---
+
+exec
+/bin/bash -lc "pwd; ls -la; find .. -name RULES.md -o -path '*/lessons/build.md' -o -name UI_BRIEF.md; rg -n 'CAM_SH09_T' scenes/film.js; git branch --show-current; git diff -- scenes/film.js" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+total 4140
+drwxrws--- 1 root nogroup    4162 Nov 23 03:18 .
+drwxrws--- 1 root nogroup     190 Nov 22 20:09 ..
+drwxrws--- 1 root nogroup      24 Nov 23 02:40 .suite
+-rw-rw---- 1 root nogroup    1992 Nov 23 01:00 BOARD_ASSEMBLY_PREP.md
+-rw-rw---- 1 root nogroup    5284 Nov 22 20:16 BUILD_CALL.md
+-rw-rw---- 1 root nogroup   22996 Nov 22 22:12 CODEX_CHUNK2_BRIEF.md
+-rw-rw---- 1 root nogroup    2717 Nov 22 23:06 CODEX_CHUNK2_FIX1_BRIEF.md
+-rw-rw---- 1 root nogroup   11379 Nov 22 23:39 CODEX_FIX2_AUDIT_BRIEF.md
+-rw-rw---- 1 root nogroup    2355 Nov 22 23:59 CODEX_FIX2_AUDIT_FIX2_BRIEF.md
+-rw-rw---- 1 root nogroup    1500 Nov 23 00:39 CODEX_FIX2_AUDIT_FIX3_BRIEF.md
+-rw-rw---- 1 root nogroup    2173 Nov 23 01:03 CODEX_FIX2_AUDIT_FIX4_BRIEF.md
+-rw-rw---- 1 root nogroup    1894 Nov 23 01:06 CODEX_FIX2_AUDIT_FIX5_BRIEF.md
+-rw-rw---- 1 root nogroup    4352 Nov 22 23:51 CODEX_FIX2_AUDIT_FIX_BRIEF.md
+-rw-rw---- 1 root nogroup    1544 Nov 23 02:00 CODEX_FIX2_CAUSE1_BRIEF.md
+-rw-rw---- 1 root nogroup    1375 Nov 23 02:03 CODEX_FIX2_CAUSE2_BRIEF.md
+-rw-rw---- 1 root nogroup    1319 Nov 23 02:06 CODEX_FIX2_CAUSE3_BRIEF.md
+-rw-rw---- 1 root nogroup    3912 Nov 23 01:20 CODEX_FIX2_FINAL4_BRIEF.md
+-rw-rw---- 1 root nogroup    2480 Nov 23 01:44 CODEX_FIX2_POINT_BRIEF.md
+-rw-rw---- 1 root nogroup    3668 Nov 23 00:39 CODEX_FIX2_RESTAGE2_BRIEF.md
+-rw-rw---- 1 root nogroup    5892 Nov 23 00:01 CODEX_FIX2_RESTAGE_BRIEF.md
+-rw-rw---- 1 root nogroup    3163 Nov 23 01:36 CODEX_FIX2_SH07_SPLIT2_BRIEF.md
+-rw-rw---- 1 root nogroup    3715 Nov 23 01:26 CODEX_FIX2_SH07_SPLIT_BRIEF.md
+-rw-rw---- 1 root nogroup    1594 Nov 23 01:37 CODEX_FIX2_SPREAD_BRIEF.md
+-rw-rw---- 1 root nogroup    3533 Nov 22 21:18 CODEX_FIX_R1_BRIEF.md
+-rw-rw---- 1 root nogroup    3668 Nov 22 21:34 CODEX_FIX_R2_BRIEF.md
+-rw-rw---- 1 root nogroup    3125 Nov 22 21:36 CODEX_FIX_R2_BRIEF_V2.md
+-rw-rw---- 1 root nogroup    3168 Nov 22 21:43 CODEX_FIX_R2_BRIEF_V3.md
+-rw-rw---- 1 root nogroup   11138 Nov 22 20:51 CODEX_OPENING_BRIEF.md
+-rw-rw---- 1 root nogroup    2791 Nov 23 01:24 DELIVERY_ENDGAME.md
+-rw-rw---- 1 root nogroup    6513 Nov 23 00:42 GLM_BUILD_BRIEF.md
+-rw-rw---- 1 root nogroup    8638 Nov 23 01:04 HYDROGEN_BUILD_BRIEF.md
+-rw-rw---- 1 root nogroup    2727 Nov 22 20:13 LIBRARY.md
+-rw-rw---- 1 root nogroup    2536 Nov 23 01:04 LUNA_VERIFY_BRIEF.md
+-rw-rw---- 1 root nogroup    2270 Nov 23 01:00 MIX_EXEC_PREP.md
+-rw-rw---- 1 root nogroup    4097 Nov 23 00:45 OPUS_HUNTER_BRIEF.md
+-rw-rw---- 1 root nogroup   90709 Nov 23 02:54 P10_CODEX_REDERIVE_OUT.txt
+-rw-rw---- 1 root nogroup    1199 Nov 23 02:59 P10_FIX_CALENDAR_BRIEF.md
+-rw-rw---- 1 root nogroup   27188 Nov 23 03:08 P10_FIX_CALENDAR_OUT.txt
+-rw-rw---- 1 root nogroup    1499 Nov 23 02:59 P10_FIX_F474_BRIEF.md
+-rw-rw---- 1 root nogroup    1844 Nov 23 02:59 P10_FIX_F570_BRIEF.md
+-rw-rw---- 1 root nogroup   44645 Nov 23 03:10 P10_FIX_F570_OUT.txt
+-rw-rw---- 1 root nogroup    1327 Nov 23 02:59 P10_FIX_F590_BRIEF.md
+-rw-rw---- 1 root nogroup    2217 Nov 23 03:13 P10_FIX_F590_ITER_BRIEF.md
+-rw-rw---- 1 root nogroup   39027 Nov 23 03:15 P10_FIX_F590_ITER_OUT.txt
+-rw-rw---- 1 root nogroup   54245 Nov 23 03:13 P10_FIX_F590_OUT.txt
+-rw-rw---- 1 root nogroup    1406 Nov 23 02:59 P10_FIX_F711_BRIEF.md
+-rw-rw---- 1 root nogroup    1319 Nov 23 03:18 P10_FIX_SH09B_BRIEF.md
+-rw-rw---- 1 root nogroup    2582 Nov 23 03:18 P10_FIX_SH09B_OUT.txt
+-rw-rw---- 1 root nogroup    1135 Nov 23 02:59 P10_FIX_SH09_BRIEF.md
+-rw-rw---- 1 root nogroup   20995 Nov 23 03:06 P10_FIX_SH09_OUT.txt
+-rw-rw---- 1 root nogroup    1561 Nov 23 02:59 P10_FIX_SH11_BRIEF.md
+-rw-rw---- 1 root nogroup    1855 Nov 23 02:59 P10_FIX_SIGN_BRIEF.md
+-rw-rw---- 1 root nogroup   71649 Nov 23 03:01 P10_FIX_SIGN_OUT.txt
+-rw-rw---- 1 root nogroup    2912 Nov 23 03:11 P10_GLM_F570_OUT2.txt
+-rw-rw---- 1 root nogroup    3758 Nov 23 03:10 P10_GLM_F570_REPROMPT.md
+-rw-rw---- 1 root nogroup    2256 Nov 23 02:56 P10_LUNA_CALENDAR_OUT.txt
+-rw-rw---- 1 root nogroup    3536 Nov 23 02:56 P10_LUNA_CALENDAR_PROMPT.md
+-rw-rw---- 1 root nogroup   22395 Nov 23 02:57 P10_LUNA_HEADS_OUT.txt
+-rw-rw---- 1 root nogroup    6834 Nov 23 02:56 P10_LUNA_HEADS_PROMPT.md
+-rw-rw---- 1 root nogroup    4920 Nov 23 02:57 P10_OPUS_F711_OUT.md
+-rw-rw---- 1 root nogroup    4778 Nov 23 02:56 P10_OPUS_F711_PROMPT.md
+-rw-rw---- 1 root nogroup    3739 Nov 23 03:17 P10_OPUS_SH09_OUT.md
+-rw-rw---- 1 root nogroup    3096 Nov 23 03:17 P10_OPUS_SH09_PROMPT.md
+-rw-rw---- 1 root nogroup    6615 Nov 23 02:57 P10_OPUS_SIGN_HUNT_OUT.md
+-rw-rw---- 1 root nogroup    7047 Nov 23 02:56 P10_OPUS_SIGN_HUNT_PROMPT.md
+-rw-rw---- 1 root nogroup    3320 Nov 23 02:39 P9_GLM_F474_BRIEF.md
+-rw-rw---- 1 root nogroup    1403 Nov 23 02:41 P9_GLM_F474_OUT.txt
+-rw-rw---- 1 root nogroup    4039 Nov 23 02:39 P9_GLM_F570_BRIEF.md
+-rw-rw---- 1 root nogroup    9618 Nov 23 02:41 P9_GLM_F570_OUT.txt
+-rw-rw---- 1 root nogroup    3945 Nov 23 02:39 P9_GLM_SH11_BRIEF.md
+-rw-rw---- 1 root nogroup    2073 Nov 23 02:41 P9_GLM_SH11_OUT.txt
+-rw-rw---- 1 root nogroup    4196 Nov 23 02:39 P9_LUNA_CALENDAR_BRIEF.md
+-rw-rw---- 1 root nogroup    4397 Nov 23 02:41 P9_LUNA_CALENDAR_OUT.txt
+-rw-rw---- 1 root nogroup    4794 Nov 23 02:38 P9_LUNA_HEADS_BRIEF.md
+-rw-rw---- 1 root nogroup     639 Nov 23 02:41 P9_LUNA_HEADS_OUT.txt
+-rw-rw---- 1 root nogroup    3150 Nov 23 02:38 P9_OPUS_F590_BRIEF.md
+-rw-rw---- 1 root nogroup    4854 Nov 23 02:41 P9_OPUS_F590_OUT.md
+-rw-rw---- 1 root nogroup    3852 Nov 23 02:38 P9_OPUS_F711_BRIEF.md
+-rw-rw---- 1 root nogroup     800 Nov 23 02:41 P9_OPUS_F711_OUT.md
+-rw-rw---- 1 root nogroup    3596 Nov 23 02:38 P9_OPUS_SIGN_HUNT_BRIEF.md
+-rw-rw---- 1 root nogroup     425 Nov 23 02:41 P9_OPUS_SIGN_HUNT_OUT.md
+-rw-rw---- 1 root nogroup    5773 Nov 23 02:50 P9_PIXEL_GATE_REDERIVE_BRIEF.md
+-rw-rw---- 1 root nogroup   10071 Nov 22 20:12 PROP_CHECKLIST.md
+-rw-rw---- 1 root nogroup    7740 Nov 23 01:04 QWEN_BUILD_BRIEF.md
+-rw-rw---- 1 root nogroup  101235 Nov 23 03:18 RUN_RECORD.md
+-rw-rw---- 1 root nogroup    7252 Nov 22 20:13 SEAT2_BUILD_CHECKLIST.md
+-rw-rw---- 1 root nogroup    9139 Nov 22 20:14 SEAT2_PROP_CAMERA_VERIFICATION.md
+-rw-rw---- 1 root nogroup    7883 Nov 22 20:13 STYLE_SHEET.md
+drwxrwx--- 1 root nogroup      72 Nov 22 20:11 __suite
+drwxrws--- 1 root nogroup      12 Nov 22 20:09 assets
+drwxrws--- 1 root nogroup      40 Nov 22 20:11 audio
+drwxrwx--- 1 root nogroup     612 Nov 22 20:11 engine
+-rw-rw---- 1 root nogroup     825 Nov 22 20:11 engine.js
+drwxrws--- 1 root nogroup      16 Nov 22 20:56 lessons
+drwxrwx--- 1 root nogroup      40 Nov 22 20:11 lib
+-rw-rw---- 1 root nogroup     220 Nov 22 20:11 models.js
+drwxrws--- 1 root nogroup      10 Nov 22 20:09 out
+drwxrws--- 1 root nogroup      28 Nov 23 03:04 probes
+-rw-rw---- 1 root nogroup     125 Nov 22 20:11 project.json
+drwxrws--- 1 root nogroup      90 Nov 23 03:17 scenes
+-rw-rw---- 1 root nogroup    1795 Nov 22 20:11 script_owner_ar.md
+drwxrwx--- 1 root nogroup    1336 Nov 22 20:11 specs
+drwxrwx--- 1 root nogroup     140 Nov 22 21:10 src
+drwxrws--- 1 root nogroup     146 Nov 23 02:54 tools
+drwxrwx--- 1 root nogroup      94 Nov 22 20:11 tracks
+drwxrwx--- 1 root nogroup      30 Nov 22 20:11 vendor
+-rw-r----- 1 root nogroup 3275548 Nov 22 20:11 voice_owner.wav
+drwxrwx--- 1 root nogroup     160 Nov 22 20:11 world
+../story5-elevator/lessons/build.md
+../fudai-wall/lessons/build.md
+37:const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,1.55,0]);
+120:  {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
+ui/unified-interface
+
+codex
+The brief calls for one literal camera target change in `scenes/film.js`. The current branch is `ui/unified-interface`, and I found the exact source line. `RULES.md` and `orch/UI_BRIEF.md` are not present in this project tree; I’ll follow the supplied standing instructions and read the available build lesson before editing.
+exec
+/bin/bash -lc 'cat lessons/build.md; cat P10_OPUS_SH09_OUT.md' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+# Build pass — opening foundation
+
+Authored the film-local cast foundation (Mayor aging states, three mockers, villagers, child and workers), three opening props (seawall/gate, 5-storey diagram, fishing boat), the own set, CALM post/shade wrappers, and the opening-only film contract for SH01–SH03. The Mayor is alone in this opening; later acts and cast join with later shots.
+
+## PLACES table
+
+`scenes/set.js` exports the sole `PLACES` table. The continuous coast uses `COAST_WALL` `[0,0,-16]`, `COAST_VILLAGE` `[0,0,2]`, and `SEA` `[0,0,-44]`. Foundation pads are `NEIGHBOR_COAST` `[600,0,0]`, `FLASHBACK_ROCK` `[1200,0,0]`, `ROOM` `[1800,0,0]`, and `HILL_GRAVE` `[2400,0,0]`. Each entry includes bounds and light-rig fields; post and shade zones cover all seven names. Film staging derives cast, prop and camera positions from these anchors.
+
+The opening set includes a continuous shore/ground, apron and gate practicals, ten varied houses with yard dressing, a town hall, harbour posts and clutter, calm sea and glitter strip, plus a recognizable foundation silhouette in each later place. Those later places need their shot-specific dressing.
+
+## Known gaps
+
+- Only SH01–SH03 are authored. SH04–SH26 and their acting, graphics and story props are not yet written.
+- Later places have anchor silhouettes only; full dressing is outstanding.
+- The opening has not been rendered or visually reviewed. No renderer was run for this authoring pass.
+
+## Chunk 2 — SH04–SH12
+
+Extended `scenes/film.js` with the mayor's later walks and face/look beats, three mockers, six villagers, the construction/sign/measurement props, and shots SH04–SH12. The nine new film-local prop kinds were already present in `scenes/props/` and were not changed. Added timed `states` to COAST_WALL and SEA for SH11; their final state explicitly restores base sky, ground, fog, and sun values under the rig's cumulative merge semantics. The storeys diagram hides at L3 start.
+
+Loader law (lib/film/resolve.js propOwners): a prop in:'hidden' key must sit within ~1 frame of a shot t0 (on a cut) or carry stow:true — end-of-line hides must be retimed to the NEXT shot's start.
+Round-5 fix: film.js carries endFrame:false — the loader's endFraming otherwise truncates the shot list of a partially-authored film to the last shot whose end frame holds a framed head (it deleted SH11/SH12, extending SH10 to t=99). Revisit when the film's true ending is authored.
+
+## Known gaps
+
+- SH13+ are not written.
+- Digit-1 occlusion at F45/F60 is a Camera-pass item, not this chunk.
+- The grey mayor is parked inside the town hall at t≈27; the next chunk must not double him when mayor_old exits.
+- No renderer was run for this authoring pass.
+
+## HANDOVER
+
+Chunk 2 authoring is ready after syntax and source audit. The next pass should take SH13 onward, keep the grey mayor parked indoors when mayor_old exits, and handle digit-1 occlusion at F45/F60 in the Camera pass.
+
+## Phase-7 lessons
+- D2-CLEAR (tools/audit_d1_d2.mjs): camera paths are audited against building solids — town hall + 10 village houses + 3 neighbour houses at MAXIMUM dims. SH01–SH03 are exempt (frozen/critic-passed; their paths were fleet-probe-verified, and the max-dim box overstates the town-hall cone). A path clearing the conservative boxes clears the real buildings.
+- RULES §3, guard-enforced: one cause, one change, one re-judgement per round. Bundling the whole BLOCKING list into one fix is itself a departure, however correct its items — the guard caught it at 01:03 and the bundle was reverted the same minute (commits a427e74 → 9616ab6 → e88a113).
+- Calendar page observation (eye-verdict, phase 7): at F345/F414 the calendar board's big digit reads "1" while the page keys should be ~7/~12 — the page flip is not advancing visually. A prop-behaviour fault, not a camera fault; for the critic to judge / a later round.
+
+## Phase-8 lessons — 2026-11-23 (FIX #2b-2 restage)
+- Keep the authored story coordinates literal when restoring staging: the construction props remain on the COAST_WALL apron at ground level, the coin drop remains `[2,19.5,-17.5]` with `v0 [.6,2.2,0]` and ground `17.55`, the mocksign remains on the seawall face, and both sky orbs use `SUNORB` as their fixed anchor with movement in `cx`/`cy` only. A framing failure is not evidence to relocate a story object.
+- Full-window SH05 can clear the conservative house boxes with a high village-side camera lane and still frame its wall-site props; preserve the glide over the entire shot window, with endpoint FOVs inside 24–50.
+- The staging audit's SH08 branch reports face results but never sets its shared `occupancy` flag (`case 621/639` calls `faceCheck` directly, unlike the `face()` helper). Its final `FAIL subjects do not occupy the frame` therefore remains even when both required faces pass; do not edit the audit to conceal this.
+- Measured restage limit: SH07 F537 close-up passes, but the full-window move reaches F570 at camera `[2.51,15.55,-10.22]`, with the mocker behind the camera and the wall-top point out of frame; F590's fixed coin drop passes at 390 px. Do not trade away either story beat or the pinned drop to force one camera interpolation through both.
+- Measured SH11 limit under the village-side-over-wall composition: the sea patch is only 6 px at the audit probes (minimum 40 px), and the seawall's corners leave frame. A closer sea-side view previously raised the patch only to 21–22 px while still not framing the wall; keep the geography and report the conflict rather than moving the orb, wall, or sea patch.
+
+## Phase-8 lessons — 2026-11-23 (FIX #2 final four camera iteration)
+- A camera-only SH11 park can satisfy the wall, sea patch, and moving-orb checks together. The tested park `[-5,40,0]` aimed at `[-5.5,9,-30]` gives PASS at F768/F798/F822, with sea spans 674/690/702 px and every orb passing. Preserve the audit's reported CAM values as the ground truth because lowCams adjusts sampled camera positions.
+- SH07's F570 and F590 requirements pull the camera to opposite sides of a depth constraint. The mocker head `[4,1.9,0]` and wall-top `[3,18,-16]` need a village-side low camera near `[4.1,0.2,1.6]` for a shared narrow frustum. From that region, the pinned coin at about `[2.1,19.73,-17.5]` is roughly 19 depth units away; at fov 24 the audit's 230px occupancy threshold requires depth about 11 or less (the 0.5m coin box projects only about 75–81px in the tested F590 village-side samples). The F590 passing reference camera had z=-11.74, on the seawall/coin side; a straight camera interpolation cannot move from z≈+1.6 at F570 to that near coin-side position by F590 while also keeping F537's face close-up. Do not move the coin drop or alter audit occupancy to conceal this conflict.
+- Verified result for this iteration: SH11 passes all three probes; SH07 fails F537, F570 and F590 in the final camera attempt. `audit_d1_d2.mjs` remains PASS. The constrained SH07 camera requirements need an authorized change to the one-move camera model or one of the pinned checks before this audit can reach 19/19.
+
+## Phase-8 lessons — 2026-11-23 (SH07 line-6 split attempt)
+- Restore the SH07 baseline endpoints before splitting: close-up from `CAM_SH07_A` / `CAM_SH07_TA`, and the coin-side finish at `CAM_SH07_B` / `CAM_SH07_TB`, with fov 50→24 and roll -5→-2. SH11 stays at its passing park.
+- A split on `line:6.word:9` (19.17 s, between words 8 and 10) can separate the mockery close-up from the coin-side move. The padded camera interval changes the sample fraction: inspect the audit's printed CAM rows after every ease change. `inExpo` kept F537's face in frame in this attempt.
+- The current audit hard-codes F537, F570 and F590 to `shotById('SH07')`, and `shotById` returns the first matching shot by id. After adding SH07B, F590 is still measured on SH07 at its end pose; it never samples SH07B. The resulting F590 CAM row `[5.50, 1.80, 4.20]`, fov 50 and 43 px coins is evidence that the split's second shot is not bound. Correct time-to-shot lookup is needed before the audit can judge the split as intended.
+- This attempt did not reach 19/19: F537 passed, while F570's head sphere and wall-top point remained outside the frustum and F590 remained bound to SH07. Do not report a passing split from a run where the sampled shot id does not match the moment's active interval.
+
+## Phase-8 lesson — SH07 split binding and F570 occlusion limit (2026-11-23)
+- A split shot needs every sampled audit moment rebound to the shot ID active at that time. `shotById` returns the first matching ID, so leaving F590 bound to `SH07` silently audits the pull-back instead of `SH07B`; rebind the F590 moment to `SH07B` when the split is introduced.
+- With that binding, SH07B can pass F590 by lifting its camera above the seawall and aiming between the wall-top point and coin drop. The measured passing F590 camera is `[2.51,18.71,-10.51]`, target `[1.86,17.76,-32.25]`, fov `31.19`; coins are 254px and the wall-top point is in-frame.
+- F570's fixed head and wall-top checks conflict under the current seawall occluder model: from the village side the ray to `[3,18,-16]` intersects the seawall; from the sea side the mocker head cannot meet the 230px occupancy threshold. Do not claim 19/19 or change audit checks under a camera-only split brief; this requires an owner-authorized audit/geometry decision.
+
+## Phase-8 lesson — visible wall-top test point (2026-11-23)
+- A test point must be a point the render can show. A point inside the tested mesh's own box is self-occluded; test the visible edge. This is the same family as the sea-span measure correction.
+
+## Phase-8 lesson — spread stacked cast (2026-11-23)
+- Stacked cast at one point is a render fault the staging audit cannot see: a character can merge with another or occlude a face while all audit moments still pass. Check cast spreads with the hunter and fleet stills, alongside the staging audit.
+
+## Phase 9 — METHOD CHANGE #3: the pixel-verified loop (2026-11-23)
+- Critic round 8 (precision round, sort 0·0, VERDICT: NO) named the same fault family a second time — cropped heads, occluded props, missing subjects, foreign sign text — while the scene-data staging audit read 19/19 PASS. Per RULES §3 the METHOD changed: `tools/audit_pixels.mjs` (+ `tools/pixel_measure.py`) now judges the fleet-probed STILLS. The scene-data audit is a pre-check only; **no frame is called staged until the PIXEL gate passes on its probed still.**
+- The pixel gate's three tests: (a) HEAD CROP — the required face's rendered head disc is MEASURED in the still (skin segmentation ringed by the dark outline, scipy components), matched to the projected centre/size, and fails if edge-cut, absent, or ambiguous; (b) FOREGROUND OCCLUSION — screen-space: a named prop's projected legibility rect fails if a closer character disc (calibrated radius) or a closer prop box covers >10% of it (the staging audit's occluder set — buildings + wall + gateleaf — cannot see character-on-prop or prop-on-prop occlusion; at F345/F414 the crane_b box overlaps the calendar's rect 100%); (c) SET BAR — §5 detail/flat measured on the pixels (32×32 blocks, grayscale std; flat = std<5, detail = std≥12), judged per SHOT as §5 writes it (median of the shot's key frames ≥22% detail / ≤78% flat; film median shot ≥28%; ≤40% of shots under).
+- CALIBRATION (measured on the chunk2d stills, 2026-11-23): rendered head radius vs the audit's r=0.5 sphere — mayor ≈1.04–1.06× (F669: R 431 vs 414; F687: R 473 vs 448, disc centre (553,30) solved from the chord at y=0 + chin at y≈503); hat-wearing villager/mocker silhouette ≈1.32× (F537: 648×624 px vs the 480 px model disc; face-only ≈1.10×). Occlusion discs use k=1.35 (worst case, hat-inclusive).
+- CALIBRATION — centre offsets: the rendered head centre sits far ABOVE the audit's projected centre on close shots (F687 ≈ −623 px, F669 ≈ −576 px, F537 ≈ −342 px vertically). The audit's camera model (approximated lowCams rest; renderer face-limit clamping unmodelled) does not reproduce the render camera's effective aim for close shots — this, not the 5% radius error, is the head-crop mechanism: the sphere test passes a head whose rendered disc is centred ~600 px higher than the model thinks. Hence test (a) measures discs in the image; projected centres are used only as match seeds (tolerance 780 px + size-ratio window 0.45–2.4 + ambiguity = FAIL).
+- Gate validation on the unrepaired chunk2d stills: PASS exactly on the frames the critic/driver judged good (F288, F537, F621, F639, F870) and FAIL on every faulted frame, each with its cause named (F219/F241 mayor not identifiable; F345/F414 calendar under crane_b 100%; F474 set 13.7%/85.1%; F570 no disc segments — the back-of-head does not read as skin; F590 set 14.5%/84.4%; F669/F687 skin touches the top edge; F711/F723 blueprint 46% geometric / 74% measured-disc overlap by villager_4; F768/F798/F822 set ~14%/81%). Chunk-scope set bar: median shot detail 26.7% (< 28% film bar), 3/10 shots under.
+
+## Phase 8 — audit-model blind spots (learned from the fleet eye-verdicts, 2026-11-23)
+- The staging audit's head sphere (r=0.5) is SMALLER than the rendered head mesh: "head in" passed at F669/F687 while the renders crop the head's top. The audit is a NECESSARY gate, never a sufficient one — fleet stills + the driver's eye + the critic remain the judges.
+- The audit does not model FACING/legibility: at F570 the mocker's head passed geometrically (520px) but renders as an illegible back-of-head against the blueprint grid that fills the frame's lower half. A passing subject must also READ.
+- Rendered prop clusters can sit outside the audit's prop box: the coins' rendered discs ride ~1 D above the audit's 0.5 D drop box (F590: coins cropped at the frame's top edge, measured y 0–12.4%, while the audit's box read 8/8 corners in). When a prop's visual is a cluster, audit the cluster's bounds, not the origin box.
+- Fleet render spec: a single frame is `render:N:N+1` — END must be greater than START (`render:N:N` fails in parseModeSpec). 19 runs were lost to this once; never again.
+- Guard flag 3: bundling three one-value fixes into one session is still bundling. One cause, one session, one re-judgement — even when each item is a single constant.
+
+## Phase 10 — CodePen framing lab adopted as a standing pre-check (owner's word, 2026-11-23 ~05:01)
+- Owner's word: «اعتمديه في الشغل» — the CodePen framing lab (pen «معمل التأطير — كاميرا ٩:١٦», editor Araby-Mahmoud, pen 01a20657-7257-7466-8fb1-1bdd85dabbd4; preview https://01a20657-7257-7466-8fb1-1bdd85dabbd4.codepen.dev/) is adopted in the work: a 9:16 Three.js frame (wall + character + sign) with camera pos / target-Y / fov sliders, reading live — head fully in frame or cropped, head height in px at 1920, top margin in px.
+- STANDING USE: before any fleet re-probe of a re-staged close/medium shot, sanity-check the shot's camera/target/fov values in this lab pattern (head-in-frame + head-px + top-margin readouts) and record the lab readout beside the cause in RUN_RECORD; a lab FAIL blocks the probe dispatch until the staging is corrected. Pre-check only — the pixel gate and the critic remain the judges.
+- Driver execution note (phase 10): the driver has no browser; the readout is computed in the lab's exact pattern (the audit's screen() projection + the pixel-calibrated rendered-disc offsets from the phase-9 calibration) and recorded beside the cause. The interactive pen itself is Layla's browser surface.
+- KEEPER APPOINTED (owner's word, 2026-11-23 ~05:02 — if the lab needs an agent appointed to it, Layla should not hesitate): **Seat 6 (styles & library keeper) owns the CodePen framing lab** — keeps the pen current, extends it when a new fault class needs a visual pre-check, and its readouts are the ones recorded beside causes.
+
+## Phase 10 lessons — 2026-11-23
+- SCREEN-Y RESPONSE SIGN (measured twice, both directions): lowering a camera target pitches the camera down and moves frame content UP (screen y decreases) — the audit model's projected head centre moved −744/−789 px for a −0.915 target change on SH09. Luna's SH09 correction assumed the opposite sign and pushed the rendered head from crown-cut to fully out of frame; it was reverted on the fleet evidence. Compute target changes from the measured slope (≈813–862 px per unit on SH09), never from intuition about "aiming lower".
+- PIXEL GATE measured-disc FALSE POSITIVE (driver-harness note for the re-derivation spec): the gate's occlusion test (b) flags any segmented skin-toned disc over a prop's rect — the CALENDAR'S OWN cream page segments as a disc (F345: the calendar page itself read as 100% measured-disc overlap while the eye shows it fully legible and geometric overlap is 0%), and on frames flooded with tan wall/ground the segmentation returns one frame-filling "disc" (F345/F687). Judge test (b) by the geometric overlap + the eye when the named occluder is a prop and the "disc" coincides with the prop's own rendered face.
+## CORRECTION:
+
+```
+CAM_SH09_T = [0, 2.47, 2]
+```
+
+Change target y from 1.55 to 2.47 (Δy = +0.92).
+
+---
+
+## ARITHMETIC:
+
+**Measured response slope** (model centre y-shift per unit target y):
+
+- Target y = 1.55 → model centres: F669 (540, 679), F687 (540, 653)
+- Target y = 0.635 → model centres: F669 (540, −65), F687 (540, −136)
+- Δ target y = 0.635 − 1.55 = −0.915
+- Δ model y: F669 = −65 − 679 = −744 px; F687 = −136 − 653 = −789 px
+- Slope: F669 = −744 / −0.915 = **813 px/unit**; F687 = −789 / −0.915 = **862 px/unit**
+
+**Predicted model centres at target y = 2.47:**
+
+- Δy from baseline (1.55) = 2.47 − 1.55 = +0.92
+- F669: 679 + (813 × 0.92) = 679 + 748 = **1427 px**
+- F687: 653 + (862 × 0.92) = 653 + 793 = **1446 px**
+
+**Predicted model disc specs:**
+
+- F669: centre (540, 1427), diameter 828 → radius 414
+- F687: centre (540, 1446), diameter 897 → radius 448.5
+
+**Predicted rendered disc (apply measured family offset and radius scaling):**
+
+- Render offset: F669 −576px, F687 −623px; radius scale 1.06
+
+F669 render:
+- Centre: (540, 1427 − 576) = **(540, 851)**
+- Radius: 414 × 1.06 = **439 px**
+- Bounding box: x [101, 979], y [412, 1290]
+- Margins: left 101, right 101, top 412, bottom 630 — **all ≥40px ✓**
+
+F687 render:
+- Centre: (540, 1446 − 623) = **(540, 823)**
+- Radius: 448.5 × 1.06 = **475 px**
+- Bounding box: x [65, 1015], y [348, 1298]
+- Margins: left 65, right 65, top 348, bottom 622 — **all ≥40px ✓**
+
+**Tightest margin:** 65px (F687 left/right).
+
+---
+
+## PREDICTED:
+
+At target y = 2.47, both F669 and F687 render the mayor's head fully in frame with the head larger and lower in screen space than the original. F669 disc centred at (540, 851) radius 439; F687 disc centred at (540, 823) radius 475. Push-in preserved: F687 is tighter (larger disc, 475 vs 439) and climbs slightly in frame (823 vs 851). Minimum margin 65px at F687 sides. The head occupies roughly the upper half of frame at F669, upper 55% at F687.
+
+---
+
+## RISKS:
+
+1. **Nonlinear camera adjustment**: The measured slopes differ (813 vs 862 px/unit) across a 0.915-unit span; extrapolating +0.92 beyond the measurement range assumes linearity. The lowCams/autoMove rig may exhibit pitch or distance nonlinearity at target y = 2.47 (1.6σ above the high data point).
+
+2. **Render offset family variance**: The two data points show render-vs-model offset drift (−576 → −623 px, +47 over 0.6s / 18 frames). If the offset continues drifting, F687's actual render centre may sit lower than predicted, tightening the top margin.
+
+3. **Tight side margins at F687**: 65px is 1.6× the §4 minimum but only 6% of frame width. Any unexpected lateral drift (the x-centres were stable in measurements, but target y may couple to x via the rig) risks edge crop.
+
+4. **Aspect/composition**: Raising target y = 2.47 tips the camera upward; depending on the mayor's torso/shoulder geometry and background elements at world y < 1.5, the lower frame may gain unwanted staging (desk edge, floor seam). Not measurable from head data alone.
+
+5. **§4 face rule confidence**: Predicted discs are large (diameter 878–950px, 46–49% of frame height) and well-centered vertically (y = 823–851, within middle third). Crown/chin should clear edges comfortably, but §4 forbids *any* face cut — the 65px margin at F687 leaves 14% buffer on a 475px radius (0.14 × 475 ≈ 66px), so a 2px model error or 1px render shift touches the limit.
+
+**Recommendation**: If fleet re-probe is cheap, verify F687 at target y = 2.47 before final commit. If the left/right margin falls below 50px, consider target y = 2.42 (trades 40px top margin at F669 for +25px side margin at F687 via reduced disc size).
+exec
+/bin/bash -lc "python3 - <<'PY'
+from pathlib import Path
+p = Path('scenes/film.js')
+s = p.read_text()
+old = 'CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,1.55,0]);'
+new = 'CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);'
+assert s.count(old) == 1, f'expected one exact occurrence, got {s.count(old)}'
+p.write_text(s.replace(old, new))
+PY
+node --check scenes/film.js
+node tools/audit_staging.mjs
+node tools/audit_d1_d2.mjs" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 582ms:
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [605.81, 8.50, 15.00] target [600.00, 4.00, 3.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 1056px corners 2/8; sticker_a PASS 139px corners 8/8; sticker_b PASS 166px corners 4/8; neighbour houses PASS 1/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 20.84, -13.08] target [1.86, 5.36, -34.81] fov 50.00
+F590 | 19.67 | SH07B | PASS | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 258px corners 7/8; wall top PASS point in frustum
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (1/19 moments)
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+
+codex
+The one-line change is in place. Syntax checking passed; the staging audit reports its rows verbatim and ends `FAIL (1/19 moments)` with F687 failing (F669 passes in this run). The D1/D2 audit passes. I’m checking the final diff and working-tree scope now so I can confirm only the requested source file changed.
+exec
+/bin/bash -lc 'git diff --check -- scenes/film.js; git diff --stat -- scenes/film.js; git diff -- scenes/film.js; git status --short' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+ projects/fudai-wall/scenes/film.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 4bc1ee4..c0c96dd 100644
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -34,7 +34,7 @@ const CAM_SH07_A=add(PLACES.COAST_VILLAGE,[4,2.5,-7]), CAM_SH07_TA=add(PLACES.CO
+ const CAM_SH07_B=add(PLACES.COAST_VILLAGE,[2,20,-14]), CAM_SH07_TB=add(PLACES.COAST_WALL,[2,19.5,0]);
+ const CAM_SH08_A=add(PLACES.COAST_VILLAGE,[4,3,-6]), CAM_SH08_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+ const CAM_SH08_B=add(PLACES.COAST_VILLAGE,[4,3,-6]);
+-const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,1.55,0]);
++const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);
+ const CAM_SH09_B=add(PLACES.COAST_VILLAGE,[.3,2.1,4.0]);
+ const CAM_SH10_A=add(BLUEPRINT,[0,3,9]), CAM_SH10_T=add(BLUEPRINT,[0,1.55,0]), CAM_SH10_B=add(BLUEPRINT,[0,3,9]);
+ const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
+ M scenes/film.js
+?? P10_FIX_F474_BRIEF.md
+?? P10_FIX_F711_BRIEF.md
+?? P10_FIX_SH09B_BRIEF.md
+?? P10_FIX_SH09B_OUT.txt
+?? P10_FIX_SH11_BRIEF.md
+?? P10_OPUS_F711_OUT.md
+?? P10_OPUS_F711_PROMPT.md
+
+codex
+Changed only `scenes/film.js`: `CAM_SH09_T` now uses `[0,2.47,0]`. No commit was made. `node --check scenes/film.js` passed with no output, and `git diff --check` passed. The diff is one insertion and one deletion. The other listed untracked files were already present and left untouched.
+
+**Complete `node tools/audit_staging.mjs` output:**
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [605.81, 8.50, 15.00] target [600.00, 4.00, 3.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 1056px corners 2/8; sticker_a PASS 139px corners 8/8; sticker_b PASS 166px corners 4/8; neighbour houses PASS 1/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 20.84, -13.08] target [1.86, 5.36, -34.81] fov 50.00
+F590 | 19.67 | SH07B | PASS | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 258px corners 7/8; wall top PASS point in frustum
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (1/19 moments)
+```
+
+**Complete `node tools/audit_d1_d2.mjs` output:**
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+**Diff summary:** one line changed in `scenes/film.js`, from target Y `1.55` to `2.47`. Staging audit: 18/19 moments pass; F687 fails. D1/D2 audit passes.
+tokens used
+25,387
+Changed only `scenes/film.js`: `CAM_SH09_T` now uses `[0,2.47,0]`. No commit was made. `node --check scenes/film.js` passed with no output, and `git diff --check` passed. The diff is one insertion and one deletion. The other listed untracked files were already present and left untouched.
+
+**Complete `node tools/audit_staging.mjs` output:**
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [605.81, 8.50, 15.00] target [600.00, 4.00, 3.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 1056px corners 2/8; sticker_a PASS 139px corners 8/8; sticker_b PASS 166px corners 4/8; neighbour houses PASS 1/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 20.84, -13.08] target [1.86, 5.36, -34.81] fov 50.00
+F590 | 19.67 | SH07B | PASS | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 258px corners 7/8; wall top PASS point in frustum
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (1/19 moments)
+```
+
+**Complete `node tools/audit_d1_d2.mjs` output:**
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+**Diff summary:** one line changed in `scenes/film.js`, from target Y `1.55` to `2.47`. Staging audit: 18/19 moments pass; F687 fails. D1/D2 audit passes.
