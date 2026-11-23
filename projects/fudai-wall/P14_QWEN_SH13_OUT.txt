@@ -1,0 +1,34 @@
+QWEN SEAT OUTPUT — phase 14 · cause 4: SH13 camera fix
+Seat: Qwen4-Max (chat.qwen.ai, Araby Soft / nooaar343@gmail.com)
+Conversation: https://chat.qwen.ai/c/0da3fc68-b605-40d1-8f06-af4f29088a52
+Run by Layla via browser seat, 2026-11-23 09:23–10:07 EET (44 min; first attempt blocked by an Access Verification slider, recovered on a fresh tab; brief sent exactly once, no follow-up).
+Brief: the cause-4 brief (same measured baseline as P13_GLM_SH13_BRIEF.md, adapted to address Qwen as the chunk-3a author).
+Previous verdict cited: phase-15 pixel-gate verdict commit 0b5b45d (hard gate).
+
+================================================================
+QWEN'S COMPLETE VERBATIM REPLY:
+
+BASELINE RESTATED:
+D2-CLEAR FAIL: authored path world z=10.2 ∈ [9.5,18.5], y=1.62 < 6.4, x sweeps -5.4→-2 crossing x=-4.5 → inside the hall box.
+F933 (t=31.10) PASS: hand tip [4,1.2,-1] inside frustum (invariant).
+F942 (t=31.40) FAIL: box [-5.4,1.15,3.8] projects 195px outside the frame.
+F969 (t=32.30) FAIL: mayor at ≈[-5.73,1.68,4.27], face angle 61.5° > 60°, head 343px out.
+Near-miss (pos offset [4.8,5,-8], targets [4,2,-3]→[-4.6,1.9,2.2], fov 50): D2 CLEARED; F942 PASS (75px inside); F969 PASS (47.9°, head 165px inside); F933 FAIL (hand out). Its hand–mayor angular separation at t=31.10 from world [4.8,5,-6] is ≈43.2° (authored y) / ≈40.8° (lowCams y≈1.7), both beyond the fov-50 horizontal half-angle ≈39.6° — that is the single open failure.
+CANDIDATE:
+chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[4.8,5,-16],[4,2,-3]],[[4.8,5,-16],[-4.6,1.9,2.2]],50)
+One change vs the near-miss: static pos offset z -8 → -16 (world [4.8,5,-14]), pulling the camera 8 units back along -z so the hand and the mayor converge angularly at t=31.10. x, y, both targets, fov unchanged; no other line touched.
+PREDICTED READINGS (u=(t-30.9)/3.0; world = offset+[0,0,2]; fov 50 → half-vertical 25°, half-horizontal atan(tan25°·16/9)=39.65°; loader caveat noted, audits are truth):
+D2-CLEAR: PASS. Static world pos [4.8,5,-14]; z=-14 < 9.5 (and x=4.8 > 4.5), so the path never enters the hall box x∈[-4.5,4.5], y∈[0,6.4], z∈[9.5,18.5]. Same clearance mechanism as the near-miss, further out.
+F933 (t=31.10, u=0.0667): PASS. Mayor M=[-5.958,1.68,3.196], hand H=[4,1.2,-1], C=[4.8,5,-14].
+vM=(M-C)/|M-C| = [-10.758,-3.32,17.196]/20.554 = [-0.5234,-0.1615,0.8366];
+vH=(H-C)/|H-C| = [-0.8,-3.8,13]/13.568 = [-0.0590,-0.2801,0.9581].
+vM·vH = 0.0309+0.0452+0.8015 = 0.8776 → 28.6° total; azimuths -32.03° vs -3.52° → Δaz=28.5° < 39.65°; elevations -9.30° vs -16.27° → Δel=7.0° < 25°. With lowCams y≈1.7: vM=[-0.5304,-0.0010,0.8478], vH=[-0.0614,-0.0384,0.9974], dot=0.8782 → 28.6°, Δaz=28.5°, Δel≈2.1° — still inside. If the loader instead honors the early target T≈[3.43,1.99,-0.65], |H-T|=1.038 at |C-T|=13.75 → 4.3° off-axis, inside. Hand in under either aim.
+F942 (t=31.40, u=0.1667): PASS. Box B=[-5.4,1.15,3.8], mayor M=[-5.895,1.68,3.489].
+vB=(B-C)/|B-C| = [-10.2,-3.85,17.8]/20.873 = [-0.4887,-0.1845,0.8528];
+vM=(M-C)/|M-C| = [-10.695,-3.32,17.489]/20.767 = [-0.5150,-0.1599,0.8422].
+vB·vM = 0.2517+0.0295+0.7182 = 0.9994 → 2.0° separation; the box rides the mayor axis, well inside. Margin scales ≈75px·(14.2/20.9) ≈ 51px inside — smaller than the near-miss but still in.
+F969 (t=32.30, u=0.4667): PASS (predicted). Mayor M=[-5.728,1.68,4.272]; facing f=([-2,1.5,11]-M)/7.696=[0.4844,-0.0234,0.8742]. Authored (M→C)=[10.528,3.32,-18.272]/21.348=[0.4932,0.1555,-0.8559]; dot f = -0.513 → 120.9° raw, but the loader demonstrably re-lanes this: the near-miss's raw 104.8° measured 47.9°. The two measured faces vs authored pos z (10.2→61.5°, -6→47.9°) give ≈0.84°/unit; extrapolating to z=-14 predicts ≈41° (<60°), i.e. no worse than the near-miss lane. Head margin ≈165px·(15.1/21.35) ≈ 117px inside → whole head in, not edge-cut. This face number is a trend extrapolation, not a run; the audit decides.
+Net: the pull-back crosses F933 from out (≈40.8°) to in (≈28.5°) while keeping the box on-axis, the hall cleared, and the face lane at least as frontal as the measured near-miss.
+================================================================
+END OF VERBATIM REPLY.
+Seat's own honesty flags (preserved): F969's face figure is a trend extrapolation from two measured points, NOT a run — the staging audit decides. F942's margin shrinks (≈51px predicted vs the near-miss's 75px).
