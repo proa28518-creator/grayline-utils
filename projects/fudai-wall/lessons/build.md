@@ -65,3 +65,10 @@ Chunk 2 authoring is ready after syntax and source audit. The next pass should t
 
 ## Phase-8 lesson — spread stacked cast (2026-11-23)
 - Stacked cast at one point is a render fault the staging audit cannot see: a character can merge with another or occlude a face while all audit moments still pass. Check cast spreads with the hunter and fleet stills, alongside the staging audit.
+
+## Phase 8 — audit-model blind spots (learned from the fleet eye-verdicts, 2026-11-23)
+- The staging audit's head sphere (r=0.5) is SMALLER than the rendered head mesh: "head in" passed at F669/F687 while the renders crop the head's top. The audit is a NECESSARY gate, never a sufficient one — fleet stills + the driver's eye + the critic remain the judges.
+- The audit does not model FACING/legibility: at F570 the mocker's head passed geometrically (520px) but renders as an illegible back-of-head against the blueprint grid that fills the frame's lower half. A passing subject must also READ.
+- Rendered prop clusters can sit outside the audit's prop box: the coins' rendered discs ride ~1 D above the audit's 0.5 D drop box (F590: coins cropped at the frame's top edge, measured y 0–12.4%, while the audit's box read 8/8 corners in). When a prop's visual is a cluster, audit the cluster's bounds, not the origin box.
+- Fleet render spec: a single frame is `render:N:N+1` — END must be greater than START (`render:N:N` fails in parseModeSpec). 19 runs were lost to this once; never again.
+- Guard flag 3: bundling three one-value fixes into one session is still bundling. One cause, one session, one re-judgement — even when each item is a single constant.

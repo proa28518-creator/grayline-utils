@@ -1,0 +1,12 @@
+# ROUND 8 — STATUS (for Layla's browser seat)
+
+Pack: `.suite/critic/round8_chunk2/pics/` — 25 JPGs (19 ours from the fleet re-probe of commit 0ccb5d0 + 6 Story 4 bar frames), shuffled, seed 41. KEY: `.suite/critic/round8_chunk2_KEY.driver.txt` (driver only — do NOT show the critic).
+
+Execution (precision round per the owner's delegation addendum — the sort must key-check at 0 errors and Step B may cite only supplied frames):
+1. Gemini, account nooaar343 as it stands, skill `@fudai-wall-critic`, model Neon, thinking High (Chat-mode skill session per the ~01:18 ruling). Confirm the skill footer is active BEFORE each step.
+2. Upload pics in three batches (10/10/5 — web cap), then send `prompt_stepA.txt` verbatim. Save the reply verbatim to `stepA_reply.txt` in this folder. Two-candidate rule: take the FIRST complete reply matching the fixed form.
+3. Send `prompt_stepB.txt` verbatim. Save the reply verbatim to `stepB_reply.txt`.
+4. NO API fallback (AI Studio API retired). If the round's Step B cites any frame outside the 19 named in the prompt, the round is INVALID (not a NO) under the precision clause and is rerun with a fresh critic.
+5. Post both replies back to the driver under the driver's name for key-checking + the CRITIC_REPORT_round8.md write-up.
+
+Driver eye-verdicts on the 19 stills (from probes/chunk2d/stills/, vs round 7's BLOCKING): PASS — 241 (3,000 sign now present; RED CANYON subtitle remains — engine-sign shadowing, queued rename fix), 288, 414 (15.5M measure now reads), 537 (face, was a back), 621, 639 (laughing faces, were backs), 768, 798, 822 (sun/moon cycle complete; 798 was ~98% flat wall), 870 (villagers now below the sign; subtitle remains). WEAK — 219 (crowd corner-cropped, large blank wall), 345 (calendar small behind the crane), 669 (head top slightly cropped), 711/723 (blueprint reads as background behind the mayor's face; ruler + 15.5M label present at 723). FAIL by eye — 474 (flat dark wall dominant, right 10M sign edge-cropped), 570 (mocker illegible against the blueprint grid that fills the lower frame; grounding: only an edge-cropped head at the right), 590 (coins cropped at the top edge, y 0–12.4% measured; ~60% empty blue), 687 (mayor's head cropped at the top edge). Known audit-model gaps behind the eye-fails are recorded in lessons/build.md (head sphere smaller than the rendered head mesh; no facing/legibility model; coins' rendered cluster sits above the audit's drop box).
