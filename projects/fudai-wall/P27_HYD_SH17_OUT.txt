@@ -1,0 +1,16 @@
+HYDROGEN SEAT OUTPUT — SH17 camera (cause 8)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/46371250cedacfcb
+Run by Layla via browser seat, 2026-11-23 14:20–14:24 EET. Brief: P23_QWEN_SH17_BRIEF.md as amended in phase 25 + Layla's live-baseline update (D1/D2 at ZERO lines, must stay zero).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH17','line:15.start','line:15.end','SEA',[[-6,13.5,19],[-2,0,2]],[[2,12.5,18],[0,0,2]],48)
+Design: camera path pulled ~4 units seaward (world z −25→−26) with the aim shallowed to world z −42 at both ends and fov widened 44→48, so boat_b's centre enters the late frame while boat_a holds at mid-shot.
+
+PREDICTED READINGS (seat's arithmetic, empirical ease; audit governs):
+- F1197 boat_a: PASS — centre IN, 381px (seat computed boat_a at world z −40; it ALSO checked the brief's stated −37 position: PASS 435px; the driver's audit reads the film's own data).
+- F1215 boat_b: PASS — centre IN, 450px ≥ 40px.
+- F1188 (parked): unchanged — FAIL pull 0 >= 6; sea_sheet untouched.
+- D1/D2: ZERO lines; D2-CLEAR 0 hits (segment strictly inside SEA).
+
+(Full arithmetic preserved in the browser report of 2026-11-23 14:24 EET.)
