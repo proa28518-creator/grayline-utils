@@ -215,13 +215,17 @@ export default {
     { id: 'coins', kind: 'coins', owner: null, in: 'world', at: [-1.6, 2.5, 1.4], keys: [{ t: 'line:6.word:9', drop: { from: [-1.6, 2.5, 1.4], v0: [0.5, 0.5, -1], ground: 0, hide: true } }] },
     { id: 'sign', kind: 'sign', owner: null, in: 'world', at: [0, 8, -7], keys: [{ t: 'line:10.start', open: 1 }, { t: 'line:10.end', open: 0 }] },
     { id: 'box', kind: 'box', owner: 'mayor', in: 'hand:R', at: [0, 0, 0], keys: [{ t: 'line:11.start', open: 1 }] },
-    { id: 'flowers', kind: 'flowers', owner: 'villager_1', in: 'hand:R', at: [0, 0, 0], keys: [{ t: 'line:24.start', open: 1 }] },
+    // Flowers are a world prop at the grave (repair round 2026-11-23, office): the
+    // hand-over to 'world' broke the boot (engine maps it to place key 'hand:world',
+    // no such hand exists — R/L only — so it read org[0] from empty). The flowers
+    // lie at the gravestone's base from line 24 start, as the mockers stand at it.
+    { id: 'flowers', kind: 'flowers', owner: null, in: 'world', at: [0.3, 0, -401], keys: [{ t: 'line:24.start', open: 1 }] },
   ],
 
   // ---- Hand-overs (both hands meet, the prop changes hands on screen) ----
-  handovers: [
-    { prop: 'flowers', from: 'villager_1', to: null, t: 'line:24.word:2', fromSide: 'R', toSide: 'world' },
-  ],
+  // Empty: no hand-to-hand pass in this film. (The flowers hand-over was removed
+  // in the 2026-11-23 repair round — hand-to-'world' is not a valid hand-over.)
+  handovers: [],
 
   // ---- Shots (the member's binding shot plan, segment for segment; cuts 1.5-3 s on line starts/actions) ----
   shots: [

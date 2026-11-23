@@ -37,6 +37,11 @@
 - The ready-made specs carry their own small props (inspector's marble, townsperson's newspaper) — part of the characters as they are, used as-is.
 - No other file changed: the 24 lines, the 30 shots, the 5 places, the 10 props and the acting are untouched by the re-cast.
 
+## Repair round — flowers hand-over (2026-11-23 ~21:50, office, third round)
+- After the THREE fix the fleet re-ran: the Group error is gone, but launch failed 8/8 on an older masked error: `BOOT_ERROR: Cannot read properties of undefined (reading '0')`.
+- Cause (measured by the office): the flowers hand-over at the grave (`{ prop: 'flowers', from: 'villager_1', to: null, t: 'line:24.word:2', fromSide: 'R', toSide: 'world' }`) — the engine maps it to place key `'hand:world'`, no such hand exists (R/L only), so it reads `org[0]` from empty.
+- Fix (office option b): the hand-over is removed (`handovers: []`) and the flowers are redistributed as an ordinary world prop at the grave — `{ id: 'flowers', owner: null, in: 'world', at: [0.3, 0, -401], keys: [{ t: 'line:24.start', open: 1 }] }` (gravestone at [0, 0, -402]; flowers at its base, 1 D in front). No hand-to-hand pass exists in this film. Refs re-validated: 202 (was 203 — exactly the one removed hand-over ref), max line 24, none out of range; `node --check` OK; no `toSide: 'world'` / `to: null` left in code.
+
 ## Repair round — THREE import (2026-11-23 ~21:20, office, separate from the re-cast)
 - The office's checks on the first delivery passed (syntax 12/12, JSON 5/5, words 186/186), but the fleet render stopped 8/8 at launch: `Cannot read properties of undefined (reading 'Group')`.
 - Cause (measured by the office): the 10 prop files assumed THREE reaches `build()` via `opts.THREE` or `globalThis.THREE` and did not import it; the host does not pass THREE to props, so the first `new THREE.Group()` failed. Neon's props on the same host import THREE themselves.
