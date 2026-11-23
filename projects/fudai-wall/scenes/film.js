@@ -71,7 +71,7 @@ const PROP3=[
  {id:'boat_sh17_a',kind:'boat',in:'world',at:p('SEA',[-3.5,.15,4]),rot:[0,0,0],keys:[{t:'line:15.start',at:p('SEA',[-3.5,.15,4]),rot:[0,0,0]},{t:39.90,at:p('SEA',[-3.5,.02,4])},{t:40.10,at:p('SEA',[-3.5,.02,4]),rot:[0,0,14]}]},
  {id:'boat_sh17_b',kind:'boat',in:'world',at:p('SEA',[2.5,.15,7]),rot:[0,0,0],keys:[{t:'line:15.start',at:p('SEA',[2.5,.15,7]),rot:[0,0,0]},{t:39.70,at:p('SEA',[2.5,.02,7])},{t:39.95,at:p('SEA',[2.5,.02,7]),rot:[0,0,-11]}]},
  {id:'wave_sh18',kind:'wave',in:'world',at:p('SEA',[0,0,-20]),h:0,advance:0,w:90,keys:[{t:'line:16.start',h:2,advance:0},{t:'line:16.word:2',h:6},{t:'line:16.end',h:17.5,advance:2}]},
- {id:'measure_wave',kind:'measure',in:'world',at:p('SEA',[5,0,-16]),lineY:0,keys:[{t:'line:16.start',lineY:0},{t:'line:16.end',lineY:15}]},
+ {id:'measure_wave',kind:'measure',in:'world',at:p('SEA',[5,0,-16]),h:0,full:15,keys:[{t:'line:16.start',h:15,ease:3.75},{t:'line:16.end',h:15}]},
  {id:'old_village_sh19',kind:'storeys',in:'world',at:p('FLASHBACK_ROCK',[-3.5,-1.5,-12]),storeys:3,keys:[{t:'line:17.start'}]},
  {id:'wave_old_sh19',kind:'wave',in:'world',at:p('FLASHBACK_ROCK',[-9,-1.5,-17]),h:5,advance:0,w:14,keys:[{t:'line:17.start',h:5,advance:0},{t:'line:17.end',h:8,advance:4.5}]},
  {id:'carved_line_sh20',kind:'carved_line',in:'world',at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85]),length:3.6,reveal:.35,keys:[{t:'line:18.start',reveal:.35},{t:'line:18.end',reveal:1}]},

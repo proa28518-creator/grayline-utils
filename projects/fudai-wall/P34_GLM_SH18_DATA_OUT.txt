@@ -1,0 +1,13 @@
+GLM SEAT OUTPUT — SH18 DATA FIX (phase 34, cause: measure_wave's climb rides on `h`/`full`, not `lineY`)
+Seat: GLM (free/glm-5.3-flashx, APInex direct API, helper ~/workspace/tools/apinex2_chat.py)
+Brief: P34_GLM_SH18_DATA_BRIEF.md. Run by the phase-34 driver, 2026-11-23.
+Verbatim reply:
+
+```js
+{id:'measure_wave',kind:'measure',in:'world',at:p('SEA',[5,0,-16]),h:0,full:15,keys:[{t:'line:16.start',h:15,ease:3.75},{t:'line:16.end',h:15}]},
+```
+
+Driver verification (character-by-character against the brief's specification):
+top-level `lineY:0` → `h:0,full:15` ✓; start key → `{t:'line:16.start',h:15,ease:3.75}` ✓;
+end key → `{t:'line:16.end',h:15}` ✓; id/kind/in/at byte-identical ✓; one line only ✓.
+(The file line's single leading space is preserved on application, as in phase 31.)
