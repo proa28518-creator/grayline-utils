@@ -1,0 +1,89 @@
+diff --git a/tools/audit_staging.mjs b/tools/audit_staging.mjs
+--- a/tools/audit_staging.mjs
++++ b/tools/audit_staging.mjs
+@@ -13,7 +13,7 @@
+ // Phase-19 P19_GLM_MATCHCUT_BRIEF.md (GLM seat): match-cut block reads the seawall from the resolved prop array (props.find) — h(t0) from the hero keys, restoring the check's documented definition; dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19).
+ // Phase-19 P19_GLM_F1647_BRIEF.md (GLM seat): F1647 case amended per dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19) — tested point re-pointed to the declared subject (wall top [0, h(t), -16]); threshold 400px unchanged; h >= 17.0 rider explicit.
++// Phase-39 P39_GLM_AUDIT_MODEL_BRIEF.md (GLM seat): audit model corrected to the engine's measured model per RUN_RECORD phase 38 — engine rests (+0.354), wave built-geometry bodies, camera-inside-wave FAIL test, waves as face occluders.
+ // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village houses, three neighbour houses); wall and gateleaf are additional occluders.
+ import { readFileSync } from 'node:fs';
+ import { fileURLToPath } from 'node:url';
+@@ -41,12 +41,14 @@ let shots = resolveTimes(film.shots, R, 'shots');
+ const cast = film.cast;
+ 
+ // Reconstruct the loader's character/rest inputs from each cast spec. These
+-// specs share the renderer's proportion fields; hip and head heights stay tied
+-// to the character's leg, neck, and head dimensions.
++// specs share the renderer's proportion fields. Per RUN_RECORD phase 38, engine
++// rests are measured constants: hipY 1.610 / headY 2.310 = spec reconstruction +
++// 0.354, two-point exact fit on the SH18 / SH19 camera floors.
+ const characters = Object.entries(cast).map(([name, c]) => {
+   const raw = JSON.parse(readFileSync(join(ROOT, 'scenes', c.spec), 'utf8'));
+   const spec = { ...raw, id: name };
+   const legLen = spec.limbs?.legLen ?? 1.35;
+   const hipY = legLen * .93;
++  const hipY = legLen * .93 + .354;
+   const armLen = spec.limbs?.armLen ?? .95;
+   const rest = { hipY, headY: hipY + (spec.body?.neckHeight ?? .35) + (spec.body?.neckToHead ?? .35), neckToHead: spec.body?.neckToHead ?? .35, legLen, armLen,
+     ankleY: (spec.limbs?.width ?? .058) / 2 + .005, hipR: [-.22, -.2, 0], hipL: [.22, -.2, 0],
+@@ -159,6 +161,22 @@ function propState(p,t){
+   return {visible,at,rot,page:val('page',0),h:val('h',.8),lift:val('lift',0),lineY:val('lineY',1),pin:val('pin',0),cx:val('cx',0),cy:val('cy',12);}
+ }
++function waveBody(p, t){
++  if (p.kind !== 'wave') return null;
++  const ks = p.keys || [], before = ks.filter(k => k.t <= t).sort((a, b) => a.t - b.t), key = before.at(-1) || {};
++  const lastHidden = before.filter(k => k.hidden != null).at(-1);
++  const hidden = lastHidden ? lastHidden.hidden : (p.hidden ?? false);
++  if (hidden) return null;
++  const val = (field, def) => {
++    if (p[field] == null) return def;
+    const keyed = before.filter(k => k[field] != null);
+    if (!keyed.length) return p[field];
+    const prev = keyed.at(-1), ix = keyed.length - 1, ease = prev.ease;
+    if (ease != null && ix > 0) {
+      const prior = keyed[ix - 1], u = clamp((t - prev.t) / ease);
+      const sm = u * u * (3 - 2 * u);
+      return lerp(prior[field], prev[field], sm);
+    }
+    return prev[field];
++  };
++  const h = val('h', p.h ?? 17.5), crestY = val('crestY', null), advance = val('advance', 0);
++  const buildH = Math.min(17.5, crestY ?? h ?? 17.5);
++  const w = p.w ?? p.width ?? 70;
++  const at = propState(p, t).at;
++  return box([at[0], at[1] + buildH / 2, at[2] - 12 + advance], [w, buildH, 24]);
+ }
+ function dropState(p,t){
+   const k=(p.keys||[]).filter(k=>k.t<=t).at(-1);if(!k?.drop)return null;
+@@ -184,7 +202,8 @@ function occs(t){
+   const g=props.find(p=>p.id==='gateleaf');if(g){const st=propState(g,t);if(st.visible)out.push({name:'gateleaf',...box(add(st.at,[0,17.88*(st.lift-.5),0]),[7,17.88,.36])});}
+   return out;
+ }
++for (const p of props) { const body = waveBody(p, t); if (body) out.push({ name: p.id, ...body }); }
++
+ function propState(p,t){const ks=p.keys||[], before=ks.filter(k=>k.t<=t).sort((a,b)=>a.t-b.t), key=before.at(-1)||{};const lastField=f=>before.filter(k=>k[f]!=null).at(-1)?.[f];const visible=key.drop?true:(lastField('in')??p.in??'world')==='world';const at=[...(lastField('at')??p.at)],rot=[...(lastField('rot')??p.rot??[0,0,0])];
+   const val=(field,def)=>{if(p[field]==null)return def;const keyed=before.filter(k=>k[field]!=null);if(!keyed.length)return p[field];const prev=keyed.at(-1),ix=keyed.length-1,ease=prev.ease;if(ease!=null&&ix>0){const prior=keyed[ix-1],u=clamp((t-prev.t)/ease);const sm=u*u*(3-2*u);return lerp(prior[field],prev[field],sm);}return prev[field];};
+   return {visible,at,rot,page:val('page',0),h:val('h',.8),lift:val('lift',0),lineY:val('lineY',1),pin:val('pin',0),cx:val('cx',0),cy:val('cy',12);}}
+@@ -261,6 +280,13 @@ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotI
+   if(!shot){results.push({frameNo,shotId,checks:['missing shot']});continue;}const cam=camAt(shot,t),fr=makeFrame(cam),checks=[];let occupancy=false;
+   if(cam.fov<24||cam.fov>50)checks.push(`fov ${cam.fov.toFixed(2)} out of grammar [24, 50]`);
+   const inside=occs(t).find(o=>cam.pos.every((v,i)=>v>=o.min[i]-.3&&v<=o.max[i]+.3));
++  const camInsideWave = props.filter(p => p.kind === 'wave').map(p => waveBody(p, t)).filter(b => b != null).find(b => cam.pos.every((v, i) => v >= b.min[i] && v <= b.max[i]));
++  if (camInsideWave) checks.push(`camera inside ${camInsideWave.name} built body FAIL`);
++
+   if(inside)checks.push(`camera inside ${inside.name}`);
+   const prop=(id,minPx,component)=>{let q=propBox(id,t);if(id==='measure_plate'){const p=props.find(x=>x.id==='measure'),s=propState(p,t);q={box:box(add(s.at,[.32,p.full??18,0]),[1.35,.42,.1],s.rot[1]||0),state:s};}
+   if(id==='seawall_gate'){const p=props.find(x=>x.id==='seawall'),s=propState(p,t);q={box:box(add(s.at,[0,8.94,.62]),[7,17.88,.55]),state:s};}
+@@ -343,6 +369,13 @@ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+   else {const s=propState(p,t),size=CHUNK3_SIZE[id]||[1,1,1],center=s.at,px=fr.height(size[1],center),inFrame=fr.point(center),key=(p.keys||[]).filter(k=>k.t<=t).at(-1)||{},hidden=key.hidden===true||key.in==='hidden';
+    if(type==='state') {const field=id==='calendar'?'page':id==='sea_sheet_sh17'?'pull':'h',val=key[field]??s[field]??p[field]??0;checks.push(`${id} state ${val>=threshold?'PASS':'FAIL'} ${field} ${val} >= ${threshold}`);}
+    else if(type==='crest'){const w=p,wall=film.props.find(x=>x.id==='seawall'),ws=propState(wall,t),crest=key.crestY??key.h??w.crestY??w.h??0;const top=ws.h??wall.h;const topIn=fr.point([0,top,wall.at[2]]);checks.push(`SH24 crest margin ${crest<=17.5&&top===18&&topIn?'PASS':'FAIL'} wave crest ${crest.toFixed(2)} <= 17.50; wall top ${top.toFixed(2)}; wall-top in frame ${topIn?'yes':'no'}`);}
++    else if (p.kind === 'wave') {
++      const body = waveBody(p, t);
++      if (!body) { checks.push(`${id} FAIL absent`); }
++      else { const size = body.size, center = body.center, px = fr.height(size[1], center), inFrame = fr.point(center), pass = !hidden && inFrame && px != null && px >= threshold; checks.push(`${id} ${pass ? 'PASS' : 'FAIL'} ${px?.toFixed(0) ?? 'n/a'}px ${inFrame ? 'in frustum' : 'out of frustum'}${hidden ? ' hidden' : ''}`); }
++    }
++
+    else if(frameNo===1647){ // F1647 case amended per dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19): the declared moment (CHUNK3B_HYDROGEN_REPLY.md line 476) is `seawall_hero >= 400 [state: h >= 17.0]` — the hero wall's rising top; the base-anchor point the generic fallback measured was never in the declared moment. Tested point re-pointed to the wall top [at[0], h(t), at[2]], size = h(t), threshold unchanged (400px), h >= 17.0 rider explicit.
+     const top=[center[0],s.h,center[2]],topPx=fr.height(s.h,top),topIn=fr.point(top),pass=!hidden&&topIn&&topPx!=null&&topPx>=threshold&&s.h>=17;checks.push(`${id} ${pass?'PASS':'FAIL'} ${topPx?.toFixed(0)??'n/a'}px wall-top [${top.map(v=>v.toFixed(2)).join(', ')}] ${topIn?'in frustum':'out of frustum'}; state rider h ${s.h.toFixed(2)} >= 17.0 ${s.h>=17?'PASS':'FAIL'}`);}
+   else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}

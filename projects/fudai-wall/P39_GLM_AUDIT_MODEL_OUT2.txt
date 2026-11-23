@@ -1,0 +1,46 @@
+<diff file="tools/audit_staging.mjs" />
+
+@@ -1434,7 +1434,7 @@ function makeLeg(legLen){
+     const hipZ = legLen * 0.93;
+-    const hipY = legLen * .93;
++    const hipY = legLen * .93 + .354; // phase-39 hip offset
+     const hipX = legLen * .93;
+@@ -1510,6 +1510,12 @@ function waveBody(p,t){
+   }
+ }
++function occs(t){
++  const out=[];
++  for(const p of props){const body=waveBody(p,t);if(body)out.push({name:p.id,...body});}
++  return out;
++}
+@@ -1950,14 +1956,6 @@ function buildChunk3(){
+@@ -2033,16 +2031,10 @@ function buildChunk3(){
+   for(const [frameNo,t,shotId] of moments){
+@@ -2183,7 +2175,16 @@ function buildChunk3(){
+   for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+-    currentTime=t;const shot=shotById(shotId),fr=shot&&makeFrame(camAt(shot,t)),checks=[];
++    currentTime=t;const shot=shotById(shotId),cam=shot?camAt(shot,t):null,fr=cam&&makeFrame(cam),checks=[];
+     if(!shot){checks.push('missing shot');chunk3Results.push({frameNo,t,shotId,checks});continue;}
++    for(const p of props){if(p.kind!=='wave')continue;const b=waveBody(p,t);if(b&&cam.pos.every((v,i)=>v>=b.min[i]&&v<=b.max[i]))checks.push(`camera inside ${p.id} built body FAIL`);}
+@@ -2310,9 +2311,14 @@ function buildChunk3(){
+           else if(p.kind==='wave'){
+-            const fr=cam&&makeFrame(cam);
++            const fr=cam&&makeFrame(cam),bb=waveBody(p,t);
+             checks.push(`${id} wave rendered`);
+@@ -2323,6 +2329,9 @@ function buildChunk3(){
+                 threshold: Number(threshold),
+             });
++          }
++        }
++        else if(p.kind==='wave'){
++          const fr=cam&&makeFrame(cam),bb=waveBody(p,t);
++          checks.push(`${id} wave rendered`);
++          const hit=bb&&fr&&inside(fr.pos,bb);
++          checks.push(`${id} ${hit?'IN':'OUT'} ${Number(threshold||0).toFixed(3)}`);
++          chunk3Results.push({frameNo,t,shotId,id,type:'wave',checks});
++          continue;
+         }
+       }
+     }
+
+</diff>
