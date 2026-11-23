@@ -1,0 +1,17 @@
+HYDROGEN SEAT OUTPUT — phase 17 · cause 13: SH24 camera + wave crest (thesis frame)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/e790f9e47e75dee7
+Run by Layla via browser seat, 2026-11-23 10:41–10:47 EET. Brief: P17_HYD_SH24_BRIEF.md (cites verdict commit 2cc52dc).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH24','line:22.start','line:22.end','COAST_WALL',[[10,20.5,-50],[0,11,-14]],[[6,19.5,-44],[0,8,-10]],[42,48])
+World: pos [10,20.5,-66] → [6,19.5,-60]; target [0,11,-30] → [0,8,-26]; fov [42,48].
+Design: a high, far-seaward camera looking back at the coast — the wave centre, the spray, and the wall-top point all inside one wide frustum.
+
+PREDICTED READINGS (seat's arithmetic; checked under outCubic AND linear sampling — both pass):
+- F1863 spray: PASS — 386px (outCubic) / 357px (linear) ≥ 260px; off-axis 12.24°; NDC (+0.190, +0.533).
+- F1896 wave: PASS — centre IN frustum; 1260px / 1213px ≥ 500px; off-axis 17.40°; NDC (+0.168, −0.721).
+- F1908 crest: PASS — crest 17.50 ≤ 17.50 ✓; wall top 18.00 ✓; topIn YES (off-axis 16.63°; NDC (−0.164, +0.668)).
+- D2-CLEAR / solids: PASS — path x∈[6,10], y∈[19.5,20.5], z∈[−66,−60]; ≥1.5 units above the seawall top plane and ≥43 units seaward of its face; clear of the wave solid by ≥2.0 units above.
+
+(Full arithmetic preserved in the browser report of 2026-11-23 10:47 EET; the driver's audit run is the judge.)
