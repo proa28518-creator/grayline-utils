@@ -6,6 +6,7 @@
 // documented calibrated rest rule below is used. Camera roll is ignored (SH07
 // is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
 // corner counts use a world AABB after yaw rotation, per the audit specification.
+// Phase-11 F570 face-staging amendment (Codex seat): see RUN_RECORD phase 11.
 // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
 // houses, three neighbour houses); wall and gateleaf are additional occluders.
 import { readFileSync } from 'node:fs';
@@ -147,7 +148,8 @@ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotI
  case 414: prop('measure_plate',40);checks.push(`measure effH ${propState(props.find(p=>p.id==='measure'),t).h.toFixed(1)}${propState(props.find(p=>p.id==='measure'),t).h>=17?' PASS':' FAIL'}`);prop('calendar',120);checks.push(`calendar effPage ${propState(props.find(p=>p.id==='calendar'),t).page.toFixed(1)}${propState(props.find(p=>p.id==='calendar'),t).page>=10?' PASS':' FAIL'}`);checks.push(`gateleaf effLift ${propState(props.find(p=>p.id==='gateleaf'),t).lift.toFixed(2)}${propState(props.find(p=>p.id==='gateleaf'),t).lift>=.9?' PASS':' FAIL'}`);break;
  case 474: {const c=boxCheck(fr,wallBox,150,true,'neighbour wall');checks.push(`neighbour wall ${c.pass?'PASS':'FAIL'} ${c.px?.toFixed(0)??'n/a'}px corners ${c.n}/8`);if(c.center&&c.px>=230)occupancy=true;prop('sticker_a',60);prop('sticker_b',60);const n=houseBoxes.filter(b=>boxCheck(fr,b,0,true).pass).length;checks.push(`neighbour houses ${n>=1?'PASS':'FAIL'} ${n}/1`);break;}
  case 537: face('mocker_a',200);break;
- case 570: {const p=posAt('mocker_a',t),h=[p[0],1.9,p[2]],headIn=fr.point(h)&&fr.sphere(h,.5),headPx=fr.height(1,h);checks.push(`mocker_a head ${headIn?'PASS':'FAIL'} centre ${fr.depth(h)<=0?'behind camera':fr.point(h)?'in':'out'} frustum ${headPx==null?'n/a':headPx.toFixed(0)+'px'}`);if(headIn&&headPx>=230)occupancy=true;point('wall top',[3,18,-15.42]);break;}
+ case 570: { // wall-top requirement dropped per owner's option-(b) decision 2026-11-23 (RUN_RECORD phase 11); the beat is served at F590
+  face('mocker_a',230);break;}
  case 590: {const cp=props.find(p=>p.id==='coins'),dropKey=cp.keys.find(k=>k.drop),coinPos=dropState(cp,t);checks.push(`coins drop-start ${dropKey?.t?.toFixed(3)??'n/a'}s position ${coinPos?`[${coinPos.map(v=>v.toFixed(2)).join(', ')}]`:'hidden'}`);prop('coins',24);point('wall top',[2,18,-15.42]);break;}
  case 621: case 639: {const ids=['mocker_a','mocker_b','mocker_c','villager_2','villager_4'],n=ids.filter(id=>faceCheck(fr,id,t).pass).length;checks.push(`faces ${n>=2?'PASS':'FAIL'} ${n}/2 (angle threshold 60°)`);for(const id of ids){const f=faceCheck(fr,id,t);checks.push(`${id} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.pass&&f.px>=230)occupancy=true;}break;}
  case 669: face('mayor',250);break;case 687:face('mayor',200);break;
