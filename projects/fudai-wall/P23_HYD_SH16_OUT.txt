@@ -1,0 +1,19 @@
+HYDROGEN SEAT OUTPUT — SH16 camera (cause 5), re-routed from the Qwen seat
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/f8793d4d1ef516e5
+Run by Layla via browser seat, 2026-11-23 13:06–13:12 EET.
+Routing note: SH16 was Qwen's staging (chunk 3a) and Qwen's cause; the Qwen seat stalled measurably (two generations, ~90 min, zero output, chat.qwen.ai conversation 88dfb3d1) — Layla re-routed the remaining chunk-3 camera causes to Hydrogen (dispatcher ruling, 2026-11-23 ~13:06 EET).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-8.2,2.3,9.5],[-1.5,2.4,0.9]],[[-7.9,2.2,9.2],[-1.5,2.3,0.9]],48)
+World: pos [-8.2,2.3,11.5] → [-7.9,2.2,11.2]; target [-1.5,2.4,2.9] → [-1.5,2.3,2.9]; fov 48.
+Design: the camera leaves the hall box entirely to the WEST (|x| ≥ 7.9, 3.4 m clear of the hall's west wall), looking east-south-east at the villagers; sightlines to villagers and birds cross the hall's front plane west of its wall — unoccluded.
+
+PREDICTED READINGS (seat's arithmetic):
+- D2-CLEAR: PASS — |x| ≥ 7.9 ≥ 5.0 across the whole path.
+- D2 target bound: PASS — FROM y=2.4, TO y=2.3, both ∈ [0,19.5]; D1/D2 → FAIL (1) (SH13 only).
+- F1131 body: PASS — 465.1px; corners 8/8.
+- F1137 birds: PASS — point in frustum, NDC (+0.787, +0.411). (The seat's text carries two size figures — 185.4px by the height formula and a ≈92.4px scaled cross-note; the audit's own reading governs.)
+- F1155 head: PASS — face angle 30.31°; head sphere fully in (smallest margin +148.9px left); 237.5px ≥ 80px.
+
+(Full arithmetic preserved in the browser report of 2026-11-23 13:12 EET; the driver's audit run is the judge.)
