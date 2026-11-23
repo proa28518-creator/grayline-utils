@@ -1,0 +1,385 @@
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a2069c-0e26-73d0-b581-9f02a4418c23
+--------
+user
+Execute the brief in P10_FIX_F474_BRIEF.md in this project directory, exactly as written. Apply only the values it names. When done, paste the complete audit outputs and a diff summary in your reply. Do not commit.
+codex
+I’ll read the brief and repo instructions first, then apply only the named values and capture the requested audit outputs and diff summary.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P10_FIX_F474_BRIEF.md' -g 'AGENTS.md' -g 'UI_BRIEF.md' -g 'project.json' | sort && git status --short --branch" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P10_FIX_F474_BRIEF.md
+project.json
+## ui/unified-interface...origin/ui/unified-interface
+?? P11_FIX_F474_OUT.txt
+
+exec
+/bin/bash -lc "cat P10_FIX_F474_BRIEF.md && printf '\\n--- UI BRIEF ---\\n' && cat orch/UI_BRIEF.md && printf '\\n--- PROJECT JSON ---\\n' && cat project.json" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 0ms:
+# CODEX SEAT — APPLY BRIEF · phase 10 · cause: F474 FLAT WALL + EDGE-CROPPED 10M SIGN (SH06)
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md`; RULES.md §3
+(one cause, one change), §4, §5; `lessons/build.md`. This session applies
+ONE cause: at F474 a flat dark wall dominates the frame (pixel gate: set
+13.7% detail / 85.1% flat) and the right 10M sign is edge-cropped. The GLM
+seat computed the correction (`P9_GLM_F474_OUT.txt`): reframe SH06 wider
+and lower-fov so both 10M signs and the neighbour houses read.
+
+Previous cause's verdict commit (hard-gate citation, filled by the driver
+at firing): `ec01786` — F590 follow-up round-3 verdict NOT CLOSED
+(measured conflict, escalated to Layla with priced options; cause parked
+at its round-2 pose). No judgement is pending: this brief may fire.
+
+ASTRA REVIEW INPUT (2026-11-23, batch 2) — GOVERNING: the root cause is
+that the camera sits on the WRONG SIDE of the occluding surface for an
+establishing beat. The single correction is an ELEVATED VILLAGE-SIDE
+OBLIQUE ESTABLISHING VIEW: houses read IN FRONT of the wall, and the
+complete "10M" sign sits inside the safe area. The GLM values below are
+the mechanism (village-side, elevated, oblique); the verdict on the
+re-probed stills must confirm that composition by eye — houses in front
+of the wall, full "10M" inscription inside the safe area — and the SHOT
+MEDIAN decides the set bar (this fix is not an automatic pass). If the
+applied values do not achieve that composition, report it; do not
+improvise different values in this session.
+
+APPLY EXACTLY (`scenes/film.js`):
+- `CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-10,8.5,15])` → `add(PLACES.NEIGHBOR_COAST,[-12,9,18])`
+- `CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[10,8.5,15])` → `add(PLACES.NEIGHBOR_COAST,[12,9,18])`
+- `CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,3])` → `add(PLACES.NEIGHBOR_COAST,[0,4,2])`
+- `CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,3])` → `add(PLACES.NEIGHBOR_COAST,[0,4,2])`
+- SH06 shot entry (line ~116): `fov:50` → `fov:34` in BOTH the from and to poses.
+(World result: from [588,9,18] → to [612,9,18], target [600,4,2], fov 34.)
+Nothing else.
+
+Then verify: `node --check scenes/film.js`, run
+`node tools/audit_staging.mjs` (full) and `node tools/audit_d1_d2.mjs`, and
+paste their complete outputs in your reply, plus a diff summary. Do NOT
+commit (the driver commits). Do not touch any other file.
+
+--- UI BRIEF ---
+cat: orch/UI_BRIEF.md: No such file or directory
+
+exec
+/bin/bash -lc "rg -n -C 8 'CAM_SH06_[AB]|CAM_SH06_T[AB]|SH06|fov: ?50' scenes/film.js && rg --files tools scenes | sort && git diff -- scenes/film.js && git status --short" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+23-const COINS=add(PLACES.COAST_WALL,[2,19.5,-1.5]);
+24-const SUNORB=add(PLACES.SEA,[0,0,-16]);
+25-const V1=add(PLACES.COAST_VILLAGE,[-1,0,2]), V2=add(PLACES.COAST_VILLAGE,[1,0,2]);
+26-const V3=add(PLACES.COAST_VILLAGE,[-2,0,4]), V4=add(PLACES.COAST_VILLAGE,[5,0,5]);
+27-const V5=add(PLACES.COAST_VILLAGE,[-8,0,3]), V6=add(PLACES.COAST_VILLAGE,[10,0,4]);
+28-const CAM_SH04_A=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SH04_B=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SQUARE=add(PLACES.COAST_VILLAGE,[0,4.8,-1]);
+29-const CAM_SH05_A=add(PLACES.COAST_VILLAGE,[-5,16.5,16]), CAM_SH05_B=add(PLACES.COAST_VILLAGE,[20,16.5,16]);
+30-const CAM_SH05_TA=add(PLACES.COAST_WALL,[4,10.5,2]), CAM_SH05_TB=add(PLACES.COAST_WALL,[12.6,10.5,2]);
+31:const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-10,8.5,15]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[10,8.5,15]);
+32:const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,3]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,3]);
+33-const CAM_SH07_A=add(PLACES.COAST_VILLAGE,[4,2.5,-7]), CAM_SH07_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+34-const CAM_SH07_B=add(PLACES.COAST_VILLAGE,[2,20,-14]), CAM_SH07_TB=add(PLACES.COAST_WALL,[2,19.5,0]);
+35-const CAM_SH08_A=add(PLACES.COAST_VILLAGE,[4,3,-6]), CAM_SH08_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+36-const CAM_SH08_B=add(PLACES.COAST_VILLAGE,[4,3,-6]);
+37-const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);
+38-const CAM_SH09_B=add(PLACES.COAST_VILLAGE,[.3,2.1,4.0]);
+39-const CAM_SH10_A=add(BLUEPRINT,[0,3,9]), CAM_SH10_T=add(BLUEPRINT,[0,1.55,0]), CAM_SH10_B=add(BLUEPRINT,[0,3,9]);
+40-const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
+--
+106-  {id:'sunorb',kind:'orb',in:'world',at:SUNORB,cx:-15,cy:8,color:'#ffd27a',r:1.7,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:8},{t:25.75,cx:0,cy:18,ease:.66},{t:26.40,cx:15,cy:8,ease:.65},{t:27.05,cx:15,cy:-5,ease:.65},{t:27.45,cx:-15,cy:9,ease:.27}]},
+107-  {id:'moonorb',kind:'orb',in:'world',at:SUNORB,cx:-15,cy:-5,color:'#dfe8ff',r:1.3,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:-5},{t:27.05,cx:-8,cy:14,ease:.65},{t:27.45,cx:6,cy:-5,ease:.27}]}
+108- ],
+109- handovers:[],
+110- shots:[
+111-  {id:'SH01',t0:0,t1:2.6,camera:{move:'push',from:{pos:CLOSE_POS,target:MAYOR_HEAD,fov:34},to:{pos:TILT_POS,target:TILT_TARGET,fov:38}}},
+112-  {id:'SH02',t0:2.6,t1:'line:1.end',camera:{move:'push',from:{pos:TILT_POS,target:TILT_TARGET,fov:38},to:{pos:WIDE_POS,target:WIDE_TARGET,fov:48}}},
+113-  {id:'SH03',t0:'line:2.start',t1:'line:2.end',camera:{move:'push',from:{pos:SEA_FROM,target:BOAT,fov:42},to:{pos:SEA_TO,target:BOAT,fov:42}}},
+114:  {id:'SH04',t0:'line:3.start',t1:'line:3.end',camera:{move:'push',from:{pos:CAM_SH04_A,target:CAM_SQUARE,fov:50},to:{pos:CAM_SH04_B,target:CAM_SQUARE,fov:50}}},
+115:  {id:'SH05',t0:'line:4.start',t1:'line:4.end',camera:{move:'push',ease:'inQuad',from:{pos:CAM_SH05_A,target:CAM_SH05_TA,fov:50},to:{pos:CAM_SH05_B,target:CAM_SH05_TB,fov:34}}},
+116:  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}},
+117:  {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
+118:  {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_WALL,[2,44,-20.5]),target:add(PLACES.COAST_WALL,[0,14,0]),fov:38}}},
+119-  {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
+120-  {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
+121-  {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
+122:  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}},
+123:  {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}}
+124- ],
+125- captions:'words'
+126-};
+scenes/BIBLE.md
+scenes/cast/child.json
+scenes/cast/mayor.json
+scenes/cast/mayor_old.json
+scenes/cast/mayor_young.json
+scenes/cast/mocker_a.json
+scenes/cast/mocker_b.json
+scenes/cast/mocker_c.json
+scenes/cast/villagers.json
+scenes/cast/workers.json
+scenes/film.js
+scenes/post.js
+scenes/props/blueprint.js
+scenes/props/boardsign.js
+scenes/props/boat.js
+scenes/props/calendar.js
+scenes/props/coins.js
+scenes/props/crane.js
+scenes/props/gateleaf.js
+scenes/props/measure.js
+scenes/props/money.js
+scenes/props/orb.js
+scenes/props/seawall.js
+scenes/props/sign.js
+scenes/props/storeys.js
+scenes/set.js
+scenes/shade.js
+tools/audit_d1_d2.mjs
+tools/audit_pixels.mjs
+tools/audit_staging.mjs
+tools/board.cjs
+tools/pixel_measure.py
+?? P11_FIX_F474_OUT.txt
+
+codex
+The brief’s target values are present as specified, and the working tree has one unrelated untracked file (`P11_FIX_F474_OUT.txt`) that I’ll leave untouched. `orch/UI_BRIEF.md` is absent here; the supplied P10 brief is explicit, so I’m applying only its five SH06 value changes in `scenes/film.js`.
+exec
+/bin/bash -lc "python3 - <<'PY'
+from pathlib import Path
+p = Path('scenes/film.js')
+s = p.read_text()
+replacements = {
+\"const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-10,8.5,15]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[10,8.5,15]);\": \"const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-12,9,18]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[12,9,18]);\",
+\"const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,3]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,3]);\": \"const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,2]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,2]);\",
+\"{id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}}\": \"{id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:34},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:34}}}\"
+}
+for old, new in replacements.items():
+    if s.count(old) "'!= 1:
+        raise SystemExit(f'"'Expected exactly one occurrence, got {s.count(old)}: {old}')
+    s = s.replace(old, new)
+p.write_text(s)
+PY
+node --check scenes/film.js && node tools/audit_staging.mjs && node tools/audit_d1_d2.mjs" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 517ms:
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [606.98, 9.00, 18.00] target [600.00, 4.00, 2.00] fov 34.00
+F474 | 15.80 | SH06 | FAIL | neighbour wall PASS 1357px corners 0/8; sticker_a PASS 167px corners 4/8; sticker_b PASS 191px corners 4/8; neighbour houses FAIL 0/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (3/19 moments)
+
+codex
+The syntax check passed. The full staging audit ran and returned a failure: F474 reports neighbour houses missing after the requested change, alongside two pre-existing failing moments (F590 and F687); I’m preserving that result and running the second required audit independently so its full output is captured too.
+exec
+/bin/bash -lc 'node tools/audit_d1_d2.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 31ms:
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+
+exec
+/bin/bash -lc 'git diff --stat && git diff -- scenes/film.js && git status --short --branch && node --check scenes/film.js' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 1ms:
+ projects/fudai-wall/scenes/film.js | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index d97432d..4fcf436 100644
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -28,8 +28,8 @@ const V5=add(PLACES.COAST_VILLAGE,[-8,0,3]), V6=add(PLACES.COAST_VILLAGE,[10,0,4
+ const CAM_SH04_A=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SH04_B=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SQUARE=add(PLACES.COAST_VILLAGE,[0,4.8,-1]);
+ const CAM_SH05_A=add(PLACES.COAST_VILLAGE,[-5,16.5,16]), CAM_SH05_B=add(PLACES.COAST_VILLAGE,[20,16.5,16]);
+ const CAM_SH05_TA=add(PLACES.COAST_WALL,[4,10.5,2]), CAM_SH05_TB=add(PLACES.COAST_WALL,[12.6,10.5,2]);
+-const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-10,8.5,15]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[10,8.5,15]);
+-const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,3]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,3]);
++const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-12,9,18]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[12,9,18]);
++const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,2]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,2]);
+ const CAM_SH07_A=add(PLACES.COAST_VILLAGE,[4,2.5,-7]), CAM_SH07_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+ const CAM_SH07_B=add(PLACES.COAST_VILLAGE,[2,20,-14]), CAM_SH07_TB=add(PLACES.COAST_WALL,[2,19.5,0]);
+ const CAM_SH08_A=add(PLACES.COAST_VILLAGE,[4,3,-6]), CAM_SH08_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+@@ -113,7 +113,7 @@ export default {
+   {id:'SH03',t0:'line:2.start',t1:'line:2.end',camera:{move:'push',from:{pos:SEA_FROM,target:BOAT,fov:42},to:{pos:SEA_TO,target:BOAT,fov:42}}},
+   {id:'SH04',t0:'line:3.start',t1:'line:3.end',camera:{move:'push',from:{pos:CAM_SH04_A,target:CAM_SQUARE,fov:50},to:{pos:CAM_SH04_B,target:CAM_SQUARE,fov:50}}},
+   {id:'SH05',t0:'line:4.start',t1:'line:4.end',camera:{move:'push',ease:'inQuad',from:{pos:CAM_SH05_A,target:CAM_SH05_TA,fov:50},to:{pos:CAM_SH05_B,target:CAM_SH05_TB,fov:34}}},
+-  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}},
++  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:34},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:34}}},
+   {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
+   {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_WALL,[2,44,-20.5]),target:add(PLACES.COAST_WALL,[0,14,0]),fov:38}}},
+   {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
+## ui/unified-interface...origin/ui/unified-interface
+ M scenes/film.js
+?? P11_FIX_F474_OUT.txt
+
+codex
+Applied only the requested SH06 values in `scenes/film.js`. `node --check scenes/film.js` passed. No commit was made. The staging audit failed at three moments, including the target F474 composition; the D1/D2 audit passed. I did not change the values further.
+
+### Complete `node tools/audit_staging.mjs` output
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [606.98, 9.00, 18.00] target [600.00, 4.00, 2.00] fov 34.00
+F474 | 15.80 | SH06 | FAIL | neighbour wall PASS 1357px corners 0/8; sticker_a PASS 167px corners 4/8; sticker_b PASS 191px corners 4/8; neighbour houses FAIL 0/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (3/19 moments)
+```
+
+### Complete `node tools/audit_d1_d2.mjs` output
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+### Diff summary
+
+- `scenes/film.js`: 3 lines changed, 3 insertions and 3 deletions. Updated SH06 camera positions, targets, and both endpoint FOV values as specified.
+- Existing unrelated untracked file `P11_FIX_F474_OUT.txt` remains untouched.
+tokens used
+31,031
+Applied only the requested SH06 values in `scenes/film.js`. `node --check scenes/film.js` passed. No commit was made. The staging audit failed at three moments, including the target F474 composition; the D1/D2 audit passed. I did not change the values further.
+
+### Complete `node tools/audit_staging.mjs` output
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [606.98, 9.00, 18.00] target [600.00, 4.00, 2.00] fov 34.00
+F474 | 15.80 | SH06 | FAIL | neighbour wall PASS 1357px corners 0/8; sticker_a PASS 167px corners 4/8; sticker_b PASS 191px corners 4/8; neighbour houses FAIL 0/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (3/19 moments)
+```
+
+### Complete `node tools/audit_d1_d2.mjs` output
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+### Diff summary
+
+- `scenes/film.js`: 3 lines changed, 3 insertions and 3 deletions. Updated SH06 camera positions, targets, and both endpoint FOV values as specified.
+- Existing unrelated untracked file `P11_FIX_F474_OUT.txt` remains untouched.
