@@ -28,8 +28,8 @@ const V5=add(PLACES.COAST_VILLAGE,[-8,0,3]), V6=add(PLACES.COAST_VILLAGE,[10,0,4
 const CAM_SH04_A=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SH04_B=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SQUARE=add(PLACES.COAST_VILLAGE,[0,4.8,-1]);
 const CAM_SH05_A=add(PLACES.COAST_VILLAGE,[-5,16.5,16]), CAM_SH05_B=add(PLACES.COAST_VILLAGE,[20,16.5,16]);
 const CAM_SH05_TA=add(PLACES.COAST_WALL,[4,10.5,2]), CAM_SH05_TB=add(PLACES.COAST_WALL,[12.6,10.5,2]);
-const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[-12,9,18]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[12,9,18]);
-const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,4,2]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,4,2]);
+const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[0,14,20]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[0,14,20]);
+const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,5,5]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,5,5]);
 const CAM_SH07_A=add(PLACES.COAST_VILLAGE,[4,2.5,-7]), CAM_SH07_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
 const CAM_SH07_B=add(PLACES.COAST_VILLAGE,[2,20,-14]), CAM_SH07_TB=add(PLACES.COAST_WALL,[2,19.5,0]);
 const CAM_SH08_A=add(PLACES.COAST_VILLAGE,[4,3,-6]), CAM_SH08_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
@@ -113,7 +113,7 @@ export default {
   {id:'SH03',t0:'line:2.start',t1:'line:2.end',camera:{move:'push',from:{pos:SEA_FROM,target:BOAT,fov:42},to:{pos:SEA_TO,target:BOAT,fov:42}}},
   {id:'SH04',t0:'line:3.start',t1:'line:3.end',camera:{move:'push',from:{pos:CAM_SH04_A,target:CAM_SQUARE,fov:50},to:{pos:CAM_SH04_B,target:CAM_SQUARE,fov:50}}},
   {id:'SH05',t0:'line:4.start',t1:'line:4.end',camera:{move:'push',ease:'inQuad',from:{pos:CAM_SH05_A,target:CAM_SH05_TA,fov:50},to:{pos:CAM_SH05_B,target:CAM_SH05_TB,fov:34}}},
-  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:34},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:34}}},
+  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}},
   {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
   {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_WALL,[2,44,-20.5]),target:add(PLACES.COAST_WALL,[0,14,0]),fov:38}}},
   {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
