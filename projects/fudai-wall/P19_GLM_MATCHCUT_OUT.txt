@@ -1,0 +1,17 @@
+GLM here. Zhipu AI built me.
+
+BASELINE RESTATED: At frame 1635 the match-cut check fails at NDC_y 0.501 while the child reads 0.062, and at frame 1647 it fails identically at 0.501; chunk 3 totals FAIL at 20/40 moments.
+
+REPLACEMENT BLOCK:
+```js
+ if(frameNo===1635||frameNo===1647){const child=film.props.find(x=>x.id==='pencil_mark_sh21'),wall=props.find(x=>x.id==='seawall'),s21=shotById('SH21'),s22=shotById('SH22'),fr21=makeFrame(camAt(s21,s21.t1)),fr22=makeFrame(camAt(s22,s22.t0)),wallState=propState(wall,s22.t0),y1=fr21.screen([child.at[0],child.at[1],child.at[2]]),y2=fr22.screen([wall.at[0],wallState.h,wall.at[2]]),ndc=y=>y?1-y[1]/960:null,n1=ndc(y1),n2=ndc(y2),pass=Math.abs(n1-.062)<.02&&Math.abs(n2-.062)<.02;checks.push(`SH21→SH22 match-cut NDC_y +0.062 ${pass?'PASS':'FAIL'}: ${n1?.toFixed(3)??'n/a'} / ${n2?.toFixed(3)??'n/a'} (target +0.062 on both)`);}
+```
+
+HEADER LINE:
+// Phase-19 P19_GLM_MATCHCUT_BRIEF.md (GLM seat): match-cut block reads the seawall from the resolved prop array (props.find) — h(t0) from the hero keys, restoring the check's documented definition; dispatcher's ruling 2026-11-23 (RUN_RECORD phase 19).
+
+PREDICTED LINES:
+- CHUNK3 F1635 | 54.50 | SH21 | PASS | child face PASS angle 0.0° head in 854px; SH21→SH22 match-cut NDC_y +0.062 PASS: 0.062 / 0.060 (target +0.062 on both)
+- CHUNK3 F1647 | 54.90 | SH22 | FAIL | seawall FAIL 315px out of frustum; SH21→SH22 match-cut NDC_y +0.062 PASS: 0.062 / 0.060 (target +0.062 on both)
+- CHUNK 3: FAIL (19/40 moments)
+Every other line of the audit output reproduces unchanged, including chunk 2.
