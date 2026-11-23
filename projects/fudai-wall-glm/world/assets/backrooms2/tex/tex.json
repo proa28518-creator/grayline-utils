@@ -1,0 +1,231 @@
+{
+ "note": "tile = D covered by one repeat of the texture. Decals multiply: surface * mix(1, rgb, a * instance alpha).",
+ "files": {
+  "wallpaper.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "carpet.jpg": {
+   "tile": [
+    4,
+    4
+   ],
+   "seamless": true,
+   "source": "flow"
+  },
+  "ceiling_tile.jpg": {
+   "tile": [
+    1.2,
+    1.2
+   ],
+   "seamless": true,
+   "source": "flow",
+   "note": "one tile; 1.2 D = the grid pitch of the current set"
+  },
+  "panel.jpg": {
+   "tile": [
+    1.2,
+    2.4
+   ],
+   "seamless": false,
+   "source": "flow",
+   "note": "stretched once over a panel face, 1.2 x 2.4 D, no frame drawn"
+  },
+  "decals.png": {
+   "grid": [
+    6,
+    6
+   ],
+   "cellOrder": "row by row, top-left first: cell c is at column c % 6, row floor(c / 6)",
+   "blend": "multiply",
+   "source": "flow",
+   "wall_damp": "cells 18-23 have their heavy edge at the cell bottom: place the cell bottom at the skirting top or a little behind it"
+  }
+ },
+ "decals": [
+  {
+   "cell": 0,
+   "name": "stain_a",
+   "kind": "floor"
+  },
+  {
+   "cell": 1,
+   "name": "stain_b",
+   "kind": "floor"
+  },
+  {
+   "cell": 2,
+   "name": "stain_c",
+   "kind": "floor"
+  },
+  {
+   "cell": 3,
+   "name": "stain_d",
+   "kind": "floor"
+  },
+  {
+   "cell": 4,
+   "name": "stain_e",
+   "kind": "floor"
+  },
+  {
+   "cell": 5,
+   "name": "stain_f",
+   "kind": "floor"
+  },
+  {
+   "cell": 6,
+   "name": "spill",
+   "kind": "floor"
+  },
+  {
+   "cell": 7,
+   "name": "drips",
+   "kind": "floor"
+  },
+  {
+   "cell": 8,
+   "name": "dust_smear",
+   "kind": "floor"
+  },
+  {
+   "cell": 9,
+   "name": "mould_blotch",
+   "kind": "floor"
+  },
+  {
+   "cell": 10,
+   "name": "grime",
+   "kind": "floor"
+  },
+  {
+   "cell": 11,
+   "name": "damp_ring",
+   "kind": "floor"
+  },
+  {
+   "cell": 12,
+   "name": "drag",
+   "kind": "scuff"
+  },
+  {
+   "cell": 13,
+   "name": "wheel_tracks",
+   "kind": "scuff"
+  },
+  {
+   "cell": 14,
+   "name": "foot_path",
+   "kind": "scuff"
+  },
+  {
+   "cell": 15,
+   "name": "heel",
+   "kind": "scuff"
+  },
+  {
+   "cell": 16,
+   "name": "footprints",
+   "kind": "scuff"
+  },
+  {
+   "cell": 17,
+   "name": "rubbed",
+   "kind": "scuff"
+  },
+  {
+   "cell": 18,
+   "name": "damp_a",
+   "kind": "wall_damp"
+  },
+  {
+   "cell": 19,
+   "name": "damp_b",
+   "kind": "wall_damp"
+  },
+  {
+   "cell": 20,
+   "name": "damp_c",
+   "kind": "wall_damp"
+  },
+  {
+   "cell": 21,
+   "name": "damp_d",
+   "kind": "wall_damp"
+  },
+  {
+   "cell": 22,
+   "name": "damp_e",
+   "kind": "wall_damp"
+  },
+  {
+   "cell": 23,
+   "name": "damp_f",
+   "kind": "wall_damp"
+  },
+  {
+   "cell": 24,
+   "name": "torn_patch",
+   "kind": "peel"
+  },
+  {
+   "cell": 25,
+   "name": "seam_tear",
+   "kind": "peel"
+  },
+  {
+   "cell": 26,
+   "name": "corner_rip",
+   "kind": "peel"
+  },
+  {
+   "cell": 27,
+   "name": "blister",
+   "kind": "peel"
+  },
+  {
+   "cell": 28,
+   "name": "strip",
+   "kind": "peel"
+  },
+  {
+   "cell": 29,
+   "name": "flakes",
+   "kind": "peel"
+  },
+  {
+   "cell": 30,
+   "name": "ring_a",
+   "kind": "ceiling_stain"
+  },
+  {
+   "cell": 31,
+   "name": "ring_b",
+   "kind": "ceiling_stain"
+  },
+  {
+   "cell": 32,
+   "name": "ring_c",
+   "kind": "ceiling_stain"
+  },
+  {
+   "cell": 33,
+   "name": "ring_d",
+   "kind": "ceiling_stain"
+  },
+  {
+   "cell": 34,
+   "name": "ring_e",
+   "kind": "ceiling_stain"
+  },
+  {
+   "cell": 35,
+   "name": "ring_f",
+   "kind": "ceiling_stain"
+  }
+ ]
+}

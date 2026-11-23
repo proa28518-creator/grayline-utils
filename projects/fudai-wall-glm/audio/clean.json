@@ -1,0 +1,1304 @@
+[
+ {
+  "start": 0.1,
+  "end": 0.37,
+  "line": 1,
+  "who": null,
+  "word": "بنى"
+ },
+ {
+  "start": 0.37,
+  "end": 0.64,
+  "line": 1,
+  "who": null,
+  "word": "سور"
+ },
+ {
+  "start": 0.64,
+  "end": 1.19,
+  "line": 1,
+  "who": null,
+  "word": "خرساني"
+ },
+ {
+  "start": 1.19,
+  "end": 1.55,
+  "line": 1,
+  "who": null,
+  "word": "بطول"
+ },
+ {
+  "start": 1.55,
+  "end": 2.0,
+  "line": 1,
+  "who": null,
+  "word": "عمارة"
+ },
+ {
+  "start": 2.0,
+  "end": 2.28,
+  "line": 1,
+  "who": null,
+  "word": "خمس"
+ },
+ {
+  "start": 2.28,
+  "end": 2.73,
+  "line": 1,
+  "who": null,
+  "word": "أدوار"
+ },
+ {
+  "start": 2.73,
+  "end": 3.09,
+  "line": 1,
+  "who": null,
+  "word": "قدام"
+ },
+ {
+  "start": 3.09,
+  "end": 3.45,
+  "line": 1,
+  "who": null,
+  "word": "قرية"
+ },
+ {
+  "start": 3.45,
+  "end": 3.73,
+  "line": 1,
+  "who": null,
+  "word": "صيد"
+ },
+ {
+  "start": 3.73,
+  "end": 4.18,
+  "line": 1,
+  "who": null,
+  "word": "صغيرة"
+ },
+ {
+  "start": 4.56,
+  "end": 5.06,
+  "line": 2,
+  "who": null,
+  "word": "والبحر"
+ },
+ {
+  "start": 5.06,
+  "end": 5.47,
+  "line": 2,
+  "who": null,
+  "word": "قدامه"
+ },
+ {
+  "start": 5.47,
+  "end": 5.8,
+  "line": 2,
+  "who": null,
+  "word": "هادي"
+ },
+ {
+  "start": 5.8,
+  "end": 5.98,
+  "line": 2,
+  "who": null,
+  "word": "زي"
+ },
+ {
+  "start": 5.98,
+  "end": 6.56,
+  "line": 2,
+  "who": null,
+  "word": "المراية"
+ },
+ {
+  "start": 7.06,
+  "end": 7.24,
+  "line": 3,
+  "who": null,
+  "word": "كان"
+ },
+ {
+  "start": 7.24,
+  "end": 7.48,
+  "line": 3,
+  "who": null,
+  "word": "عمدة"
+ },
+ {
+  "start": 7.48,
+  "end": 7.79,
+  "line": 3,
+  "who": null,
+  "word": "لقرية"
+ },
+ {
+  "start": 7.79,
+  "end": 8.03,
+  "line": 3,
+  "who": null,
+  "word": "فيها"
+ },
+ {
+  "start": 8.03,
+  "end": 8.57,
+  "line": 3,
+  "who": null,
+  "word": "3000"
+ },
+ {
+  "start": 8.57,
+  "end": 8.76,
+  "line": 3,
+  "who": null,
+  "word": "شخص"
+ },
+ {
+  "start": 8.76,
+  "end": 8.89,
+  "line": 3,
+  "who": null,
+  "word": "بس"
+ },
+ {
+  "start": 9.04,
+  "end": 9.32,
+  "line": 4,
+  "who": null,
+  "word": "وصرف"
+ },
+ {
+  "start": 9.32,
+  "end": 9.77,
+  "line": 4,
+  "who": null,
+  "word": "30"
+ },
+ {
+  "start": 9.77,
+  "end": 10.12,
+  "line": 4,
+  "who": null,
+  "word": "مليون"
+ },
+ {
+  "start": 10.12,
+  "end": 10.47,
+  "line": 4,
+  "who": null,
+  "word": "دولار"
+ },
+ {
+  "start": 10.47,
+  "end": 11.0,
+  "line": 4,
+  "who": null,
+  "word": "و12"
+ },
+ {
+  "start": 11.0,
+  "end": 11.21,
+  "line": 4,
+  "who": null,
+  "word": "سنة"
+ },
+ {
+  "start": 11.21,
+  "end": 11.49,
+  "line": 4,
+  "who": null,
+  "word": "بناء"
+ },
+ {
+  "start": 11.49,
+  "end": 11.7,
+  "line": 4,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 11.7,
+  "end": 12.05,
+  "line": 4,
+  "who": null,
+  "word": "بوابة"
+ },
+ {
+  "start": 12.21,
+  "end": 12.93,
+  "line": 5,
+  "who": null,
+  "word": "ارتفاعها"
+ },
+ {
+  "start": 12.93,
+  "end": 13.6,
+  "line": 5,
+  "who": null,
+  "word": "15"
+ },
+ {
+  "start": 13.6,
+  "end": 13.87,
+  "line": 5,
+  "who": null,
+  "word": "متر"
+ },
+ {
+  "start": 13.87,
+  "end": 14.14,
+  "line": 5,
+  "who": null,
+  "word": "ونص"
+ },
+ {
+  "start": 14.4,
+  "end": 14.54,
+  "line": 6,
+  "who": null,
+  "word": "مع"
+ },
+ {
+  "start": 14.54,
+  "end": 14.69,
+  "line": 6,
+  "who": null,
+  "word": "إن"
+ },
+ {
+  "start": 14.69,
+  "end": 14.83,
+  "line": 6,
+  "who": null,
+  "word": "كل"
+ },
+ {
+  "start": 14.83,
+  "end": 15.16,
+  "line": 6,
+  "who": null,
+  "word": "القرى"
+ },
+ {
+  "start": 15.16,
+  "end": 15.42,
+  "line": 6,
+  "who": null,
+  "word": "اللي"
+ },
+ {
+  "start": 15.42,
+  "end": 15.81,
+  "line": 6,
+  "who": null,
+  "word": "حواليه"
+ },
+ {
+  "start": 16.01,
+  "end": 16.23,
+  "line": 7,
+  "who": null,
+  "word": "اكتفت"
+ },
+ {
+  "start": 16.23,
+  "end": 16.41,
+  "line": 7,
+  "who": null,
+  "word": "بسور"
+ },
+ {
+  "start": 16.41,
+  "end": 16.64,
+  "line": 7,
+  "who": null,
+  "word": "10"
+ },
+ {
+  "start": 16.64,
+  "end": 16.77,
+  "line": 7,
+  "who": null,
+  "word": "متر"
+ },
+ {
+  "start": 17.28,
+  "end": 17.45,
+  "line": 8,
+  "who": null,
+  "word": "أهل"
+ },
+ {
+  "start": 17.45,
+  "end": 17.78,
+  "line": 8,
+  "who": null,
+  "word": "القرية"
+ },
+ {
+  "start": 17.78,
+  "end": 18.05,
+  "line": 8,
+  "who": null,
+  "word": "ضحكوا"
+ },
+ {
+  "start": 18.05,
+  "end": 18.27,
+  "line": 8,
+  "who": null,
+  "word": "عليه"
+ },
+ {
+  "start": 18.27,
+  "end": 18.61,
+  "line": 8,
+  "who": null,
+  "word": "وقالوا"
+ },
+ {
+  "start": 18.61,
+  "end": 18.73,
+  "line": 8,
+  "who": null,
+  "word": "له:"
+ },
+ {
+  "start": 18.73,
+  "end": 18.89,
+  "line": 9,
+  "who": "v1",
+  "word": "إنت"
+ },
+ {
+  "start": 18.89,
+  "end": 19.17,
+  "line": 9,
+  "who": "v1",
+  "word": "بترمي"
+ },
+ {
+  "start": 19.17,
+  "end": 19.5,
+  "line": 9,
+  "who": "v1",
+  "word": "فلوسنا"
+ },
+ {
+  "start": 19.5,
+  "end": 19.62,
+  "line": 9,
+  "who": "v1",
+  "word": "في"
+ },
+ {
+  "start": 19.62,
+  "end": 19.9,
+  "line": 9,
+  "who": "v1",
+  "word": "البحر؟"
+ },
+ {
+  "start": 20.34,
+  "end": 20.66,
+  "line": 10,
+  "who": "v1",
+  "word": "الموج"
+ },
+ {
+  "start": 20.66,
+  "end": 20.91,
+  "line": 10,
+  "who": "v1",
+  "word": "عمره"
+ },
+ {
+  "start": 20.91,
+  "end": 21.05,
+  "line": 10,
+  "who": "v1",
+  "word": "ما"
+ },
+ {
+  "start": 21.05,
+  "end": 21.37,
+  "line": 10,
+  "who": "v1",
+  "word": "هيوصل"
+ },
+ {
+  "start": 21.37,
+  "end": 21.62,
+  "line": 10,
+  "who": "v1",
+  "word": "هناك"
+ },
+ {
+  "start": 22.02,
+  "end": 22.15,
+  "line": 11,
+  "who": null,
+  "word": "بس"
+ },
+ {
+  "start": 22.15,
+  "end": 22.5,
+  "line": 11,
+  "who": null,
+  "word": "العمدة"
+ },
+ {
+  "start": 22.5,
+  "end": 22.63,
+  "line": 11,
+  "who": null,
+  "word": "ما"
+ },
+ {
+  "start": 22.63,
+  "end": 22.8,
+  "line": 11,
+  "who": null,
+  "word": "ردش"
+ },
+ {
+  "start": 23.18,
+  "end": 23.39,
+  "line": 12,
+  "who": null,
+  "word": "ولا"
+ },
+ {
+  "start": 23.39,
+  "end": 23.6,
+  "line": 12,
+  "who": null,
+  "word": "نزل"
+ },
+ {
+  "start": 23.6,
+  "end": 23.96,
+  "line": 12,
+  "who": null,
+  "word": "السور"
+ },
+ {
+  "start": 23.96,
+  "end": 24.24,
+  "line": 12,
+  "who": null,
+  "word": "سنتي"
+ },
+ {
+  "start": 24.24,
+  "end": 24.52,
+  "line": 12,
+  "who": null,
+  "word": "واحد"
+ },
+ {
+  "start": 25.09,
+  "end": 25.47,
+  "line": 13,
+  "who": null,
+  "word": "السور"
+ },
+ {
+  "start": 25.47,
+  "end": 25.7,
+  "line": 13,
+  "who": null,
+  "word": "خلص"
+ },
+ {
+  "start": 25.95,
+  "end": 26.49,
+  "line": 13,
+  "who": null,
+  "word": "والبحر"
+ },
+ {
+  "start": 26.49,
+  "end": 26.77,
+  "line": 13,
+  "who": null,
+  "word": "فضل"
+ },
+ {
+  "start": 26.77,
+  "end": 27.13,
+  "line": 13,
+  "who": null,
+  "word": "هادي"
+ },
+ {
+  "start": 27.27,
+  "end": 27.72,
+  "line": 13,
+  "who": null,
+  "word": "سنين"
+ },
+ {
+  "start": 28.13,
+  "end": 28.5,
+  "line": 14,
+  "who": null,
+  "word": "والناس"
+ },
+ {
+  "start": 28.5,
+  "end": 28.74,
+  "line": 14,
+  "who": null,
+  "word": "سموه"
+ },
+ {
+  "start": 28.93,
+  "end": 29.12,
+  "line": 14,
+  "who": null,
+  "word": "أغبى"
+ },
+ {
+  "start": 29.12,
+  "end": 29.35,
+  "line": 14,
+  "who": null,
+  "word": "مشروع"
+ },
+ {
+  "start": 29.35,
+  "end": 29.45,
+  "line": 14,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 29.45,
+  "end": 29.68,
+  "line": 14,
+  "who": null,
+  "word": "البلد"
+ },
+ {
+  "start": 30.27,
+  "end": 30.56,
+  "line": 15,
+  "who": null,
+  "word": "العمدة"
+ },
+ {
+  "start": 30.56,
+  "end": 30.71,
+  "line": 15,
+  "who": null,
+  "word": "طلع"
+ },
+ {
+  "start": 30.71,
+  "end": 30.85,
+  "line": 15,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 30.85,
+  "end": 31.14,
+  "line": 15,
+  "who": null,
+  "word": "المعاش"
+ },
+ {
+  "start": 31.14,
+  "end": 31.29,
+  "line": 15,
+  "who": null,
+  "word": "وهو"
+ },
+ {
+  "start": 31.29,
+  "end": 31.43,
+  "line": 15,
+  "who": null,
+  "word": "لسه"
+ },
+ {
+  "start": 31.43,
+  "end": 31.73,
+  "line": 15,
+  "who": null,
+  "word": "بيتلام"
+ },
+ {
+  "start": 31.73,
+  "end": 31.87,
+  "line": 15,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 31.87,
+  "end": 32.16,
+  "line": 15,
+  "who": null,
+  "word": "الفلوس"
+ },
+ {
+  "start": 32.16,
+  "end": 32.36,
+  "line": 15,
+  "who": null,
+  "word": "اللي"
+ },
+ {
+  "start": 32.36,
+  "end": 32.55,
+  "line": 15,
+  "who": null,
+  "word": "ضاعت"
+ },
+ {
+  "start": 33.04,
+  "end": 33.26,
+  "line": 16,
+  "who": null,
+  "word": "ومات"
+ },
+ {
+  "start": 33.72,
+  "end": 33.9,
+  "line": 17,
+  "who": null,
+  "word": "من"
+ },
+ {
+  "start": 33.9,
+  "end": 34.15,
+  "line": 17,
+  "who": null,
+  "word": "غير"
+ },
+ {
+  "start": 34.15,
+  "end": 34.34,
+  "line": 17,
+  "who": null,
+  "word": "ما"
+ },
+ {
+  "start": 34.34,
+  "end": 34.52,
+  "line": 17,
+  "who": null,
+  "word": "حد"
+ },
+ {
+  "start": 34.52,
+  "end": 34.85,
+  "line": 17,
+  "who": null,
+  "word": "واحد"
+ },
+ {
+  "start": 34.85,
+  "end": 35.27,
+  "line": 17,
+  "who": null,
+  "word": "يصدقه"
+ },
+ {
+  "start": 35.7,
+  "end": 35.91,
+  "line": 18,
+  "who": null,
+  "word": "بعد"
+ },
+ {
+  "start": 35.91,
+  "end": 36.19,
+  "line": 18,
+  "who": null,
+  "word": "موته"
+ },
+ {
+  "start": 36.19,
+  "end": 36.35,
+  "line": 18,
+  "who": null,
+  "word": "بـ"
+ },
+ {
+  "start": 36.35,
+  "end": 36.91,
+  "line": 18,
+  "who": null,
+  "word": "14"
+ },
+ {
+  "start": 36.91,
+  "end": 37.12,
+  "line": 18,
+  "who": null,
+  "word": "سنة"
+ },
+ {
+  "start": 37.39,
+  "end": 37.72,
+  "line": 19,
+  "who": null,
+  "word": "الأرض"
+ },
+ {
+  "start": 37.72,
+  "end": 38.05,
+  "line": 19,
+  "who": null,
+  "word": "اتهزت"
+ },
+ {
+  "start": 38.05,
+  "end": 38.45,
+  "line": 19,
+  "who": null,
+  "word": "بزلزال"
+ },
+ {
+  "start": 38.45,
+  "end": 38.71,
+  "line": 19,
+  "who": null,
+  "word": "عنيف"
+ },
+ {
+  "start": 39.28,
+  "end": 39.84,
+  "line": 20,
+  "who": null,
+  "word": "والبحر"
+ },
+ {
+  "start": 39.84,
+  "end": 40.3,
+  "line": 20,
+  "who": null,
+  "word": "اتسحب"
+ },
+ {
+  "start": 40.3,
+  "end": 40.67,
+  "line": 20,
+  "who": null,
+  "word": "لورا"
+ },
+ {
+  "start": 41.06,
+  "end": 41.46,
+  "line": 21,
+  "who": null,
+  "word": "ورجع"
+ },
+ {
+  "start": 41.87,
+  "end": 42.22,
+  "line": 22,
+  "who": null,
+  "word": "بموجة"
+ },
+ {
+  "start": 42.22,
+  "end": 42.63,
+  "line": 22,
+  "who": null,
+  "word": "عملاقة"
+ },
+ {
+  "start": 42.86,
+  "end": 43.5,
+  "line": 23,
+  "who": null,
+  "word": "ارتفاعها"
+ },
+ {
+  "start": 43.5,
+  "end": 44.09,
+  "line": 23,
+  "who": null,
+  "word": "15"
+ },
+ {
+  "start": 44.09,
+  "end": 44.33,
+  "line": 23,
+  "who": null,
+  "word": "متر"
+ },
+ {
+  "start": 44.33,
+  "end": 44.81,
+  "line": 23,
+  "who": null,
+  "word": "بالظبط"
+ },
+ {
+  "start": 45.45,
+  "end": 45.64,
+  "line": 24,
+  "who": null,
+  "word": "أصل"
+ },
+ {
+  "start": 45.64,
+  "end": 46.03,
+  "line": 24,
+  "who": null,
+  "word": "العمدة"
+ },
+ {
+  "start": 46.03,
+  "end": 46.22,
+  "line": 24,
+  "who": null,
+  "word": "وهو"
+ },
+ {
+  "start": 46.22,
+  "end": 46.41,
+  "line": 24,
+  "who": null,
+  "word": "شاب"
+ },
+ {
+  "start": 46.6,
+  "end": 46.8,
+  "line": 25,
+  "who": null,
+  "word": "شاف"
+ },
+ {
+  "start": 46.8,
+  "end": 47.13,
+  "line": 25,
+  "who": null,
+  "word": "البحر"
+ },
+ {
+  "start": 47.13,
+  "end": 47.46,
+  "line": 25,
+  "who": null,
+  "word": "بيبلع"
+ },
+ {
+  "start": 47.46,
+  "end": 47.79,
+  "line": 25,
+  "who": null,
+  "word": "قريته"
+ },
+ {
+  "start": 48.36,
+  "end": 48.68,
+  "line": 26,
+  "who": null,
+  "word": "فافتكر"
+ },
+ {
+  "start": 48.68,
+  "end": 49.0,
+  "line": 26,
+  "who": null,
+  "word": "علامات"
+ },
+ {
+  "start": 49.0,
+  "end": 49.27,
+  "line": 26,
+  "who": null,
+  "word": "قديمة"
+ },
+ {
+  "start": 49.27,
+  "end": 49.43,
+  "line": 26,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 49.43,
+  "end": 49.7,
+  "line": 26,
+  "who": null,
+  "word": "الصخر"
+ },
+ {
+  "start": 49.91,
+  "end": 50.22,
+  "line": 27,
+  "who": null,
+  "word": "بتحدد"
+ },
+ {
+  "start": 50.22,
+  "end": 50.48,
+  "line": 27,
+  "who": null,
+  "word": "أعلى"
+ },
+ {
+  "start": 50.48,
+  "end": 50.73,
+  "line": 27,
+  "who": null,
+  "word": "نقطة"
+ },
+ {
+  "start": 50.73,
+  "end": 51.04,
+  "line": 27,
+  "who": null,
+  "word": "وصلها"
+ },
+ {
+  "start": 51.04,
+  "end": 51.36,
+  "line": 27,
+  "who": null,
+  "word": "الموج"
+ },
+ {
+  "start": 51.36,
+  "end": 51.61,
+  "line": 27,
+  "who": null,
+  "word": "زمان"
+ },
+ {
+  "start": 52.11,
+  "end": 52.23,
+  "line": 28,
+  "who": null,
+  "word": "زي"
+ },
+ {
+  "start": 52.23,
+  "end": 52.36,
+  "line": 28,
+  "who": null,
+  "word": "ما"
+ },
+ {
+  "start": 52.36,
+  "end": 52.53,
+  "line": 28,
+  "who": null,
+  "word": "تحط"
+ },
+ {
+  "start": 52.53,
+  "end": 52.75,
+  "line": 28,
+  "who": null,
+  "word": "شرطة"
+ },
+ {
+  "start": 52.75,
+  "end": 53.09,
+  "line": 28,
+  "who": null,
+  "word": "بالقلم"
+ },
+ {
+  "start": 53.09,
+  "end": 53.26,
+  "line": 28,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 53.26,
+  "end": 53.6,
+  "line": 28,
+  "who": null,
+  "word": "الحيطة"
+ },
+ {
+  "start": 53.6,
+  "end": 53.83,
+  "line": 29,
+  "who": null,
+  "word": "عشان"
+ },
+ {
+  "start": 53.83,
+  "end": 53.95,
+  "line": 29,
+  "who": null,
+  "word": "ما"
+ },
+ {
+  "start": 53.95,
+  "end": 54.23,
+  "line": 29,
+  "who": null,
+  "word": "تنساش"
+ },
+ {
+  "start": 54.23,
+  "end": 54.57,
+  "line": 29,
+  "who": null,
+  "word": "المقاس"
+ },
+ {
+  "start": 54.88,
+  "end": 55.05,
+  "line": 30,
+  "who": null,
+  "word": "هو"
+ },
+ {
+  "start": 55.05,
+  "end": 55.29,
+  "line": 30,
+  "who": null,
+  "word": "بنى"
+ },
+ {
+  "start": 55.29,
+  "end": 55.68,
+  "line": 30,
+  "who": null,
+  "word": "السور"
+ },
+ {
+  "start": 55.68,
+  "end": 55.91,
+  "line": 30,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 55.91,
+  "end": 56.22,
+  "line": 30,
+  "who": null,
+  "word": "مقاس"
+ },
+ {
+  "start": 56.22,
+  "end": 56.54,
+  "line": 30,
+  "who": null,
+  "word": "أضخم"
+ },
+ {
+  "start": 56.54,
+  "end": 56.85,
+  "line": 30,
+  "who": null,
+  "word": "موجة"
+ },
+ {
+  "start": 56.85,
+  "end": 57.02,
+  "line": 30,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 57.02,
+  "end": 57.57,
+  "line": 30,
+  "who": null,
+  "word": "الذاكرة"
+ },
+ {
+  "start": 58.0,
+  "end": 58.23,
+  "line": 31,
+  "who": null,
+  "word": "القرى"
+ },
+ {
+  "start": 58.23,
+  "end": 58.41,
+  "line": 31,
+  "who": null,
+  "word": "اللي"
+ },
+ {
+  "start": 58.41,
+  "end": 58.73,
+  "line": 31,
+  "who": null,
+  "word": "حواليهم"
+ },
+ {
+  "start": 58.73,
+  "end": 59.1,
+  "line": 31,
+  "who": null,
+  "word": "بأسوارها"
+ },
+ {
+  "start": 59.1,
+  "end": 59.23,
+  "line": 31,
+  "who": null,
+  "word": "الـ"
+ },
+ {
+  "start": 59.23,
+  "end": 59.46,
+  "line": 31,
+  "who": null,
+  "word": "10"
+ },
+ {
+  "start": 59.46,
+  "end": 59.6,
+  "line": 31,
+  "who": null,
+  "word": "متر"
+ },
+ {
+  "start": 60.12,
+  "end": 60.57,
+  "line": 32,
+  "who": null,
+  "word": "اتمسحت"
+ },
+ {
+  "start": 60.57,
+  "end": 60.74,
+  "line": 32,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 60.74,
+  "end": 61.12,
+  "line": 32,
+  "who": null,
+  "word": "دقايق"
+ },
+ {
+  "start": 61.56,
+  "end": 61.99,
+  "line": 33,
+  "who": null,
+  "word": "والموجة"
+ },
+ {
+  "start": 61.99,
+  "end": 62.24,
+  "line": 33,
+  "who": null,
+  "word": "خبطت"
+ },
+ {
+  "start": 62.24,
+  "end": 62.37,
+  "line": 33,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 62.37,
+  "end": 62.62,
+  "line": 33,
+  "who": null,
+  "word": "سوره"
+ },
+ {
+  "start": 63.04,
+  "end": 63.29,
+  "line": 34,
+  "who": null,
+  "word": "ووقفت"
+ },
+ {
+  "start": 63.29,
+  "end": 63.44,
+  "line": 34,
+  "who": null,
+  "word": "عند"
+ },
+ {
+  "start": 63.44,
+  "end": 63.69,
+  "line": 34,
+  "who": null,
+  "word": "حافته"
+ },
+ {
+  "start": 64.49,
+  "end": 64.83,
+  "line": 35,
+  "who": null,
+  "word": "القرية"
+ },
+ {
+  "start": 64.83,
+  "end": 65.05,
+  "line": 35,
+  "who": null,
+  "word": "كلها"
+ },
+ {
+  "start": 65.05,
+  "end": 65.22,
+  "line": 35,
+  "who": null,
+  "word": "نجت"
+ },
+ {
+  "start": 65.75,
+  "end": 66.02,
+  "line": 36,
+  "who": null,
+  "word": "والناس"
+ },
+ {
+  "start": 66.02,
+  "end": 66.21,
+  "line": 36,
+  "who": null,
+  "word": "اللي"
+ },
+ {
+  "start": 66.21,
+  "end": 66.44,
+  "line": 36,
+  "who": null,
+  "word": "ضحكوا"
+ },
+ {
+  "start": 66.44,
+  "end": 66.62,
+  "line": 36,
+  "who": null,
+  "word": "عليه"
+ },
+ {
+  "start": 66.96,
+  "end": 67.16,
+  "line": 37,
+  "who": null,
+  "word": "راحوا"
+ },
+ {
+  "start": 67.16,
+  "end": 67.31,
+  "line": 37,
+  "who": null,
+  "word": "قبره"
+ },
+ {
+  "start": 67.31,
+  "end": 67.55,
+  "line": 37,
+  "who": null,
+  "word": "يشكروه"
+ }
+]
