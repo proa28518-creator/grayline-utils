@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 
 // scenes/props/oldflood.js — the remembered flood: grey old-wave slabs over the distant
-// mini village in the sepia flashback. State: { in: 0..1 } opacity/height. Fetch on a cut.
+// mini village in the sepia flashback. State: { fade: 0..1 } opacity/height. Fetch on a cut.
 
 export function build(opts) {
   const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
-  const inn = (typeof o.in === 'number') ? Math.max(0, Math.min(1, o.in)) : 1;
+  const inn = (typeof o.fade === 'number') ? Math.max(0, Math.min(1, o.fade)) : 1;
   const g = new T.Group();
   const waterM = new T.MeshStandardMaterial({ color: 0x5a6a62, roughness: 0.45, transparent: true, opacity: 0.85 * inn });
   // two surge slabs climbing the distant houses

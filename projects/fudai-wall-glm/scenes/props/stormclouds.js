@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 
 // scenes/props/stormclouds.js — the storm arriving (and parting): three dark cloud layers
-// over the village plus faint rain streaks. State: { in: 0..1 } arrival, { part: 0..1 } opening.
+// over the village plus faint rain streaks. State: { fade: 0..1 } arrival, { part: 0..1 } opening.
 
 export function build(opts) {
   const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
-  const inn = (typeof o.in === 'number') ? Math.max(0, Math.min(1, o.in)) : 1;
+  const inn = (typeof o.fade === 'number') ? Math.max(0, Math.min(1, o.fade)) : 1;
   const part = (typeof o.part === 'number') ? Math.max(0, Math.min(1, o.part)) : 0;
   const g = new T.Group();
   const cloudM = (op) => new T.MeshStandardMaterial({ color: 0x3a4450, roughness: 1, transparent: true, opacity: op, depthWrite: false });

@@ -348,8 +348,8 @@ export default {
         { t: 'line:31.end', rise: 1, adv: 14, ease: 1.2 }] },
     { id: 'flood_n', kind: 'floodwater', in: 'hidden', at: [800, 0, -12],
       keys: [
-        { t: 'line:30.word:9.end', fetch: true, in: 0.2 },
-        { t: 'line:32.word:3', in: 1, ease: 1.2 }] },
+        { t: 'line:30.word:9.end', fetch: true, fade: 0.2 },
+        { t: 'line:32.word:3', fade: 1, ease: 1.2 }] },
     { id: 'wave_c', kind: 'wave', in: 'hidden', at: [0, 0, -52],
       keys: [
         { t: 'line:21.start', fetch: true, rise: 0.25, adv: 0 },
@@ -384,13 +384,13 @@ export default {
         { t: 'line:13.word:6.end', stow: true }] },
     { id: 'storm_s', kind: 'stormclouds', in: 'hidden', at: [0, 0, -8],
       keys: [
-        { t: 'line:19.start', fetch: true, in: 0.15 },
-        { t: 'line:19.end', in: 1, ease: 1.2 },
+        { t: 'line:19.start', fetch: true, fade: 0.15 },
+        { t: 'line:19.end', fade: 1, ease: 1.2 },
         { t: 'line:34.end+0.5', part: 1, ease: 1.5 }] },
     { id: 'storm_s2', kind: 'stormclouds', in: 'hidden', at: [400, 0, -10],
       keys: [
-        { t: 'line:18.start', fetch: true, in: 0.3 },
-        { t: 'line:18.end', in: 0.9, ease: 0.9 },
+        { t: 'line:18.start', fetch: true, fade: 0.3 },
+        { t: 'line:18.end', fade: 0.9, ease: 0.9 },
         { t: 'line:19.start', stow: true }] },
     { id: 'sway_p', kind: 'swaypole', in: 'hidden', at: [-6.5, 0, -1],
       keys: [
@@ -403,8 +403,8 @@ export default {
       keys: [{ t: 'line:28.start', fetch: true }] },
     { id: 'oldflood_o', kind: 'oldflood', in: 'hidden', at: [1200, 0, -46],
       keys: [
-        { t: 'line:24.start', fetch: true, in: 0.6 },
-        { t: 'line:24.end', in: 1, ease: 1.0 }] },
+        { t: 'line:24.start', fetch: true, fade: 0.6 },
+        { t: 'line:24.end', fade: 1, ease: 1.0 }] },
     { id: 'box_b', kind: 'box', owner: 'mayor', in: 'hidden',
       keys: [{ t: 'line:15.start', fetch: true }, { t: 'line:24.start', stow: true }] },
     { id: 'pen_p', kind: 'pen', owner: 'walter', in: 'hidden',

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 // scenes/props/floodwater.js — the flood slab that swallows the neighbours' streets.
-// State: { in: 0..1 } — rises 0.2 → 2 D and turns translucent-possible; appears via fetch on a cut.
+// State: { fade: 0..1 } — rises 0.2 → 2 D and turns translucent-possible; appears via fetch on a cut.
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
@@ -11,7 +11,7 @@ function cnv(T, w, h, draw) {
 export function build(opts) {
   const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
-  const inn = (typeof o.in === 'number') ? Math.max(0, Math.min(1, o.in)) : 1;
+  const inn = (typeof o.fade === 'number') ? Math.max(0, Math.min(1, o.fade)) : 1;
   const g = new T.Group();
   const h = 0.2 + inn * 1.8;
   const waterM = new T.MeshStandardMaterial({
