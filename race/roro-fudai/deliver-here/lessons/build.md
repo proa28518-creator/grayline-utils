@@ -7,6 +7,7 @@
 - Verified the 24 spoken lines 1:1 against `audio/clean.json` (186 words, 0.10–67.55 s): every line's words match the visualization bible exactly, all 186 words covered, zero mismatch. The lines are the film's lines.
 - Wrote the Bible first (`scenes/BIBLE.md`): a row per line (speaker, listeners, place, beat, action word, story prop) and a row per place (real thing, size in D, far end in D, practicals, colour mood, air), plus the colour script and the cast.
 - Cast and props were drafted by helpers under the critic's helper contract (one writer per file); film.js and set.js were authored by the builder seat. The Bible, the cast specs and the props were verified (JSON parses, `node --check` passes on all JS).
+- CORRECTION (2026-11-23 ~21:00, verified by araby's question): the cast specs are NOT the tree's ready-made characters. The race/roro-fudai/ package contains only `method/references/characters.md` (the character-system reference); the actual ready-made spec files (`specs/` — engineer, boss, mara, etc.) were NOT in the package, are NOT in the grayline-utils repo (code search found nothing), and are NOT on this seat's machine (`~/workspace/cartoon-style-copy/` does not exist). The 5 cast specs were newly authored following the reference doc's rules, not copied from ready-made files. To cast from the tree's ready-made characters, this seat needs the `specs/` files themselves — from Layla/the desk or from the tree.
 - Authored `scenes/film.js` (30 shots, 24 lines, 15 props, 5 cast) and `scenes/set.js` (5 places, 400 D apart, lights as data, storm/sunrise states on place A).
 
 ## Saw
@@ -28,6 +29,13 @@
 - No frames were rendered at this seat, so no face, hand-on-prop, or feet-on-floor moment was looked at; no strip was opened on any fast move or seam.
 - The short shots (above) and the young mayor's hair (above) are open for the critic.
 - The `follow` shot on the retiring mayor (shot 12) uses `camOffset` in world axes; the cheat sheet warns a follow can end inside a hull — a `path` may be needed if the desk's frames show it.
+
+## Re-cast (2026-11-23 ~21:15, one round, after Layla sent the tree specs)
+- Layla admitted the lane package carried only the characters description; the 52 ready-made spec files were a packaging mistake. She sent them in the repo (`race/roro-fudai/tree-specs/`, commit ab3630d, README confirms byte-identical copies of `cartoon/specs/`).
+- The 5 authored cast specs were deleted. The 5 roles are now cast from the tree files, byte-identical, copied into `scenes/cast/`: mayor = `inspector` (navy official coat, white hair, gold buttons — the municipal official), villager_1 = `farmer` (red check shirt, strawhat, grey goatee), villager_2 = `postman` (slim, tall, grey flatcap), villager_3 = `ruby` (teal jumper, curly red hair), villagers = `townsperson` (grey bowler, brown jacket). `film.js` cast paths updated to the tree files; the BIBLE cast table updated.
+- The young mayor is now the inspector's white hair in the flashback — the sepia grade + context carry the youth; a known limitation (was: grey spec hair vs black hair; now: white spec hair vs black hair).
+- The ready-made specs carry their own small props (inspector's marble, townsperson's newspaper) — part of the characters as they are, used as-is.
+- No other file changed: the 24 lines, the 30 shots, the 5 places, the 10 props and the acting are untouched by the re-cast.
 
 ## HANDOVER (build, 2026-11-23)
 AT THE BAR: the complete Build file set is authored and syntactically valid — BIBLE.md (24 lines verified 1:1, 5 places, cast, colour script), film.js (30 shots covering all 24 lines, 15 props, 5 cast, captions 'words'), set.js (5 places, 400 D apart, lights as data, storm/sunrise states), 5 cast specs, 10 prop files. All JS passes `node --check`; all 203 line/word refs valid. No critic verdict yet — the desk runs the critic rounds; the blind score is not recorded here.
