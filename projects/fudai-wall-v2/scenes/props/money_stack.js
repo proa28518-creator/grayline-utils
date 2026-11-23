@@ -28,16 +28,11 @@ export function build(opts = {}) {
   const inner = new THREE.Group();
   root.add(inner);
 
-  if (opts.shown === false) {
-    inner.visible = false;
-    return root;
-  }
-
   const billMat = new THREE.MeshStandardMaterial({ map: makeBillTexture(), roughness: 0.75 });
   const sideMat = new THREE.MeshStandardMaterial({ color: 0xdbe8d8, roughness: 0.85 });
   const mats = [sideMat, sideMat, billMat, billMat, sideMat, sideMat];
 
-  const bundles = opts.bundles || 6;
+  const bundles = opts.bundles || (opts.opts && opts.opts.bundles) || 6;
   const offsets = [
     [-0.55, 0.14, 0.25, 0.08],
     [0.52, 0.14, 0.22, -0.12],

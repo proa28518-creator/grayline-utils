@@ -1,30 +1,26 @@
 # Build Pass Lessons — Fudai Wall (`fudai-rebuild-v2`)
 
-## What was authored
-- `scenes/BIBLE.md` — Complete Film Bible (28 lines covering all 186 words of `audio/clean.json`, 5 places spaced 400 D apart, built-in `specs/` cast table, story props, colour script, and Frame 0 reconciliation).
-- `scenes/film.js` — Full 68.08 s film data (`fps: 30`, `size: [1080, 1920]`, `captions: 'words'`, `endHold: 0.53`), 8 ready-made built-in `specs/` characters (zero custom `scenes/cast/*.json` per owner instruction), 28 word-matched voice lines (quoted speech on `villager1` for lines 8–9), word-tied acting on every line with >=4-frame cut clearance, PROP GUARD-safe prop timelines, and 28 shots following the binding 7-scene visualization bible.
-- `scenes/set.js` — Pure-in-`t` multi-place 3D set (`coast`, `flashback`, `analogy_room`, `neighbors`, `hill_grave` at X = 0, 400, 800, 1200, 1600 D), each with an opaque depth-writing sky dome, 25 D+ depth behind faces, 2+ visible practicals, deterministic `mulberry32` scatter, and pure-in-`t` animation for construction cranes, rising floodgate, time-lapse sun/moon, earthquake sway, ocean retreat, 15 m (`24 D`) tsunami wave impact & spray, growing pencil mark, and falling leaves.
-- `scenes/props/*.js` — Five custom printed/stateful props (`measure_sign.js`, `blueprint_ruler.js`, `calendar_flip.js`, `money_stack.js`, `gravestone.js`), all using inner-group visibility (`opts.shown`) so the stage never overrides hidden state.
+## Initial Build Pass (archived)
+- Authored `scenes/BIBLE.md`, `scenes/film.js`, `scenes/set.js`, 5 custom `scenes/props/*.js`, and `lessons/build.md`.
+- Fresh blind critic verdict on opening sample: `VERDICT: NO`.
 
-## Automated pre-desk checks run (local syntax & timeline audit)
-- `node --check` (ESM): PASS on all 7 `.js` files (`scenes/film.js`, `scenes/set.js`, `scenes/props/*.js`).
-- 186-word exact match against `Fudai_Wall_Word_Timestamps_21_v6r1.txt`: PASS (186/186 words in exact order across 28 lines; zero mismatches, zero leftovers).
-- Word-reference bounds (`line:N.start`, `line:N.end`, `line:N.word:K`): PASS across all shots, acts, and props.
-- 3-frame cut clearance (`> 0.105 s`): PASS (zero face, clip, or walk keys within 3 frames of any cut; all `place` keys sit strictly on cuts).
-- Pure-in-`t` static check: PASS (zero `Math.random` or `Date` calls in code).
-- Frame 0 framing math: distance `10.52 D` at `fov: 26` → Mayor Wamura head width ≈ `395 px` (bar `>= 300 px`), with the `24.8 D` seawall `30 D` behind him.
-
-## What is still unverified / below the bar (worst first — requires desk renders)
-1. Unrendered visual verification & set-bar measurement (`check_preview`, `film_probe`, `film_check { kind: 'set' }`, `film_sheet`, `render_frames`).
-2. Built-in `specs/` visual fit (`walter`, `bouncer`, `mara`, `postman`, `dotty`, `engineer`, `pip`, `ruby`) on front & 3/4 renders.
-3. Engine prop `opts` / `THREE` import convention inside `scenes/props/*.js` on first `check_preview`.
-4. Build-pass procedural set geometry detail (to be upgraded in Environment overhaul).
-5. Automatic sound design & Arabic RTL caption shaping (`captions: 'words'`).
+## Repair Round 1 — Biggest Gap Fix (Per-Shot Prop Culling, Staging & 9:16 Frustum Framing)
+- **Root cause found:**
+  1. Custom props in `scenes/film.js` wrapped parameters inside a nested `opts: { kind, shown }` object instead of top-level keys (`signType`, `years`, `bundles`, `locked`) and native `in: 'hidden'` ↔ `in: 'world'` cut transitions. Because `kind: 'measure_sign'` collided with `opts.kind`, every `measure_sign` fell through to the default `'3,000 VILLAGERS'` branch and stayed visible across unrelated shots (including `blueprint_board` bisecting `mayor` at `t=0` and `villager1` at `t=19.96`).
+  2. Several cameras (`S2`, `S3`, `S5`, `S7`, `S8`, `S11`) ignored the narrow 9:16 portrait frustum (`width ≈ 0.26 × d`), aiming into flat walls (`S5`, `S7`), empty sea (`S3`), or slicing off-beat cast members at frame edges (`S1`, `S5`, `S8`, `S11`).
+  3. On `blueprint_ruler.js`, the sliding brass ruler crossed over `'15.5M LOCKED'`.
+  4. Streetlamps at `x = ±4.2` crossed foreground faces in `S2`.
+- **Changes made (single cause family: per-shot staging & camera verification):**
+  - `scenes/film.js`: Moved all custom prop options to top-level keys (`signType`, `progress`, `years`, `flip`, `bundles`, `locked`) and culled every world prop cleanly via native `in: 'hidden'` ↔ `in: 'world'` on hard cuts; parked non-acting cast off-camera (`[40, 40]`) on cuts so zero stray faces enter or clip edges; re-framed `S1`, `S2`, `S3`, `S5`, `S6`, `S7`, `S8`, `S9`, `S11`, and `S28` (locked `mayor_gravestone`, `hill_grave`, cast, and cameras together at `X = 1600.0`).
+  - `scenes/set.js`: Widened harbour lamp posts to `x = ±5.8`; centered `boat1` at `[0, -0.08, -38.5]` with translucent mirror-water reflections for `S3`; positioned `S5` yellow construction cranes inside the 9:16 frustum (`x = ±4.2`, `z = -16.5`); added pure-in-`t` falling gold coins into the ocean for `S8` (`17.28–20.34 s`); enriched `neighbors` (`X = 1200`) with buttressed `10M` wall, 12 cottages, and red-banded lighthouse.
+  - `scenes/props/measure_sign.js`, `blueprint_ruler.js`, `calendar_flip.js`, `money_stack.js`, `gravestone.js`: Switched to top-level option reads (`signType` instead of `kind`); moved `'15.5M LOCKED'` into a dedicated top banner above the `15.5M` datum so the brass ruler never overlaps the text.
+- **Automated pre-desk checks run after Repair Round 1:**
+  - `node --check` (ESM): PASS on all 7 `.js` files.
+  - 186/186 words matched across 28 lines; zero face/clip keys within 3 frames of any cut; zero `Math.random` or `Date` calls.
+  - 3D 9:16 perspective frustum projection check at all 9 acceptance times (`0.00, 2.73, 6.73, 10.73, 14.78, 16.36, 19.96, 23.56, 67.00`): every on-screen character head projects inside `[243..839, 888..1426]` (zero edge risk), and every shot's named story prop projects strictly inside frame with zero body-prop intersections.
 
 ## HANDOVER
-- **Pass:** Build (initial whole-job authoring complete; awaiting desk `check_preview`, `film_probe`, `film_check { kind: 'set' }`, opening critic round, and whole-film critic round).
-- **Files written:** `scenes/BIBLE.md`, `scenes/film.js`, `scenes/set.js`, `scenes/props/measure_sign.js`, `scenes/props/blueprint_ruler.js`, `scenes/props/calendar_flip.js`, `scenes/props/money_stack.js`, `scenes/props/gravestone.js`, `lessons/build.md`.
-- **Cast:** Built-in `specs/` only (`walter`, `bouncer`, `mara`, `postman`, `dotty`, `engineer`, `pip`, `ruby`). Zero custom `scenes/cast/*.json`.
-- **Numbers:** 186/186 words matched across 28 lines; 28 shots (dur `1.16–3.75 s`); Frame 0 head ≈ `395 px` (`fov 26`, `d = 10.52 D`); 5 places at 400 D spacing; wall `24.8 D`, wave `24.0 D`, neighbour wall `16.0 D`.
-- **Set bar (`film_check { kind: 'set' }`):** Not yet measured (no local render; desk to measure on first run).
-- **Not checked:** Visual renders, PROP GUARD runtime trace, set-bar numbers, built-in `specs/` wardrobe appearance, Arabic RTL caption layout, automatic sound mix.
+- **Pass:** Build — Repair Round 1 authored; awaiting desk re-render at `t = 0.00, 2.73, 6.73, 10.73, 14.78, 16.36, 19.96, 23.56, 67.00`, `film_probe`, `film_check { kind: 'set' }`, and fresh blind critic round.
+- **Files updated:** `scenes/film.js`, `scenes/set.js`, `scenes/props/measure_sign.js`, `scenes/props/blueprint_ruler.js`, `scenes/props/calendar_flip.js`, `scenes/props/money_stack.js`, `scenes/props/gravestone.js`, `lessons/build.md`.
+- **Set bar (`film_check { kind: 'set' }`):** Not yet measured (desk to measure on re-render).
+- **Not checked:** Rendered pixels on desk fleet, PROP GUARD runtime trace, set-bar percentages, built-in `specs/` visual wardrobes, Arabic RTL captions.

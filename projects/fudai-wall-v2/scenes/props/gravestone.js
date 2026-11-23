@@ -34,11 +34,6 @@ export function build(opts = {}) {
   const inner = new THREE.Group();
   root.add(inner);
 
-  if (opts.shown === false) {
-    inner.visible = false;
-    return root;
-  }
-
   const baseStone = new THREE.MeshStandardMaterial({ color: 0x767d85, roughness: 0.92 });
   const faceMat = new THREE.MeshStandardMaterial({ map: makeStoneInscription(), roughness: 0.9 });
 

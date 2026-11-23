@@ -34,13 +34,8 @@ export function build(opts = {}) {
   const inner = new THREE.Group();
   root.add(inner);
 
-  if (opts.shown === false) {
-    inner.visible = false;
-    return root;
-  }
-
-  const years = opts.years || '12';
-  const flip = opts.flip ?? 0;
+  const years = opts.years || (opts.opts && opts.opts.years) || '12';
+  const flip = opts.flip ?? (opts.opts && opts.opts.flip) ?? 0;
 
   const back = new THREE.Mesh(
     new THREE.BoxGeometry(1.5, 1.9, 0.12),
@@ -48,7 +43,7 @@ export function build(opts = {}) {
   );
   inner.add(back);
 
-  const sheetTex = makeCalendarTexture(String(years), years === '14' ? 'AFTER' : 'BUILD');
+  const sheetTex = makeCalendarTexture(String(years), String(years) === '14' ? 'AFTER' : 'BUILD');
   const front = new THREE.Mesh(
     new THREE.BoxGeometry(1.38, 1.76, 0.04),
     new THREE.MeshStandardMaterial({ map: sheetTex, roughness: 0.6 })

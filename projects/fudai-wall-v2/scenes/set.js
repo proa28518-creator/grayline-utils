@@ -1,4 +1,4 @@
-// Fudai Wall — Custom multi-place 3D set (Build pass)
+// Fudai Wall — Custom multi-place 3D set (Build pass — Repair Round 1)
 // Pure in t: deterministic seeded PRNG, zero Math.random(), zero Date, zero mutable cross-frame state.
 // Five places spaced 400 D apart along X, each with an opaque depth-writing dome, 25 D+ depth, and 2+ practicals.
 
@@ -23,7 +23,6 @@ function smoothstep(a, b, x) {
 }
 
 function makeSkyDome(THREE, xOffset, colorHex, radius = 180) {
-  // Opaque dome with depthWrite: true so distant places never bleed through (pitfalls.md)
   const mat = new THREE.MeshBasicMaterial({
     color: colorHex,
     side: THREE.BackSide,
@@ -126,28 +125,28 @@ function makeStoneLantern(THREE) {
 function makeFishingBoat(THREE, hullColor = 0xd9e4ec) {
   const g = new THREE.Group();
   const hull = new THREE.Mesh(
-    new THREE.BoxGeometry(1.8, 0.72, 4.4),
+    new THREE.BoxGeometry(2.0, 0.78, 4.8),
     new THREE.MeshStandardMaterial({ color: hullColor, roughness: 0.72 })
   );
-  hull.position.y = 0.36;
+  hull.position.y = 0.39;
   g.add(hull);
   const stripe = new THREE.Mesh(
-    new THREE.BoxGeometry(1.86, 0.16, 4.44),
+    new THREE.BoxGeometry(2.06, 0.18, 4.84),
     new THREE.MeshStandardMaterial({ color: 0xc94a38, roughness: 0.7 })
   );
-  stripe.position.y = 0.56;
+  stripe.position.y = 0.60;
   g.add(stripe);
   const cabin = new THREE.Mesh(
-    new THREE.BoxGeometry(1.2, 1.05, 1.45),
+    new THREE.BoxGeometry(1.3, 1.15, 1.6),
     new THREE.MeshStandardMaterial({ color: 0xf4f7fa, roughness: 0.65 })
   );
-  cabin.position.set(0, 1.18, -0.35);
+  cabin.position.set(0, 1.25, -0.35);
   g.add(cabin);
   const mast = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.06, 2.2, 6),
+    new THREE.CylinderGeometry(0.05, 0.06, 2.5, 6),
     new THREE.MeshStandardMaterial({ color: 0x5c4632, roughness: 0.85 })
   );
-  mast.position.set(0, 2.1, -0.35);
+  mast.position.set(0, 2.3, -0.35);
   g.add(mast);
   return g;
 }
@@ -180,7 +179,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   const points = {};
   const lights = [];
 
-  const hemi = new THREE.HemisphereLight(0xaad0f5, 0x4b5878, 0.85);
+  const hemi = new THREE.HemisphereLight(0xaad0f5, 0x4b5878, 0.88);
   scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xffcf87, 1.85);
   sun.position.set(35, 42, 28);
@@ -202,11 +201,18 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   coast.add(land);
 
   const lane = new THREE.Mesh(
-    new THREE.BoxGeometry(7.6, 0.08, 48),
+    new THREE.BoxGeometry(9.6, 0.08, 48),
     new THREE.MeshStandardMaterial({ color: 0x93989e, roughness: 0.88 })
   );
   lane.position.set(0, 0.04, 0);
   coast.add(lane);
+
+  const seaPier = new THREE.Mesh(
+    new THREE.BoxGeometry(8.5, 0.5, 9.0),
+    new THREE.MeshStandardMaterial({ color: 0x7a5c3e, roughness: 0.88 })
+  );
+  seaPier.position.set(0, -0.25, -29.0);
+  coast.add(seaPier);
 
   const sand = new THREE.Mesh(
     new THREE.BoxGeometry(140, 0.6, 120),
@@ -217,19 +223,39 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
 
   const oceanMat = new THREE.MeshStandardMaterial({
     color: 0x3b86b8,
-    roughness: 0.12,
-    metalness: 0.38,
+    roughness: 0.08,
+    metalness: 0.45,
   });
   const ocean = new THREE.Mesh(new THREE.BoxGeometry(160, 0.4, 120), oceanMat);
   ocean.position.set(0, -0.25, -85);
   coast.add(ocean);
 
   const boat1 = makeFishingBoat(THREE, 0xe8eff5);
-  boat1.position.set(-4.5, -0.1, -36);
-  boat1.rotation.y = 0.25;
+  boat1.position.set(0.0, -0.08, -38.5);
+  boat1.rotation.y = 0.45;
   coast.add(boat1);
+
+  const mirrorGroup = new THREE.Group();
+  const reflectMat = new THREE.MeshBasicMaterial({
+    color: 0xbce0ff,
+    transparent: true,
+    opacity: 0.32,
+    depthWrite: false,
+  });
+  const boatMirror = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.04, 5.2), reflectMat);
+  boatMirror.position.set(0.0, -0.02, -39.5);
+  boatMirror.rotation.y = 0.45;
+  mirrorGroup.add(boatMirror);
+  for (let i = 0; i < 6; i++) {
+    const shimmer = new THREE.Mesh(new THREE.PlaneGeometry(14 - i * 1.4, 0.9), reflectMat);
+    shimmer.rotation.x = -Math.PI * 0.5;
+    shimmer.position.set(0, -0.01, -30 - i * 4.5);
+    mirrorGroup.add(shimmer);
+  }
+  coast.add(mirrorGroup);
+
   const boat2 = makeFishingBoat(THREE, 0xdbe5cc);
-  boat2.position.set(6.8, -0.1, -44);
+  boat2.position.set(6.4, -0.08, -44.0);
   boat2.rotation.y = -0.35;
   coast.add(boat2);
 
@@ -289,22 +315,39 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
     lights.push({ kind: 'practical', place: 'coast', light: bLight });
   }
 
+  // Construction cranes inside S5 9:16 frustum
   const cranes = new THREE.Group();
-  for (const cx of [-11, 11]) {
-    const tower = new THREE.Mesh(
-      new THREE.BoxGeometry(1.2, 30, 1.2),
-      new THREE.MeshStandardMaterial({ color: 0xe6a82e, roughness: 0.6 })
-    );
-    tower.position.set(cx, 15, -18);
+  const craneMat = new THREE.MeshStandardMaterial({ color: 0xf0ad24, roughness: 0.55 });
+  const cableMat = new THREE.MeshBasicMaterial({ color: 0x262b30 });
+  for (const [cx, h] of [[-4.2, 16.5], [4.2, 20.0]]) {
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.85, h, 0.85), craneMat);
+    tower.position.set(cx, h * 0.5, -16.5);
     cranes.add(tower);
-    const jib = new THREE.Mesh(
-      new THREE.BoxGeometry(14, 0.9, 0.9),
-      new THREE.MeshStandardMaterial({ color: 0xe6a82e, roughness: 0.6 })
-    );
-    jib.position.set(cx + (cx < 0 ? 5.5 : -5.5), 29.2, -18);
+    const jib = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.65, 0.65), craneMat);
+    jib.position.set(cx + (cx < 0 ? 3.2 : -3.2), h - 0.5, -16.5);
     cranes.add(jib);
+    const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 5.5, 6), cableMat);
+    cable.position.set(cx + (cx < 0 ? 5.0 : -5.0), h - 3.4, -16.5);
+    cranes.add(cable);
   }
   coast.add(cranes);
+
+  // Falling gold coins into the sea during S8 mockery (t = 17.28..20.34 s)
+  const fallingCoins = new THREE.Group();
+  const coinMat = new THREE.MeshStandardMaterial({
+    color: 0xffd24c,
+    emissive: 0x8a6400,
+    emissiveIntensity: 0.35,
+    metalness: 0.6,
+    roughness: 0.25,
+  });
+  const coinItems = [];
+  for (let i = 0; i < 16; i++) {
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 14), coinMat);
+    fallingCoins.add(c);
+    coinItems.push({ mesh: c, phase: i / 16, driftX: (rand() - 0.5) * 0.9 });
+  }
+  coast.add(fallingCoins);
 
   const cottagePalette = [0xd8c8b0, 0xc9d4d9, 0xe2cfb4, 0xc7bfb2];
   const roofPalette = [0x4c5e70, 0x6b4b3e, 0x3f4e5c, 0x7c5543];
@@ -320,7 +363,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
       roofPalette[i % roofPalette.length],
       true
     );
-    const x = side * (7.2 + (row % 2) * 2.2);
+    const x = side * (8.4 + (row % 2) * 2.0);
     const z = 14 - row * 5.2;
     c.position.set(x, 0, z);
     c.rotation.y = side < 0 ? Math.PI * 0.48 : -Math.PI * 0.48;
@@ -328,19 +371,19 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
 
   const cityHall = makeCottage(THREE, 8.2, 5.2, 5.4, 0xdad5c9, 0x3b4958, true);
-  cityHall.position.set(-10.5, 0, 5.0);
+  cityHall.position.set(-10.8, 0, 5.0);
   cityHall.rotation.y = Math.PI * 0.5;
   coast.add(cityHall);
 
   const streetLamps = [];
-  const lampCoords = [[-4.2, 2.0], [4.2, -5.0], [-4.2, -12.0], [4.2, -19.0]];
+  const lampCoords = [[-5.8, 2.0], [5.8, -5.0], [-5.8, -12.0], [5.8, -19.0]];
   for (const [lx, lz] of lampCoords) {
     const lp = makeLampPost(THREE, 4.8, 0xffd384);
     lp.position.set(lx, 0, lz);
     lp.rotation.y = lx < 0 ? 0 : Math.PI;
     coast.add(lp);
     streetLamps.push(lp);
-    const pl = new THREE.PointLight(0xffcc77, 1.4, 16);
+    const pl = new THREE.PointLight(0xffcc77, 1.4, 18);
     pl.position.set(lx + (lx < 0 ? 0.7 : -0.7), 4.5, lz);
     coast.add(pl);
     lights.push({ kind: 'practical', place: 'coast', light: pl });
@@ -518,35 +561,53 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   nLand.position.set(1200, -0.5, 12);
   neigh.add(nLand);
 
-  const nOcean = new THREE.Mesh(new THREE.BoxGeometry(150, 0.5, 110), new THREE.MeshStandardMaterial({ color: 0x357ca8, roughness: 0.18, metalness: 0.3 }));
+  const nOcean = new THREE.Mesh(new THREE.BoxGeometry(160, 0.5, 110), new THREE.MeshStandardMaterial({ color: 0x357ca8, roughness: 0.18, metalness: 0.3 }));
   nOcean.position.set(1200, -0.3, -78);
   neigh.add(nOcean);
 
   const nWall = new THREE.Mesh(new THREE.BoxGeometry(72, NEIGH_H, 3.4), concMat);
   nWall.position.set(1200, NEIGH_H * 0.5, -24);
   neigh.add(nWall);
+  const nWallCap = new THREE.Mesh(new THREE.BoxGeometry(72.4, 0.7, 3.9), concDark);
+  nWallCap.position.set(1200, NEIGH_H + 0.25, -24);
+  neigh.add(nWallCap);
+  for (let bx = -24; bx <= 24; bx += 6) {
+    const butt = new THREE.Mesh(new THREE.BoxGeometry(0.9, NEIGH_H * 0.95, 1.2), concDark);
+    butt.position.set(1200 + bx, NEIGH_H * 0.48, -22.0);
+    neigh.add(butt);
+  }
 
-  for (let i = 0; i < 10; i++) {
-    const c = makeCottage(THREE, 3.8, 2.8, 3.4, 0xd8cdb8, 0x52606e, true);
-    c.position.set(1182 + (i % 5) * 9, 0, -10 + Math.floor(i / 5) * 9);
+  for (let i = 0; i < 12; i++) {
+    const row = Math.floor(i / 4);
+    const col = i % 4;
+    const c = makeCottage(
+      THREE, 4.0, 3.0 + (i % 2) * 0.6, 3.6,
+      cottagePalette[i % cottagePalette.length],
+      roofPalette[i % roofPalette.length],
+      true
+    );
+    c.position.set(1188 + col * 8.0, 0, -14 + row * 7.5);
     neigh.add(c);
   }
 
-  const lh = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.4, 14, 12), new THREE.MeshStandardMaterial({ color: 0xf4f4f0, roughness: 0.7 }));
-  lh.position.set(1224, 7, -20);
+  const lh = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.4, 17, 12), new THREE.MeshStandardMaterial({ color: 0xf4f4f0, roughness: 0.7 }));
+  lh.position.set(1214, 8.5, -20);
   neigh.add(lh);
+  const lhBand = new THREE.Mesh(new THREE.CylinderGeometry(1.12, 1.22, 3.2, 12), new THREE.MeshStandardMaterial({ color: 0xc94a38, roughness: 0.7 }));
+  lhBand.position.set(1214, 11.5, -20);
+  neigh.add(lhBand);
   const lhBeacon = new THREE.Mesh(
-    new THREE.SphereGeometry(0.75, 12, 10),
+    new THREE.SphereGeometry(0.8, 12, 10),
     new THREE.MeshStandardMaterial({ color: 0xffe484, emissive: 0xffc844, emissiveIntensity: 2.2 })
   );
-  lhBeacon.position.set(1224, 14.4, -20);
+  lhBeacon.position.set(1214, 17.5, -20);
   neigh.add(lhBeacon);
-  const lhLight = new THREE.PointLight(0xffd277, 2.0, 28);
-  lhLight.position.set(1224, 14.4, -20);
+  const lhLight = new THREE.PointLight(0xffd277, 2.0, 30);
+  lhLight.position.set(1214, 17.5, -20);
   neigh.add(lhLight);
   lights.push({ kind: 'practical', place: 'neighbors', light: lhLight });
 
-  for (const lx of [1192, 1208]) {
+  for (const lx of [1193, 1207]) {
     const lp = makeLampPost(THREE, 4.6, 0xffd27d);
     lp.position.set(lx, 0, -16);
     neigh.add(lp);
@@ -566,6 +627,10 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   const hillTop = new THREE.Mesh(new THREE.BoxGeometry(36, 2, 22), new THREE.MeshStandardMaterial({ color: 0x658554, roughness: 0.94 }));
   hillTop.position.set(1600, -1.0, 2);
   grave.add(hillTop);
+
+  const gravePad = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.1, 7.0), new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.9 }));
+  gravePad.position.set(1600, 0.05, 2.4);
+  grave.add(gravePad);
 
   const valley = new THREE.Mesh(new THREE.BoxGeometry(130, 1, 90), new THREE.MeshStandardMaterial({ color: 0x5c7560, roughness: 0.94 }));
   valley.position.set(1600, -14, -55);
@@ -592,7 +657,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
     leaves.push({ mesh: lf, sx: 1597 + rand() * 5, phase: rand() * 6.28, speed: 0.65 + rand() * 0.45 });
   }
 
-  for (const lx of [1597.2, 1602.8]) {
+  for (const lx of [1597.4, 1602.6]) {
     const toro = makeStoneLantern(THREE);
     toro.position.set(lx, 0, -0.8);
     grave.add(toro);
@@ -603,11 +668,28 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
 
   function update(t) {
-    const buildActive = t >= 8.9 && t < 17.28;
+    const buildActive = t >= 9.04 && t < 14.40;
     cranes.visible = buildActive;
-    const gateProg = t < 9.04 ? 1.0 : t < 14.2 ? 0.25 + 0.75 * smoothstep(9.04, 14.1, t) : 1.0;
+    const gateProg = t < 9.04 ? 1.0 : t < 14.2 ? 0.30 + 0.70 * smoothstep(9.04, 14.1, t) : 1.0;
     steelGate.scale.y = gateProg;
     steelGate.position.y = (WALL_H * gateProg) * 0.5;
+
+    mirrorGroup.visible = t < 39.28;
+
+    const coinsActive = t >= 17.28 && t < 20.34;
+    fallingCoins.visible = coinsActive;
+    if (coinsActive) {
+      const dt = t - 17.28;
+      for (const item of coinItems) {
+        const u = (dt * 0.85 + item.phase) % 1;
+        item.mesh.position.set(
+          -1.15 - u * 1.1 + item.driftX * 0.35,
+          2.6 + Math.sin(u * Math.PI) * 1.1 - u * 3.1,
+          -29.0 - u * 4.5
+        );
+        item.mesh.rotation.set(dt * 8 + item.phase * 6, dt * 6, item.phase * 4);
+      }
+    }
 
     const tlActive = t >= 25.09 && t < 28.13;
     timelapseSky.visible = tlActive;
@@ -629,7 +711,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
 
     const retreat = t >= 39.28 && t < 45.45 ? smoothstep(39.28, 41.0, t) : 0;
     ocean.position.z = -85 - retreat * 36;
-    const boatY = retreat > 0.25 ? -0.45 : -0.1 + Math.sin(t * 1.4) * 0.04;
+    const boatY = retreat > 0.25 ? -0.45 : -0.08 + Math.sin(t * 1.4) * 0.03;
     boat1.position.y = boatY;
     boat1.rotation.z = retreat > 0.25 ? 0.28 : Math.sin(t * 1.2) * 0.02;
     boat2.position.y = boatY;
