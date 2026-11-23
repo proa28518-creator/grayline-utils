@@ -1,4 +1,4 @@
-// Fudai Wall — Custom multi-place 3D set (Build pass — Repair Round 4)
+// Fudai Wall — Custom multi-place 3D set (Build pass — Repair Round 5)
 // Pure in t: deterministic seeded PRNG, zero Math.random(), zero Date, zero mutable cross-frame state.
 // Round 4 upgrades: open mirror sea + tapered fishing boat + horizon (S3); all-face green $30M money bundles &
 // full lattice tower cranes with load (S5); in-frustum neighbouring village cottages + labeled "15.5M" datum (S7);
@@ -348,24 +348,35 @@ function makeFishingBoat(THREE, hullColor = 0xf0f4f8) {
   const glassMat = new THREE.MeshStandardMaterial({ color: 0x1d3b54, roughness: 0.2, metalness: 0.4 });
   const woodMat = new THREE.MeshStandardMaterial({ color: 0x5c4028, roughness: 0.85 });
 
-  // Main hull body
-  const mid = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.72, 3.6), hullMat);
-  mid.position.set(0, 0.36, -0.3);
-  g.add(mid);
-  // Pointed triangular bow prow
-  const bow = new THREE.Mesh(new THREE.ConeGeometry(1.48, 2.2, 4), hullMat);
-  bow.rotation.x = Math.PI * 0.5;
-  bow.rotation.y = Math.PI * 0.25;
-  bow.scale.set(1.0, 0.5, 1.0);
-  bow.position.set(0, 0.40, 2.55);
-  g.add(bow);
-  // Red waterline keel stripe
-  const stripe = new THREE.Mesh(new THREE.BoxGeometry(2.18, 0.2, 3.66), redMat);
-  stripe.position.set(0, 0.16, -0.3);
+  // Clean single-piece tapered fishing boat hull (stern -> parallel gunwales -> smooth pointed prow)
+  const hullShape = new THREE.Shape();
+  hullShape.moveTo(-1.05, -2.1);
+  hullShape.lineTo(1.05, -2.1);
+  hullShape.lineTo(1.05, 0.95);
+  hullShape.quadraticCurveTo(0.85, 2.05, 0.0, 2.75);
+  hullShape.quadraticCurveTo(-0.85, 2.05, -1.05, 0.95);
+  hullShape.closePath();
+
+  const hullGeo = new THREE.ExtrudeGeometry(hullShape, { depth: 0.56, bevelEnabled: false });
+  hullGeo.rotateX(Math.PI * 0.5);
+  const hull = new THREE.Mesh(hullGeo, hullMat);
+  hull.position.y = 0.74;
+  g.add(hull);
+
+  // Matching red lower waterline hull band
+  const keelGeo = new THREE.ExtrudeGeometry(hullShape, { depth: 0.22, bevelEnabled: false });
+  keelGeo.rotateX(Math.PI * 0.5);
+  const stripe = new THREE.Mesh(keelGeo, redMat);
+  stripe.scale.set(1.02, 1.0, 1.01);
+  stripe.position.y = 0.22;
   g.add(stripe);
-  // Wooden deck floor
-  const deck = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.1, 3.4), deckMat);
-  deck.position.set(0, 0.74, -0.3);
+
+  // Matching wooden deck recessed slightly inside gunwales
+  const deckGeo = new THREE.ExtrudeGeometry(hullShape, { depth: 0.06, bevelEnabled: false });
+  deckGeo.rotateX(Math.PI * 0.5);
+  const deck = new THREE.Mesh(deckGeo, deckMat);
+  deck.scale.set(0.88, 1.0, 0.92);
+  deck.position.y = 0.78;
   g.add(deck);
   // Wheelhouse cabin with dark marine windows & overhang roof
   const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.35, 1.15, 1.65), hullMat);
@@ -1366,6 +1377,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
     if (storey5Group.visible) storey5Group.scale.y = 0.38 + 0.62 * smoothstep(0.4, 2.5, t);
 
     overlookDeck.visible = t >= 17.28 && t < 22.02;
+    harbourCanal.visible = t >= 17.28 && t < 22.02;
     horizonSun.visible = t >= 4.56 && t < 7.06;
 
     pop3000Group.visible = t >= 7.06 && t < 9.04;
