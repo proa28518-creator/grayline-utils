@@ -1,0 +1,16 @@
+HYDROGEN SEAT OUTPUT — phase 20 · SH25 camera (F1944 sunbeam centre / F1953 villagers occupancy)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/cc78f3a5d8d2157b
+Run by Layla via browser seat, 2026-11-23 11:05–11:14 EET. Brief: P20_HYD_SH25_BRIEF.md (cites verdict commit d80e00f).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH25','line:23.start','line:23.end','COAST_WALL',[[0,19.6,2],[0,22,24]],[[0,19.6,6],[0,5,22]],[48,30])
+World: pos [0,19.6,-14] → [0,19.6,-10]; target [0,22,8] → [0,5,6]; fov 48 → 30.
+Design: a LEVEL camera at constant y=19.6 (exactly the loader's lowCams floor on this shot, so no unexpected lift); the aim swings from the sunbeam down to the villagers while the fov narrows 48→30, buying the villagers' pixel size.
+
+PREDICTED READINGS (seat's arithmetic at the audit's measured eased fractions e=0.6375 / 0.9400):
+- F1944 sunbeam: PASS — centre IN frustum (off-axis 14.42° within ±18.26° vertical); 3140px ≥ 400px.
+- F1953 villagers: PASS — centre in (off-axis 9.18°); 290px ≥ 230px; corners 8/8.
+- D2-CLEAR / solids: PASS — path stays y=19.6 (>18) and z∈[−14,−10], clearing the seawall solid by ≥1.6 in y and ≥1.425 in z.
+
+(Full arithmetic preserved in the browser report of 2026-11-23 11:14 EET; the driver's audit run is the judge.)
