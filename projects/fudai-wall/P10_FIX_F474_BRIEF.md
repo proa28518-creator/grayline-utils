@@ -10,7 +10,9 @@ seat computed the correction (`P9_GLM_F474_OUT.txt`): reframe SH06 wider
 and lower-fov so both 10M signs and the neighbour houses read.
 
 Previous cause's verdict commit (hard-gate citation, filled by the driver
-at firing): <PENDING — driver fills before this brief fires>.
+at firing): `ec01786` — F590 follow-up round-3 verdict NOT CLOSED
+(measured conflict, escalated to Layla with priced options; cause parked
+at its round-2 pose). No judgement is pending: this brief may fire.
 
 ASTRA REVIEW INPUT (2026-11-23, batch 2) — GOVERNING: the root cause is
 that the camera sits on the WRONG SIDE of the occluding surface for an
