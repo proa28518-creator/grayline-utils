@@ -1,0 +1,24 @@
+ACTS LINES:
+mocker_a: place:[{t:'line:3.start',at:[4.4,3.5]},{t:'line:3.end',at:[4,0]},{t:'line:3.end',at:[4,0]}],look:[{t:'line:3.start',at:[4.4,1.9,2]},{t:'line:3.end',at:[4,1.9,5]}]
+mocker_b: place:[{t:'line:3.start',at:[-3.5,4.2]},{t:'line:3.end',at:[4,-1]},{t:'line:3.end',at:[4,-1]}],look:[{t:'line:3.start',at:[-3.5,1.9,2]},{t:'line:3.end',at:[4,1.9,-6]}]
+villager_1: place:[{t:'line:3.start',at:[-1,6]},{t:'line:3.end',at:[-1,4]},{t:'line:3.end',at:[-1,4]}],look:[{t:'line:3.start',at:[-1,1.9,2]},{t:'line:3.end',at:[-1,1.9,9]}]
+villager_2: place:[{t:'line:3.start',at:[1,6]},{t:'line:3.end',at:[1,4]},{t:'line:3.end',at:[1,4]}],look:[{t:'line:3.start',at:[1,1.9,2]},{t:'line:3.end',at:[1,1.9,9]}]
+villager_3: place:[{t:'line:3.start',at:[-2,6]},{t:'line:3.end',at:[-2,6]},{t:'line:3.end',at:[-2,6]}],look:[{t:'line:3.start',at:[-2,1.9,2]},{t:'line:3.end',at:[-0.29,1.9,10.70]}]
+mocker_c: place:[{t:'line:3.start',at:[3.5,4.2]},{t:'line:3.end',at:[6,0.5]},{t:'line:3.end',at:[6,0.5]}],look:[{t:'line:3.start',at:[3.5,1.9,2]},{t:'line:3.end',at:[6,1.9,-4.5]}]
+
+ARC TABLE:
+villager_1: arc [-1, 6], radius 6.32, distance to sightline 2.34, nearest neighbours villager_3 (4.47) and mocker_b (7.62)
+villager_2: arc [1, 6], radius 6.32, distance to sightline 2.34, nearest neighbours mocker_c (4.47) and mocker_a (7.62)
+villager_3: arc [-2, 6], radius 6.32, distance to sightline 2.24, nearest neighbours villager_1 (4.47) and villager_2 (6.32)
+mocker_a: arc [4.4, 3.5], radius 5.62, distance to sightline 3.52, nearest neighbours mocker_b (4.53) and mocker_c (5.00)
+mocker_b: arc [-3.5, 4.2], radius 5.43, distance to sightline 1.67, nearest neighbours mocker_a (4.53) and villager_3 (7.62)
+mocker_c: arc [3.5, 4.2], radius 5.43, distance to sightline 1.67, nearest neighbours mocker_a (5.00) and villager_2 (4.47)
+
+HERMES TEST:
+[Round-1 HERMES TEST section repeated unchanged]
+
+PREDICTED READINGS:
+F219: all six place look restore entries present; no duplicates
+F241: arc radius 4.2–5.8, z ≥ 2.5, pairwise ≥ 2.0, sightline distance ≥ 1.2
+chunk totals: pass
+D1/D2: pass

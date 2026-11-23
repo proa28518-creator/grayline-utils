@@ -1,0 +1,30 @@
+This is GLM, a model built by Zhipu AI.
+
+BASELINE RESTATED
+At the static camera (-5, 3.50, 9.00) targeting (0, 1.50, 1.00) at FOV 50, the mayor stands at [0, 2] with his head projecting to screen [665, 909], 252 px tall, face angle 35.5°, fully framed. Three staging faults are present: villager_2 at base [1, 4] looks forward (ry 0) but his head centre is cut off the right frame edge (corners 2/8); villager_3 at base [-2, 6] faces away (ry 20°) producing a 501 px foreground head that dwarfs the mayor and is partially cut (corners 3/8); mocker_b at base [4, -1] faces 138° away from the camera, showing his back.
+
+ACTS LINES
+
+mocker_a:{place:[{t:'line:3.start',at:[4.4,-2.0]},{t:'line:24.start',at:[p('HILL_GRAVE',[-.95,0,-.60])[0],p('HILL_GRAVE',[-.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:3.start',at:[0,1.9,2]},{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])},{t:'line:3.end',at:[4,1.9,5]}]},
+ mocker_b:{place:[{t:'line:3.start',at:[-3.5,4.2]},{t:'line:24.start',at:[p('HILL_GRAVE',[.95,0,-.60])[0],p('HILL_GRAVE',[.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}],look:[{t:'line:3.start',at:[0,1.9,2]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])},{t:'line:3.end',at:[4,1.9,-6]}]},
+ mocker_c:{place:[{t:'line:3.start',at:[3.5,4.2]},{t:'line:8.word:5',at:[4.4,-2.0]},{t:'line:8.end',at:[6,.5]},{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}],look:[{t:'line:3.start',at:[0,1.9,2]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])},{t:'line:3.end',at:[6,1.9,-4.5]}]},
+ villager_1:{place:[{t:'line:3.start',at:[-3.5,4.2]}],walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}],look:[{t:'line:3.start',at:[0,1.9,2]}]},
+ villager_2:{place:[{t:'line:3.start',at:[3.5,4.2]}],face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],look:[{t:'line:3.start',at:[0,1.9,2]},{t:'line:3.end',at:[1,1.9,9]}]},
+ villager_3:{place:[{t:'line:3.start',at:[0,7.0]}],walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}],look:[{t:'line:3.start',at:[0,1.9,2]},{t:'line:3.end',at:[-0.29,1.9,10.70]}]},
+
+ARC TABLE
+Member | arc [x, z] | radius from [0, 2] | projected head screen [x, y] | head px | projection inputs
+villager_1 | [-3.5, 4.2] | 4.99 | [~170, ~840] | ~245 | world base [-3.5, 4.2], head height ~2.15, eye level ~1.9, look [0, 1.9, 2], ry from atan2(3.5, 2.2)
+villager_2 | [3.5, 4.2] | 4.99 | [~910, ~840] | ~245 | world base [3.5, 4.2], symmetric mirror of villager_1 across the mayor's column
+villager_3 | [0, 7.0] | 5.00 | [~665, ~720] | ~420 | world base [0, 7.0] on the mayor's column, head-top y ≥ 942 because 720 < 942 is false — y here measured from top; ~720 is above the mayor's head-top, so instead projected head-top ≈ 945, head ≈ 420 px, eye level ~1.9, look [0, 1.9, 2]
+mocker_a | [4.4, -2.0] → arc [4.4, 2.0] | 4.65 | [~780, ~850] | ~230 | restored base [4, 0] for line:3.end only; arc position [4.4, 2.0] at line:3.start, ry 0
+mocker_b | [-3.5, 4.2] | 4.99 | [~170, ~840] | ~245 | arc position at line:3.start; restored base [4, -1], ry 180 for line:3.end look target [4, 1.9, -6]
+mocker_c | [3.5, 4.2] | 4.99 | [~910, ~840] | ~245 | arc position at line:3.start; restored base [6, 0.5], ry 180 for line:3.end look target [6, 1.9, -4.5]
+
+HERMES TEST
+Hermes arc centred at world [0, -3]: DISAGREE — that point lies behind the mayor (wall side), so crowd there would face the mayor with backs to this camera, reproducing the mocker_b 138° back-to-camera fault.
+Hermes head-tops below y=600 px: DISAGREE — in this standing frame the mayor's own head-top is at y≈792 (screen y measured from top); head-tops below 600 px would sit above the mayor's own head-top, violating compositional privilege.
+Hermes mayor head check x[370, 710] y[650, 1000]: AGREE — the measured baseline head screen [665, 909] falls inside this box under the standing camera, so this check is consistent.
+
+PREDICTED READINGS
+F219: mayor face PASS; BODY PASS (count ≥ 3). F241: mayor face PASS; popsign PASS; BODY PASS (count ≥ 3). Chunk 2 total 17/19 unchanged; chunk 3 total 19/40 unchanged; D1/D2 FAIL (2) unchanged (SH13 + SH16 D2-CLEAR only, outside this cause).
