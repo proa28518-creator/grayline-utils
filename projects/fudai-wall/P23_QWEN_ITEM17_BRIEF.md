@@ -1,8 +1,11 @@
-# QWEN SEAT — BRIEF · phase 23 · item 17: SH04 option (iii) — crowd arc cast staging facing the mayor
+# HYDROGEN SEAT — BRIEF · phase 23 (re-addressed phase 25) · item 17: SH04 option (iii) — crowd arc cast staging facing the mayor
 
-You are the Qwen build seat for the film "fudai-wall" (project
+You are the Hydrogen build seat for the film "fudai-wall" (project
 `~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
-`ui/unified-interface`). You AUTHOR the change; the driver applies
+`ui/unified-interface`). (Item 17's history below records its earlier
+routing — GLM in phase 15, then Qwen in phase 23; Layla's phase-24
+dispatcher ruling re-routed it to you, the Hydrogen seat — see the
+AMENDMENT section at the end of this brief.) You AUTHOR the change; the driver applies
 your lines verbatim and judges them with the project's measured
 checkers. RULES §3: one cause, one change. **NO LOCAL RENDERS** —
 you return text only; the driver runs the audits and the fleet
@@ -153,3 +156,75 @@ with your own numbers.)
 4. HERMES TEST: the three values, AGREE/DISAGREE + reason each.
 5. PREDICTED READINGS: F219, F241, chunk totals, D1/D2.
 Nothing else. Do not claim you ran anything.
+
+## AMENDMENT — phase 25 (2026-11-23): re-route to Hydrogen + COMPLETE D2-CLEAR SOLID SET + D1/D2 constraints in current form
+
+**Seat (supersedes the routing lines in the body):** this brief is
+addressed to the **Hydrogen** browser seat (Gemini Neon, Task mode)
+per Layla's phase-24 dispatcher ruling (recorded verbatim in
+RUN_RECORD phase 24 — the Qwen seat stalled measurably on cause 5,
+~90 minutes with zero output; the remaining chunk-3 camera causes and
+item 17 moved to Hydrogen). The body's history stands as written:
+item 17 was GLM's in phase 15 (parked, two unusable outputs), routed
+to Qwen in phase 23, and is re-routed to Hydrogen by the phase-24
+ruling.
+
+**D1/D2 hard constraints — current form (binding):** this is a cast
+brief and the camera does not move, so no D-line can change: the
+D1/D2 audit after the change must return **exactly the baseline
+stated in the body, with NO new lines** of any kind. (The body's
+baseline is stated on HEAD `21451c4`; causes judged after this brief
+was written may have moved it — the driver re-states the live
+baseline in the session when this brief fires; the no-new-lines rule
+is what binds. The camera-brief target constraints — both ends'
+WORLD target y ∈ [0, 19.5], targets inside a place's bounds — are
+recorded here for completeness; they bind camera briefs, and SH04's
+fixed camera already satisfies them.)
+
+**COMPLETE D2-CLEAR SOLID SET (the desk fix):** extracted verbatim
+from `tools/audit_d1_d2.mjs`, the audit that runs the D2-CLEAR check.
+The audit tests **every shot from SH04 on** against **all 18 solids**,
+as the straight world segment from the camera's FROM pos to its TO
+pos (segment-vs-box; a segment touching a box fails). These 18 boxes
+are the COMPLETE set — the seawall and the storeys are **not**
+D2-CLEAR solids (they appear only as occluders in the staging audit,
+a different check), and there is no gateleaf in this list.
+
+| # | solid | min [x, y, z] | max [x, y, z] |
+|---|-------|---------------|----------------|
+| 1 | town hall | [-4.5, 0, 9.5] | [4.5, 6.4, 18.5] |
+| 2 | village house @-16,-3 | [-18.45, 0, -5.05] | [-13.55, 6, -0.95] |
+| 3 | village house @-10,-4 | [-12.45, 0, -6.05] | [-7.55, 6, -1.95] |
+| 4 | village house @-20,3 | [-22.45, 0, 0.95] | [-17.55, 6, 5.05] |
+| 5 | village house @-14,7 | [-16.45, 0, 4.95] | [-11.55, 6, 9.05] |
+| 6 | village house @-8,11 | [-10.45, 0, 8.95] | [-5.55, 6, 13.05] |
+| 7 | village house @8,-4 | [5.55, 0, -6.05] | [10.45, 6, -1.95] |
+| 8 | village house @14,-2 | [11.55, 0, -4.05] | [16.45, 6, 0.05] |
+| 9 | village house @20,3 | [17.55, 0, 0.95] | [22.45, 6, 5.05] |
+| 10 | village house @14,10 | [11.55, 0, 7.95] | [16.45, 6, 12.05] |
+| 11 | village house @6,12 | [3.55, 0, 9.95] | [8.45, 6, 14.05] |
+| 12 | neighbour house @585 | [582.55, 0, -4.05] | [587.45, 5.6, 0.05] |
+| 13 | neighbour house @590 | [587.55, 0, -4.05] | [592.45, 5.6, 0.05] |
+| 14 | neighbour house @595 | [592.55, 0, -4.05] | [597.45, 5.6, 0.05] |
+| 15 | neighbour house @600 | [597.55, 0, -4.05] | [602.45, 5.6, 0.05] |
+| 16 | neighbour house @605 | [602.55, 0, -4.05] | [607.45, 5.6, 0.05] |
+| 17 | neighbour house @610 | [607.55, 0, -4.05] | [612.45, 5.6, 0.05] |
+| 18 | neighbour house @615 | [612.55, 0, -4.05] | [617.45, 5.6, 0.05] |
+
+(Generating rule in the source, for verification: the town hall is
+fixed as above; each village house centre [hx, hz] → min
+[hx−2.45, 0, hz−2.05], max [hx+2.45, 6.0, hz+2.05]; each neighbour
+house at x=hx, z centre −2 → min [hx−2.45, 0, −4.05], max
+[hx+2.45, 5.6, 0.05]. The boxes are the audit's conservative
+maximum-dimension solids from set.js buildWorld.)
+
+**For THIS item (SH04, COAST_VILLAGE — cast staging, camera fixed):**
+the set matters as staging ground, not as a camera constraint.
+Solids #1–#11 (the town hall and all ten village houses) stand in
+SH04's place. Your arc (radius 4.2–5.8 around the mayor at [0, 2],
+all members z ≥ 2.5, so member z ≤ 7.8) reaches NONE of them — the
+nearest are the town hall (z ≥ 9.5) and village house @6,12
+(z ≥ 9.95) to the north, and village house @-8,11 (x ≤ -5.55,
+z ≥ 8.95) to the north-west — but the radius cap (≤ 5.8) and the
+z ≥ 2.5 floor are what keep it so; do not exceed them. Solids
+#12–#18 stand in NEIGHBOR_COAST and are unreachable from the square.

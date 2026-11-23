@@ -1,9 +1,12 @@
-# QWEN SEAT — BRIEF · phase 23 · cause 8: SH17 camera — bring boat_b into the frame
+# HYDROGEN SEAT — BRIEF · phase 23 (re-addressed phase 25) · cause 8: SH17 camera — bring boat_b into the frame
 
-You are the Qwen build seat for the film "fudai-wall" (project
+You are the Hydrogen build seat for the film "fudai-wall" (project
 `~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
-`ui/unified-interface`). You authored the staging for shots SH13–SH19
-of this film (chunk 3a), including SH17 — the sea pulling back, two
+`ui/unified-interface`). The staging for shots SH13–SH19 of this film
+(chunk 3a), including SH17, was authored by the **Qwen** seat — that
+authorship credit stands; this cause was re-routed to you (phase-24
+dispatcher ruling; see the AMENDMENT section at the end of this
+brief). SH17 is the sea pulling back, two
 boats settling on the drained shore. You AUTHOR the fix; the driver
 applies your values verbatim and judges them with the project's
 measured audits. RULES §3: one cause, one change. §4: faces within
@@ -74,3 +77,72 @@ Propose ONE new SH17 camera line (SEA offsets, fov ∈ [24,50]) satisfying ALL o
 2. CANDIDATE: the full replacement chunk3Shot line, verbatim, ready to paste.
 3. PREDICTED READINGS: per check (F1197 / F1215 + the two D1/D2 target constraints at both ends + D2-CLEAR): the interpolated camera pos + target AT that fraction, the forward UNIT vector, each checked point's off-axis angle in degrees computed from NORMALIZED vectors (show the dot product), and its projected size in px by the audit's height formula.
 Nothing else. Do not claim you ran anything.
+
+## AMENDMENT — phase 25 (2026-11-23): re-route to Hydrogen + COMPLETE D2-CLEAR SOLID SET + D1/D2 constraints in current form
+
+**Seat (supersedes the phase-14 seat lines in the body):** this brief is
+addressed to the **Hydrogen** browser seat (Gemini Neon, Task mode) per
+Layla's phase-24 dispatcher ruling (recorded verbatim in RUN_RECORD
+phase 24 — the Qwen seat stalled measurably on cause 5, ~90 minutes
+with zero output; the remaining chunk-3 camera causes and item 17
+moved to Hydrogen). The underlying staging (chunk 3a, SH13–SH19) was
+authored by the Qwen seat; that credit stands — only the repair seat
+changes.
+
+**D1/D2 hard constraints — current form (binding; restates and
+confirms the body's section):**
+- Both ends' WORLD target y ∈ [0, 19.5] (the D2 target-sanity bound;
+  the wall is 18 D).
+- Both ends' WORLD targets inside at least one place's bounds.
+- The D1/D2 audit after the change must return **exactly the baseline
+  stated in the body, with NO new lines** of any kind. (The body's
+  baseline is stated on HEAD `21451c4`; causes judged after this brief
+  was written may have moved it — the driver re-states the live
+  baseline in the session when this brief fires; the no-new-lines rule
+  is what binds.)
+
+**COMPLETE D2-CLEAR SOLID SET (the desk fix — read this before
+proposing any camera):** extracted verbatim from
+`tools/audit_d1_d2.mjs`, the audit that runs the D2-CLEAR check. The
+audit tests **every shot from SH04 on** against **all 18 solids**, as
+the straight world segment from the camera's FROM pos to its TO pos
+(segment-vs-box; a segment touching a box fails). These 18 boxes are
+the COMPLETE set — the seawall and the storeys are **not** D2-CLEAR
+solids (they appear only as occluders in the staging audit, a
+different check), and there is no gateleaf in this list. Where the
+body above names a partial solids list, THIS section governs.
+
+| # | solid | min [x, y, z] | max [x, y, z] |
+|---|-------|---------------|----------------|
+| 1 | town hall | [-4.5, 0, 9.5] | [4.5, 6.4, 18.5] |
+| 2 | village house @-16,-3 | [-18.45, 0, -5.05] | [-13.55, 6, -0.95] |
+| 3 | village house @-10,-4 | [-12.45, 0, -6.05] | [-7.55, 6, -1.95] |
+| 4 | village house @-20,3 | [-22.45, 0, 0.95] | [-17.55, 6, 5.05] |
+| 5 | village house @-14,7 | [-16.45, 0, 4.95] | [-11.55, 6, 9.05] |
+| 6 | village house @-8,11 | [-10.45, 0, 8.95] | [-5.55, 6, 13.05] |
+| 7 | village house @8,-4 | [5.55, 0, -6.05] | [10.45, 6, -1.95] |
+| 8 | village house @14,-2 | [11.55, 0, -4.05] | [16.45, 6, 0.05] |
+| 9 | village house @20,3 | [17.55, 0, 0.95] | [22.45, 6, 5.05] |
+| 10 | village house @14,10 | [11.55, 0, 7.95] | [16.45, 6, 12.05] |
+| 11 | village house @6,12 | [3.55, 0, 9.95] | [8.45, 6, 14.05] |
+| 12 | neighbour house @585 | [582.55, 0, -4.05] | [587.45, 5.6, 0.05] |
+| 13 | neighbour house @590 | [587.55, 0, -4.05] | [592.45, 5.6, 0.05] |
+| 14 | neighbour house @595 | [592.55, 0, -4.05] | [597.45, 5.6, 0.05] |
+| 15 | neighbour house @600 | [597.55, 0, -4.05] | [602.45, 5.6, 0.05] |
+| 16 | neighbour house @605 | [602.55, 0, -4.05] | [607.45, 5.6, 0.05] |
+| 17 | neighbour house @610 | [607.55, 0, -4.05] | [612.45, 5.6, 0.05] |
+| 18 | neighbour house @615 | [612.55, 0, -4.05] | [617.45, 5.6, 0.05] |
+
+(Generating rule in the source, for verification: the town hall is
+fixed as above; each village house centre [hx, hz] → min
+[hx−2.45, 0, hz−2.05], max [hx+2.45, 6.0, hz+2.05]; each neighbour
+house at x=hx, z centre −2 → min [hx−2.45, 0, −4.05], max
+[hx+2.45, 5.6, 0.05]. The boxes are the audit's conservative
+maximum-dimension solids from set.js buildWorld.)
+
+**For THIS shot (SH17, SEA):** NONE of the 18 stands in this shot's
+place (SEA, world z ∈ [-70,-18]) — the town hall and village houses
+(#1–#11) stand on the coast at world z ≥ -6.05, north of the sea
+place, and the neighbour houses (#12–#18) stand ~600 units east. The
+audit still tests the segment against all 18; a camera segment inside
+the SEA place cannot reach any of them. D2-CLEAR has never hit on SH17.
