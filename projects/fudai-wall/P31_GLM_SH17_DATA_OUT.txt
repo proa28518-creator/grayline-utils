@@ -1,0 +1,15 @@
+GLM SEAT OUTPUT — SH17 DATA FIX (phase 31, cause: rot keys carry the settled `at`)
+Seat: GLM (free/glm-5.3-flashx, APInex direct API, helper ~/workspace/tools/apinex2_chat.py)
+Brief: P31_GLM_SH17_DATA_BRIEF.md. Run by the phase-31 driver, 2026-11-23.
+Verbatim reply:
+
+```
+{id:'boat_sh17_a',kind:'boat',in:'world',at:p('SEA',[-3.5,.15,4]),rot:[0,0,0],keys:[{t:'line:15.start',at:p('SEA',[-3.5,.15,4]),rot:[0,0,0]},{t:39.90,at:p('SEA',[-3.5,.02,4])},{t:40.10,at:p('SEA',[-3.5,.02,4]),rot:[0,0,14]}]},
+{id:'boat_sh17_b',kind:'boat',in:'world',at:p('SEA',[2.5,.15,7]),rot:[0,0,0],keys:[{t:'line:15.start',at:p('SEA',[2.5,.15,7]),rot:[0,0,0]},{t:39.70,at:p('SEA',[2.5,.02,7])},{t:39.95,at:p('SEA',[2.5,.02,7]),rot:[0,0,-11]}]},
+```
+
+Driver check: the diff vs film.js lines 71–72 is exactly the two `at:` insertions
+on the rot keys (boat_a rot key gains at:p('SEA',[-3.5,.02,4]) = world
+[-3.5,0.02,-40]; boat_b rot key gains at:p('SEA',[2.5,.02,7]) = world
+[2.5,0.02,-37]); every other character identical. (The file's single leading
+space on each line is preserved on application.)
