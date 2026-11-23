@@ -37,7 +37,7 @@ const CAM_SH08_B=add(PLACES.COAST_VILLAGE,[4,3,-6]);
 const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);
 const CAM_SH09_B=add(PLACES.COAST_VILLAGE,[.3,2.1,4.0]);
 const CAM_SH10_A=add(BLUEPRINT,[1.8,3,9]), CAM_SH10_T=add(BLUEPRINT,[0,1.55,0]), CAM_SH10_B=add(BLUEPRINT,[1.8,3,9]);
-const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
+const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,14,16]), CAM_SH11_T=add(PLACES.SEA,[-5,0,18]);
 const CAM_SH12_A=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TA=add(PLACES.COAST_WALL,[-5,6.5,6]);
 const CAM_SH12_B=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TB=add(PLACES.COAST_WALL,[-5,6.5,6]);
 const lines=[
@@ -119,7 +119,7 @@ export default {
   {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
   {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
   {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
-  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}},
+  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:34}},
   {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}}
  ],
  captions:'words'

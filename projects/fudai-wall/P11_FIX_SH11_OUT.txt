@@ -1,0 +1,656 @@
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a206c7-be70-7102-885a-acdd537ff306
+--------
+user
+Execute the brief in P10_FIX_SH11_BRIEF.md in this project directory, exactly as written. NO LOCAL RENDERS of any kind — audits only. Apply only the values it names. When done, paste the complete audit outputs and a diff summary in your reply. Do not commit.
+codex
+I’ll read the brief and repository instructions, then make only the named changes and run its audit steps. I’ll avoid all local renders and won’t commit.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P10_FIX_SH11_BRIEF.md' -g 'AGENTS.md' -g 'orch/UI_BRIEF.md' -g '"'!vendor/renderer-original/**'"'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P10_FIX_SH11_BRIEF.md
+
+exec
+/bin/bash -lc "cat P10_FIX_SH11_BRIEF.md && git status --short --branch && rg --files -g 'AGENTS.md' -g 'orch/UI_BRIEF.md'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 0ms:
+# CODEX SEAT — APPLY BRIEF · phase 10 · cause: SH11 FLAT FRAMES (F768/F798/F822) — LEVER 1 OF 2 (THE PARK)
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md`; RULES.md §3
+(one cause, one change), §4, §5; `lessons/build.md`. This session applies
+ONE cause: SH11's sky-cycle frames measure ~14% detail / ~81% flat on
+pixels (pixel gate) — the current park (camera 40 D up) reads as near-empty
+sky/wall. The GLM seat computed the correction (`P9_GLM_SH11_OUT.txt`): a
+lower, closer park so the wall face, gate/lantern carriers and sea patch
+break the flatness while the sun/moon orbs stay in frame. (Lever 2 of
+GLM's proposal — set.js night-sky values — was checked by the driver
+against the current set.js and is already in place there; it is NOT part
+of this session.)
+
+Previous cause's verdict commit (hard-gate citation, filled by the driver
+at firing): `c9247da` — F711/F723 round-3 verdict NOT CLOSED (validated
+conflict, escalated to Layla with priced options; cause parked). No
+judgement is pending: this brief may fire.
+
+**HARD RULE (guard flag 6 standing correction): NO LOCAL RENDERS.** Do
+not run any render, board script, screenshot tool, or suite page on
+this machine. Audits only; the driver fleet-probes and judges.
+
+ASTRA REVIEW INPUT (2026-11-23, batch 2) — GOVERNING: the root cause is
+too much frame allocated to UNIFORM SKY. The correction reframes around
+a FIXED LAYERED COASTAL ROOFLINE occupying substantially more of the
+LOWER frame, preserving a clear UPPER CORRIDOR for the sun-to-moon
+progression. Use EXISTING scene detail only — no added props, no
+metric-gaming noise. The GLM lower park below is the mechanism; the
+verdict on the re-probed stills must confirm by eye: layered roofline
+present in the lower frame at all three moments, and the orbs' upper
+corridor unobstructed.
+
+APPLY EXACTLY (`scenes/film.js`):
+- `CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0])` → `CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,14,16])`
+- `CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14])` → `CAM_SH11_T=add(PLACES.SEA,[-5,0,18])`
+- SH11 shot entry (line ~122): `fov:50` → `fov:34`.
+(World result: pos [-5,14,18], target [-5,0,-26], fov 34.) Nothing else —
+set.js is NOT touched in this session.
+
+Then verify: `node --check scenes/film.js`, run
+`node tools/audit_staging.mjs` (full) and `node tools/audit_d1_d2.mjs`, and
+paste their complete outputs in your reply, plus a diff summary. Do NOT
+commit (the driver commits). Do not touch any other file.
+## ui/unified-interface...origin/ui/unified-interface
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P11_FIX_SH11_OUT.txt
+
+exec
+/bin/bash -lc "rg -n -C 3 'CAM_SH11|fov:50' scenes/film.js && sed -n '1,220p' tools/audit_staging.mjs && sed -n '1,180p' tools/audit_d1_d2.mjs" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+37-const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);
+38-const CAM_SH09_B=add(PLACES.COAST_VILLAGE,[.3,2.1,4.0]);
+39-const CAM_SH10_A=add(BLUEPRINT,[1.8,3,9]), CAM_SH10_T=add(BLUEPRINT,[0,1.55,0]), CAM_SH10_B=add(BLUEPRINT,[1.8,3,9]);
+40:const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
+41-const CAM_SH12_A=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TA=add(PLACES.COAST_WALL,[-5,6.5,6]);
+42-const CAM_SH12_B=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TB=add(PLACES.COAST_WALL,[-5,6.5,6]);
+43-const lines=[
+--
+111-  {id:'SH01',t0:0,t1:2.6,camera:{move:'push',from:{pos:CLOSE_POS,target:MAYOR_HEAD,fov:34},to:{pos:TILT_POS,target:TILT_TARGET,fov:38}}},
+112-  {id:'SH02',t0:2.6,t1:'line:1.end',camera:{move:'push',from:{pos:TILT_POS,target:TILT_TARGET,fov:38},to:{pos:WIDE_POS,target:WIDE_TARGET,fov:48}}},
+113-  {id:'SH03',t0:'line:2.start',t1:'line:2.end',camera:{move:'push',from:{pos:SEA_FROM,target:BOAT,fov:42},to:{pos:SEA_TO,target:BOAT,fov:42}}},
+114:  {id:'SH04',t0:'line:3.start',t1:'line:3.end',camera:{move:'push',from:{pos:CAM_SH04_A,target:CAM_SQUARE,fov:50},to:{pos:CAM_SH04_B,target:CAM_SQUARE,fov:50}}},
+115:  {id:'SH05',t0:'line:4.start',t1:'line:4.end',camera:{move:'push',ease:'inQuad',from:{pos:CAM_SH05_A,target:CAM_SH05_TA,fov:50},to:{pos:CAM_SH05_B,target:CAM_SH05_TB,fov:34}}},
+116:  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}},
+117:  {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
+118:  {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_WALL,[2,44,-20.5]),target:add(PLACES.COAST_WALL,[0,14,0]),fov:38}}},
+119-  {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
+120-  {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
+121-  {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
+122:  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}},
+123:  {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}}
+124- ],
+125- captions:'words'
+126-};
+// Static staging audit for Fudai Wall, chunk 2. Pure Node; no renderer/deps.
+// Geometry uses calibrated head centre y=1.9, r=.5, hip=1.35, top=2.4: phase-6
+// engine measurement was ~1.85–1.95; F0 (target 1.55, dist 5.1, fov 34) passes
+// and F687 (dist 2.9, fov 30) crops, consistent with this model and not y=1.55.
+// Named assumptions: stage-dependent lowCams rests are unavailable, so the
+// documented calibrated rest rule below is used. Camera roll is ignored (SH07
+// is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
+// corner counts use a world AABB after yaw rotation, per the audit specification.
+// D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
+// houses, three neighbour houses); wall and gateleaf are additional occluders.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import film from '../scenes/film.js';
+import { resolver, resolveTimes, autoMove } from '../lib/film/resolve.js';
+import { easeFn } from '../engine/ease.js';
+import { lowCams } from '../lib/film/end.js';
+import { hh } from '../engine/clips.js';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const words = JSON.parse(readFileSync(join(ROOT, 'audio/clean.json'), 'utf8'));
+const lines = [...new Set(words.map(w => w.line))].map(line => {
+  const ws = words.filter(w => w.line === line);
+  return { line, start: ws[0].start, end: ws.at(-1).end };
+});
+const voice = { words, lines };
+const R = resolver(voice);
+let shots = resolveTimes(film.shots, R, 'shots');
+const acts = Object.fromEntries(Object.entries(film.acts || {}).map(([id, a]) => [id, resolveTimes(a, R, `acts.${id}`)]));
+const props = resolveTimes(film.props || [], R, 'props');
+const dur = 68.08;
+const cast = film.cast;
+
+// Reconstruct the loader's character/rest inputs from each cast spec. These
+// specs share the renderer's proportion fields; hip and head heights stay tied
+// to the character's leg, neck, and head dimensions.
+const characters = Object.entries(cast).map(([name, c]) => {
+  const raw = JSON.parse(readFileSync(join(ROOT, 'scenes', c.spec), 'utf8'));
+  const spec = { ...raw, id: name };
+  const legLen = spec.limbs?.legLen ?? 1.35;
+  const hipY = legLen * .93;
+  const armLen = spec.limbs?.armLen ?? .95;
+  const rest = { hipY, headY: hipY + (spec.body?.neckHeight ?? .35) + (spec.body?.neckToHead ?? .35), neckToHead: spec.body?.neckToHead ?? .35, legLen, armLen,
+    ankleY: (spec.limbs?.width ?? .058) / 2 + .005, hipR: [-.22, -.2, 0], hipL: [.22, -.2, 0],
+    shoulderR: [-.4, .4, 0], shoulderL: [.4, .4, 0], neck: [0, .4, 0] };
+  const timeline = resolveTimes(JSON.parse(JSON.stringify(acts[name] || {})), R, `acts.${name}`);
+  timeline.root = timeline.root || { x: c.at?.[0] ?? 0, z: c.at?.[1] ?? 0, ry: c.ry ?? 0 };
+  timeline.settle ??= true;
+  return { name, spec, timeline, rest };
+});
+const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
+
+function posAt(id, t) {
+  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
+  if (!walks.length) return [base[0], 0, base[1]];
+  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
+  let remain = Math.max(0, t - w.t0) * speed;
+  for (let i=1;i<path.length;i++) {
+    const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    if (remain <= d) { const u=d ? remain/d:1; return [a[0]+(b[0]-a[0])*u,0,a[1]+(b[1]-a[1])*u]; }
+    remain -= d;
+  }
+  const p=path.at(-1); return [p[0],0,p[1]];
+}
+function faceAt(id,t,p) {
+  const a=acts[id]||{}, walks=(a.walk||[]).filter(w=>t>=w.t0);
+  if(walks.length){const w=walks.at(-1), path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
+    for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);if(rem<=d)return [path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]];rem-=d;}
+    const n=path.length;return [path[n-1][0]-path[n-2][0],path[n-1][1]-path[n-2][1]]; }
+  const look=(a.look||[]).filter(k=>k.t<=t).sort((x,y)=>x.t-y.t).at(-1);
+  if(look)return [look.at[0]-p[0],look.at[2]-p[2]];
+  const ry=(cast[id].ry||0)*Math.PI/180;return [Math.sin(ry),Math.cos(ry)];
+}
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,u)=>a+(b-a)*u;
+function lerpV(a,b,u){return a.map((v,i)=>lerp(v,b[i],u));}
+const raises=[];
+const lowered = lowCams(shots, characters, rests, { log: msg => raises.push(msg) });
+shots = lowered.shots;
+const moved=await autoMove(shots,dur);
+const shotById=id=>moved.find(s=>s.id===id);
+
+function camAt(shot,t){const c=shot.camera,a=c.t0??shot.t0,b=c.t1??shot.t1;let u=clamp((t-a)/(b-a));u=easeFn(c.ease??'outCubic')(u);return {pos:lerpV(c.from.pos,c.to.pos,u),target:lerpV(c.from.target,c.to.target,u),fov:lerp(c.from.fov??26,c.to.fov??26,u)};}
+
+function add(a,b){return a.map((x,i)=>x+b[i]);}
+function ry(v,yaw){const a=yaw*Math.PI/180;return [v[0]*Math.cos(a)+v[2]*Math.sin(a),v[1],-v[0]*Math.sin(a)+v[2]*Math.cos(a)];}
+function box(center,size,yaw=0){const [x,y,z]=size,a=Math.abs(yaw*Math.PI/180);const ex=Math.abs(x*Math.cos(a))+Math.abs(z*Math.sin(a)),ez=Math.abs(x*Math.sin(a))+Math.abs(z*Math.cos(a));return {center,min:[center[0]-ex/2,center[1]-y/2,center[2]-ez/2],max:[center[0]+ex/2,center[1]+y/2,center[2]+ez/2],size:[ex,y,ez]};}
+function corners(b){const out=[];for(const x of [b.min[0],b.max[0]])for(const y of [b.min[1],b.max[1]])for(const z of [b.min[2],b.max[2]])out.push([x,y,z]);return out;}
+function makeFrame(cam){const f=norm(sub(cam.target,cam.pos)), right=norm(cross(f,[0,1,0])), up=norm(cross(right,f));const v=cam.fov*Math.PI/180,h=2*Math.atan(Math.tan(v/2)*1080/1920);const planes=[];
+  for(const [axis,ang,other,swap] of [[right,h/2,up,false],[neg(right),h/2,up,true],[up,v/2,right,true],[neg(up),v/2,right,false]]){const edge=norm(add(f,mul(axis,Math.tan(ang))));let n=norm(swap?cross(other,edge):cross(edge,other));if(dot(n,f)<0)n=neg(n);planes.push({n});}
+  planes.push({n:f,dot:0,origin:cam.pos,near:true},{n:neg(f),dot:0,origin:cam.pos,far:true});
+  return {cam,planes,point(p){const d=sub(p,cam.pos);return dot(d,f)>=.1&&dot(d,f)<=2000&&planes.slice(0,4).every(pl=>dot(d,pl.n)>=-1e-7);},sphere(p,r){const d=sub(p,cam.pos);return dot(d,f)-r>=.1&&dot(d,f)+r<=2000&&planes.slice(0,4).every(pl=>dot(d,pl.n)>=r-1e-7);},depth(p){return dot(sub(p,cam.pos),f);},height(size,p){const d=this.depth(p);return d>0?2*Math.atan(size/(2*d))/(cam.fov*Math.PI/180)*1920:null;},width(size,p){const d=this.depth(p);return d>0?2*Math.atan(size/(2*d))/(h)*1080:null;},screen(p){const d=sub(p,cam.pos),z=dot(d,f);if(z<=.1)return null;const x=dot(d,right)/(z*Math.tan(h/2)),y=dot(d,up)/(z*Math.tan(v/2));return [(x+1)*540,(1-y)*960];}};
+}
+const sub=(a,b)=>a.map((v,i)=>v-b[i]), mul=(a,k)=>a.map(v=>v*k), dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0), norm=a=>mul(a,1/(Math.hypot(...a)||1)), cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], neg=a=>mul(a,-1);
+function segBox(p0,p1,b){let lo=0,hi=1;for(let i=0;i<3;i++){const d=p1[i]-p0[i];if(Math.abs(d)<1e-9){if(p0[i]<b.min[i]||p0[i]>b.max[i])return null;}else{let a=(b.min[i]-p0[i])/d,z=(b.max[i]-p0[i])/d;if(a>z)[a,z]=[z,a];lo=Math.max(lo,a);hi=Math.min(hi,z);if(lo>hi)return null;}}return lo>1e-6&&lo<1-1e-6?lo:null;}
+function occluder(p0,p1,t,exclude){return occs(t).filter(o=>o.name!==exclude).map(o=>({name:o.name,k:segBox(p0,p1,o)})).filter(x=>x.k!=null).sort((a,b)=>a.k-b.k)[0]?.name||null;}
+const solids=[{name:'town hall',min:[-4.5,0,9.5],max:[4.5,6.4,18.5]}];
+for(const [x,z] of [[-16,-3],[-10,-4],[-20,3],[-14,7],[-8,11],[8,-4],[14,-2],[20,3],[14,10],[6,12]])solids.push({name:`village house @${x},${z}`,min:[x-2.45,0,z-2.05],max:[x+2.45,6,z+2.05]});
+for(const x of [580,600,620])solids.push({name:`neighbour house @${x}`,min:[x-2.45,0,8-2.05],max:[x+2.45,5.6,8+2.05]});
+function occs(t){const out=solids.map(b=>({...b}));out.push({name:'seawall',...box([0,9,-16],[90,18,1.15])});const g=props.find(p=>p.id==='gateleaf');if(g){const st=propState(g,t);if(st.visible)out.push({name:'gateleaf',...box(add(st.at,[0,17.88*(st.lift-.5),0]),[7,17.88,.36])});}return out;}
+function propState(p,t){const ks=p.keys||[], before=ks.filter(k=>k.t<=t).sort((a,b)=>a.t-b.t), key=before.at(-1)||{};const lastField=f=>before.filter(k=>k[f]!=null).at(-1)?.[f];const visible=key.drop?true:(lastField('in')??p.in??'world')==='world';const at=[...(lastField('at')??p.at)],rot=[...(lastField('rot')??p.rot??[0,0,0])];
+  const val=(field,def)=>{if(p[field]==null)return def;const keyed=before.filter(k=>k[field]!=null);if(!keyed.length)return p[field];const prev=keyed.at(-1),ix=keyed.length-1,ease=prev.ease;if(ease!=null&&ix>0){const prior=keyed[ix-1],u=clamp((t-prev.t)/ease);const sm=u*u*(3-2*u);return lerp(prior[field],prev[field],sm);}return prev[field];};
+  return {visible,at,rot,page:val('page',0),h:val('h',.8),lift:val('lift',0),lineY:val('lineY',1),pin:val('pin',0),cx:val('cx',0),cy:val('cy',12)};}
+function dropState(p,t){const k=(p.keys||[]).filter(k=>k.t<=t).at(-1);if(!k?.drop)return null;const d=k.drop,dt=t-k.t,g=d.g??9.8,v0=d.v0||[0,0,0],from=d.from||k.at||p.at,ground=d.ground??0,a=g/2,c=from[1]-ground,T=a>0?(v0[1]+Math.sqrt(v0[1]**2+4*a*Math.max(0,c)))/(2*a):Infinity;if(d.hide&&dt>T)return null;const u=Math.min(dt,T),y=from[1]+v0[1]*u-.5*g*u*u;return [from[0]+v0[0]*u,y,from[2]+v0[2]*u];}
+function boxCheck(frame,b,minPx=0,skipOcc=false,name='subject'){const n=corners(b).filter(p=>frame.point(p)).length,center=frame.point(b.center),px=frame.height(b.size[1],b.center),pw=frame.width(b.size[0],b.center),by=!skipOcc?occluder(frame.cam.pos,b.center,currentTime,name):null,behind=frame.depth(b.center)<=0;return {pass:center&&!by&&px!=null&&px>=minPx&&(n>=4||px>=1920||pw>=1080),n,px,pw,center,occluded:by,behind};}
+let currentTime=0;
+function propBox(id,t){const p=props.find(x=>x.id===id);if(!p)return null;const s=propState(p,t);if(!s.visible)return null;const a=s.at,r=s.rot[1]||0,kind=p.kind;let B,points=[];
+  if(kind==='boardsign')B=box(add(a,[0,(p.post?p.leg||1.2:0)+(p.h||.8)/2,0]),[p.w||2,p.h||.8,.12],r);
+  if(kind==='calendar')B=box(add(a,[0,1.9,0]),[2.2,3.5,.2],r);
+  if(kind==='measure'){if(id.endsWith('label'))return null;}
+  if(kind==='money')B=box(add(a,[0,.55,0]),[3.7,1.15,2.1],r);
+  if(kind==='crane')B=box(add(a,ry([2,8,0],r)),[11.5,16.8,1.2],r);
+  if(kind==='gateleaf')B=box(add(a,[0,17.88*(s.lift-.5),0]),[7,17.88,.36],r);
+  if(kind==='seawall')B=box(add(a,[0,9,0]),[90,18,1.15],r);
+  if(kind==='blueprint')B=box(add(a,[0,1.7,0]),[3.4,3.4,.2],r);
+  if(kind==='orb')return {sphere:add(a,[s.cx,s.cy,0]),r:p.r||1.5,state:s};
+  if(kind==='coins'){const q=dropState(p,t);return q?{box:box(q,[.5,.5,.5]),state:s}:null;}
+  return B?{box:B,state:s}:null;
+}
+const houseBoxes=[580,600,620].map(x=>box([x,2.1,8],[4,4.2,3.5]));
+const wallBox=box([600,6,-10],[24,12,.8]);
+const moments=[
+ [219,7.3,'SH04'],[241,8.0333333333,'SH04'],[288,9.6,'SH05'],[345,11.5,'SH05'],[414,13.8,'SH05'],[474,15.8,'SH06'],[537,17.9,'SH07'],[570,19,'SH07'],[590,19.6666667,'SH07B'],[621,20.7,'SH08'],[639,21.3,'SH08'],[669,22.3,'SH09'],[687,22.9,'SH09'],[711,23.7,'SH10'],[723,24.1,'SH10'],[768,25.6,'SH11'],[798,26.6,'SH11'],[822,27.4,'SH11'],[870,29,'SH12']
+];
+function pointCheck(frame,p){return frame.point(p)&&!occluder(frame.cam.pos,p,currentTime);}
+function screenVerticalSpan(frame, points){const ys=points.map(p=>frame.screen(p)).filter(p=>p!==null).map(p=>p[1]);return ys.length?Math.max(...ys)-Math.min(...ys):0;}
+function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+const results=[];
+for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotId);if(!shot){results.push({frameNo,shotId,checks:['missing shot']});continue;}const cam=camAt(shot,t),fr=makeFrame(cam),checks=[];let occupancy=false;
+ if(cam.fov<24||cam.fov>50)checks.push(`fov ${cam.fov.toFixed(2)} out of grammar [24, 50]`);
+ const inside=occs(t).find(o=>cam.pos.every((v,i)=>v>=o.min[i]-.3&&v<=o.max[i]+.3));
+ if(inside)checks.push(`camera inside ${inside.name}`);
+ const prop=(id,minPx,component)=>{let q=propBox(id,t);if(id==='measure_plate'){const p=props.find(x=>x.id==='measure'),s=propState(p,t);q={box:box(add(s.at,[.32,p.full??18,0]),[1.35,.42,.1],s.rot[1]||0),state:s};}
+  if(id==='seawall_gate'){const p=props.find(x=>x.id==='seawall'),s=propState(p,t);q={box:box(add(s.at,[0,8.94,.62]),[7,17.88,.55]),state:s};}
+  if(!q){checks.push(`${id} absent`);return false;}let ck;if(q.sphere){const inside=fr.sphere(q.sphere,q.r),oc=occluder(cam.pos,q.sphere,t,id),px=fr.height(q.r*2,q.sphere);ck={pass:inside&&!oc&&px!=null&&px>=minPx,px,inside,oc,behind:fr.depth(q.sphere)<=0};}
+  else {ck=boxCheck(fr,q.box,minPx,false,id);}
+  const by=ck.occluded||ck.oc;checks.push(`${id} ${ck.pass?'PASS':'FAIL'} ${ck.px?.toFixed(0)??'n/a'}px${ck.behind?' behind camera':''} corners ${ck.n??'-'}/8${by?` occluded by ${by}`:''}`);if(ck.center&&ck.px>=230)occupancy=true;return ck.pass;};
+ const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+ const body=(id,b)=>{const ck=boxCheck(fr,b,0,true,id);return ck.pass;};
+ const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
+ const point=(name,p)=>{const pass=pointCheck(fr,p),behind=fr.depth(p)<=0;checks.push(`${name} ${pass?'PASS':'FAIL'} point ${behind?'behind camera':pass?'in':'out'} frustum`);return pass;};
+ switch(frameNo){
+ case 219: face('mayor');{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+ case 241: face('mayor');prop('popsign',60);{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+ case 288: prop('crane_a',120)||prop('crane_b',120);prop('money',60);prop('moneysign',60);break;
+ case 345: prop('calendar',120);checks.push(`calendar effPage ${propState(props.find(p=>p.id==='calendar'),t).page.toFixed(1)}${propState(props.find(p=>p.id==='calendar'),t).page>=5?' PASS':' FAIL'}`);prop('seawall_gate',200);break;
+ case 414: prop('measure_plate',40);checks.push(`measure effH ${propState(props.find(p=>p.id==='measure'),t).h.toFixed(1)}${propState(props.find(p=>p.id==='measure'),t).h>=17?' PASS':' FAIL'}`);prop('calendar',120);checks.push(`calendar effPage ${propState(props.find(p=>p.id==='calendar'),t).page.toFixed(1)}${propState(props.find(p=>p.id==='calendar'),t).page>=10?' PASS':' FAIL'}`);checks.push(`gateleaf effLift ${propState(props.find(p=>p.id==='gateleaf'),t).lift.toFixed(2)}${propState(props.find(p=>p.id==='gateleaf'),t).lift>=.9?' PASS':' FAIL'}`);break;
+ case 474: {const c=boxCheck(fr,wallBox,150,true,'neighbour wall');checks.push(`neighbour wall ${c.pass?'PASS':'FAIL'} ${c.px?.toFixed(0)??'n/a'}px corners ${c.n}/8`);if(c.center&&c.px>=230)occupancy=true;prop('sticker_a',60);prop('sticker_b',60);const n=houseBoxes.filter(b=>boxCheck(fr,b,0,true).pass).length;checks.push(`neighbour houses ${n>=1?'PASS':'FAIL'} ${n}/1`);break;}
+ case 537: face('mocker_a',200);break;
+ case 570: {const p=posAt('mocker_a',t),h=[p[0],1.9,p[2]],headIn=fr.point(h)&&fr.sphere(h,.5),headPx=fr.height(1,h);checks.push(`mocker_a head ${headIn?'PASS':'FAIL'} centre ${fr.depth(h)<=0?'behind camera':fr.point(h)?'in':'out'} frustum ${headPx==null?'n/a':headPx.toFixed(0)+'px'}`);if(headIn&&headPx>=230)occupancy=true;point('wall top',[3,18,-15.42]);break;}
+ case 590: {const cp=props.find(p=>p.id==='coins'),dropKey=cp.keys.find(k=>k.drop),coinPos=dropState(cp,t);checks.push(`coins drop-start ${dropKey?.t?.toFixed(3)??'n/a'}s position ${coinPos?`[${coinPos.map(v=>v.toFixed(2)).join(', ')}]`:'hidden'}`);prop('coins',24);point('wall top',[2,18,-15.42]);break;}
+ case 621: case 639: {const ids=['mocker_a','mocker_b','mocker_c','villager_2','villager_4'],n=ids.filter(id=>faceCheck(fr,id,t).pass).length;checks.push(`faces ${n>=2?'PASS':'FAIL'} ${n}/2 (angle threshold 60°)`);for(const id of ids){const f=faceCheck(fr,id,t);checks.push(`${id} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.pass&&f.px>=230)occupancy=true;}break;}
+ case 669: face('mayor',250);break;case 687:face('mayor',200);break;
+ case 711: prop('blueprint',150);{const p=props.find(x=>x.id==='blueprint'),s=propState(p,t);point('blueprint line',add(s.at,[.15,.75+s.lineY*1.9,.12]));point('blueprint palm',add(s.at,[1.42,.75+s.lineY*1.9,.13]));}break;
+ case 723: prop('blueprint',150);{const p=props.find(x=>x.id==='blueprint'),s=propState(p,t);if(s.pin<1)checks.push(`blueprint ruler FAIL absent effPin ${s.pin}`);else{const b=box(add(s.at,[1.28,1.7,.14]),[.18,2.05,.07]);const q=boxCheck(fr,b,60,false,'blueprint ruler');checks.push(`blueprint ruler ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}const l=boxCheck(fr,box(add(s.at,[1.3,2.82,.14]),[.9,.28,.06]),40,false,'blueprint label');checks.push(`blueprint label ${l.pass?'PASS':'FAIL'} ${l.px?.toFixed(0)??'n/a'}px corners ${l.n}/8`);}break;
+ case 768: case 798: case 822: prop('seawall',300);{const seaCorners=[[-15,0,-40],[15,0,-40],[-15,0,-20],[15,0,-20]],span=screenVerticalSpan(fr,seaCorners),centreIn=fr.point([0,0,-30]),pass=centreIn&&span>=40;checks.push(`sea patch ${pass?'PASS':'FAIL'} ${span.toFixed(0)}px centre ${centreIn?'in':'out'}`);const id=frameNo===822?'moonorb':'sunorb';prop(id,0);}break;
+ case 870: prop('mocksign',80);{const n=bodyIds(['mocker_b','mocker_c','villager_1','villager_3']).length;checks.push(`passers-by ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+ }
+ if(!occupancy)checks.push('FAIL subjects do not occupy the frame (no required subject ≥230px)');
+ results.push({frameNo,t,shotId,checks});
+}
+if(raises.length){console.log('LOWCAMS raises:');for(const r of raises)console.log(`  ${r}`);}
+console.log('FRAME | TIME | SHOT | RESULT | CHECKS');
+let failed=0;
+for(const r of results){const bad=r.checks.filter(x=>/FAIL| absent|do not occupy|out of grammar|camera inside/.test(x));if(bad.length)failed++;const shot=shotById(r.shotId),cam=shot&&camAt(shot,r.t);if(cam)console.log(`CAM F${r.frameNo} pos [${cam.pos.map(v=>v.toFixed(2)).join(', ')}] target [${cam.target.map(v=>v.toFixed(2)).join(', ')}] fov ${cam.fov.toFixed(2)}`);console.log(`F${r.frameNo} | ${r.t.toFixed(2)} | ${r.shotId} | ${bad.length?'FAIL':'PASS'} | ${r.checks.join('; ')}`);}
+console.log(`${failed?`FAIL (${failed}/19 moments)`:'PASS (19/19 moments)'}`);
+process.exitCode=failed?1:0;
+// tools/audit_d1_d2.mjs — Seat 1 driver-side static audits for the Fudai build.
+// D1: film.props schema (ARRAY of {id, kind, in:'world', at:[x,y,z], keys:[{t, at}]},
+//     ids unique, keys non-empty; box entry keeps fetch:true when present),
+//     purity scan (no Math.random / no Date in scene sources).
+// D2: ONE PLACES table exported from scenes/set.js (all 7 places, at + bounds);
+//     every prop `at`, cast `at`, and camera target falls inside a declared
+//     place's bounds (zone audit); camera targets sane in y (frustum pre-audit —
+//     the looked-at zoom frustum check stays Seat 4's, on the probe stills).
+// Run: node tools/audit_d1_d2.mjs   (from the project folder)
+// Exit 0 = PASS, 1 = FAIL (failures printed, one per line).
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const fails = [];
+const notes = [];
+const ok = (cond, msg) => { if (!cond) fails.push(msg); };
+
+const filmSrc = readFileSync(join(ROOT, 'scenes/film.js'), 'utf8');
+const setSrc = readFileSync(join(ROOT, 'scenes/set.js'), 'utf8');
+
+// ---- purity (RULES §4) across all authored scene sources ----
+import { readdirSync } from 'node:fs';
+const scan = (dir) => {
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) scan(p);
+    else if (e.name.endsWith('.js')) {
+      const s = readFileSync(p, 'utf8');
+      if (/Math\.random/.test(s)) fails.push(`PURITY: Math.random in ${p}`);
+      if (/\bDate\s*\(|Date\.now/.test(s)) fails.push(`PURITY: Date in ${p}`);
+    }
+  }
+};
+scan(join(ROOT, 'scenes'));
+
+// ---- load the film + the PLACES table ----
+const film = (await import(join(ROOT, 'scenes/film.js'))).default;
+const setMod = await import(join(ROOT, 'scenes/set.js'));
+const PLACES = setMod.PLACES;
+ok(PLACES && typeof PLACES === 'object', 'D2: scenes/set.js does not export a PLACES table');
+ok(/import\s*\{[^}]*PLACES[^}]*\}\s*from\s*'\.\/set\.js'/.test(filmSrc),
+  'D2: film.js does not import PLACES from ./set.js');
+
+const EXPECTED = ['COAST_WALL', 'COAST_VILLAGE', 'SEA', 'NEIGHBOR_COAST', 'FLASHBACK_ROCK', 'ROOM', 'HILL_GRAVE'];
+for (const name of EXPECTED) {
+  const p = PLACES?.[name];
+  ok(p, `D2: PLACES.${name} missing`);
+  if (!p) continue;
+  ok(Array.isArray(p.at) && p.at.length === 3, `D2: PLACES.${name}.at is not a 3-vector`);
+  ok(p.bounds && Array.isArray(p.bounds.x) && Array.isArray(p.bounds.z),
+    `D2: PLACES.${name}.bounds missing {x:[..], z:[..]}`);
+}
+const inBounds = (x, z) => EXPECTED.some(n => {
+  const b = PLACES[n]?.bounds; if (!b) return false;
+  return x >= b.x[0] && x <= b.x[1] && z >= b.z[0] && z <= b.z[1];
+});
+const placeOf = (x, z) => EXPECTED.find(n => {
+  const b = PLACES[n]?.bounds; if (!b) return false;
+  return x >= b.x[0] && x <= b.x[1] && z >= b.z[0] && z <= b.z[1];
+});
+
+// ---- D1: props schema ----
+ok(Array.isArray(film.props), 'D1: film.props is NOT an array');
+if (Array.isArray(film.props)) {
+  const ids = new Set();
+  for (const p of film.props) {
+    ok(p.id && !ids.has(p.id), `D1: prop id missing/duplicated: ${p.id}`);
+    ids.add(p.id);
+    ok(typeof p.kind === 'string' && /^[a-z][a-z0-9_]*$/.test(p.kind), `D1: prop ${p.id}: bad kind ${p.kind}`);
+    ok(p.in === 'world', `D1: prop ${p.id}: in !== 'world' (${p.in})`);
+    ok(Array.isArray(p.at) && p.at.length === 3 && p.at.every(v => Number.isFinite(v)),
+      `D1: prop ${p.id}: at is not a finite 3-vector`);
+    ok(Array.isArray(p.keys) && p.keys.length > 0, `D1: prop ${p.id}: keys empty`);
+    if (Array.isArray(p.keys)) {
+      const nums = p.keys.map(k => k.t).filter(t => typeof t === 'number');
+      ok(nums.every((v, i) => i === 0 || v >= nums[i - 1]), `D1: prop ${p.id}: numeric keys not sorted by t`);
+      for (const k of p.keys) if (k.at) ok(Array.isArray(k.at) && k.at.length === 3, `D1: prop ${p.id}: a key's at is not a 3-vector`);
+    }
+    // D2 zone: prop position inside a declared place
+    if (Array.isArray(p.at)) ok(inBounds(p.at[0], p.at[2]),
+      `D2: prop ${p.id} at [${p.at}] is outside every place's bounds`);
+    else notes.push(`prop ${p.id}: no at to zone-check`);
+    if (p.id === 'box' || p.kind === 'box') ok(p.fetch === true, 'D1: belongings box entry lost fetch: true');
+  }
+  if (!film.props.some(p => p.id === 'box' || p.kind === 'box'))
+    notes.push('D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)');
+}
+
+// ---- D2: cast + cameras inside places ----
+for (const [id, c] of Object.entries(film.cast || {})) {
+  ok(Array.isArray(c.at) && c.at.length === 2, `D2: cast ${id}: at is not [x, z]`);
+  if (Array.isArray(c.at)) ok(inBounds(c.at[0], c.at[1]),
+    `D2: cast ${id} at [${c.at}] is outside every place's bounds`);
+}
+ok(Array.isArray(film.shots) && film.shots.length > 0, 'D2: film.shots empty');
+for (const [i, s] of (film.shots || []).entries()) {
+  const ends = s.camera?.move === 'park' ? [s.camera] : [s.camera?.from, s.camera?.to];
+  for (const e of ends) {
+    if (!e) { fails.push(`D2: shot ${i + 1}: missing camera from/to`); continue; }
+    ok(Array.isArray(e.target) && e.target.length === 3, `D2: shot ${i + 1}: target not a 3-vector`);
+    if (Array.isArray(e.target)) {
+      ok(inBounds(e.target[0], e.target[2]),
+        `D2: shot ${i + 1}: target [${e.target}] outside every place's bounds`);
+      ok(e.target[1] >= 0 && e.target[1] <= 19.5,
+        `D2: shot ${i + 1}: target y ${e.target[1]} outside sane 0..19.5 (wall is 18 D)`);
+    }
+    ok(Array.isArray(e.pos) && e.pos.length === 3, `D2: shot ${i + 1}: pos not a 3-vector`);
+  }
+}
+
+// ---- D2-CLEAR: camera paths vs building solids (phase-7 extension) ----
+// Conservative solids from set.js buildWorld at MAXIMUM dimensions (village house
+// w<=4.9 -> hx 2.45, d<=4.1 -> hz 2.05, h<=4.65 + roof cone 1.25 -> top 6.0; town hall
+// box + cone r4.5 -> x +-4.5, z 9.5..18.5, top 6.4; neighbour houses h 4.2 + roof -> 5.6).
+// A path clearing these boxes clears the real buildings. Wall/storeys are NOT solids.
+const SOLIDS = [{ name: 'town hall', min: [-4.5, 0, 9.5], max: [4.5, 6.4, 18.5] }];
+for (const [hx, hz] of [[-16, -3], [-10, -4], [-20, 3], [-14, 7], [-8, 11], [8, -4], [14, -2], [20, 3], [14, 10], [6, 12]])
+  SOLIDS.push({ name: `village house @${hx},${hz}`, min: [hx - 2.45, 0, hz - 2.05], max: [hx + 2.45, 6.0, hz + 2.05] });
+for (const hx of [580, 600, 620])
+  SOLIDS.push({ name: `neighbour house @${hx}`, min: [hx - 2.45, 0, 8 - 2.05], max: [hx + 2.45, 5.6, 8 + 2.05] });
+function segHitsBox(p0, p1, b) {
+  let t0 = 0, t1 = 1;
+  for (let i = 0; i < 3; i++) {
+    const d = p1[i] - p0[i];
+    if (Math.abs(d) < 1e-9) { if (p0[i] < b.min[i] || p0[i] > b.max[i]) return false; }
+    else {
+      let ta = (b.min[i] - p0[i]) / d, tb = (b.max[i] - p0[i]) / d;
+      if (ta > tb) { const t = ta; ta = tb; tb = t; }
+      t0 = Math.max(t0, ta); t1 = Math.min(t1, tb);
+      if (t0 > t1) return false;
+    }
+  }
+  return true;
+}
+// Scope: chunk-2 shots (index >= 3, SH04+). SH01-SH03 are frozen and critic-passed;
+// their paths were fleet-probe-verified in phases 1-3, and the max-dim box overstates
+// the town-hall cone (round cross-section), so the opening is exempt from this check.
+for (const [i, s] of (film.shots || []).entries()) {
+  if (i < 3) continue;
+  const ends = s.camera?.move === 'park' ? [s.camera] : [s.camera?.from, s.camera?.to];
+  const p0 = ends[0]?.pos, p1 = ends[ends.length - 1]?.pos;
+  if (!Array.isArray(p0) || !Array.isArray(p1)) continue;
+  for (const b of SOLIDS)
+    ok(!segHitsBox(p0, p1, b), `D2-CLEAR: shot ${i + 1} (${s.id || '?'}) camera path intersects ${b.name}`);
+}
+notes.push(`D2-CLEAR: ${SOLIDS.length} building solids checked per shot`);
+
+// ---- format locks ----
+ok(film.fps === 30, `FORMAT: fps !== 30 (${film.fps})`);
+ok(JSON.stringify(film.size) === '[1080,1920]', `FORMAT: size !== [1080,1920] (${film.size})`);
+ok(film.voice?.file === 'voice_owner.wav', `FORMAT: voice.file !== voice_owner.wav (${film.voice?.file})`);
+ok(Array.isArray(film.voice?.lines) && film.voice.lines.length === 24,
+  `FORMAT: voice.lines !== 24 (${film.voice?.lines?.length})`);
+
+console.log('— D1/D2 AUDIT —');
+for (const n of notes) console.log('note:', n);
+if (fails.length) { console.log(`FAIL (${fails.length}):`); for (const f of fails) console.log('  ✗', f); process.exit(1); }
+console.log('PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.');
+console.log('places:', EXPECTED.map(n => `${n}@${PLACES[n].at}`).join(' · '));
+
+codex
+The brief calls for three value changes in `scenes/film.js`; the other listed working-tree files are unrelated, so I’ll leave them untouched. I’m applying those exact substitutions now, then I’ll run the syntax check and both audits without invoking render or screenshot tooling.
+exec
+/bin/bash -lc "python3 - <<'PY'
+from pathlib import Path
+p = Path('scenes/film.js')
+s = p.read_text()
+old = \"const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);\"
+new = \"const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,14,16]), CAM_SH11_T=add(PLACES.SEA,[-5,0,18]);\"
+assert s.count(old) == 1
+s = s.replace(old, new)
+old = \"{id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}}\"
+new = \"{id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:34}}\"
+assert s.count(old) == 1
+p.write_text(s.replace(old, new))
+PY
+node --check scenes/film.js
+node tools/audit_staging.mjs
+node tools/audit_d1_d2.mjs
+git diff -- scenes/film.js
+git status --short --branch" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 634ms:
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 13.87, 17.60] target [-5.00, 0.00, -26.00] fov 34.00
+F768 | 25.60 | SH11 | FAIL | seawall PASS 1699px corners 0/8; sea patch PASS 368px centre in; sunorb FAIL 145px corners -/8 occluded by seawall
+CAM F798 pos [-5.00, 13.57, 16.65] target [-5.00, 0.00, -26.00] fov 34.00
+F798 | 26.60 | SH11 | FAIL | seawall PASS 1748px corners 0/8; sea patch PASS 376px centre in; sunorb FAIL 152px corners -/8 occluded by seawall
+CAM F822 pos [-5.00, 13.34, 15.93] target [-5.00, 0.00, -26.00] fov 34.00
+F822 | 27.40 | SH11 | FAIL | seawall PASS 1788px corners 0/8; sea patch PASS 382px centre in; moonorb FAIL 113px corners -/8 occluded by seawall
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (5/19 moments)
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 98cc038..5f75ea1 100644
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -37,7 +37,7 @@ const CAM_SH08_B=add(PLACES.COAST_VILLAGE,[4,3,-6]);
+ const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);
+ const CAM_SH09_B=add(PLACES.COAST_VILLAGE,[.3,2.1,4.0]);
+ const CAM_SH10_A=add(BLUEPRINT,[1.8,3,9]), CAM_SH10_T=add(BLUEPRINT,[0,1.55,0]), CAM_SH10_B=add(BLUEPRINT,[1.8,3,9]);
+-const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
++const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,14,16]), CAM_SH11_T=add(PLACES.SEA,[-5,0,18]);
+ const CAM_SH12_A=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TA=add(PLACES.COAST_WALL,[-5,6.5,6]);
+ const CAM_SH12_B=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TB=add(PLACES.COAST_WALL,[-5,6.5,6]);
+ const lines=[
+@@ -119,7 +119,7 @@ export default {
+   {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
+   {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
+   {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
+-  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}},
++  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:34}},
+   {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}}
+  ],
+  captions:'words'
+## ui/unified-interface...origin/ui/unified-interface
+ M scenes/film.js
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P11_FIX_SH11_OUT.txt
+
+codex
+Applied only the three requested changes in [scenes/film.js](/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/scenes/film.js): SH11 camera offset, target offset, and FOV. No commit or local render was made.
+
+**Diff summary:** 2 lines changed; 3 values updated. `node --check scenes/film.js` passed with no output.
+
+**Complete audit outputs**
+
+`node tools/audit_staging.mjs`:
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 13.87, 17.60] target [-5.00, 0.00, -26.00] fov 34.00
+F768 | 25.60 | SH11 | FAIL | seawall PASS 1699px corners 0/8; sea patch PASS 368px centre in; sunorb FAIL 145px corners -/8 occluded by seawall
+CAM F798 pos [-5.00, 13.57, 16.65] target [-5.00, 0.00, -26.00] fov 34.00
+F798 | 26.60 | SH11 | FAIL | seawall PASS 1748px corners 0/8; sea patch PASS 376px centre in; sunorb FAIL 152px corners -/8 occluded by seawall
+CAM F822 pos [-5.00, 13.34, 15.93] target [-5.00, 0.00, -26.00] fov 34.00
+F822 | 27.40 | SH11 | FAIL | seawall PASS 1788px corners 0/8; sea patch PASS 382px centre in; moonorb FAIL 113px corners -/8 occluded by seawall
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (5/19 moments)
+```
+
+`node tools/audit_d1_d2.mjs`:
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+The staging audit reports 5 failing moments, including SH11’s orb occlusion at F768, F798, and F822. No additional values were changed beyond the brief.
+tokens used
+18,895
+Applied only the three requested changes in [scenes/film.js](/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/scenes/film.js): SH11 camera offset, target offset, and FOV. No commit or local render was made.
+
+**Diff summary:** 2 lines changed; 3 values updated. `node --check scenes/film.js` passed with no output.
+
+**Complete audit outputs**
+
+`node tools/audit_staging.mjs`:
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.08, 2.48, -4.54] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 15.0° head in 480px
+CAM F570 pos [5.50, 2.20, 4.20] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a head PASS centre in frustum 520px; wall top PASS point in frustum
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 13.87, 17.60] target [-5.00, 0.00, -26.00] fov 34.00
+F768 | 25.60 | SH11 | FAIL | seawall PASS 1699px corners 0/8; sea patch PASS 368px centre in; sunorb FAIL 145px corners -/8 occluded by seawall
+CAM F798 pos [-5.00, 13.57, 16.65] target [-5.00, 0.00, -26.00] fov 34.00
+F798 | 26.60 | SH11 | FAIL | seawall PASS 1748px corners 0/8; sea patch PASS 376px centre in; sunorb FAIL 152px corners -/8 occluded by seawall
+CAM F822 pos [-5.00, 13.34, 15.93] target [-5.00, 0.00, -26.00] fov 34.00
+F822 | 27.40 | SH11 | FAIL | seawall PASS 1788px corners 0/8; sea patch PASS 382px centre in; moonorb FAIL 113px corners -/8 occluded by seawall
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (5/19 moments)
+```
+
+`node tools/audit_d1_d2.mjs`:
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+The staging audit reports 5 failing moments, including SH11’s orb occlusion at F768, F798, and F822. No additional values were changed beyond the brief.
