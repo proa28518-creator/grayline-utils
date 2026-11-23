@@ -1,0 +1,10 @@
+DEFECT RESTATED: the block read `chunks[ci]` instead of resolving `sea_sheet_sh17` from `props` by id.
+
+AUDIT BLOCK:
+// Phase-14 P14_GLM_CAUSE7_BRIEF.md (GLM seat): F1197 sea_sheet state rider restored per Qwen's declared moment.
+if (frameNo === 1197) {
+  const p = props.find(x => x.id === 'sea_sheet_sh17');
+  const lastKey = p ? [...p.keys].filter(k => k.t <= t).pop() : null;
+  const pull = lastKey ? (lastKey.pull ?? p.pull ?? 0) : (p ? p.pull ?? 0 : 0);
+  checks.push(`sea_sheet_sh17 state rider ${pull >= 12 ? 'PASS' : 'FAIL'} pull ${pull} >= 12`);
+}

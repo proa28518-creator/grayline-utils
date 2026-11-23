@@ -1,0 +1,24 @@
+BASELINE RESTATED: D1/D2 fail with 2 failures (D2-CLEAR SH13 + SH16 only). CHUNK3 F1188 fails as `sea_sheet_sh17 state FAIL pull 0 >= 6` and stays parked. CHUNK3 F1197 passes with `boat_sh17_a PASS 512px in frustum` and no rider yet. CHUNK3 F1215 fails with `boat_sh17_b FAIL 638px out of frustum`. Chunk 3 total is 19/40 PASS; chunk 2 audit lines are unchanged.
+
+FILM LINES:
+```
+ {id:'sea_sheet_sh17',kind:'sea_sheet',in:'world',at:p('SEA',[0,.02,0]),pull:0,keys:[{t:'line:15.start',pull:0},{t:'line:15.word:2',pull:4},{t:39.90,pull:14},{t:40.50,pull:36},{t:'line:15.end',pull:36}]},
+ {id:'boat_sh17_a',kind:'boat',in:'world',at:p('SEA',[-3.5,.15,4]),keys:[{t:'line:15.start',at:p('SEA',[-3.5,.15,4])},{t:39.90,at:p('SEA',[-3.5,.02,4])}]},
+ {id:'boat_sh17_b',kind:'boat',in:'world',at:p('SEA',[2.5,.15,7]),keys:[{t:'line:15.start',at:p('SEA',[2.5,.15,7])},{t:39.70,at:p('SEA',[2.5,.02,7])}]},
+```
+
+AUDIT BLOCK:
+```
+// Phase-14 P14_GLM_CAUSE7_BRIEF.md (GLM seat): F1197 sea_sheet state rider restored per Qwen's declared moment.
+if(frameNo===1197){
+  const prop=chunks[ci].props.find(x=>x.id==='sea_sheet_sh17');
+  let pull=prop?.pull??0;
+  for(const k of (prop?.keys||[])){
+    if(k.t<=t && typeof k.pull==='number') pull=k.pull;
+  }
+  checks.push(pull>=12?`sea_sheet_sh17 state rider PASS pull ${pull} >= 12`:`sea_sheet_sh17 state rider FAIL pull ${pull} >= 12`);
+}
+ chunk3Results.push({frameNo,t,shotId,checks});
+```
+
+PREDICTED READINGS: F1197 keeps PASS `boat_sh17_a PASS 512px in frustum` and gains `sea_sheet_sh17 state rider PASS pull 14 >= 12`. F1188 stays FAIL `sea_sheet_sh17 state FAIL pull 0 >= 6`. F1215 stays FAIL `boat_sh17_b FAIL 638px out of frustum`. Chunk 3 stays 19/40 PASS. D1/D2 stay FAIL (2).
