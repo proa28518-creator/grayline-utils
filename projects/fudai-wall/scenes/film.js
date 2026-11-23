@@ -55,9 +55,9 @@ const CAST3={
 };
 const ACTS3={
  mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
- mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
+ mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,-1.10])[0],p('FLASHBACK_ROCK',[.9,0,-1.10])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
  child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
- workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+ workers:{place:[{t:'line:20.start',at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:17},{t:57.10,at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:18}],look:[{t:'line:20.start',at:p('COAST_WALL',[0,17.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
  villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
  villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
 };
@@ -138,9 +138,9 @@ const film = {
   look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
   walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
  },
- mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
- mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
- mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
+ mocker_a:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[-.95,0,-.60])[0],p('HILL_GRAVE',[-.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
+ mocker_b:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[.95,0,-.60])[0],p('HILL_GRAVE',[.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
+ mocker_c:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
  villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
  villager_2:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
  villager_3:{walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}]},

@@ -1,0 +1,1321 @@
+Reading prompt from stdin...
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a20714-01a8-77a0-bacd-e552bd6006da
+--------
+user
+Execute the brief in P12_FIX_CAST_PLACE_BRIEF.md in this project directory, exactly as written. NO LOCAL RENDERS. Paste the validation results and the four target moment lines in your reply. Do not commit.
+codex
+I’ll read the P12 brief and repo guidance first, then make only the requested changes and run its non-render validations. I’ll leave the working tree uncommitted and won’t run local renders.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P12_FIX_CAST_PLACE_BRIEF.md' -g 'AGENTS.md' -g 'orch/UI_BRIEF.md' -g '"'!vendor/**'"' | sed -n '1,80p'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P12_FIX_CAST_PLACE_BRIEF.md
+
+exec
+/bin/bash -lc "cat P12_FIX_CAST_PLACE_BRIEF.md && printf '\\n--- UI BRIEF ---\\n' && cat orch/UI_BRIEF.md && printf '\\n--- STATUS ---\\n' && git status --short --branch" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 0ms:
+# CODEX SEAT — BRIEF · phase 12 · cause 3: chunk-3 cast placement — restore the packages' dropped `place` keys (+ the staging audit's place semantics)
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md` (you author
+ALL code; seat-attribution headers), RULES.md §3 (one cause, one
+change), §4 (pure in t; PLACES-anchored staging). **NO LOCAL RENDERS.
+No fleet dispatch. Audits only.**
+
+## Previous verdict this brief cites (hard-gate requirement)
+Commit `76f035b` — phase-12 cause 2 CLOSED (HILL_GRAVE bounds).
+D1/D2 stands at FAIL (2) — the two D2-CLEAR town-hall items, which
+are later causes. No judgement is pending; this brief may fire.
+
+## The cause (ONE mechanism, two files)
+The chunk-3 merge translated the Qwen/Hydrogen packages' cameras and
+audit moments but DROPPED their cast `place` keys — the engine's
+native placement mechanism (`engine/compose.js`: a timeline may carry
+`place: [{t, at:[x,z], ry?, y?}]`; `engine/height.js` addPlace: at the
+key's t the root SNAPS to the place — "a place key: a snap, nothing
+slides" — ry = key's ry ?? previous ry, y = key's y ?? 0). Characters
+the packages placed per-shot therefore stand at their cast bases in
+the merged film, and four audit moments judge staging that was never
+applied: F1518/F1542 (mayor_young, SH20), F1716 (workers, SH22 —
+in the merged film they stand at the wall's base on the ground; the
+packages place them ON the wall top, y 17→18), F1980 (mocker_a,
+SH26). The staging audit's `posAt`/`faceAt` also omit place keys
+entirely, so the gate cannot see the mechanism even when present —
+this cause restores BOTH sides of the same gap: the film's keys
+(faithful to the chunk records) and the audit's reconstruction of
+the loader semantics (a measure completion, documented as such —
+the phase-8/10 precedent: the tool must measure what the loader does).
+
+## Part 1 — `scenes/film.js`: restore the place/look keys, values verbatim from `.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md`
+Express every point PLACES-anchored in the film's established style
+(the CAST3 `p('PLACE',[dx,dy,dz])` pattern; a place key's `at` is the
+[x,z] pair, `y` separate — mirror `engine/height.js` addPlace).
+- **mayor_young** (his ACTS3 entry): add
+  `place:[{t:'line:18.start', at: FLASHBACK_ROCK+[0.9,·,-1.10] (x,z)}]`;
+  append look keys `{t:'line:18.start', at: FLASHBACK_ROCK+[-1.4,1.68,-0.60]}`
+  and `{t:50.60, at: FLASHBACK_ROCK+[-0.4,1.65,-1.85]}` (POS_SH20_LINE).
+  His existing line:17 look/face keys stay untouched (SH19 is Qwen's
+  staging and reads PASS at F1367).
+- **workers** (his ACTS3 entry): add
+  `place:[{t:'line:20.start', at: COAST_WALL+[0,·,0.20] (x,z), y:17},
+          {t:57.10, at: COAST_WALL+[0,·,0.20] (x,z), y:18}]`;
+  correct his look key to Hydrogen's value
+  `COAST_WALL+[0,17.5,12]` (the merge wrote [0,.5,12] — a translation
+  error; restore the record).
+- **mocker_a / mocker_b / mocker_c** (their inline acts in the film
+  object): add `place:[{t:'line:24.start', at: HILL_GRAVE+[-0.95,·,-0.60]}]`
+  for a, `[+0.95,·,-0.60]` for b, `[0,·,-1.30]` for c (x,z pairs);
+  add/append look key `{t:'line:24.start', at: HILL_GRAVE+[0,1.00,1.00]}`
+  (LOOK_SH26_GRAVE) for each. Their chunk-2 acts (faces, walks, clips,
+  looks) stay byte-identical apart from these additions.
+- NOT changed, verified equal already (state this in your reply):
+  child (CAST3 base = POS_SH21_CHILD, ACTS3 look = LOOK_SH21_CHILD);
+  villagers (the merge already pins POS_SH25_VILLAGERS via a
+  degenerate walk at (0,6); no place key needed).
+
+## Part 2 — `tools/audit_staging.mjs`: teach `posAt`/`faceAt` the loader's place semantics
+- Resolve a character's governing root event at t from base / walks /
+  places in time order (renderer order at equal t: place, then walk —
+  a walk starting exactly on a place key starts from the new place;
+  the audit's walks carry absolute paths, so on a tie the walk's path
+  governs position, as today).
+- If the governing event is a place key: position = [at[0], y ?? 0,
+  at[1]] (snap, no travel). `posAt` returns [x, y, z] with y = 0 for
+  base/walk governance (today's behaviour); `faceCheck`'s head centre
+  becomes [p[0], p[1] + 1.9, p[2]] and the body/occupancy boxes centre
+  at p[1] + 1 — identical numbers for every ground character (y = 0).
+- `faceAt`: if the governing event is a place (or no event), use the
+  existing look branch (last look key ≤ t, else cast ry). If a walk
+  governs, keep today's walk-direction branch EXACTLY (chunk 2's
+  calibrated readings depend on it).
+- Header note: cite this brief + the engine sources
+  (compose.js place layer, height.js addPlace) as the semantics'
+  origin. This is a measure completion, NOT a threshold change: no
+  moment, threshold, or check formula changes.
+
+## Validation (all required in your reply)
+1. `node --check` on both files; `node tools/audit_d1_d2.mjs` —
+   must still read FAIL (2), the same two D2-CLEAR items.
+2. `node tools/audit_staging.mjs` full: chunk 2 must read **19/19
+   PASS, every line unchanged**; chunk 3 changes confined to
+   F1518/F1542/F1716/F1980 (F1635 and F1953 readings must NOT move).
+3. Paste the four target moments' new lines. Expected direction:
+   F1542 and F1716 and F1980 PASS on the restored staging; F1518 is
+   reported AS MEASURED — if it fails on Hydrogen's look switch at
+   exactly t=50.60 (his key, restored verbatim), do NOT retime his
+   keys and do NOT adjust the audit's key-boundary rule; report the
+   measured angle and stop — that residual belongs to a later cause.
+4. A diff summary proving SH01–SH12 film data is untouched apart
+   from the mocker acts additions named above.
+Do NOT commit. Touch no other file.
+
+--- UI BRIEF ---
+cat: orch/UI_BRIEF.md: No such file or directory
+
+codex
+The brief is narrowly scoped to `scenes/film.js` and `tools/audit_staging.mjs`; `orch/UI_BRIEF.md` isn’t present at the stated path, so I’m following the supplied repo instructions and the brief. I’ll inspect the existing cast entries, audit implementation, chunk record values, and working tree before editing.
+exec
+/bin/bash -lc "git status --short --branch; rg --files -g 'RULES.md' -g 'CHUNK3B_HYDROGEN_REPLY.md' -g 'film.js' -g 'audit_staging.mjs' -g 'AGENTS.md';" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 31ms:
+## ui/unified-interface...origin/ui/unified-interface
+?? .suite/critic/round9_chunk2/stepA_reply.txt
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P12_FIX_CAST_PLACE_BRIEF.md
+?? P12_FIX_CAST_PLACE_OUT.txt
+tools/audit_staging.mjs
+scenes/film.js
+
+exec
+/bin/bash -lc "rg -n \"mayor_young|workers|mocker_[abc]|function posAt|posAt\\(|faceAt\\(|faceCheck|CHUNK3B|PLACES|place\" scenes/film.js tools/audit_staging.mjs .suite/chunks 2>/dev/null; rg --files -g 'RULES.md' -g '*HYDROGEN*' -g 'CHUNK3*' .suite ." in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+scenes/film.js:1:// Fudai opening: SH01–SH03. Every world point is staged from the one PLACES table.
+scenes/film.js:2:import { PLACES } from './set.js';
+scenes/film.js:6:const MAYOR=add(PLACES.COAST_WALL,[0,0,7]);
+scenes/film.js:8:const WALLTOP=add(PLACES.COAST_WALL,[0,17,0]);
+scenes/film.js:9:const BOAT=add(PLACES.SEA,[0,.25,14]);
+scenes/film.js:10:const CLOSE_POS=add(PLACES.COAST_WALL,[.7,.9,12]);
+scenes/film.js:11:const TILT_POS=add(PLACES.COAST_WALL,[8,9,38]);
+scenes/film.js:12:const TILT_TARGET=add(PLACES.COAST_WALL,[4.5,9,0]);
+scenes/film.js:13:const WIDE_POS=add(PLACES.COAST_VILLAGE,[12,26,30]);
+scenes/film.js:14:const WIDE_TARGET=add(PLACES.COAST_WALL,[0,6,6]);
+scenes/film.js:15:const SEA_FROM=add(PLACES.SEA,[-16,3.5,6]);
+scenes/film.js:16:const SEA_TO=add(PLACES.SEA,[16,3.5,-2]);
+scenes/film.js:17:const SQUARE=add(PLACES.COAST_VILLAGE,[0,0,0]);
+scenes/film.js:18:const MOCK_A=add(PLACES.COAST_VILLAGE,[4,.5,-2]);
+scenes/film.js:19:const MOCK_B=add(PLACES.COAST_VILLAGE,[4,0,-3.0]), MOCK_C=add(PLACES.COAST_VILLAGE,[6,0,-1.5]);
+scenes/film.js:21:const BLUEPRINT=add(PLACES.COAST_VILLAGE,[5.2,0,-1.5]);
+scenes/film.js:22:const MOCKSIGN=add(PLACES.COAST_WALL,[-6,12.8,1.8]);
+scenes/film.js:23:const COINS=add(PLACES.COAST_WALL,[2,19.5,-1.5]);
+scenes/film.js:24:const SUNORB=add(PLACES.SEA,[0,0,-16]);
+scenes/film.js:25:const V1=add(PLACES.COAST_VILLAGE,[-1,0,2]), V2=add(PLACES.COAST_VILLAGE,[1,0,2]);
+scenes/film.js:26:const V3=add(PLACES.COAST_VILLAGE,[-2,0,4]), V4=add(PLACES.COAST_VILLAGE,[5,0,5]);
+scenes/film.js:27:const V5=add(PLACES.COAST_VILLAGE,[-8,0,3]), V6=add(PLACES.COAST_VILLAGE,[10,0,4]);
+scenes/film.js:28:const CAM_SH04_A=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SH04_B=add(PLACES.COAST_VILLAGE,[-5,3.5,7]), CAM_SQUARE=add(PLACES.COAST_VILLAGE,[0,1.5,-1]);
+scenes/film.js:29:const CAM_SH05_A=add(PLACES.COAST_VILLAGE,[-5,16.5,16]), CAM_SH05_B=add(PLACES.COAST_VILLAGE,[20,16.5,16]);
+scenes/film.js:30:const CAM_SH05_TA=add(PLACES.COAST_WALL,[4,10.5,2]), CAM_SH05_TB=add(PLACES.COAST_WALL,[12.6,10.5,2]);
+scenes/film.js:31:const CAM_SH06_A=add(PLACES.NEIGHBOR_COAST,[0,14,20]), CAM_SH06_B=add(PLACES.NEIGHBOR_COAST,[0,14,20]);
+scenes/film.js:32:const CAM_SH06_TA=add(PLACES.NEIGHBOR_COAST,[0,5,5]), CAM_SH06_TB=add(PLACES.NEIGHBOR_COAST,[0,5,5]);
+scenes/film.js:33:const CAM_SH07_A=add(PLACES.COAST_VILLAGE,[4,2.5,-7]), CAM_SH07_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+scenes/film.js:35:const CAM_SH08_A=add(PLACES.COAST_VILLAGE,[4,3,-6]), CAM_SH08_TA=add(PLACES.COAST_VILLAGE,[4,1.9,-2]);
+scenes/film.js:36:const CAM_SH08_B=add(PLACES.COAST_VILLAGE,[4,3,-6]);
+scenes/film.js:37:const CAM_SH09_A=add(PLACES.COAST_VILLAGE,[.5,1.7,4.4]), CAM_SH09_T=add(PLACES.COAST_VILLAGE,[0,2.47,0]);
+scenes/film.js:38:const CAM_SH09_B=add(PLACES.COAST_VILLAGE,[.3,2.1,4.0]);
+scenes/film.js:40:const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
+scenes/film.js:41:const CAM_SH12_A=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TA=add(PLACES.COAST_WALL,[-5,6.5,6]);
+scenes/film.js:42:const CAM_SH12_B=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TB=add(PLACES.COAST_WALL,[-5,6.5,6]);
+scenes/film.js:44:// records in P11_MERGE_CHUNKS_BRIEF.md. All points remain PLACES anchored.
+scenes/film.js:45:const p=(place,offset)=>add(PLACES[place],offset);
+scenes/film.js:46:const cam=(place,pos,look,fov)=>({pos:p(place,pos),target:p(place,look),fov});
+scenes/film.js:47:const chunk3Shot=(id,t0,t1,place,a,b,fov=40)=>({id,t0,t1,camera:{move:'push',from:cam(place,a[0],a[1],Array.isArray(fov)?fov[0]:fov),to:cam(place,b[0],b[1],Array.isArray(fov)?fov[1]:fov)}});
+scenes/film.js:50: mayor_young:{spec:'cast/mayor_young.json',at:[p('FLASHBACK_ROCK',[0,0,2])[0],p('FLASHBACK_ROCK',[0,0,2])[2]],ry:0},
+scenes/film.js:52: workers:{spec:'cast/workers.json',at:[p('COAST_WALL',[0,17,.2])[0],p('COAST_WALL',[0,17,.2])[2]],ry:0},
+scenes/film.js:58: mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
+scenes/film.js:60: workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+scenes/film.js:133: cast:{mayor:{spec:'cast/mayor.json',at:[MAYOR[0],MAYOR[2]],ry:0},mocker_a:{spec:'cast/mocker_a.json',at:[MOCK_A[0],MOCK_A[2]],ry:0},mocker_b:{spec:'cast/mocker_b.json',at:[MOCK_B[0],MOCK_B[2]],ry:180},mocker_c:{spec:'cast/mocker_c.json',at:[MOCK_C[0],MOCK_C[2]],ry:180},villager_1:{spec:'cast/villagers.json',at:[V1[0],V1[2]],ry:0},villager_2:{spec:'cast/villagers.json',at:[V2[0],V2[2]],ry:0},villager_3:{spec:'cast/villagers.json',at:[V3[0],V3[2]],ry:20},villager_4:{spec:'cast/villagers.json',at:[V4[0],V4[2]],ry:-20},villager_5:{spec:'cast/villagers.json',at:[V5[0],V5[2]],ry:40},villager_6:{spec:'cast/villagers.json',at:[V6[0],V6[2]],ry:-40},...CAST3},
+scenes/film.js:138:  look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
+scenes/film.js:141: mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
+scenes/film.js:142: mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
+scenes/film.js:143: mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
+scenes/film.js:151:  {id:'seawall',kind:'seawall',in:'world',at:PLACES.COAST_WALL.at,w:90,h:18,gateW:7,keys:[{t:0,at:PLACES.COAST_WALL.at}]},
+scenes/film.js:152:  {id:'storeys',kind:'storeys',in:'world',at:add(PLACES.COAST_WALL,[4.5,0,2.5]),h:17.4,floors:5,keys:[{t:0,at:add(PLACES.COAST_WALL,[4.5,0,2.5])},{t:'line:3.start',in:'hidden'}]},
+scenes/film.js:153:  {id:'boat',kind:'boat',in:'world',at:BOAT,keys:[{t:0,at:BOAT},{t:'line:2.end',at:add(PLACES.SEA,[.12,.25,14.08])}]},
+scenes/film.js:154:  {id:'popsign',kind:'boardsign',in:'world',at:add(PLACES.COAST_VILLAGE,[0,3,-1]),text:'3,000',w:3.4,h:1.5,post:0,keys:[{t:0,in:'hidden'},{t:'line:3.word:4',in:'world',at:add(PLACES.COAST_VILLAGE,[0,3,-1])},{t:'line:4.start',in:'hidden'}]},
+scenes/film.js:155:  {id:'crane_a',kind:'crane',in:'world',at:add(PLACES.COAST_WALL,[2,0,2]),rot:[0,15,0],keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[2,0,2]),rot:[0,15,0]},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:156:  {id:'crane_b',kind:'crane',in:'world',at:add(PLACES.COAST_WALL,[17.5,0,4]),rot:[0,-90,0],keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[17.5,0,4]),rot:[0,-90,0]},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:157:  {id:'money',kind:'money',in:'world',at:add(PLACES.COAST_WALL,[0,0,3]),keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[0,0,3])},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:158:  {id:'moneysign',kind:'boardsign',in:'world',at:add(PLACES.COAST_WALL,[0,0,3.4]),text:'$30M',w:2.6,h:1.1,post:1,leg:2.2,keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[0,0,3.4])},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:159:  {id:'calendar',kind:'calendar',in:'world',at:add(PLACES.COAST_WALL,[13,0,2]),page:0,keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[13,0,2])},{t:'line:4.word:1',page:0},{t:'line:4.word:2',page:1},{t:'line:4.word:3',page:2},{t:'line:4.word:4',page:3},{t:'line:4.word:5',page:4},{t:'line:4.word:6',page:5},{t:'line:4.word:7',page:6},{t:'line:4.word:8',page:7},{t:'line:4.word:9',page:8},{t:'line:4.word:10',page:9},{t:'line:4.word:11',page:10},{t:'line:4.word:12',page:11},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:160:  {id:'gateleaf',kind:'gateleaf',in:'world',at:add(PLACES.COAST_WALL,[0,0,1.1]),lift:0,keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[0,0,1.1])},{t:'line:4.start',lift:0},{t:'line:4.word:7',lift:1,ease:2.6},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:161:  {id:'measure',kind:'measure',in:'world',at:add(PLACES.COAST_WALL,[16,0,2]),h:.8,full:18,label:'15.5M',keys:[{t:0,in:'hidden'},{t:'line:4.start',in:'world',at:add(PLACES.COAST_WALL,[16,0,2])},{t:'line:4.word:8',h:.8},{t:'line:4.word:10',h:18,ease:1.2},{t:'line:5.start',in:'hidden'}]},
+scenes/film.js:162:  {id:'sticker_a',kind:'boardsign',in:'world',at:add(PLACES.NEIGHBOR_COAST,[-3,7,2]),text:'10M',w:1.7,h:.95,post:0,keys:[{t:0,at:add(PLACES.NEIGHBOR_COAST,[-3,7,2])}]},
+scenes/film.js:163:  {id:'sticker_b',kind:'boardsign',in:'world',at:add(PLACES.NEIGHBOR_COAST,[3,7,2]),text:'10M',w:1.7,h:.95,post:0,keys:[{t:0,at:add(PLACES.NEIGHBOR_COAST,[3,7,2])}]},
+scenes/film.js:166:  {id:'mocksign',kind:'boardsign',in:'world',at:add(PLACES.COAST_WALL,[-6,12.8,1.8]),text:'أغبى مشروع',w:4.2,h:2.4,bg:'#9a7047',fg:'#f5e9d0',post:0,rot:[4,0,-2],keys:[{t:0,in:'hidden'},{t:'line:10.start',in:'world',at:add(PLACES.COAST_WALL,[-6,12.8,1.8]),rot:[4,0,-2]}]},
+scenes/film.js:180:  {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_WALL,[2,44,-20.5]),target:add(PLACES.COAST_WALL,[0,14,0]),fov:38}}},
+tools/audit_staging.mjs:55:function posAt(id, t) {
+tools/audit_staging.mjs:67:function faceAt(id,t,p) {
+tools/audit_staging.mjs:128: [933,31.10,'SH13','point','mocker_b'],[942,31.40,'SH13','prop','box_sh13',60],[969,32.30,'SH13','face','mayor_old',120],
+tools/audit_staging.mjs:134: [1367,45.57,'SH19','face','mayor_young',45],[1410,47.00,'SH19','face','mayor_young',55],[1428,47.60,'SH19','prop','wave_old_sh19',120],
+tools/audit_staging.mjs:135: [1497,49.90,'SH20','prop','carved_line_sh20',120],[1518,50.60,'SH20','face','mayor_young',350],[1542,51.40,'SH20','body','mayor_young',600],
+tools/audit_staging.mjs:137: [1677,55.90,'SH22','prop','pour_sh22',180],[1716,57.20,'SH22','body','workers',240],[1764,58.80,'SH23','prop','wave_neighbor_sh23',600],
+tools/audit_staging.mjs:140: [1944,64.80,'SH25','prop','sunbeam_sh25',400],[1953,65.10,'SH25','occupancy','villagers',230],[1980,66.00,'SH26','face','mocker_a',240],
+tools/audit_staging.mjs:145:function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+tools/audit_staging.mjs:156: const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+tools/audit_staging.mjs:158: const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
+tools/audit_staging.mjs:161: case 219: face('mayor');{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+tools/audit_staging.mjs:162: case 241: face('mayor');prop('popsign',60);{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+tools/audit_staging.mjs:167: case 537: face('mocker_a',200);break;
+tools/audit_staging.mjs:169:  face('mocker_a',230);break;}
+tools/audit_staging.mjs:171: case 621: case 639: {const ids=['mocker_a','mocker_b','mocker_c','villager_2','villager_4'],n=ids.filter(id=>faceCheck(fr,id,t).pass).length;checks.push(`faces ${n>=2?'PASS':'FAIL'} ${n}/2 (angle threshold 60°)`);for(const id of ids){const f=faceCheck(fr,id,t);checks.push(`${id} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.pass&&f.px>=230)occupancy=true;}break;}
+tools/audit_staging.mjs:176: case 870: prop('mocksign',80);{const n=bodyIds(['mocker_b','mocker_c','villager_1','villager_3']).length;checks.push(`passers-by ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+tools/audit_staging.mjs:186: if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+tools/audit_staging.mjs:195: } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
+tools/audit_staging.mjs:196: else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+tools/audit_staging.mjs:197: else {const pos=posAt(id,t),tip=[pos[0],2.5,pos[2]],pass=pointCheck(fr,tip);checks.push(`${id} hand tip ${pass?'PASS':'FAIL'} point ${pass?'in':'out'} frustum`);}
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:10:// All positions derived from PLACES anchors; every const shot-id prefixed.
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:14:const POS_SH20_LINE       = [PLACES.FLASHBACK_ROCK[0] - 0.4,  1.65, PLACES.FLASHBACK_ROCK[2] - 1.85];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:15:const POS_SH20_MAYOR      = [PLACES.FLASHBACK_ROCK[0] + 0.9,  0.00, PLACES.FLASHBACK_ROCK[2] - 1.10];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:16:const LOOK_SH20_MAYOR     = [PLACES.FLASHBACK_ROCK[0] - 1.4,  1.68, PLACES.FLASHBACK_ROCK[2] - 0.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:17:const CAM_SH20_A          = [PLACES.FLASHBACK_ROCK[0] - 2.8,  1.75, PLACES.FLASHBACK_ROCK[2] + 2.40];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:18:const CAM_SH20_B          = [PLACES.FLASHBACK_ROCK[0] - 1.6,  1.82, PLACES.FLASHBACK_ROCK[2] + 3.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:19:const TGT_SH20_A          = [PLACES.FLASHBACK_ROCK[0] - 0.4,  1.68, PLACES.FLASHBACK_ROCK[2] - 1.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:20:const TGT_SH20_B          = [PLACES.FLASHBACK_ROCK[0] + 0.65, 1.78, PLACES.FLASHBACK_ROCK[2] - 1.20];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:24:const POS_SH21_CHILD      = [PLACES.ROOM[0] + 0.0,  0.00, PLACES.ROOM[2] - 1.15];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:25:const POS_SH21_MARK       = [PLACES.ROOM[0] + 0.0,  1.62, PLACES.ROOM[2] - 1.55];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:26:const LOOK_SH21_CHILD     = [PLACES.ROOM[0] + 0.0,  1.52, PLACES.ROOM[2] + 2.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:27:const CAM_SH21_A          = [PLACES.ROOM[0] + 0.0,  1.52, PLACES.ROOM[2] + 3.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:28:const CAM_SH21_B          = [PLACES.ROOM[0] + 0.0,  1.54, PLACES.ROOM[2] + 2.40];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:29:const TGT_SH21_A          = [PLACES.ROOM[0] + 0.0,  1.52, PLACES.ROOM[2] - 1.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:30:const TGT_SH21_B          = [PLACES.ROOM[0] + 0.0,  1.54, PLACES.ROOM[2] - 1.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:34:const POS_SH22_WORKERS    = [PLACES.COAST_WALL[0] + 0.0, 17.00, PLACES.COAST_WALL[2] + 0.20];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:35:const LOOK_SH22_WORKERS   = [PLACES.COAST_WALL[0] + 0.0, 17.50, PLACES.COAST_WALL[2] + 12.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:36:const POS_SH22_POUR       = [PLACES.COAST_WALL[0] + 0.0, 17.00, PLACES.COAST_WALL[2] + 0.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:37:const CAM_SH22_A          = [PLACES.COAST_WALL[0] + 0.0, 16.75, PLACES.COAST_WALL[2] + 14.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:38:const CAM_SH22_B          = [PLACES.COAST_WALL[0] + 6.0, 19.20, PLACES.COAST_WALL[2] + 20.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:39:const TGT_SH22_A          = [PLACES.COAST_WALL[0] + 0.0, 16.75, PLACES.COAST_WALL[2] + 1.50];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:40:const TGT_SH22_B          = [PLACES.COAST_WALL[0] + 0.0, 17.50, PLACES.COAST_WALL[2] + 0.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:44:const POS_SH23_WAVE_A     = [PLACES.NEIGHBOR_COAST[0] + 0.0,  0.00, PLACES.NEIGHBOR_COAST[2] - 26.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:45:const POS_SH23_WAVE_B     = [PLACES.NEIGHBOR_COAST[0] + 0.0,  0.00, PLACES.NEIGHBOR_COAST[2] + 18.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:46:const CAM_SH23_A          = [PLACES.NEIGHBOR_COAST[0] - 26.0, 26.00, PLACES.NEIGHBOR_COAST[2] + 24.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:47:const CAM_SH23_B          = [PLACES.NEIGHBOR_COAST[0] + 22.0, 24.00, PLACES.NEIGHBOR_COAST[2] + 28.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:48:const TGT_SH23_A          = [PLACES.NEIGHBOR_COAST[0] - 4.0,  10.00, PLACES.NEIGHBOR_COAST[2] - 4.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:49:const TGT_SH23_B          = [PLACES.NEIGHBOR_COAST[0] + 4.0,  11.00, PLACES.NEIGHBOR_COAST[2] + 6.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:54:const POS_SH24_WAVE_A     = [PLACES.COAST_WALL[0] + 0.0,  0.00, PLACES.COAST_WALL[2] - 18.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:55:const POS_SH24_WAVE_HIT   = [PLACES.COAST_WALL[0] + 0.0,  0.00, PLACES.COAST_WALL[2] - 1.50];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:56:const POS_SH24_SPRAY      = [PLACES.COAST_WALL[0] + 0.0, 17.50, PLACES.COAST_WALL[2] - 1.50];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:57:const CAM_SH24_A          = [PLACES.COAST_WALL[0] + 24.0, 19.50, PLACES.COAST_WALL[2] - 10.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:58:const CAM_SH24_SHAKE_1    = [PLACES.COAST_WALL[0] + 21.4, 20.05, PLACES.COAST_WALL[2] - 9.20];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:59:const CAM_SH24_SHAKE_2    = [PLACES.COAST_WALL[0] + 20.6, 18.95, PLACES.COAST_WALL[2] - 8.80];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:60:const CAM_SH24_SHAKE_3    = [PLACES.COAST_WALL[0] + 19.8, 19.45, PLACES.COAST_WALL[2] - 8.40];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:61:const CAM_SH24_B          = [PLACES.COAST_WALL[0] + 15.0, 18.80, PLACES.COAST_WALL[2] - 6.50];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:62:const TGT_SH24_A          = [PLACES.COAST_WALL[0] + 0.0,  14.50, PLACES.COAST_WALL[2] - 0.80];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:63:const TGT_SH24_B          = [PLACES.COAST_WALL[0] + 0.0,  17.20, PLACES.COAST_WALL[2] - 0.80];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:66:const POS_SH25_VILLAGERS  = [PLACES.COAST_VILLAGE[0] + 0.0,  0.00, PLACES.COAST_VILLAGE[2] + 4.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:67:const LOOK_SH25_VILLAGERS = [PLACES.COAST_VILLAGE[0] + 0.0, 14.00, PLACES.COAST_VILLAGE[2] - 16.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:68:const POS_SH25_SUNBEAM    = [PLACES.COAST_VILLAGE[0] + 0.0, 16.00, PLACES.COAST_VILLAGE[2] + 6.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:69:const CAM_SH25_A          = [PLACES.COAST_WALL[0] + 0.0,    19.60, PLACES.COAST_WALL[2] + 1.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:70:const CAM_SH25_B          = [PLACES.COAST_WALL[0] + 0.0,    23.50, PLACES.COAST_WALL[2] + 5.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:71:const TGT_SH25_A          = [PLACES.COAST_VILLAGE[0] + 0.0,  3.50, PLACES.COAST_VILLAGE[2] + 6.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:72:const TGT_SH25_B          = [PLACES.COAST_VILLAGE[0] + 0.0,  2.50, PLACES.COAST_VILLAGE[2] + 8.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:76:const POS_SH26_GRAVE      = [PLACES.HILL_GRAVE[0] + 0.0,   0.00, PLACES.HILL_GRAVE[2] + 1.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:77:const POS_SH26_FLOWERS    = [PLACES.HILL_GRAVE[0] + 0.0,   0.05, PLACES.HILL_GRAVE[2] + 1.45];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:78:const POS_SH26_DIST_WALL  = [PLACES.HILL_GRAVE[0] + 0.0,  -6.00, PLACES.HILL_GRAVE[2] - 58.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:79:const POS_SH26_MOCKER_A   = [PLACES.HILL_GRAVE[0] - 0.95,  0.00, PLACES.HILL_GRAVE[2] - 0.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:80:const POS_SH26_MOCKER_B   = [PLACES.HILL_GRAVE[0] + 0.95,  0.00, PLACES.HILL_GRAVE[2] - 0.60];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:81:const POS_SH26_MOCKER_C   = [PLACES.HILL_GRAVE[0] + 0.00,  0.00, PLACES.HILL_GRAVE[2] - 1.30];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:82:const LOOK_SH26_GRAVE     = [PLACES.HILL_GRAVE[0] + 0.00,  1.00, PLACES.HILL_GRAVE[2] + 1.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:83:const CAM_SH26_A          = [PLACES.HILL_GRAVE[0] + 0.00,  2.30, PLACES.HILL_GRAVE[2] + 7.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:84:const CAM_SH26_B          = [PLACES.HILL_GRAVE[0] + 0.00,  3.20, PLACES.HILL_GRAVE[2] + 11.20];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:85:const TGT_SH26_A          = [PLACES.HILL_GRAVE[0] + 0.00,  1.65, PLACES.HILL_GRAVE[2] - 1.20];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:86:const TGT_SH26_B          = [PLACES.HILL_GRAVE[0] + 0.00,  2.20, PLACES.HILL_GRAVE[2] - 3.00];
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:92:  'mayor_young',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:94:  'workers',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:96:  'mocker_a',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:97:  'mocker_b',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:98:  'mocker_c',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:105:  mayor_young: {
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:106:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:124:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:139:  workers: {
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:140:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:142:      { t: 57.10,           at: [PLACES.COAST_WALL[0] + 0.0, 18.00, PLACES.COAST_WALL[2] + 0.20] },
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:156:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:170:  mocker_a: {
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:171:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:185:  mocker_b: {
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:186:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:200:  mocker_c: {
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:201:    place: [
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:295:      { t: 60.20,           hidden: false, at: [PLACES.NEIGHBOR_COAST[0], 0, PLACES.NEIGHBOR_COAST[2] + 6.0], h: 17.5, crestY: 17.5, curl: 0.85 },
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:393:    place: 'FLASHBACK_ROCK',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:404:    place: 'ROOM',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:414:    place: 'COAST_WALL',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:425:    place: 'NEIGHBOR_COAST',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:435:    place: 'COAST_WALL',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:449:    place: 'COAST_VILLAGE',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:459:    place: 'HILL_GRAVE',
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:472:F1518 t=50.60 SH20 — FACE: mayor_young >= 350
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:473:F1542 t=51.40 SH20 — BODY: mayor_young >= 600
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:478:F1716 t=57.20 SH22 — BODY: workers >= 240 [state: h >= 18.0]
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:487:F1980 t=66.00 SH26 — FACE: mocker_a >= 240
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:512:SH20: Close lateral track along the sepia rock face keeps carved_line_sh20 centered for الصخر while framing mayor_young at a ~34° face angle as his hand reaches the historic high-water groove.
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:516:SH22: Opens on a level lock (NDC_y = +0.062) where the seawall's rising top edge (17.0 -> 18.0 D) seamlessly receives SH21's pencil line, then pulls back-and-up to reveal workers pouring the last metre.
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:524:SH26: Slow pull-back from the foreground gravestone and flowers reveals mocker_a/b/c bowing silently behind the grave (faces ≤ 31° to camera) with the true-scale 18.0 D wall towering on the distant coast before the hard-cut loop.
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md:532:SH23 NEIGHBOR_COAST wall Z-offset: set.js's exact Z offset for the existing neighbour walls inside NEIGHBOR_COAST is not quoted in the brief; SH23 stages the neighbour wall line at dz = 0 relative to PLACES.NEIGHBOR_COAST. If set.js offsets neighbour walls to dz = -16 (matching COAST_WALL), shift all SH23 Z offsets by -16 uniformly so the overtop geometry stays identical.
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:13:// Anchors: PLACES only (scenes/set.js). Every position = anchor + offset.
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:14:const A_SH13 = PLACES.COAST_VILLAGE;   // [0,0,2]
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:15:const A_SH14 = PLACES.HILL_GRAVE;      // [2400,0,0]
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:16:const A_SH15 = PLACES.COAST_VILLAGE;
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:17:const A_SH16 = PLACES.COAST_VILLAGE;
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:18:const A_SH17 = PLACES.SEA;             // [0,0,-44]
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:19:const A_SH18 = PLACES.SEA;
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:20:const A_SH19 = PLACES.FLASHBACK_ROCK;  // [1200,0,0]
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:25:  place:'COAST_VILLAGE', fov:40,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:32:  place:'HILL_GRAVE', fov:40,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:39:  place:'COAST_VILLAGE', fov:32,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:46:  place:'COAST_VILLAGE', fov:46,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:54:  place:'SEA', fov:44,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:61:  place:'SEA', fov:46,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:68:  place:'FLASHBACK_ROCK', fov:46,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:82:  { id:'mayor_old', spec:'mayor_old', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:98:  { id:'mocker_a', spec:'mocker_a', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:103:  { id:'mocker_b', spec:'mocker_b', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:108:  { id:'mocker_c', spec:'mocker_c', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:114:  { id:'villagers', spec:'villagers', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:124:  { id:'villagers_shore', spec:'villagers', in:'world', place:'SEA',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:135:  { id:'mayor_young', spec:'mayor_young', in:'world', place:'FLASHBACK_ROCK',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:147:  { id:'box_sh13', kind:'belongings_box', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:158:  { id:'gravestone_sh14', kind:'gravestone', in:'world', place:'HILL_GRAVE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:160:  { id:'leaf_sh14', kind:'leaf', in:'world', place:'HILL_GRAVE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:176:  { id:'wall_distant_sh14', kind:'seawall', in:'world', place:'HILL_GRAVE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:180:  { id:'calendar', kind:'calendar', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:192:  { id:'birds_sh16', kind:'birds', in:'world', place:'COAST_VILLAGE',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:204:  { id:'sea_sheet_sh17', kind:'sea_sheet', in:'world', place:'SEA',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:214:  { id:'boat_sh17_a', kind:'boat', in:'world', place:'SEA',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:223:  { id:'boat_sh17_b', kind:'boat', in:'world', place:'SEA',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:235:  { id:'wave_sh18', kind:'wave', in:'world', place:'SEA',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:248:  { id:'measure_wave', kind:'measure', in:'world', place:'SEA',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:262:  { id:'old_village_sh19', kind:'storeys', in:'world', place:'FLASHBACK_ROCK',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:265:  { id:'wave_old_sh19', kind:'wave', in:'world', place:'FLASHBACK_ROCK',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:278:  { id:'SH13', t0:'line:11.start', t1:'line:11.end', place:'COAST_VILLAGE', cam:CAM_SH13, sky:'clear' },
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:279:  { id:'SH14', t0:'line:12.start', t1:'line:12.end', place:'HILL_GRAVE',    cam:CAM_SH14, sky:'clear', grade:'quiet_haze' },
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:280:  { id:'SH15', t0:'line:13.start', t1:'line:13.end', place:'COAST_VILLAGE', cam:CAM_SH15,
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:282:  { id:'SH16', t0:'line:14.start', t1:'line:14.end', place:'COAST_VILLAGE', cam:CAM_SH16, sky:'storm_bluegrey',
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:284:  { id:'SH17', t0:'line:15.start', t1:'line:15.end', place:'SEA',           cam:CAM_SH17, sky:'storm_bluegrey' },
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:285:  { id:'SH18', t0:'line:16.start', t1:'line:16.end', place:'SEA',           cam:CAM_SH18, sky:'storm_bluegrey' },
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:286:  { id:'SH19', t0:'line:17.start', t1:'line:17.end', place:'FLASHBACK_ROCK', cam:CAM_SH19, grade:'sepia' }
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:290:F933  t=31.10 SH13 — POINT: mocker_b hand tip >= 30
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:308:F1367 t=45.57 SH19 — FACE: mayor_young >= 45
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:309:F1410 t=47.00 SH19 — FACE: mayor_young >= 55
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:332:2. HILL_GRAVE → "the distant silent wall": the literal COAST_WALL is 2400 D from HILL_GRAVE — a real sightline is geometrically impossible (sub-pixel at any legal fov). Staged honestly as an 18 D seawall-kind silhouette at 140 D on the hill's horizon (≈82 px at crane top). If the owner requires the literal wall, the beat cannot be staged inside the PLACES table — ruling requested.
+.suite/chunks/CHUNK3A_QWEN_REPLY.md:333:3. Pack gap — set.js piece list: hall door, pole, calendar-wall and SEA-floor offsets are declared staging assumptions (door at village [−6,0,0.5]; calendar at [−1.5,1.7,0.25]; SEA floor reads as sand under sea_sheet). Pole sway is bound via SH16.sway to set:poles; if set poles are not keyable, Codex should bind or drop the descriptor — the اتهزت beat still reads measured via camera shake + bird burst + villager rush (all declared moments pass without it). If chunk 2's calendar entry lives in another place, this entry declares the village instance; the page channel is the law-1 declaration either way.
+./HYDROGEN_BUILD_BRIEF.md
+.suite/chunks/CHUNK3B_HYDROGEN_REPLY.md
+.suite/chunks/CHUNK3A_QWEN_REPLY.md
+
+exec
+/bin/bash -lc "sed -n '1,105p' tools/audit_staging.mjs; sed -n '45,75p' scenes/film.js; sed -n '125,148p' scenes/film.js; sed -n '100,215p' .suite/chunks/CHUNK3B_HYDROGEN_REPLY.md; rg -n \"function addPlace|addPlace|place\" engine/compose.js engine/height.js; rg --files -g 'RULES.md' .." in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 0ms:
+// Static staging audit for Fudai Wall, chunks 2–3. Pure Node; no renderer/deps.
+// Chunk 3 moment declarations and reconciliation rules: P11_MERGE_CHUNKS_BRIEF.md.
+// Geometry uses calibrated head centre y=1.9, r=.5, hip=1.35, top=2.4: phase-6
+// engine measurement was ~1.85–1.95; F0 (target 1.55, dist 5.1, fov 34) passes
+// and F687 (dist 2.9, fov 30) crops, consistent with this model and not y=1.55.
+// Named assumptions: stage-dependent lowCams rests are unavailable, so the
+// documented calibrated rest rule below is used. Camera roll is ignored (SH07
+// is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
+// corner counts use a world AABB after yaw rotation, per the audit specification.
+// Phase-11 F570 face-staging amendment (Codex seat): see RUN_RECORD phase 11.
+// D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
+// houses, three neighbour houses); wall and gateleaf are additional occluders.
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import film from '../scenes/film.js';
+import { resolver, resolveTimes, autoMove } from '../lib/film/resolve.js';
+import { easeFn } from '../engine/ease.js';
+import { lowCams } from '../lib/film/end.js';
+import { hh } from '../engine/clips.js';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const words = JSON.parse(readFileSync(join(ROOT, 'audio/clean.json'), 'utf8'));
+const lines = [...new Set(words.map(w => w.line))].map(line => {
+  const ws = words.filter(w => w.line === line);
+  return { line, start: ws[0].start, end: ws.at(-1).end };
+});
+const voice = { words, lines };
+const R = resolver(voice);
+let shots = resolveTimes(film.shots, R, 'shots');
+const acts = Object.fromEntries(Object.entries(film.acts || {}).map(([id, a]) => [id, resolveTimes(a, R, `acts.${id}`)]));
+const props = resolveTimes(film.props || [], R, 'props');
+const dur = 68.08;
+const cast = film.cast;
+
+// Reconstruct the loader's character/rest inputs from each cast spec. These
+// specs share the renderer's proportion fields; hip and head heights stay tied
+// to the character's leg, neck, and head dimensions.
+const characters = Object.entries(cast).map(([name, c]) => {
+  const raw = JSON.parse(readFileSync(join(ROOT, 'scenes', c.spec), 'utf8'));
+  const spec = { ...raw, id: name };
+  const legLen = spec.limbs?.legLen ?? 1.35;
+  const hipY = legLen * .93;
+  const armLen = spec.limbs?.armLen ?? .95;
+  const rest = { hipY, headY: hipY + (spec.body?.neckHeight ?? .35) + (spec.body?.neckToHead ?? .35), neckToHead: spec.body?.neckToHead ?? .35, legLen, armLen,
+    ankleY: (spec.limbs?.width ?? .058) / 2 + .005, hipR: [-.22, -.2, 0], hipL: [.22, -.2, 0],
+    shoulderR: [-.4, .4, 0], shoulderL: [.4, .4, 0], neck: [0, .4, 0] };
+  const timeline = resolveTimes(JSON.parse(JSON.stringify(acts[name] || {})), R, `acts.${name}`);
+  timeline.root = timeline.root || { x: c.at?.[0] ?? 0, z: c.at?.[1] ?? 0, ry: c.ry ?? 0 };
+  timeline.settle ??= true;
+  return { name, spec, timeline, rest };
+});
+const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
+
+function posAt(id, t) {
+  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
+  if (!walks.length) return [base[0], 0, base[1]];
+  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
+  let remain = Math.max(0, t - w.t0) * speed;
+  for (let i=1;i<path.length;i++) {
+    const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    if (remain <= d) { const u=d ? remain/d:1; return [a[0]+(b[0]-a[0])*u,0,a[1]+(b[1]-a[1])*u]; }
+    remain -= d;
+  }
+  const p=path.at(-1); return [p[0],0,p[1]];
+}
+function faceAt(id,t,p) {
+  const a=acts[id]||{}, walks=(a.walk||[]).filter(w=>t>=w.t0);
+  if(walks.length){const w=walks.at(-1), path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
+    for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);if(rem<=d)return [path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]];rem-=d;}
+    const n=path.length;return [path[n-1][0]-path[n-2][0],path[n-1][1]-path[n-2][1]]; }
+  const look=(a.look||[]).filter(k=>k.t<=t).sort((x,y)=>x.t-y.t).at(-1);
+  if(look)return [look.at[0]-p[0],look.at[2]-p[2]];
+  const ry=(cast[id].ry||0)*Math.PI/180;return [Math.sin(ry),Math.cos(ry)];
+}
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,u)=>a+(b-a)*u;
+function lerpV(a,b,u){return a.map((v,i)=>lerp(v,b[i],u));}
+const raises=[];
+const lowered = lowCams(shots, characters, rests, { log: msg => raises.push(msg) });
+shots = lowered.shots;
+const moved=await autoMove(shots,dur);
+const shotById=id=>moved.find(s=>s.id===id);
+
+function camAt(shot,t){const c=shot.camera,a=c.t0??shot.t0,b=c.t1??shot.t1;let u=clamp((t-a)/(b-a));u=easeFn(c.ease??'outCubic')(u);return {pos:lerpV(c.from.pos,c.to.pos,u),target:lerpV(c.from.target,c.to.target,u),fov:lerp(c.from.fov??26,c.to.fov??26,u)};}
+
+function add(a,b){return a.map((x,i)=>x+b[i]);}
+function ry(v,yaw){const a=yaw*Math.PI/180;return [v[0]*Math.cos(a)+v[2]*Math.sin(a),v[1],-v[0]*Math.sin(a)+v[2]*Math.cos(a)];}
+function box(center,size,yaw=0){const [x,y,z]=size,a=Math.abs(yaw*Math.PI/180);const ex=Math.abs(x*Math.cos(a))+Math.abs(z*Math.sin(a)),ez=Math.abs(x*Math.sin(a))+Math.abs(z*Math.cos(a));return {center,min:[center[0]-ex/2,center[1]-y/2,center[2]-ez/2],max:[center[0]+ex/2,center[1]+y/2,center[2]+ez/2],size:[ex,y,ez]};}
+function corners(b){const out=[];for(const x of [b.min[0],b.max[0]])for(const y of [b.min[1],b.max[1]])for(const z of [b.min[2],b.max[2]])out.push([x,y,z]);return out;}
+function makeFrame(cam){const f=norm(sub(cam.target,cam.pos)), right=norm(cross(f,[0,1,0])), up=norm(cross(right,f));const v=cam.fov*Math.PI/180,h=2*Math.atan(Math.tan(v/2)*1080/1920);const planes=[];
+  for(const [axis,ang,other,swap] of [[right,h/2,up,false],[neg(right),h/2,up,true],[up,v/2,right,true],[neg(up),v/2,right,false]]){const edge=norm(add(f,mul(axis,Math.tan(ang))));let n=norm(swap?cross(other,edge):cross(edge,other));if(dot(n,f)<0)n=neg(n);planes.push({n});}
+  planes.push({n:f,dot:0,origin:cam.pos,near:true},{n:neg(f),dot:0,origin:cam.pos,far:true});
+  return {cam,planes,point(p){const d=sub(p,cam.pos);return dot(d,f)>=.1&&dot(d,f)<=2000&&planes.slice(0,4).every(pl=>dot(d,pl.n)>=-1e-7);},sphere(p,r){const d=sub(p,cam.pos);return dot(d,f)-r>=.1&&dot(d,f)+r<=2000&&planes.slice(0,4).every(pl=>dot(d,pl.n)>=r-1e-7);},depth(p){return dot(sub(p,cam.pos),f);},height(size,p){const d=this.depth(p);return d>0?2*Math.atan(size/(2*d))/(cam.fov*Math.PI/180)*1920:null;},width(size,p){const d=this.depth(p);return d>0?2*Math.atan(size/(2*d))/(h)*1080:null;},screen(p){const d=sub(p,cam.pos),z=dot(d,f);if(z<=.1)return null;const x=dot(d,right)/(z*Math.tan(h/2)),y=dot(d,up)/(z*Math.tan(v/2));return [(x+1)*540,(1-y)*960];}};
+}
+const sub=(a,b)=>a.map((v,i)=>v-b[i]), mul=(a,k)=>a.map(v=>v*k), dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0), norm=a=>mul(a,1/(Math.hypot(...a)||1)), cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], neg=a=>mul(a,-1);
+function segBox(p0,p1,b){let lo=0,hi=1;for(let i=0;i<3;i++){const d=p1[i]-p0[i];if(Math.abs(d)<1e-9){if(p0[i]<b.min[i]||p0[i]>b.max[i])return null;}else{let a=(b.min[i]-p0[i])/d,z=(b.max[i]-p0[i])/d;if(a>z)[a,z]=[z,a];lo=Math.max(lo,a);hi=Math.min(hi,z);if(lo>hi)return null;}}return lo>1e-6&&lo<1-1e-6?lo:null;}
+function occluder(p0,p1,t,exclude){return occs(t).filter(o=>o.name!==exclude).map(o=>({name:o.name,k:segBox(p0,p1,o)})).filter(x=>x.k!=null).sort((a,b)=>a.k-b.k)[0]?.name||null;}
+const solids=[{name:'town hall',min:[-4.5,0,9.5],max:[4.5,6.4,18.5]}];
+for(const [x,z] of [[-16,-3],[-10,-4],[-20,3],[-14,7],[-8,11],[8,-4],[14,-2],[20,3],[14,10],[6,12]])solids.push({name:`village house @${x},${z}`,min:[x-2.45,0,z-2.05],max:[x+2.45,6,z+2.05]});
+for(const x of [580,600,620])solids.push({name:`neighbour house @${x}`,min:[x-2.45,0,8-2.05],max:[x+2.45,5.6,8+2.05]});
+function occs(t){const out=solids.map(b=>({...b}));out.push({name:'seawall',...box([0,9,-16],[90,18,1.15])});const g=props.find(p=>p.id==='gateleaf');if(g){const st=propState(g,t);if(st.visible)out.push({name:'gateleaf',...box(add(st.at,[0,17.88*(st.lift-.5),0]),[7,17.88,.36])});}return out;}
+function propState(p,t){const ks=p.keys||[], before=ks.filter(k=>k.t<=t).sort((a,b)=>a.t-b.t), key=before.at(-1)||{};const lastField=f=>before.filter(k=>k[f]!=null).at(-1)?.[f];const visible=key.drop?true:(lastField('in')??p.in??'world')==='world';const at=[...(lastField('at')??p.at)],rot=[...(lastField('rot')??p.rot??[0,0,0])];
+  const val=(field,def)=>{if(p[field]==null)return def;const keyed=before.filter(k=>k[field]!=null);if(!keyed.length)return p[field];const prev=keyed.at(-1),ix=keyed.length-1,ease=prev.ease;if(ease!=null&&ix>0){const prior=keyed[ix-1],u=clamp((t-prev.t)/ease);const sm=u*u*(3-2*u);return lerp(prior[field],prev[field],sm);}return prev[field];};
+  return {visible,at,rot,page:val('page',0),h:val('h',.8),lift:val('lift',0),lineY:val('lineY',1),pin:val('pin',0),cx:val('cx',0),cy:val('cy',12)};}
+const p=(place,offset)=>add(PLACES[place],offset);
+const cam=(place,pos,look,fov)=>({pos:p(place,pos),target:p(place,look),fov});
+const chunk3Shot=(id,t0,t1,place,a,b,fov=40)=>({id,t0,t1,camera:{move:'push',from:cam(place,a[0],a[1],Array.isArray(fov)?fov[0]:fov),to:cam(place,b[0],b[1],Array.isArray(fov)?fov[1]:fov)}});
+const CAST3={
+ mayor_old:{spec:'cast/mayor_old.json',at:[p('COAST_VILLAGE',[-6,0,1])[0],p('COAST_VILLAGE',[-6,0,1])[2]],ry:30},
+ mayor_young:{spec:'cast/mayor_young.json',at:[p('FLASHBACK_ROCK',[0,0,2])[0],p('FLASHBACK_ROCK',[0,0,2])[2]],ry:0},
+ child:{spec:'cast/child.json',at:[p('ROOM',[0,0,-1.15])[0],p('ROOM',[0,0,-1.15])[2]],ry:180},
+ workers:{spec:'cast/workers.json',at:[p('COAST_WALL',[0,17,.2])[0],p('COAST_WALL',[0,17,.2])[2]],ry:0},
+ villagers:{spec:'cast/villagers.json',at:[p('COAST_VILLAGE',[-3,0,.8])[0],p('COAST_VILLAGE',[-3,0,.8])[2]],ry:0},
+ villagers_shore:{spec:'cast/villagers.json',at:[p('SEA',[-5,0,-5])[0],p('SEA',[-5,0,-5])[2]],ry:0}
+};
+const ACTS3={
+ mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
+ mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
+ child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
+ workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+ villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
+ villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
+};
+const PROP3=[
+ {id:'box_sh13',kind:'belongings_box',in:'world',at:p('COAST_VILLAGE',[-6,1.15,1.45]),fetch:true,keys:[{t:'line:11.start',at:p('COAST_VILLAGE',[-6,1.15,1.45])},{t:'line:11.end',at:p('COAST_VILLAGE',[-2.6,1.15,3.25])}]},
+ {id:'gravestone_sh14',kind:'gravestone',in:'world',at:p('HILL_GRAVE',[0,0,0]),keys:[{t:'line:12.start'}]},
+ {id:'leaf_sh14',kind:'leaf',in:'world',at:p('HILL_GRAVE',[.55,3.3,.25]),keys:[{t:'line:12.start',at:p('HILL_GRAVE',[.55,3.3,.25])},{t:'line:12.end',at:p('HILL_GRAVE',[.18,.06,.55])}]},
+ {id:'wall_distant_sh14',kind:'seawall',in:'world',at:p('HILL_GRAVE',[0,0,-140]),w:18,h:18,keys:[{t:'line:12.start'}]},
+ {id:'birds_sh16',kind:'birds',in:'world',at:p('COAST_VILLAGE',[1.5,4.6,1]),n:7,burst:0,keys:[{t:'line:14.start',burst:0},{t:'line:14.word:2',burst:.15},{t:'line:14.end',burst:1}]},
+ {id:'sea_sheet_sh17',kind:'sea_sheet',in:'world',at:p('SEA',[0,.02,0]),pull:0,keys:[{t:'line:15.start',pull:0},{t:'line:15.word:2',pull:4},{t:'line:15.end',pull:36}]},
+ {id:'boat_sh17_a',kind:'boat',in:'world',at:p('SEA',[-3.5,.15,4]),keys:[{t:'line:15.start',at:p('SEA',[-3.5,.15,4])},{t:'line:15.end',at:p('SEA',[-3.5,.02,4])}]},
+ {id:'boat_sh17_b',kind:'boat',in:'world',at:p('SEA',[2.5,.15,7]),keys:[{t:'line:15.start',at:p('SEA',[2.5,.15,7])},{t:'line:15.end',at:p('SEA',[2.5,.02,7])}]},
+ {id:'wave_sh18',kind:'wave',in:'world',at:p('SEA',[0,0,-20]),h:0,advance:0,w:90,keys:[{t:'line:16.start',h:2,advance:0},{t:'line:16.word:2',h:6},{t:'line:16.end',h:17.5,advance:2}]},
+ {id:'measure_wave',kind:'measure',in:'world',at:p('SEA',[5,0,-16]),lineY:0,keys:[{t:'line:16.start',lineY:0},{t:'line:16.end',lineY:15}]},
+ {id:'old_village_sh19',kind:'storeys',in:'world',at:p('FLASHBACK_ROCK',[-3.5,-1.5,-12]),storeys:3,keys:[{t:'line:17.start'}]},
+'القرى اللي حواليهم بأسوارها الـ 10 متر اتمسحت في دقايق',
+'والموجة خبطت في سوره ووقفت عند حافته',
+'القرية كلها نجت',
+'والناس اللي ضحكوا عليه راحوا قبره يشكروه'
+];
+const film = {
+ fps:30,size:[1080,1920],endFrame:false,
+ world:{set:'own',setOpts:{post:{...makePost(),shade:makeShade()}}},
+ cast:{mayor:{spec:'cast/mayor.json',at:[MAYOR[0],MAYOR[2]],ry:0},mocker_a:{spec:'cast/mocker_a.json',at:[MOCK_A[0],MOCK_A[2]],ry:0},mocker_b:{spec:'cast/mocker_b.json',at:[MOCK_B[0],MOCK_B[2]],ry:180},mocker_c:{spec:'cast/mocker_c.json',at:[MOCK_C[0],MOCK_C[2]],ry:180},villager_1:{spec:'cast/villagers.json',at:[V1[0],V1[2]],ry:0},villager_2:{spec:'cast/villagers.json',at:[V2[0],V2[2]],ry:0},villager_3:{spec:'cast/villagers.json',at:[V3[0],V3[2]],ry:20},villager_4:{spec:'cast/villagers.json',at:[V4[0],V4[2]],ry:-20},villager_5:{spec:'cast/villagers.json',at:[V5[0],V5[2]],ry:40},villager_6:{spec:'cast/villagers.json',at:[V6[0],V6[2]],ry:-40},...CAST3},
+ voice:{file:'voice_owner.wav',words:'audio/clean.json',lines:lines.map(text=>({who:null,text}))},
+ acts:{
+ mayor:{
+  face:[{t:0,eyes:'open',brow:'up',mouth:'tight'},{t:'line:1.word:2',eyes:'look_up',brow:'up',mouth:'tight'},{t:'line:3.start',eyes:'open',brow:'up',mouth:'tight'},{t:'line:8.start',eyes:'open',brow:'down',mouth:'tight'}],
+  look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
+  walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
+ },
+ mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
+ mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
+ mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
+ villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
+ villager_2:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
+ villager_3:{walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}]},
+ villager_4:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
+ villager_5:{},villager_6:{}
+
+// ============================================================================
+// ACTS (pure in t, keyed to word/line timings)
+// ============================================================================
+export const ACTS_SH20_SH26 = {
+  mayor_young: {
+    place: [
+      { t: 'line:18.start', at: POS_SH20_MAYOR },
+    ],
+    look: [
+      { t: 'line:18.start', at: LOOK_SH20_MAYOR },
+      { t: 50.60,           at: POS_SH20_LINE },
+    ],
+    face: [
+      { t: 'line:18.start', expr: 'solemn' },
+      { t: 50.60,           expr: 'determined' },
+    ],
+    clips: [
+      { t: 'line:18.start', clip: 'idle_still' },
+      { t: 49.90,           clip: 'reach_touch_wall' },
+    ],
+  },
+
+  child: {
+    place: [
+      { t: 'line:19.start', at: POS_SH21_CHILD },
+    ],
+    look: [
+      { t: 'line:19.start', at: LOOK_SH21_CHILD },
+    ],
+    face: [
+      { t: 'line:19.start', expr: 'curious_smile' },
+      { t: 53.30,           expr: 'proud_smile' },
+    ],
+    clips: [
+      { t: 'line:19.start', clip: 'stand_straight' },
+    ],
+  },
+
+  workers: {
+    place: [
+      { t: 'line:20.start', at: POS_SH22_WORKERS },
+      { t: 57.10,           at: [PLACES.COAST_WALL[0] + 0.0, 18.00, PLACES.COAST_WALL[2] + 0.20] },
+    ],
+    look: [
+      { t: 'line:20.start', at: LOOK_SH22_WORKERS },
+    ],
+    face: [
+      { t: 'line:20.start', expr: 'focused' },
+    ],
+    clips: [
+      { t: 'line:20.start', clip: 'pour_trowel' },
+    ],
+  },
+
+  villagers: {
+    place: [
+      { t: 'line:23.start', at: POS_SH25_VILLAGERS },
+    ],
+    look: [
+      { t: 'line:23.start', at: LOOK_SH25_VILLAGERS },
+    ],
+    face: [
+      { t: 'line:23.start', expr: 'relief' },
+    ],
+    clips: [
+      { t: 'line:23.start', clip: 'stand_relief' },
+    ],
+  },
+
+  mocker_a: {
+    place: [
+      { t: 'line:24.start', at: POS_SH26_MOCKER_A },
+    ],
+    look: [
+      { t: 'line:24.start', at: LOOK_SH26_GRAVE },
+    ],
+    face: [
+      { t: 'line:24.start', expr: 'remorse' },
+    ],
+    clips: [
+      { t: 'line:24.start', clip: 'bow_hold_flowers' },
+    ],
+  },
+
+  mocker_b: {
+    place: [
+      { t: 'line:24.start', at: POS_SH26_MOCKER_B },
+    ],
+    look: [
+      { t: 'line:24.start', at: LOOK_SH26_GRAVE },
+    ],
+    face: [
+      { t: 'line:24.start', expr: 'remorse' },
+    ],
+    clips: [
+      { t: 'line:24.start', clip: 'bow_silent' },
+    ],
+  },
+
+  mocker_c: {
+    place: [
+      { t: 'line:24.start', at: POS_SH26_MOCKER_C },
+    ],
+    look: [
+      { t: 'line:24.start', at: LOOK_SH26_GRAVE },
+    ],
+    face: [
+      { t: 'line:24.start', expr: 'remorse' },
+    ],
+    clips: [
+      { t: 'line:24.start', clip: 'bow_silent' },
+    ],
+  },
+};
+
+engine/height.js:1:// engine/height.js - characters off the ground and characters changing place (FIX HEIGHT, 2026-11-04). Used by compose.js. Pure in t.
+engine/height.js:5://   place:  [{ t, at: [x, z], ry, y, legs, floor }]   a snap to another place + facing (nothing slides; walks, looks, props follow)
+engine/height.js:12:export const uses = tl => !!(tl.height?.length || tl.place?.length || tl.root?.y != null || (tl.walk || []).some(w => (w.path || []).some(p => p.length > 2)));
+engine/height.js:18:/** the timeline's height + place keys as compile steps, in time order with its walks (see compose.js compile) */
+engine/height.js:24:  (tl.place || []).forEach((p, i) => { isT(p.t, `place[${i}]`); if (!Array.isArray(p.at) && p.y == null && p.ry == null) throw new Error(`place[${i}]: needs at: [x, z] (or y / ry)`); out.push({ t0: p.t, o: -2, place: p }); });
+engine/height.js:41:  c.placeTs = []; c.lands = []; c.antics = []; c.places = [];
+engine/height.js:78:      c.walks.push({ t0: t, flight: { t1: t + T, x0: r.x, z0: r.z, x1: h.to[0], z1: h.to[1], ry: h.ry ?? r.ry } }); c.walkStarts.push(t); c.placeTs.push(t); }
+engine/height.js:94:/** one place key at compile time: a snap */
+engine/height.js:95:export function addPlace(c, p, rootAt) {
+engine/height.js:96:  const t = p.t, from = rootAt(t - 1e-6), L = legName(p, `place key at t ${t}`), y = p.y ?? 0;
+engine/height.js:98:  c.walks.push({ t0: t, place: true, end });
+engine/height.js:99:  c.walkStarts.push(t); c.placeTs.push(t); c.places.push({ t, from: { ...from }, end: { ...end, y } });
+engine/height.js:200:/** after the feet are placed: legs off the ground (world feet, so they blend with whatever the feet were doing) */
+engine/height.js:222:/** a look target held across a place moves with him: the same direction relative to his body. A key exactly on the place snaps. */
+engine/height.js:223:export function placeLooks(c, list, rootAt) {
+engine/height.js:224:  if (!c.places?.length) return list;
+engine/height.js:226:  for (const p of c.places) {
+engine/height.js:233:    L.push({ t: p.t, at: [b.x + dx * co + dz * si, (b.y || 0) + dy, b.z - dx * si + dz * co], instant: true, gaze: false, _place: true });
+engine/compose.js:10://   height: [{ t, y, over, legs } | { t, fall, up, to }], place: [{ t, at, ry, y }], root.y, path heights: engine/height.js + MOTION_API "Height and place" }
+engine/compose.js:16:import * as HT from './height.js';   // height + place keys (root.y, tl.height, tl.place, path heights): runs only for a timeline that uses them (c.air)
+engine/compose.js:100:    const ch = Object.entries(clip.ch).map(([p, tr]) => { const add = p.endsWith('+') || !!s.add; const path = p.replace(/\+$/, '');
+engine/compose.js:120:  // height + place (engine/height.js): their keys join the walks in time order (at the same time: place, height, then walk)
+engine/compose.js:122:  // a walk / seat / reach that starts exactly on a place key starts from the NEW place (older timelines: just before t0, as ever)
+engine/compose.js:123:  const hereT = t0 => c.air && c.placeTs.some(p => Math.abs(p - t0) < 1e-9) ? t0 : t0 - 1e-6;
+engine/compose.js:128:  // done in time order with the walks, so a walk after it starts from where he stands. `params.fwd: 0` = stand up in place (old).
+engine/compose.js:138:    if (st.place) { HT.addPlace(c, st.place, x => rootAt(c, x)); continue; }
+engine/compose.js:207:  if (c.air) c.look = HT.placeLooks(c, c.look, x => rootAt(c, x));
+engine/compose.js:218:    if (wk.place) { r = { ...wk.end }; active = null; continue; }                                            // a place key: a snap, nothing slides
+engine/compose.js:241:// seated feet sit in front of the hips) -> a turn in place to `face` that swings through the CAMERA side (the shorter of the two ways
+engine/compose.js:323:    if (c.air && LEGROOT.test(x.path) && c.placeTs.some(p => cl.t0 < p - 1e-9 && p <= t + 1e-9)) continue;   // a place key ends every earlier clip's hold on root and legs (a turn half way must not push him off the new place)
+engine/compose.js:363:  for (const wk of c.walks) { if (t < wk.t0) break; if (wk.w || !c.air) { last = wk; away = false; } else away = true; }   // away: a place / jump since that walk (the cane stays in the hand, measured from where the walk ended)
+engine/compose.js:494:    // MO2 (item 14): a cane walk places the cane prop itself (id = walk `caneProp`, default 'cane'): in the world, from the hand to the
+engine/compose.js:512:    // the stage reads walkK from the root's speed: a place key is not speed, and legs in the air don't walk
+engine/compose.js:513:    const nearPlace = c.placeTs.some(p => Math.abs(p - t) <= F(1) + 1e-6);
+engine/compose.js:540:  const w = L[k].instant ? 1 : fastIn(clamp((t - L[k].t - F(1)) / F(5)));   // instant: a look key on a place key (no swing from the old place)
+engine/compose.js:558:/** The times this timeline changes place (place keys): a camera's lag must not average across them. [] for nearly every film. */
+engine/compose.js:559:export const placeTimes = (tl, rest) => (compile(tl, rest).places || []).map(p => p.t);
+
+exec
+/bin/bash -lc "rg -n \"\\[pos\\[0\\],1|\\[posAt\\(.*\\[0\\].*1\\.9|\\[p\\[0\\],1\\.9|\\[p\\[0\\], 1\\.9\" tools/audit_staging.mjs; find .. -name RULES.md -o -name AGENTS.md" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+145:function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+156: const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+186: if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+196: else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+
+codex
+I confirmed the engine treats place keys as snaps and orders place before walk at equal timestamps. I’m implementing that ordering in the audit, while preserving its existing absolute walk path/direction behavior, and restoring only the named film act keys.
+apply patch
+patch: completed
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/scenes/film.js
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 42a718a43823ae07095a0c0c92999d478f10b1a8..1125ce2def8d462751b42412f3ee9f31f358efbe
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -55,9 +55,9 @@
+ };
+ const ACTS3={
+  mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
+- mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
++ mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,-1.10])[0],p('FLASHBACK_ROCK',[.9,0,-1.10])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
+  child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
+- workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
++ workers:{place:[{t:'line:20.start',at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:17},{t:57.10,at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:18}],look:[{t:'line:20.start',at:p('COAST_WALL',[0,17.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+  villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
+  villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
+ };
+@@ -138,9 +138,9 @@
+   look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
+   walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
+  },
+- mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
+- mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
+- mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
++ mocker_a:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[-.95,0,-.60])[0],p('HILL_GRAVE',[-.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_b:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[.95,0,-.60])[0],p('HILL_GRAVE',[.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_c:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
+  villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
+  villager_2:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
+  villager_3:{walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}]},
+
+apply patch
+patch: completed
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/tools/audit_staging.mjs
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 42a718a43823ae07095a0c0c92999d478f10b1a8..1125ce2def8d462751b42412f3ee9f31f358efbe
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -55,9 +55,9 @@
+ };
+ const ACTS3={
+  mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
+- mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
++ mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,-1.10])[0],p('FLASHBACK_ROCK',[.9,0,-1.10])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
+  child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
+- workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
++ workers:{place:[{t:'line:20.start',at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:17},{t:57.10,at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:18}],look:[{t:'line:20.start',at:p('COAST_WALL',[0,17.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+  villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
+  villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
+ };
+@@ -138,9 +138,9 @@
+   look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
+   walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
+  },
+- mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
+- mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
+- mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
++ mocker_a:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[-.95,0,-.60])[0],p('HILL_GRAVE',[-.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_b:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[.95,0,-.60])[0],p('HILL_GRAVE',[.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_c:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
+  villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
+  villager_2:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
+  villager_3:{walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}]},
+diff --git a/projects/fudai-wall/tools/audit_staging.mjs b/projects/fudai-wall/tools/audit_staging.mjs
+index b34501c952321a45caa7d815f1df73682aad17bf..a327eba69a1be80cc7572c986424a2ef96e48a6b
+--- a/projects/fudai-wall/tools/audit_staging.mjs
++++ b/projects/fudai-wall/tools/audit_staging.mjs
+@@ -8,6 +8,8 @@
+ // is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
+ // corner counts use a world AABB after yaw rotation, per the audit specification.
+ // Phase-11 F570 face-staging amendment (Codex seat): see RUN_RECORD phase 11.
++// Phase-12 P12_FIX_CAST_PLACE_BRIEF.md (Codex seat): root place keys are measured
++// as snaps, per engine/compose.js place layer and engine/height.js addPlace.
+ // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
+ // houses, three neighbour houses); wall and gateleaf are additional occluders.
+ import { readFileSync } from 'node:fs';
+@@ -53,9 +55,15 @@
+ const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
+ 
+ function posAt(id, t) {
+-  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
+-  if (!walks.length) return [base[0], 0, base[1]];
+-  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
++  const c = cast[id], base = c.at, a = acts[id] || {};
++  const events = [
++    ...(a.place || []).filter(k => t >= k.t).map(k => ({ ...k, kind: 'place', order: 0 })),
++    ...(a.walk || []).filter(w => t >= w.t0).map(w => ({ ...w, t: w.t0, kind: 'walk', order: 1 }))
++  ].sort((x,y) => x.t-y.t || x.order-y.order);
++  const event = events.at(-1);
++  if (!event) return [base[0], 0, base[1]];
++  if (event.kind === 'place') return [event.at[0], event.y ?? 0, event.at[1]];
++  const w = event, path = w.path, speed = w.speed || 1;
+   let remain = Math.max(0, t - w.t0) * speed;
+   for (let i=1;i<path.length;i++) {
+     const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
+@@ -65,8 +73,11 @@
+   const p=path.at(-1); return [p[0],0,p[1]];
+ }
+ function faceAt(id,t,p) {
+-  const a=acts[id]||{}, walks=(a.walk||[]).filter(w=>t>=w.t0);
+-  if(walks.length){const w=walks.at(-1), path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
++  const a=acts[id]||{}, events=[
++    ...(a.place||[]).filter(k=>t>=k.t).map(k=>({...k,kind:'place',order:0})),
++    ...(a.walk||[]).filter(w=>t>=w.t0).map(w=>({...w,t:w.t0,kind:'walk',order:1}))
++  ].sort((x,y)=>x.t-y.t||x.order-y.order), governing=events.at(-1);
++  if(governing?.kind==='walk'){const w=governing, path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
+     for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);if(rem<=d)return [path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]];rem-=d;}
+     const n=path.length;return [path[n-1][0]-path[n-2][0],path[n-1][1]-path[n-2][1]]; }
+   const look=(a.look||[]).filter(k=>k.t<=t).sort((x,y)=>x.t-y.t).at(-1);
+@@ -142,7 +153,7 @@
+ ];
+ function pointCheck(frame,p){return frame.point(p)&&!occluder(frame.cam.pos,p,currentTime);}
+ function screenVerticalSpan(frame, points){const ys=points.map(p=>frame.screen(p)).filter(p=>p!==null).map(p=>p[1]);return ys.length?Math.max(...ys)-Math.min(...ys):0;}
+-function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
++function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],p[1]+1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+ const results=[];
+ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotId);if(!shot){results.push({frameNo,shotId,checks:['missing shot']});continue;}const cam=camAt(shot,t),fr=makeFrame(cam),checks=[];let occupancy=false;
+  if(cam.fov<24||cam.fov>50)checks.push(`fov ${cam.fov.toFixed(2)} out of grammar [24, 50]`);
+@@ -153,7 +164,7 @@
+   if(!q){checks.push(`${id} absent`);return false;}let ck;if(q.sphere){const inside=fr.sphere(q.sphere,q.r),oc=occluder(cam.pos,q.sphere,t,id),px=fr.height(q.r*2,q.sphere);ck={pass:inside&&!oc&&px!=null&&px>=minPx,px,inside,oc,behind:fr.depth(q.sphere)<=0};}
+   else {ck=boxCheck(fr,q.box,minPx,false,id);}
+   const by=ck.occluded||ck.oc;checks.push(`${id} ${ck.pass?'PASS':'FAIL'} ${ck.px?.toFixed(0)??'n/a'}px${ck.behind?' behind camera':''} corners ${ck.n??'-'}/8${by?` occluded by ${by}`:''}`);if(ck.center&&ck.px>=230)occupancy=true;return ck.pass;};
+- const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
++ const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),p=posAt(id,t),behind=fr.depth([p[0],p[1]+1.9,p[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+  const body=(id,b)=>{const ck=boxCheck(fr,b,0,true,id);return ck.pass;};
+  const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
+  const point=(name,p)=>{const pass=pointCheck(fr,p),behind=fr.depth(p)<=0;checks.push(`${name} ${pass?'PASS':'FAIL'} point ${behind?'behind camera':pass?'in':'out'} frustum`);return pass;};
+@@ -183,7 +194,7 @@
+ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+  currentTime=t;const shot=shotById(shotId),fr=shot&&makeFrame(camAt(shot,t)),checks=[];
+  if(!shot){checks.push('missing shot');chunk3Results.push({frameNo,t,shotId,checks});continue;}
+- if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
++ if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+  if(type==='prop'||type==='state'||type==='occupancy'||type==='crest'){
+   const p=props.find(x=>x.id===id);
+   if(!p)checks.push(`${id} FAIL absent`);
+@@ -193,7 +204,7 @@
+    else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
+   }
+  } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
+- else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
++ else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+  else {const pos=posAt(id,t),tip=[pos[0],2.5,pos[2]],pass=pointCheck(fr,tip);checks.push(`${id} hand tip ${pass?'PASS':'FAIL'} point ${pass?'in':'out'} frustum`);}
+  if(frameNo===1635||frameNo===1647){const child=film.props.find(x=>x.id==='pencil_mark_sh21'),wall=film.props.find(x=>x.id==='seawall'),s21=shotById('SH21'),s22=shotById('SH22'),fr21=makeFrame(camAt(s21,s21.t1)),fr22=makeFrame(camAt(s22,s22.t0)),wallState=propState(wall,s22.t0),y1=fr21.screen([child.at[0],child.at[1],child.at[2]]),y2=fr22.screen([wall.at[0],wallState.h,wall.at[2]]),ndc=y=>y?1-y[1]/960:null,n1=ndc(y1),n2=ndc(y2),pass=Math.abs(n1-.062)<.02&&Math.abs(n2-.062)<.02;checks.push(`SH21→SH22 match-cut NDC_y +0.062 ${pass?'PASS':'FAIL'}: ${n1?.toFixed(3)??'n/a'} / ${n2?.toFixed(3)??'n/a'} (target +0.062 on both)`);}
+  chunk3Results.push({frameNo,t,shotId,checks});
+
+exec
+/bin/bash -lc 'node --check scenes/film.js && node --check tools/audit_staging.mjs && node tools/audit_d1_d2.mjs && node tools/audit_staging.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 267ms:
+— D1/D2 AUDIT —
+note: D2-CLEAR: 14 building solids checked per shot
+FAIL (2):
+  ✗ D2-CLEAR: shot 14 (SH13) camera path intersects town hall
+  ✗ D2-CLEAR: shot 17 (SH16) camera path intersects town hall
+
+exec
+/bin/bash -lc 'node tools/audit_staging.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 184ms:
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (workers's chest; was 0.9)
+  camera floor: S15 camera raised to y 1.25 (child's chest; was 0.9)
+  camera floor: S19 camera raised to y 1.26 (villagers_shore's chest; was 0.65)
+  camera floor: S20 camera raised to y 1.61 (mayor_young's chest; was 0.9)
+  camera floor: S23 camera raised to y 18.61 (workers's chest; was 16.75)
+  camera floor: S25 camera raised to y 19.61 (workers's chest; was 19.5)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; BODY PASS 3/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; popsign PASS 359px corners 8/8; BODY PASS 3/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.02, 2.67, -4.76] target [4.00, 1.90, 0.00] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 14.2° head in 454px
+CAM F570 pos [4.30, 5.82, -0.30] target [4.00, 1.90, 0.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a face PASS angle 51.5° head in 555px
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (2/19 moments)
+CHUNK 3 | FRAME | TIME | SHOT | RESULT | CHECKS
+CHUNK3 F933 | 31.10 | SH13 | PASS | mocker_b hand tip PASS point in frustum
+CHUNK3 F942 | 31.40 | SH13 | FAIL | box_sh13 FAIL 195px out of frustum
+CHUNK3 F969 | 32.30 | SH13 | FAIL | mayor_old face FAIL angle 61.5° head out 343px
+CHUNK3 F993 | 33.10 | SH14 | PASS | gravestone_sh14 PASS 692px in frustum
+CHUNK3 F1026 | 34.20 | SH14 | PASS | leaf_sh14 PASS 75px in frustum
+CHUNK3 F1056 | 35.20 | SH14 | FAIL | wall_distant_sh14 FAIL 357px out of frustum
+CHUNK3 F1083 | 36.10 | SH15 | PASS | calendar state PASS page 14 >= 14
+CHUNK3 F1101 | 36.70 | SH15 | PASS | calendar PASS 3810px in frustum
+CHUNK3 F1110 | 37.00 | SH15 | PASS | calendar PASS 3878px in frustum
+CHUNK3 F1131 | 37.70 | SH16 | FAIL | villagers body FAIL 428px corners 2/8
+CHUNK3 F1137 | 37.90 | SH16 | PASS | birds_sh16 PASS 130px in frustum
+CHUNK3 F1155 | 38.50 | SH16 | FAIL | villagers face FAIL angle 33.4° head out 221px
+CHUNK3 F1188 | 39.60 | SH17 | FAIL | sea_sheet_sh17 state FAIL pull 0 >= 6
+CHUNK3 F1197 | 39.90 | SH17 | PASS | boat_sh17_a PASS 512px in frustum
+CHUNK3 F1215 | 40.50 | SH17 | FAIL | boat_sh17_b FAIL 638px out of frustum
+CHUNK3 F1257 | 41.90 | SH18 | PASS | wave_sh18 PASS 1833px in frustum
+CHUNK3 F1302 | 43.40 | SH18 | FAIL | measure_wave FAIL 2082px out of frustum
+CHUNK3 F1335 | 44.50 | SH18 | FAIL | wave_sh18 FAIL 2094px out of frustum
+CHUNK3 F1367 | 45.57 | SH19 | PASS | mayor_young face PASS angle 8.1° head in 106px
+CHUNK3 F1410 | 47.00 | SH19 | FAIL | mayor_young face FAIL angle 10.3° head out 131px
+CHUNK3 F1428 | 47.60 | SH19 | FAIL | wave_old_sh19 FAIL 6216px out of frustum
+CHUNK3 F1497 | 49.90 | SH20 | FAIL | carved_line_sh20 FAIL 151px out of frustum
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 86.4° head out 634px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 1255px corners 3/8
+CHUNK3 F1599 | 53.30 | SH21 | PASS | pencil_mark_sh21 PASS 254px in frustum
+CHUNK3 F1635 | 54.50 | SH21 | FAIL | child face PASS angle 0.0° head in 854px; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.322 (target +0.062 on both)
+CHUNK3 F1647 | 54.90 | SH22 | FAIL | seawall FAIL 183px out of frustum; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.322 (target +0.062 on both)
+CHUNK3 F1677 | 55.90 | SH22 | FAIL | pour_sh22 FAIL 155px in frustum
+CHUNK3 F1716 | 57.20 | SH22 | PASS | workers body PASS 260px corners 8/8
+CHUNK3 F1764 | 58.80 | SH23 | PASS | wave_neighbor_sh23 PASS 741px in frustum
+CHUNK3 F1806 | 60.20 | SH23 | PASS | wave_neighbor_sh23 PASS 1191px in frustum
+CHUNK3 F1827 | 60.90 | SH23 | PASS | wave_neighbor_sh23 PASS 1098px in frustum occupancy subject
+CHUNK3 F1863 | 62.10 | SH24 | PASS | spray_hero_sh24 PASS 662px in frustum
+CHUNK3 F1896 | 63.20 | SH24 | FAIL | wave_hero_sh24 FAIL 3187px out of frustum
+CHUNK3 F1908 | 63.60 | SH24 | FAIL | SH24 crest margin FAIL wave crest 17.50 <= 17.50; wall top 18.00; wall-top in frame no
+CHUNK3 F1944 | 64.80 | SH25 | FAIL | sunbeam_sh25 FAIL 2522px out of frustum
+CHUNK3 F1953 | 65.10 | SH25 | FAIL | villagers occupancy FAIL 170px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | PASS | mocker_a face PASS angle 24.4° head in 298px
+CHUNK3 F2001 | 66.70 | SH26 | PASS | gravestone_sh26 PASS 408px in frustum
+CHUNK3 F2022 | 67.40 | SH26 | PASS | wall_distant_sh26 PASS 644px in frustum
+CHUNK 3: FAIL (21/40 moments)
+
+exec
+/bin/bash -lc "rg -n \"F590|F687|19/19|P12|FAIL \\(2/19\" P12_FIX_CAST_PLACE_OUT.txt .suite orch 2>/dev/null; rg -n \"function bodyIds|box\\(\\[p\\[0\\],1|\\[p\\[0\\], 1\" tools/audit_staging.mjs" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 52ms:
+.suite/critic/round9_chunk2/ROUND9_STATUS.md:14:(round-2 park), F537, F570 (F570(b) landed), F590 (round-2 park),
+.suite/critic/round9_chunk2/ROUND9_STATUS.md:15:F669, F687 (SH09B), F711, F723 (re-probed on the reverted round-1
+.suite/critic/round9_chunk2/ROUND9_STATUS.md:21:faults, disclosed in the Step B context paragraph — F590 (flat),
+.suite/critic/round9_chunk2/prompt_stepB.txt:19:- F570 (SH07): the mocker's face readable, looking up at the finished wall (the wall-top beat itself is served in the next shot, F590).
+.suite/critic/round9_chunk2/prompt_stepB.txt:20:- F590 (SH07B): the coins falling toward the sea by the wall.
+.suite/critic/round9_chunk2/prompt_stepB.txt:24:- F687 (SH09): the mayor's whole face, uncropped.
+.suite/critic/round9_chunk2/prompt_stepB.txt:32:PRIOR ROUND (round 8) VERDICT, for context: NO — biggest gap: round-7 faults persisted (cropped heads, occluded key props, missing subjects, foreign template text), "proving the computed staging audit did not fix actual camera framing or blocking, so the staging method itself must change." Since then the method changed again: every frame is now judged on its RENDERED PIXELS (a pixel gate measuring head discs, prop occlusion and the §5 detail/flat bar on the fleet-probed stills themselves), and fixes were applied one cause at a time against those pixels. Closed since round 8: the foreign sign text (film-local sign kind), the stuck calendar, the cropped mayor heads in SH09, and the F570 mocker's face (re-staged from above the sea side; he still looks up at the wall). Known weaknesses carried into this round, stated honestly: F474 and F590 are flat compositions; in F723 a villager's head covers part of the ruler label; the SH11 frames are mostly sky; in F219 the mayor is among the crowd rather than compositionally singled out. Judge whether the FRAMES now pass.
+P12_FIX_CAST_PLACE_OUT.txt:14:Execute the brief in P12_FIX_CAST_PLACE_BRIEF.md in this project directory, exactly as written. NO LOCAL RENDERS. Paste the validation results and the four target moment lines in your reply. Do not commit.
+P12_FIX_CAST_PLACE_OUT.txt:16:I’ll read the P12 brief and repo guidance first, then make only the requested changes and run its non-render validations. I’ll leave the working tree uncommitted and won’t run local renders.
+P12_FIX_CAST_PLACE_OUT.txt:18:/bin/bash -lc "pwd && rg --files -g 'P12_FIX_CAST_PLACE_BRIEF.md' -g 'AGENTS.md' -g 'orch/UI_BRIEF.md' -g '"'!vendor/**'"' | sed -n '1,80p'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P12_FIX_CAST_PLACE_OUT.txt:21:P12_FIX_CAST_PLACE_BRIEF.md
+P12_FIX_CAST_PLACE_OUT.txt:24:/bin/bash -lc "cat P12_FIX_CAST_PLACE_BRIEF.md && printf '\\n--- UI BRIEF ---\\n' && cat orch/UI_BRIEF.md && printf '\\n--- STATUS ---\\n' && git status --short --branch" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P12_FIX_CAST_PLACE_OUT.txt:109:2. `node tools/audit_staging.mjs` full: chunk 2 must read **19/19
+P12_FIX_CAST_PLACE_OUT.txt:133:?? P12_FIX_CAST_PLACE_BRIEF.md
+P12_FIX_CAST_PLACE_OUT.txt:134:?? P12_FIX_CAST_PLACE_OUT.txt
+P12_FIX_CAST_PLACE_OUT.txt:372:// and F687 (dist 2.9, fov 30) crops, consistent with this model and not y=1.55.
+P12_FIX_CAST_PLACE_OUT.txt:765:+// Phase-12 P12_FIX_CAST_PLACE_BRIEF.md (Codex seat): root place keys are measured
+P12_FIX_CAST_PLACE_OUT.txt:876:CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+P12_FIX_CAST_PLACE_OUT.txt:877:F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+P12_FIX_CAST_PLACE_OUT.txt:884:CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+P12_FIX_CAST_PLACE_OUT.txt:885:F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+P12_FIX_CAST_PLACE_OUT.txt:898:FAIL (2/19 moments)
+.suite/critic/round5_chunk2_KEY.driver.txt:4:pic_04.jpg = ours F687 (/home/hatch/workspace/fudai-rebuild/probes/chunk2/stills/frame_0687.png)
+.suite/critic/CRITIC_REPORT_round8.md:23:every "ours" call also matches its keyed frame (e.g. pic_14 = F669, pic_25 = F687,
+.suite/critic/CRITIC_REPORT_round8.md:33:> BLOCKING: Foreign template text ("RED CANYON SHORT LINE") on signs in F241, F288, F474, and F870; cropped heads/faces in F219, F241, F570, F669, F687, F711, and F723; missing or occluded subjects and props—mayor absent in F219–F241, calendar blocked by crane with no legible 12-year count in F345–F414, no coastal houses/low wall and clipped "10M" sign in F474, mocker hidden behind blueprint in F570, no sea under coins in F590, and blueprint/"15.5M" ruler blurred and occluded to "5M" by a foreground villager in F711–F723.
+.suite/critic/CRITIC_REPORT_round8.md:35:> LINE COHERENCE: key windows mismatch (F219, F570, F590, F711–F723); other windows match topically but lose readability to occlusion and cropping.
+.suite/critic/CRITIC_REPORT_round8.md:36:> SET BAR: below bar — flattest frames F590, F474, F768, F798, F822, F621–F639.
+.suite/critic/CRITIC_REPORT_round8.md:66:- **F687:** the mayor's head is cropped at the top edge — as the driver also
+.suite/critic/CRITIC_REPORT_round8.md:71:the scene-data staging audit passed these frames 19/19 while the renders fail —
+.suite/critic/CRITIC_REPORT_round8.md:81:tweak): head crops (F669/F687, and by the critic's eye F219/F241/F570/F711/F723);
+.suite/critic/CRITIC_REPORT_round8.md:86:mocker behind the blueprint F570); missing sea under the coins (F590); the flat
+.suite/critic/round8_chunk2/stepB_reply.txt:3:BLOCKING: Foreign template text ("RED CANYON SHORT LINE") on signs in F241, F288, F474, and F870; cropped heads/faces in F219, F241, F570, F669, F687, F711, and F723; missing or occluded subjects and props—mayor absent in F219–F241, calendar blocked by crane with no legible 12-year count in F345–F414, no coastal houses/low wall and clipped "10M" sign in F474, mocker hidden behind blueprint in F570, no sea under coins in F590, and blueprint/"15.5M" ruler blurred and occluded to "5M" by a foreground villager in F711–F723.
+.suite/critic/round8_chunk2/stepB_reply.txt:6:S3 — FAIL: F570 buries the mocker behind the blueprint rather than framing mocker plus wall top, F590 omits the sea beneath the coins, and F669–F687 crop the mayor's upper head and eyebrows.
+.suite/critic/round8_chunk2/stepB_reply.txt:8:LINE COHERENCE: Key windows mismatch their visuals—F219 names the mayor without showing him, F570 pairs throwing-money dialogue with a blueprint, F590 references the sea with no water present, and F711–F723 put a smiling villager over the blueprint beat. Other windows match topically but lose readability to occlusion and cropping.
+.suite/critic/round8_chunk2/stepB_reply.txt:9:SET BAR: below bar — flattest frames are F590, F474, F768, F798, F822, and F621–F639, dominated by empty sky, bare slabs, and flat backdrops behind faces.
+.suite/critic/round8_chunk2/prompt_stepB.txt:20:- F590 (SH07B): the coins falling toward the sea by the wall.
+.suite/critic/round8_chunk2/prompt_stepB.txt:24:- F687 (SH09): the mayor's whole face, uncropped.
+.suite/critic/round8_chunk2/prompt_stepB.txt:32:PRIOR ROUND (round 7) BIGGEST GAP, for context: misaimed camera staging and unstaged beat props — empty probes at 570 and 798, gutted wall framing at 474, missing named props and story numbers, backs instead of faces, cropped heads, foreign template text ("RED CANYON SHORT LINE") on the signs. Since then the staging method changed: hand-tweaked placement was replaced by a computed staging audit (frustum + occlusion + occupancy computed from scene data for all 19 moments above; the audit passes 19/19) and the beat-prop key animations were unlocked at their loader cause. Judge whether the FRAMES now show it.
+.suite/critic/ROUND7_STATUS.md:7:  stills: F474/F687 from `probes/chunk2/stills/`, F798/F870 from
+.suite/critic/ROUND7_STATUS.md:27:  our 12 frames only (F219/F241/F288/F345/F414/F474/F537/F570/F621/F687/F798/F870),
+.suite/critic/round7_chunk2_KEY.driver.txt:18:pic_18.jpg = ours F687 (/home/hatch/workspace/fudai-rebuild/probes/chunk2/stills/frame_0687.png)
+.suite/critic/round6_chunk2_KEY.driver.txt:3:pic_03.jpg = ours F687 (/home/hatch/workspace/fudai-rebuild/probes/chunk2/stills/frame_0687.png)
+169: const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
+
+apply patch
+patch: completed
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/tools/audit_staging.mjs
+apply patch
+patch: completed
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/tools/audit_staging.mjs
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 42a718a43823ae07095a0c0c92999d478f10b1a8..1125ce2def8d462751b42412f3ee9f31f358efbe
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -55,9 +55,9 @@
+ };
+ const ACTS3={
+  mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
+- mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
++ mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,-1.10])[0],p('FLASHBACK_ROCK',[.9,0,-1.10])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
+  child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
+- workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
++ workers:{place:[{t:'line:20.start',at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:17},{t:57.10,at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:18}],look:[{t:'line:20.start',at:p('COAST_WALL',[0,17.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+  villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
+  villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
+ };
+@@ -138,9 +138,9 @@
+   look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
+   walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
+  },
+- mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
+- mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
+- mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
++ mocker_a:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[-.95,0,-.60])[0],p('HILL_GRAVE',[-.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_b:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[.95,0,-.60])[0],p('HILL_GRAVE',[.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_c:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
+  villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
+  villager_2:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
+  villager_3:{walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}]},
+diff --git a/projects/fudai-wall/tools/audit_staging.mjs b/projects/fudai-wall/tools/audit_staging.mjs
+index b34501c952321a45caa7d815f1df73682aad17bf..cb097aba10db03a61b49933540b877acf72a5c87
+--- a/projects/fudai-wall/tools/audit_staging.mjs
++++ b/projects/fudai-wall/tools/audit_staging.mjs
+@@ -8,6 +8,8 @@
+ // is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
+ // corner counts use a world AABB after yaw rotation, per the audit specification.
+ // Phase-11 F570 face-staging amendment (Codex seat): see RUN_RECORD phase 11.
++// Phase-12 P12_FIX_CAST_PLACE_BRIEF.md (Codex seat): root place keys are measured
++// as snaps, per engine/compose.js place layer and engine/height.js addPlace.
+ // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
+ // houses, three neighbour houses); wall and gateleaf are additional occluders.
+ import { readFileSync } from 'node:fs';
+@@ -53,9 +55,15 @@
+ const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
+ 
+ function posAt(id, t) {
+-  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
+-  if (!walks.length) return [base[0], 0, base[1]];
+-  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
++  const c = cast[id], base = c.at, a = acts[id] || {};
++  const events = [
++    ...(a.place || []).filter(k => t >= k.t).map(k => ({ ...k, kind: 'place', order: 0 })),
++    ...(a.walk || []).filter(w => t >= w.t0).map(w => ({ ...w, t: w.t0, kind: 'walk', order: 1 }))
++  ].sort((x,y) => x.t-y.t || x.order-y.order);
++  const event = events.at(-1);
++  if (!event) return [base[0], 0, base[1]];
++  if (event.kind === 'place') return [event.at[0], event.y ?? 0, event.at[1]];
++  const w = event, path = w.path, speed = w.speed || 1;
+   let remain = Math.max(0, t - w.t0) * speed;
+   for (let i=1;i<path.length;i++) {
+     const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
+@@ -65,8 +73,11 @@
+   const p=path.at(-1); return [p[0],0,p[1]];
+ }
+ function faceAt(id,t,p) {
+-  const a=acts[id]||{}, walks=(a.walk||[]).filter(w=>t>=w.t0);
+-  if(walks.length){const w=walks.at(-1), path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
++  const a=acts[id]||{}, events=[
++    ...(a.place||[]).filter(k=>t>=k.t).map(k=>({...k,kind:'place',order:0})),
++    ...(a.walk||[]).filter(w=>t>=w.t0).map(w=>({...w,t:w.t0,kind:'walk',order:1}))
++  ].sort((x,y)=>x.t-y.t||x.order-y.order), governing=events.at(-1);
++  if(governing?.kind==='walk'){const w=governing, path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
+     for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);if(rem<=d)return [path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]];rem-=d;}
+     const n=path.length;return [path[n-1][0]-path[n-2][0],path[n-1][1]-path[n-2][1]]; }
+   const look=(a.look||[]).filter(k=>k.t<=t).sort((x,y)=>x.t-y.t).at(-1);
+@@ -142,7 +153,7 @@
+ ];
+ function pointCheck(frame,p){return frame.point(p)&&!occluder(frame.cam.pos,p,currentTime);}
+ function screenVerticalSpan(frame, points){const ys=points.map(p=>frame.screen(p)).filter(p=>p!==null).map(p=>p[1]);return ys.length?Math.max(...ys)-Math.min(...ys):0;}
+-function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
++function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],p[1]+1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+ const results=[];
+ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotId);if(!shot){results.push({frameNo,shotId,checks:['missing shot']});continue;}const cam=camAt(shot,t),fr=makeFrame(cam),checks=[];let occupancy=false;
+  if(cam.fov<24||cam.fov>50)checks.push(`fov ${cam.fov.toFixed(2)} out of grammar [24, 50]`);
+@@ -153,9 +164,9 @@
+   if(!q){checks.push(`${id} absent`);return false;}let ck;if(q.sphere){const inside=fr.sphere(q.sphere,q.r),oc=occluder(cam.pos,q.sphere,t,id),px=fr.height(q.r*2,q.sphere);ck={pass:inside&&!oc&&px!=null&&px>=minPx,px,inside,oc,behind:fr.depth(q.sphere)<=0};}
+   else {ck=boxCheck(fr,q.box,minPx,false,id);}
+   const by=ck.occluded||ck.oc;checks.push(`${id} ${ck.pass?'PASS':'FAIL'} ${ck.px?.toFixed(0)??'n/a'}px${ck.behind?' behind camera':''} corners ${ck.n??'-'}/8${by?` occluded by ${by}`:''}`);if(ck.center&&ck.px>=230)occupancy=true;return ck.pass;};
+- const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
++ const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),p=posAt(id,t),behind=fr.depth([p[0],p[1]+1.9,p[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+  const body=(id,b)=>{const ck=boxCheck(fr,b,0,true,id);return ck.pass;};
+- const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
++ const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],p[1]+1,p[2]],[.9,2,.5]);return body(id,b);});
+  const point=(name,p)=>{const pass=pointCheck(fr,p),behind=fr.depth(p)<=0;checks.push(`${name} ${pass?'PASS':'FAIL'} point ${behind?'behind camera':pass?'in':'out'} frustum`);return pass;};
+  switch(frameNo){
+  case 219: face('mayor');{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+@@ -183,7 +194,7 @@
+ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+  currentTime=t;const shot=shotById(shotId),fr=shot&&makeFrame(camAt(shot,t)),checks=[];
+  if(!shot){checks.push('missing shot');chunk3Results.push({frameNo,t,shotId,checks});continue;}
+- if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
++ if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+  if(type==='prop'||type==='state'||type==='occupancy'||type==='crest'){
+   const p=props.find(x=>x.id===id);
+   if(!p)checks.push(`${id} FAIL absent`);
+@@ -193,7 +204,7 @@
+    else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
+   }
+  } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
+- else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
++ else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+  else {const pos=posAt(id,t),tip=[pos[0],2.5,pos[2]],pass=pointCheck(fr,tip);checks.push(`${id} hand tip ${pass?'PASS':'FAIL'} point ${pass?'in':'out'} frustum`);}
+  if(frameNo===1635||frameNo===1647){const child=film.props.find(x=>x.id==='pencil_mark_sh21'),wall=film.props.find(x=>x.id==='seawall'),s21=shotById('SH21'),s22=shotById('SH22'),fr21=makeFrame(camAt(s21,s21.t1)),fr22=makeFrame(camAt(s22,s22.t0)),wallState=propState(wall,s22.t0),y1=fr21.screen([child.at[0],child.at[1],child.at[2]]),y2=fr22.screen([wall.at[0],wallState.h,wall.at[2]]),ndc=y=>y?1-y[1]/960:null,n1=ndc(y1),n2=ndc(y2),pass=Math.abs(n1-.062)<.02&&Math.abs(n2-.062)<.02;checks.push(`SH21→SH22 match-cut NDC_y +0.062 ${pass?'PASS':'FAIL'}: ${n1?.toFixed(3)??'n/a'} / ${n2?.toFixed(3)??'n/a'} (target +0.062 on both)`);}
+  chunk3Results.push({frameNo,t,shotId,checks});
+
+exec
+/bin/bash -lc "node --check scenes/film.js; node --check tools/audit_staging.mjs; node tools/audit_d1_d2.mjs; node tools/audit_staging.mjs | rg '"'^(F219|F241|F288|F345|F414|F474|F537|F570|F590|F621|F639|F669|F687|F711|F723|F768|F798|F822|F870|FAIL '"\\(|CHUNK3 F1518|CHUNK3 F1542|CHUNK3 F1635|CHUNK3 F1716|CHUNK3 F1953|CHUNK3 F1980|CHUNK 3:)'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 556ms:
+— D1/D2 AUDIT —
+note: D2-CLEAR: 14 building solids checked per shot
+FAIL (2):
+  ✗ D2-CLEAR: shot 14 (SH13) camera path intersects town hall
+  ✗ D2-CLEAR: shot 17 (SH16) camera path intersects town hall
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; BODY PASS 3/2
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; popsign PASS 359px corners 8/8; BODY PASS 3/2
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 14.2° head in 454px
+F570 | 19.00 | SH07 | PASS | mocker_a face PASS angle 51.5° head in 555px
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (2/19 moments)
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 86.4° head out 634px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 1255px corners 3/8
+CHUNK3 F1635 | 54.50 | SH21 | FAIL | child face PASS angle 0.0° head in 854px; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.322 (target +0.062 on both)
+CHUNK3 F1716 | 57.20 | SH22 | PASS | workers body PASS 260px corners 8/8
+CHUNK3 F1953 | 65.10 | SH25 | FAIL | villagers occupancy FAIL 170px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | PASS | mocker_a face PASS angle 24.4° head in 298px
+CHUNK 3: FAIL (21/40 moments)
+
+exec
+/bin/bash -lc 'git diff --stat -- scenes/film.js tools/audit_staging.mjs; git diff -- scenes/film.js; git diff -- tools/audit_staging.mjs; git status --short' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+ projects/fudai-wall/scenes/film.js          | 10 +++++-----
+ projects/fudai-wall/tools/audit_staging.mjs | 31 +++++++++++++++++++----------
+ 2 files changed, 26 insertions(+), 15 deletions(-)
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 42a718a..1125ce2 100644
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -55,9 +55,9 @@ const CAST3={
+ };
+ const ACTS3={
+  mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
+- mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
++ mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,-1.10])[0],p('FLASHBACK_ROCK',[.9,0,-1.10])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
+  child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
+- workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
++ workers:{place:[{t:'line:20.start',at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:17},{t:57.10,at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:18}],look:[{t:'line:20.start',at:p('COAST_WALL',[0,17.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+  villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
+  villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
+ };
+@@ -138,9 +138,9 @@ const film = {
+   look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
+   walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
+  },
+- mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
+- mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
+- mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
++ mocker_a:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[-.95,0,-.60])[0],p('HILL_GRAVE',[-.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]},{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_b:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[.95,0,-.60])[0],p('HILL_GRAVE',[.95,0,-.60])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
++ mocker_c:{place:[{t:'line:24.start',at:[p('HILL_GRAVE',[0,0,-1.30])[0],p('HILL_GRAVE',[0,0,-1.30])[2]]}],face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}],look:[{t:'line:24.start',at:p('HILL_GRAVE',[0,1,1])}]},
+  villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
+  villager_2:{face:[{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}]},
+  villager_3:{walk:[{t0:'line:9.start',path:[[-3,-6],[-3,-8],[-3,-8]],speed:5}]},
+diff --git a/projects/fudai-wall/tools/audit_staging.mjs b/projects/fudai-wall/tools/audit_staging.mjs
+index b34501c..cb097ab 100644
+--- a/projects/fudai-wall/tools/audit_staging.mjs
++++ b/projects/fudai-wall/tools/audit_staging.mjs
+@@ -8,6 +8,8 @@
+ // is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
+ // corner counts use a world AABB after yaw rotation, per the audit specification.
+ // Phase-11 F570 face-staging amendment (Codex seat): see RUN_RECORD phase 11.
++// Phase-12 P12_FIX_CAST_PLACE_BRIEF.md (Codex seat): root place keys are measured
++// as snaps, per engine/compose.js place layer and engine/height.js addPlace.
+ // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
+ // houses, three neighbour houses); wall and gateleaf are additional occluders.
+ import { readFileSync } from 'node:fs';
+@@ -53,9 +55,15 @@ const characters = Object.entries(cast).map(([name, c]) => {
+ const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
+ 
+ function posAt(id, t) {
+-  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
+-  if (!walks.length) return [base[0], 0, base[1]];
+-  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
++  const c = cast[id], base = c.at, a = acts[id] || {};
++  const events = [
++    ...(a.place || []).filter(k => t >= k.t).map(k => ({ ...k, kind: 'place', order: 0 })),
++    ...(a.walk || []).filter(w => t >= w.t0).map(w => ({ ...w, t: w.t0, kind: 'walk', order: 1 }))
++  ].sort((x,y) => x.t-y.t || x.order-y.order);
++  const event = events.at(-1);
++  if (!event) return [base[0], 0, base[1]];
++  if (event.kind === 'place') return [event.at[0], event.y ?? 0, event.at[1]];
++  const w = event, path = w.path, speed = w.speed || 1;
+   let remain = Math.max(0, t - w.t0) * speed;
+   for (let i=1;i<path.length;i++) {
+     const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
+@@ -65,8 +73,11 @@ function posAt(id, t) {
+   const p=path.at(-1); return [p[0],0,p[1]];
+ }
+ function faceAt(id,t,p) {
+-  const a=acts[id]||{}, walks=(a.walk||[]).filter(w=>t>=w.t0);
+-  if(walks.length){const w=walks.at(-1), path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
++  const a=acts[id]||{}, events=[
++    ...(a.place||[]).filter(k=>t>=k.t).map(k=>({...k,kind:'place',order:0})),
++    ...(a.walk||[]).filter(w=>t>=w.t0).map(w=>({...w,t:w.t0,kind:'walk',order:1}))
++  ].sort((x,y)=>x.t-y.t||x.order-y.order), governing=events.at(-1);
++  if(governing?.kind==='walk'){const w=governing, path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
+     for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);if(rem<=d)return [path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]];rem-=d;}
+     const n=path.length;return [path[n-1][0]-path[n-2][0],path[n-1][1]-path[n-2][1]]; }
+   const look=(a.look||[]).filter(k=>k.t<=t).sort((x,y)=>x.t-y.t).at(-1);
+@@ -142,7 +153,7 @@ const chunk3Moments=[
+ ];
+ function pointCheck(frame,p){return frame.point(p)&&!occluder(frame.cam.pos,p,currentTime);}
+ function screenVerticalSpan(frame, points){const ys=points.map(p=>frame.screen(p)).filter(p=>p!==null).map(p=>p[1]);return ys.length?Math.max(...ys)-Math.min(...ys):0;}
+-function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
++function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],p[1]+1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+ const results=[];
+ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotId);if(!shot){results.push({frameNo,shotId,checks:['missing shot']});continue;}const cam=camAt(shot,t),fr=makeFrame(cam),checks=[];let occupancy=false;
+  if(cam.fov<24||cam.fov>50)checks.push(`fov ${cam.fov.toFixed(2)} out of grammar [24, 50]`);
+@@ -153,9 +164,9 @@ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotI
+   if(!q){checks.push(`${id} absent`);return false;}let ck;if(q.sphere){const inside=fr.sphere(q.sphere,q.r),oc=occluder(cam.pos,q.sphere,t,id),px=fr.height(q.r*2,q.sphere);ck={pass:inside&&!oc&&px!=null&&px>=minPx,px,inside,oc,behind:fr.depth(q.sphere)<=0};}
+   else {ck=boxCheck(fr,q.box,minPx,false,id);}
+   const by=ck.occluded||ck.oc;checks.push(`${id} ${ck.pass?'PASS':'FAIL'} ${ck.px?.toFixed(0)??'n/a'}px${ck.behind?' behind camera':''} corners ${ck.n??'-'}/8${by?` occluded by ${by}`:''}`);if(ck.center&&ck.px>=230)occupancy=true;return ck.pass;};
+- const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
++ const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),p=posAt(id,t),behind=fr.depth([p[0],p[1]+1.9,p[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+  const body=(id,b)=>{const ck=boxCheck(fr,b,0,true,id);return ck.pass;};
+- const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
++ const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],p[1]+1,p[2]],[.9,2,.5]);return body(id,b);});
+  const point=(name,p)=>{const pass=pointCheck(fr,p),behind=fr.depth(p)<=0;checks.push(`${name} ${pass?'PASS':'FAIL'} point ${behind?'behind camera':pass?'in':'out'} frustum`);return pass;};
+  switch(frameNo){
+  case 219: face('mayor');{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
+@@ -183,7 +194,7 @@ const chunk3Results=[];
+ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+  currentTime=t;const shot=shotById(shotId),fr=shot&&makeFrame(camAt(shot,t)),checks=[];
+  if(!shot){checks.push('missing shot');chunk3Results.push({frameNo,t,shotId,checks});continue;}
+- if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
++ if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+  if(type==='prop'||type==='state'||type==='occupancy'||type==='crest'){
+   const p=props.find(x=>x.id===id);
+   if(!p)checks.push(`${id} FAIL absent`);
+@@ -193,7 +204,7 @@ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+    else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
+   }
+  } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
+- else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
++ else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+  else {const pos=posAt(id,t),tip=[pos[0],2.5,pos[2]],pass=pointCheck(fr,tip);checks.push(`${id} hand tip ${pass?'PASS':'FAIL'} point ${pass?'in':'out'} frustum`);}
+  if(frameNo===1635||frameNo===1647){const child=film.props.find(x=>x.id==='pencil_mark_sh21'),wall=film.props.find(x=>x.id==='seawall'),s21=shotById('SH21'),s22=shotById('SH22'),fr21=makeFrame(camAt(s21,s21.t1)),fr22=makeFrame(camAt(s22,s22.t0)),wallState=propState(wall,s22.t0),y1=fr21.screen([child.at[0],child.at[1],child.at[2]]),y2=fr22.screen([wall.at[0],wallState.h,wall.at[2]]),ndc=y=>y?1-y[1]/960:null,n1=ndc(y1),n2=ndc(y2),pass=Math.abs(n1-.062)<.02&&Math.abs(n2-.062)<.02;checks.push(`SH21→SH22 match-cut NDC_y +0.062 ${pass?'PASS':'FAIL'}: ${n1?.toFixed(3)??'n/a'} / ${n2?.toFixed(3)??'n/a'} (target +0.062 on both)`);}
+  chunk3Results.push({frameNo,t,shotId,checks});
+ M scenes/film.js
+ M tools/audit_staging.mjs
+?? .suite/critic/round9_chunk2/stepA_reply.txt
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P12_FIX_CAST_PLACE_BRIEF.md
+?? P12_FIX_CAST_PLACE_OUT.txt
+?? P12_FIX_SH13_BRIEF.md
+?? P12_FIX_SH16_BRIEF.md
+
+codex
+Implemented the requested changes in `scenes/film.js` and `tools/audit_staging.mjs`. No local renders or fleet dispatch were run, and nothing was committed.
+
+**Validation results**
+
+- `node --check scenes/film.js` — PASS
+- `node --check tools/audit_staging.mjs` — PASS
+- `node tools/audit_d1_d2.mjs` — `FAIL (2)`, unchanged: shot 14 (SH13) and shot 17 (SH16) camera paths intersect the town hall.
+- `node tools/audit_staging.mjs` — chunk 2 reports `FAIL (2/19 moments)`, at F590 and F687. The other 17 moments pass. This does **not** meet the brief’s required 19/19, though the output is unchanged from before the requested staging changes.
+- Chunk 3 changes are confined to F1518, F1542, F1716, and F1980. F1635 and F1953 readings did not move.
+
+**Four target moment lines**
+
+```text
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 86.4° head out 634px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 1255px corners 3/8
+CHUNK3 F1716 | 57.20 | SH22 | PASS | workers body PASS 260px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | PASS | mocker_a face PASS angle 24.4° head in 298px
+```
+
+F1518 is reported as measured at the restored 50.60 look key; I did not retime it or change the key-boundary rule. F1542 also remains a measured failure, despite the brief’s expected PASS.
+
+**Diff scope:** film changes add the requested place/look keys and correct the workers’ look value. SH01–SH12 film data is untouched; the only changes within the shared mocker acts are the specified SH26 place and look additions. The working tree remains uncommitted.
+tokens used
+85,552
+Implemented the requested changes in `scenes/film.js` and `tools/audit_staging.mjs`. No local renders or fleet dispatch were run, and nothing was committed.
+
+**Validation results**
+
+- `node --check scenes/film.js` — PASS
+- `node --check tools/audit_staging.mjs` — PASS
+- `node tools/audit_d1_d2.mjs` — `FAIL (2)`, unchanged: shot 14 (SH13) and shot 17 (SH16) camera paths intersect the town hall.
+- `node tools/audit_staging.mjs` — chunk 2 reports `FAIL (2/19 moments)`, at F590 and F687. The other 17 moments pass. This does **not** meet the brief’s required 19/19, though the output is unchanged from before the requested staging changes.
+- Chunk 3 changes are confined to F1518, F1542, F1716, and F1980. F1635 and F1953 readings did not move.
+
+**Four target moment lines**
+
+```text
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 86.4° head out 634px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 1255px corners 3/8
+CHUNK3 F1716 | 57.20 | SH22 | PASS | workers body PASS 260px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | PASS | mocker_a face PASS angle 24.4° head in 298px
+```
+
+F1518 is reported as measured at the restored 50.60 look key; I did not retime it or change the key-boundary rule. F1542 also remains a measured failure, despite the brief’s expected PASS.
+
+**Diff scope:** film changes add the requested place/look keys and correct the workers’ look value. SH01–SH12 film data is untouched; the only changes within the shared mocker acts are the specified SH26 place and look additions. The working tree remains uncommitted.

@@ -8,6 +8,8 @@
 // is ≤5°). Face-limit clamping from the renderer is not applied. Box frustum
 // corner counts use a world AABB after yaw rotation, per the audit specification.
 // Phase-11 F570 face-staging amendment (Codex seat): see RUN_RECORD phase 11.
+// Phase-12 P12_FIX_CAST_PLACE_BRIEF.md (Codex seat): root place keys are measured
+// as snaps, per engine/compose.js place layer and engine/height.js addPlace.
 // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
 // houses, three neighbour houses); wall and gateleaf are additional occluders.
 import { readFileSync } from 'node:fs';
@@ -53,9 +55,15 @@ const characters = Object.entries(cast).map(([name, c]) => {
 const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
 
 function posAt(id, t) {
-  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
-  if (!walks.length) return [base[0], 0, base[1]];
-  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
+  const c = cast[id], base = c.at, a = acts[id] || {};
+  const events = [
+    ...(a.place || []).filter(k => t >= k.t).map(k => ({ ...k, kind: 'place', order: 0 })),
+    ...(a.walk || []).filter(w => t >= w.t0).map(w => ({ ...w, t: w.t0, kind: 'walk', order: 1 }))
+  ].sort((x,y) => x.t-y.t || x.order-y.order);
+  const event = events.at(-1);
+  if (!event) return [base[0], 0, base[1]];
+  if (event.kind === 'place') return [event.at[0], event.y ?? 0, event.at[1]];
+  const w = event, path = w.path, speed = w.speed || 1;
   let remain = Math.max(0, t - w.t0) * speed;
   for (let i=1;i<path.length;i++) {
     const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
@@ -65,8 +73,11 @@ function posAt(id, t) {
   const p=path.at(-1); return [p[0],0,p[1]];
 }
 function faceAt(id,t,p) {
-  const a=acts[id]||{}, walks=(a.walk||[]).filter(w=>t>=w.t0);
-  if(walks.length){const w=walks.at(-1), path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
+  const a=acts[id]||{}, events=[
+    ...(a.place||[]).filter(k=>t>=k.t).map(k=>({...k,kind:'place',order:0})),
+    ...(a.walk||[]).filter(w=>t>=w.t0).map(w=>({...w,t:w.t0,kind:'walk',order:1}))
+  ].sort((x,y)=>x.t-y.t||x.order-y.order), governing=events.at(-1);
+  if(governing?.kind==='walk'){const w=governing, path=w.path;let rem=Math.max(0,t-w.t0)*(w.speed||1);
     for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);if(rem<=d)return [path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]];rem-=d;}
     const n=path.length;return [path[n-1][0]-path[n-2][0],path[n-1][1]-path[n-2][1]]; }
   const look=(a.look||[]).filter(k=>k.t<=t).sort((x,y)=>x.t-y.t).at(-1);
@@ -142,7 +153,7 @@ const chunk3Moments=[
 ];
 function pointCheck(frame,p){return frame.point(p)&&!occluder(frame.cam.pos,p,currentTime);}
 function screenVerticalSpan(frame, points){const ys=points.map(p=>frame.screen(p)).filter(p=>p!==null).map(p=>p[1]);return ys.length?Math.max(...ys)-Math.min(...ys):0;}
-function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
+function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],p[1]+1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
 const results=[];
 for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotId);if(!shot){results.push({frameNo,shotId,checks:['missing shot']});continue;}const cam=camAt(shot,t),fr=makeFrame(cam),checks=[];let occupancy=false;
  if(cam.fov<24||cam.fov>50)checks.push(`fov ${cam.fov.toFixed(2)} out of grammar [24, 50]`);
@@ -153,9 +164,9 @@ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotI
   if(!q){checks.push(`${id} absent`);return false;}let ck;if(q.sphere){const inside=fr.sphere(q.sphere,q.r),oc=occluder(cam.pos,q.sphere,t,id),px=fr.height(q.r*2,q.sphere);ck={pass:inside&&!oc&&px!=null&&px>=minPx,px,inside,oc,behind:fr.depth(q.sphere)<=0};}
   else {ck=boxCheck(fr,q.box,minPx,false,id);}
   const by=ck.occluded||ck.oc;checks.push(`${id} ${ck.pass?'PASS':'FAIL'} ${ck.px?.toFixed(0)??'n/a'}px${ck.behind?' behind camera':''} corners ${ck.n??'-'}/8${by?` occluded by ${by}`:''}`);if(ck.center&&ck.px>=230)occupancy=true;return ck.pass;};
- const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),behind=fr.depth([posAt(id,t)[0],1.9,posAt(id,t)[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
+ const face=(id,minPx=0)=>{const f=faceCheck(fr,id,t,minPx),p=posAt(id,t),behind=fr.depth([p[0],p[1]+1.9,p[2]])<=0;checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${behind?'behind camera':f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);if(f.visible&&f.px>=230)occupancy=true;return f.pass;};
  const body=(id,b)=>{const ck=boxCheck(fr,b,0,true,id);return ck.pass;};
- const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],1,p[2]],[.9,2,.5]);return body(id,b);});
+ const bodyIds=ids=>ids.filter(id=>{const p=posAt(id,t),b=box([p[0],p[1]+1,p[2]],[.9,2,.5]);return body(id,b);});
  const point=(name,p)=>{const pass=pointCheck(fr,p),behind=fr.depth(p)<=0;checks.push(`${name} ${pass?'PASS':'FAIL'} point ${behind?'behind camera':pass?'in':'out'} frustum`);return pass;};
  switch(frameNo){
  case 219: face('mayor');{const n=bodyIds(['villager_1','villager_2','villager_3','villager_4','villager_5','villager_6','mocker_a','mocker_b','mocker_c']).length;checks.push(`BODY ${n>=2?'PASS':'FAIL'} ${n}/2`);}break;
@@ -183,7 +194,7 @@ const chunk3Results=[];
 for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
  currentTime=t;const shot=shotById(shotId),fr=shot&&makeFrame(camAt(shot,t)),checks=[];
  if(!shot){checks.push('missing shot');chunk3Results.push({frameNo,t,shotId,checks});continue;}
- if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+ if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
  if(type==='prop'||type==='state'||type==='occupancy'||type==='crest'){
   const p=props.find(x=>x.id===id);
   if(!p)checks.push(`${id} FAIL absent`);
@@ -193,7 +204,7 @@ for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
    else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
   }
  } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
- else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+ else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],pos[1]+1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
  else {const pos=posAt(id,t),tip=[pos[0],2.5,pos[2]],pass=pointCheck(fr,tip);checks.push(`${id} hand tip ${pass?'PASS':'FAIL'} point ${pass?'in':'out'} frustum`);}
  if(frameNo===1635||frameNo===1647){const child=film.props.find(x=>x.id==='pencil_mark_sh21'),wall=film.props.find(x=>x.id==='seawall'),s21=shotById('SH21'),s22=shotById('SH22'),fr21=makeFrame(camAt(s21,s21.t1)),fr22=makeFrame(camAt(s22,s22.t0)),wallState=propState(wall,s22.t0),y1=fr21.screen([child.at[0],child.at[1],child.at[2]]),y2=fr22.screen([wall.at[0],wallState.h,wall.at[2]]),ndc=y=>y?1-y[1]/960:null,n1=ndc(y1),n2=ndc(y2),pass=Math.abs(n1-.062)<.02&&Math.abs(n2-.062)<.02;checks.push(`SH21→SH22 match-cut NDC_y +0.062 ${pass?'PASS':'FAIL'}: ${n1?.toFixed(3)??'n/a'} / ${n2?.toFixed(3)??'n/a'} (target +0.062 on both)`);}
  chunk3Results.push({frameNo,t,shotId,checks});
