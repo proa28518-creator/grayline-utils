@@ -1,13 +1,15 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: the hanging point at the
 // top centre (where the ropes meet the nail) — the sign swings from it.
 // The wooden mock sign "أغبى مشروع" (line 10: "والناس سموه أغبى مشروع في البلد").
 // opts: { open: 0..1 } — drives the hang angle: 0.5 = hanging straight,
 // 0 / 1 = swung to either side (key `open` over time to sway it).
+
+import * as THREE from 'three';
 
 function plankTexture(THREE) {
   const canvas = document.createElement('canvas');
@@ -50,7 +52,6 @@ function plankTexture(THREE) {
 }
 
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const open = opts.open ?? 0.5; // 0.5 = hanging straight
 
   const root = new THREE.Group();

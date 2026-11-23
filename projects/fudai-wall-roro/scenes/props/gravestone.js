@@ -1,13 +1,15 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: base centre (ground).
 // The simple gravestone on the hill (lines 12, 24). The carved horizontal line on
 // its face echoes the old mark cut into the rock (line 18).
 // opts: { open: 0..1 } — 0 = bare stone, 1 = the engraving filled with gold
 // (tended, after the thanks of line 24).
+
+import * as THREE from 'three';
 
 function engraveTexture(THREE, gold) {
   const canvas = document.createElement('canvas');
@@ -34,7 +36,6 @@ function engraveTexture(THREE, gold) {
 }
 
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const open = opts.open ?? 0; // 0 = bare stone, 1 = gold-filled engraving
 
   const root = new THREE.Group();

@@ -1,7 +1,7 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: base centre at the waterline.
 // The wave machinery the set needs: the 15 m water wall (24 D tall, ~40 D wide)
@@ -9,8 +9,9 @@
 // opts: { open: 0..1 } — 0 = flat sea (a low swell), 1 = the full 24 D wall.
 // The glowing "15M" measure line is a separate measure.js prop placed alongside.
 
+import * as THREE from 'three';
+
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const open = opts.open ?? 1; // 0 = flat sea, 1 = full wave wall
 
   const root = new THREE.Group();

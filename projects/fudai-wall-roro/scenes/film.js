@@ -10,15 +10,20 @@ export default {
   world: { set: 'own', setOpts: { wave: 0 } },
   captions: 'words',
 
-  // ---- Cast (ready-made tree characters only; specs in scenes/cast/) ----
+  // ---- Cast (the tree's ready-made characters ONLY; byte-identical copies of race/roro-fudai/tree-specs/) ----
+  // mayor = inspector (navy official coat, white hair, gold buttons — the municipal official).
+  // villager_1 = farmer (red check shirt, strawhat, grey goatee — the weathered villager, lead mocker).
+  // villager_2 = postman (slim, tall, grey flatcap, navy jacket — the slim villager).
+  // villager_3 = ruby (teal jumper, curly red hair — the teal villager).
+  // villagers = townsperson (grey bowler, brown jacket — the crowd base).
   // Place A (coast + wall) is the home place. Two people talking: 1.5-1.8 D apart,
   // both cheated 45-70 deg toward the camera side. ry 0 faces +Z (the camera side).
   cast: {
-    mayor: { spec: 'cast/mayor.json', at: [0, 0.8], ry: 30 },
-    villager_1: { spec: 'cast/villager_1.json', at: [-1.6, 1.4], ry: -40 },
-    villager_2: { spec: 'cast/villager_2.json', at: [1.6, 1.4], ry: 40 },
-    villager_3: { spec: 'cast/villager_3.json', at: [-2.9, 0.6], ry: -30 },
-    villagers: { spec: 'cast/villagers.json', at: [3.0, 0.4], ry: 35 },
+    mayor: { spec: 'cast/inspector.json', at: [0, 0.8], ry: 30 },
+    villager_1: { spec: 'cast/farmer.json', at: [-1.6, 1.4], ry: -40 },
+    villager_2: { spec: 'cast/postman.json', at: [1.6, 1.4], ry: 40 },
+    villager_3: { spec: 'cast/ruby.json', at: [-2.9, 0.6], ry: -30 },
+    villagers: { spec: 'cast/townsperson.json', at: [3.0, 0.4], ry: 35 },
   },
 
   // ---- Voice (the member's voice; lines as heard; who: null = narrator) ----

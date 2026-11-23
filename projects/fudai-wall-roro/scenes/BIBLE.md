@@ -77,14 +77,19 @@ sits 400 D from the others, in its own dome and fog.
 
 ## 4. Cast (from the ready-made tree characters only — no new characters built)
 
-| id | who | from a sentence | owned colour | notes |
+**Re-cast (2026-11-23 ~21:15):** the first cast specs were newly authored from the characters.md reference
+because the ready-made spec files were missing from the lane package. Layla then sent the 52 tree specs
+(`race/roro-fudai/tree-specs/`, commit ab3630d). The cast below is re-cast from those files, byte-identical,
+with their outfits and rigs as they are. No character spec is authored here.
+
+| id | tree character | who | owned colour | notes |
 |---|---|---|---|---|
-| mayor | the mayor, old | grey short hair, dark municipal suit, upright stance, calm steady gaze; the lead | deep navy | the same person as `young_mayor` — one cast, two places/times via `acts.<id>.place` |
-| young_mayor | the mayor as a young man | black hair, same face, younger; flashback only (scenes 6) | deep navy (same) | NOT a cast copy — the mayor in place B via `acts.mayor.place` |
-| villager_1 | the lead mocker | fisherman's clothes, warm red cap, big laughing mouth | warm red | speaks lines 6–7; reacts 1–3 frames after the trigger word |
-| villager_2 | a second mocker | fisherman's clothes, warm ochre cap, pointed finger | warm ochre | laughs with villager_1; later bows at the grave |
-| villager_3 | a third villager | fisherman's clothes, warm teal cap, wide eyes | warm teal | shock, then gratitude at the grave |
-| villagers | the crowd | fishermen's clothes, warm contrasting caps; the nearest three react, the rest hold dead still | warm mix | background crowd in the square and the streets |
+| mayor | `inspector` | the mayor, old — navy official coat, white hair, gold buttons, officer hat; the lead | deep navy | the same person as `young_mayor` — one cast, two places/times via `acts.<id>.place`. The inspector's officer hat and marble prop are part of the ready-made spec, used as-is. |
+| young_mayor | `inspector` (same) | the mayor as a young man; flashback only (scenes 6) | deep navy (same) | NOT a cast copy — the mayor in place B via `acts.mayor.place`. The white hair reads old even in the flashback; the sepia grade + context carry the youth — a known limitation. |
+| villager_1 | `farmer` | the lead mocker — red check shirt, strawhat, grey goatee, suspenders; a weathered villager | warm red | speaks lines 6–7; reacts 1–3 frames after the trigger word |
+| villager_2 | `postman` | a second mocker — slim, tall, grey flatcap, navy jacket with brass buttons | warm ochre | laughs with villager_1; later bows at the grave |
+| villager_3 | `ruby` | a third villager — teal jumper, curly red hair, round sunglasses; wide eyes | warm teal | shock, then gratitude at the grave |
+| villagers | `townsperson` | the crowd — grey bowler, brown jacket, newspaper | warm mix | background crowd in the square and the streets; the newspaper prop is part of the ready-made spec, used as-is |
 
 **Casting rule (owner's instruction, 2026-11-23):** cast ONLY from the tree's ready-made characters with
 their outfits and rigs, as they are — dress and pose per the style's own character references. No character

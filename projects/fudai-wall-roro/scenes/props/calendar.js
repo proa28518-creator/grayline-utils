@@ -1,12 +1,14 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: centre of the board.
 // The flipping calendar: 12 years of building (line 4), then 14 flying years
 // (line 13). opts: { year: 12 | 14, flip: 0..1, open: 0..1 }.
 // `flip` fans the loose pages out from the top binding; `open` fades the board in.
+
+import * as THREE from 'three';
 
 function pageTexture(THREE, year) {
   const canvas = document.createElement('canvas');
@@ -44,7 +46,6 @@ function pageTexture(THREE, year) {
 }
 
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const year = opts.year ?? 12;
   const flip = opts.flip ?? 0; // 0 = pages flat, 1 = pages fanned out
   const open = opts.open ?? 1; // 0 = hidden, 1 = fully present
