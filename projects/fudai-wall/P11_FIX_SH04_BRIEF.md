@@ -72,3 +72,20 @@ F219 (t=7.30 s) and F241 (t=8.03 s).
 The driver then fleet-probes F219/F241 and judges with the pixel gate
 + eye. If your framing fails there, the measured discs come back to
 you for round 2 of THIS cause — do not widen the change.
+
+## ASTRA REVIEW INPUT (2026-11-23, batch 2) — GOVERNING
+
+Root cause, in Astra's framing: INVERTED SUBJECT HIERARCHY — the frame
+gives the mayor no protected screen area. The correction is a MAYOR-LED
+ANNOUNCEMENT COMPOSITION: the mayor's complete head sits in a CLEAR
+UPPER-MIDDLE REGION of the frame; the villagers are subordinate (lower,
+smaller, at the edges — never competing for the head's region). The
+placement method is confirmed and binding: sample the actual camera +
+head position per frame; resolve displacement onto the camera's
+orthonormal axes; perspective division by FORWARD-AXIS DEPTH (8.222 if
+confirmed against the sampled geometry), NEVER the camera-to-target
+distance (12.71 — Luna's rejected slip); true 1080×1920 aspect +
+vertical fov; check full-head bounds / angle / occlusion; then
+reconcile with the measured rendered head (the calibration offsets in
+this brief). A composition that passes the model but crowds the mayor's
+head region with villager heads fails this brief.

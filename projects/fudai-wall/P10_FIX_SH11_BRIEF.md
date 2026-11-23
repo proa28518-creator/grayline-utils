@@ -13,6 +13,19 @@ GLM's proposal — set.js night-sky values — was checked by the driver
 against the current set.js and is already in place there; it is NOT part
 of this session.)
 
+Previous cause's verdict commit (hard-gate citation, filled by the driver
+at firing): <PENDING — driver fills before this brief fires>.
+
+ASTRA REVIEW INPUT (2026-11-23, batch 2) — GOVERNING: the root cause is
+too much frame allocated to UNIFORM SKY. The correction reframes around
+a FIXED LAYERED COASTAL ROOFLINE occupying substantially more of the
+LOWER frame, preserving a clear UPPER CORRIDOR for the sun-to-moon
+progression. Use EXISTING scene detail only — no added props, no
+metric-gaming noise. The GLM lower park below is the mechanism; the
+verdict on the re-probed stills must confirm by eye: layered roofline
+present in the lower frame at all three moments, and the orbs' upper
+corridor unobstructed.
+
 APPLY EXACTLY (`scenes/film.js`):
 - `CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0])` → `CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,14,16])`
 - `CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14])` → `CAM_SH11_T=add(PLACES.SEA,[-5,0,18])`

@@ -67,6 +67,44 @@ the set-bar line; exit code 1 if any frame fails. Node entry
 prints one JSON object per still (flat_pct, detail_pct, discs with skin
 bbox / expanded disc bbox / centre / area / dark-adjacency).
 
+## SPEC CORRECTIONS — Astra review (Miora, GPT-6 Astra), 2026-11-23, batches 1+2 — GOVERNING
+
+A review seat (GPT-6 Astra) audited the driver's reference implementation
+and found real defects. Your re-derivation must FIX all four; a version
+that reproduces the validation table while keeping any of them is a
+FAILED delivery.
+
+1. **DEAD EDGE-CROSS CHECK (batch 1).** The reference `pixel_measure.py`
+   CLAMPS the expanded disc bounds to the image, so the "disc crosses an
+   edge by >24 px" condition in test (a) can NEVER trigger — crop
+   verdicts currently rest on the skin-touch test alone. Your version
+   must preserve UNCLIPPED expanded bounds through the JSON and evaluate
+   the cross condition on them.
+2. **PAIR DETECTION MUST MATCH BOTH CHARACTERS (batch 1).** The
+   reference passes the F621/F639 face-pair moment on ONE large segmented
+   region. Your version passes a pair moment only when BOTH named
+   characters' discs are individually matched (each within tolerance of
+   its own projection); one region, however large, is not a pair.
+3. **OCCLUSION NEEDS A DEPTH TEST (batch 1).** The reference's
+   measured-disc overlap fails a prop rect when ANY disc overlaps it,
+   including unmatched/background discs — contradicting the spec's
+   "closer occluder" requirement. Your version counts a measured disc as
+   an occluder only with depth evidence it is closer than the prop
+   (e.g. matched to a cast member whose projected depth is nearer than
+   the prop's, or demonstrably larger/nearer by the calibrated disc
+   model); background or unmatched discs are reported, not counted.
+4. **MEASUREMENT GEOMETRY — CLUSTER BOUNDS, SAMPLED STATE (batch 2,
+   from the F590 cause).** Wherever a subject's size is measured for an
+   occupancy-style judgement, measure the RENDERED CLUSTER'S AGGREGATE
+   BOUNDS (the union of its members' bounds), computed from the SAMPLED
+   EASED CAMERA and the prop's STATE AT t (e.g. the coins' drop state),
+   never the prop's 0.5-unit origin proxy box and never the authored TO
+   pose alone. (The same correction is owed to the staging audit's
+   occupancy test — a separate seat session, recorded in RUN_RECORD;
+   your scope stays the two files below, but do not reintroduce the
+   proxy error anywhere in them.) Also verify any reported cluster
+   bounds hold meaningful content, not empty spacing between members.
+
 ## VALIDATION — the gate must reproduce this table (measured on the chunk2d stills)
 
 PASS: F288, F537, F621, F639, F870.
@@ -76,7 +114,8 @@ F474 (set 13.7% detail / 85.1% flat), F570 (no rendered disc segments —
 the back-of-head does not read as skin), F590 (set 14.5% / 84.4%),
 F669/F687 (head disc cut by the top edge), F711/F723 (blueprint occluded
 by villager_4 — geometric 46%, measured-disc 74%), F768/F798/F822 (set
-~14% / ~81%). Chunk-scope set bar: median shot detail ~26.7% (< 28%).
+~14% / ~81%). Chunk-scope set bar: median shot detail 23.9% (< 28%) —
+corrected in phase 10 (an earlier ~26.7% figure did not reproduce).
 Run your version on the same stills and report the table. ANY discrepancy
 from this table is a measured item to report — do NOT tune the tool to
 match the table; if a discrepancy is real, the table (not the tool) is what
