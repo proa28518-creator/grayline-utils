@@ -77,7 +77,7 @@ export default {
   look:[{t:0,at:MAYOR_HEAD},{t:'line:1.word:2',at:WALLTOP},{t:'line:3.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,8])},{t:'line:8.start',at:add(PLACES.COAST_VILLAGE,[0,1.5,3])}],
   walk:[{t0:'line:2.start',path:[[0,-9],[0,-2],[0,2]],speed:5.5,gait:'walk'},{t0:'line:8.end',path:[[0,2],[0,8],[0,10.8]],speed:5,gait:'walk'},{t0:25.3,path:[[0,10.8],[0,13.8]],speed:1.5,gait:'walk'}]
  },
- mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[3,18,-40]}]},
+ mocker_a:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:6.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:7.end',eyes:'open',brow:'up',mouth:'smile'}],clips:[{clip:'point',at:'line:6.word:3',params:{dir:[3,18,-16]}},{clip:'point',at:'line:6.word:8',params:{dir:[3,19,-40]}}],look:[{t:'line:6.word:3',at:WALLTOP},{t:'line:6.word:8',at:[2,19.5,-17.5]}]},
  mocker_b:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-5,-6],[-5,-8],[-5,-8]],speed:5}]},
  mocker_c:{face:[{t:'line:3.start',eyes:'open',brow:'up',mouth:'smile'},{t:'line:7.start',eyes:'happy',brow:'up',mouth:'D'},{t:'line:10.start',eyes:'happy',brow:'up',mouth:'D'}],walk:[{t0:'line:9.start',path:[[-4,-6],[-4,-8],[-4,-8]],speed:5}]},
  villager_1:{walk:[{t0:'line:9.start',path:[[-6,-5],[-6,-7],[-6,-7]],speed:5}]},
