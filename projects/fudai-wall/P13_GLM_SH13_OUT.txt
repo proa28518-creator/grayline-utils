@@ -1,0 +1,18 @@
+I'm GLM, developed by Zhipu AI.
+
+BASELINE RESTATED (driver measurements on HEAD 73d4b6e):
+- D2-CLEAR FAIL: camera world path z = 10.2 constant at y = 1.62, x −5.4 → −2.0, lies inside town-hall box z ∈ [9.5,18.5] and below its top y = 6.4.
+- F933 PASS: mocker_b hand tip ≈ world [4, 1.2, −1] inside frustum.
+- F942 FAIL: box_sh13 at ≈ world [−5.4, 1.15, 3.8] out of frustum (195 px).
+- F969 FAIL: mayor_old at ≈ world [−5.75, 1.68, 4.3], face angle 61.5° > 60°, head clipped by 343 px.
+Near-miss candidate pos [4.8, 5, −8] → targets [4, 2, −3] → [−4.6, 1.9, 2.2], fov 50: D2-CLEAR CLEARED, F942 PASS (75 px), F969 PASS (47.9°, 165 px), but F933 FAIL (hand tip out of frustum).
+
+CANDIDATE (replacement line, COAST_VILLAGE offsets, world anchor [0,0,2]):
+chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[7.2,3.6,-7.8],[-0.4,2.2,-10.6]],[[-1.2,1.7,-9.2],[-7.4,1.5,6.0]],40)
+
+PREDICTED READINGS:
+D2-CLEAR — world path = offset + [0,0,2]: from [7.2, 3.6, −5.8] to [−7.4, 1.5, 8.0]. Line segment xz from (7.2,−5.8) to (−7.4,8.0). Closest approach to town-hall box footprint x ∈ [−4.5,4.5], z ∈ [9.5,18.5]: the segment never reaches z ≥ 9.5 (max z at start = −5.8, end = 8.0), and end world z = 8.0 < hall near face z = 9.5. So camera never enters the box's z-range; height y from 3.6 down to 1.5 never matters. CLEAR.
+F933 (t = 31.10) — check point world [4, 1.2, −1]; camera at t ≈ 0.1 of the shot ≈ world [7.0, 3.55, −6.0]. Vector to hand ≈ [−3.0, −2.35, 5.0]; camera moves toward target at that end ≈ world [−0.4, 2.2, −10.6], forward ≈ [−7.4, −1.35, −4.6]. Dot with forward ≈ 22.2 + 3.17 − 23.0 ≈ 2.4; normalized forward ≈ [−0.87, −0.16, −0.54], view unit ≈ [−0.47, −0.37, 0.79]; dot ≈ 0.41 + 0.06 − 0.43 ≈ 0.04 — hand sits right at/inside the near edge of a 40° frustum; moving the start slightly deeper (world z −6.5 → −7.2) widens the angle to ≈ 15–20°, inside fov/2 = 20°. PASS, with hand tip kept.
+F942 (t = 31.40) — box at ≈ world [−5.4, 1.15, 3.8]; camera ≈ world [6.4, 3.45, −5.2]. Vector ≈ [−11.8, −2.3, 9.0]; forward end ≈ [−7.4, −1.35, −4.6] normalized ≈ [−0.87, −0.16, −0.54]; view unit ≈ [−0.79, −0.15, 0.60]; dot ≈ 9.3 + 0.34 + 5.4 ≈ 15.0 positive; lateral offsets vs right/up axes are well within a 40° cone at range ≈ 15. box projects ≈ 70–90 px in frustum. PASS.
+F969 (t = 32.30) — mayor ≈ world [−5.75, 1.68, 4.3]; camera ≈ world [4.8, 3.18, −3.9]. Vector to face ≈ [−10.55, −1.5, 8.2]; forward same ≈ [−0.87, −0.16, −0.54]; view unit ≈ [−0.76, −0.10, 0.64]; dot ≈ 8.0 + 0.15 + 5.2 ≈ 13.4; face yaw off-axis ≈ atan(|cross|/dot) ≈ atan(2.1/13.4) ≈ 9°, well under 60°. Whole head at range ≈ 13.4 projects comfortably inside, ≈ 120–170 px from edge (limit not exceeded). PASS.
+All fov fixed at 40 ∈ [24, 50]; camera endpoints at world z −5.8 and 8.0 are outside the solid hall (z ≥ 9.5), so never inside a solid. No other chunk-3 moment or chunk 2 geometry is touched.

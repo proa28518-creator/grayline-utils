@@ -1,0 +1,30 @@
+1. BASELINE RESTATED
+- Camera motion line SEAFARER PROMENADE; local origin [0,0,2] anchor added to every offset.
+- Local FROM push: [-0.4,2.2,-10.6] → world FROM [7.2,3.6,-5.8] is WRONG; world FROM = [-0.4,2.2,-8.6].
+- Hand world tip: [4,1.2,-1].
+- Box world centre: [-5.4,1.15,3.8].
+- Mayor world centre: [-5.75,1.68,4.3]; face direction [-2,1.5,11].
+- Check times: F933 fraction 0.07, F942 fraction 0.17, F969 fraction 0.47.
+- Required: early frustum contains hand + box together; at F969 mayor face within 60° of camera forward and whole head in frame.
+
+2. CANDIDATE chunk3Shot line
+push linear [-0.4,2.2,-8.6] to [-5.2,3.4,-3.4]; yaw toward [-0.1,-0.2,1] at push; fov 50
+
+3. PREDICTED READINGS (world coords; anchor already applied)
+
+F933 fraction 0.07 — camera [-0.68,2.23,-8.46], target [-0.69,2.01,-7.50]
+- forward unit: [0.01,-0.10,-0.99]
+- hand [4,1.2,-1]: vector [4.68,-1.03,7.46], normalized [0.53,-0.12,0.84], angle ≈ 33°
+- box [-5.4,1.15,3.8]: vector [-4.72,-1.08,12.26], normalized [-0.36,-0.08,0.93], angle ≈ 27°
+
+F942 fraction 0.17 — camera [-1.22,2.26,-8.11], target [-1.19,1.82,-6.46]
+- forward unit: [0.02,-0.25,-0.97]
+- hand: vector [5.22,-1.06,7.11], angle ≈ 32°
+- box: vector [-4.18,-1.11,11.91], angle ≈ 23°
+
+F969 fraction 0.47 — camera [-2.66,2.37,-6.99], target [-3.34,1.41,-3.97]
+- forward unit: [-0.48,-0.63,0.61]
+- mayor [-5.75,1.68,4.3]: vector [-3.09,-0.69,11.29], normalized [-0.25,-0.06,0.97], off-axis angle ≈ 64°
+- mayor face alignment: camera-to-mayor unit [-0.25,-0.06,0.97]; face unit [-0.17,0.13,0.98]; dot ≈ 0.98, face angle ≈ 11° (within 60°)
+
+GLM here. Zhipu AI built me.
