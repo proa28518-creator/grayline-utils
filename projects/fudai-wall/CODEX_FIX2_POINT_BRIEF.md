@@ -1,0 +1,12 @@
+# CODEX BRIEF — fix #2 close-out 5: wall-top test-point measure correction (audit only)
+
+Required in-session reading first (standing method): studio `AGENTS.md`, `.suite/critic/CRITIC_PROTOCOL.md` §3/§4/§7, `lessons/build.md`, and in `tools/audit_staging.mjs`: `segBox`/`occluder`/`occs` (~lines 95-100), `pointCheck` (~125), the F570/F590 cases (~150-151). Task delta only below.
+
+## The measured defect (in the audit's test point, not in the film)
+The F570/F590 cases test a "wall top" POINT at [3,18,-16] / [2,18,-16]. The seawall occluder box is centred [0,9,-16] size [90,18,1.15] -> z range [-16.575,-15.425]. The test point (z=-16) lies INSIDE that box's z-range, recessed 0.575 D behind its village-side face. `segBox` counts an intersection when the segment enters a box at a fraction strictly inside (1e-6, 1-1e-6): from ANY village-side camera below y=18, the ray to [3,18,-16] enters the seawall box through its front face (at z=-15.425, ray y ~17.5) before reaching the point — the wall occludes its own centre-depth top point. From a camera above y=18 the ray grazes the top edge (entry fraction ~1.0, excluded) — which is why F590's point passes from its high camera and F570's cannot pass from the low village-side camera its head check requires (head >=230px needs the camera ~4.5 D from the head at y~2). The point as specified is inside the wall mesh: invisible in any render from the village side. The beat's intent is the wall's VISIBLE top edge.
+
+## Deliverable (exact)
+In `tools/audit_staging.mjs`, F570/F590 cases only: change the wall-top test point's z from -16 to **-15.42** (the top-front edge: y=18, z=-15.42, the silhouette edge a village-side camera actually sees). F570: [3,18,-15.42]. F590: [2,18,-15.42] — apply F590's change ONLY if F590 stays PASS after it; if it regresses, revert F590's point to [2,18,-16] (reachable from its high camera) and report that. NO other audit change: no threshold, no check logic, no other moment. NO film.js change in this session.
+
+## Acceptance check (exact)
+1. `node tools/audit_staging.mjs` prints **19/19 PASS**; D1/D2 still PASS. 2. Diff: `tools/audit_staging.mjs` (the test-point z in the two cases) + `lessons/build.md`. 3. Lesson appended: a test point must be a point the render can show — a point inside the tested mesh's own box is self-occluded; test the visible edge (same family as the sea-span measure correction). 4. Summary: the two case lines before/after + the final audit tail.

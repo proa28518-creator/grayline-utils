@@ -251,3 +251,17 @@ Applied from round 7 onward:
   into one seat fix; the bundle was halted, its fleet runs cancelled, and its scene
   changes reverted to 7c9d2ae the same minute. Fix #1 — camera lines clear of
   buildings — is the only fix that round's method produced.)
+
+## 7.2 AMENDMENT — pack completeness rule (phase 8, from round 7's pack failure)
+
+Round 7's pack supplied 12 frames while its own spec text (`prompt_stepB.txt`)
+named 16 — frames 590, 639, 669, 711, 723, 768, 822 were judged in the spec but
+never shown, and several BLOCKING items cited their absence. Recorded in full in
+`CRITIC_REPORT_round7.md`; the verdict stood (the driver never overturns a
+critic), but the mismatch was our pack-design fault, not a film fault.
+
+**RULE for every future pack: a round's pack must supply every frame its spec
+text names, or the spec text must be trimmed to the supplied frames.** The pack
+builder checks the spec text's frame list against the supplied stills before the
+pack is declared ready; a mismatch blocks the pack, not the film. The round-8
+pack is the first built under this rule.

@@ -1,0 +1,19 @@
+pic_01: bar — Supermarket aisle with a red-vested character pushing a red MARKET shopping cart beside an older woman holding a milk carton
+pic_02: bar — Supermarket aisle with the red-vested character pushing a shopping cart while an older man with glasses stands behind
+pic_03: ours — Concrete wall with a mounted sign reading «أغبى مشروع / RED CANYON SHORT LINE» and a wall light
+pic_04: ours — Grey-haired suited mayor standing in the village square in front of a building, wall, and street lamp
+pic_05: bar — Supermarket aisle with tomato soup cans flying around the red-vested character and shopping cart
+pic_06: ours — Giant grey steel gate with X-bracing, a lit lamp post, and the top of an orange hat at the bottom edge
+pic_07: ours — Nearly empty dark-grey concrete wall surface with a sliver of ground at the bottom left
+pic_08: ours — Giant grey steel gate with X-bracing, glowing lights, and a calendar showing «1» at the bottom right
+pic_09: bar — Supermarket aisle with the red-vested character on a sparking shopping cart and soup cans scattered on the tiled floor
+pic_10: ours — Tall dark-grey concrete wall between blue sky and sandy ground with signs cropped at both side edges
+pic_11: ours — Villager in an orange hat and tunic seen from behind pointing at a blue grid blueprint board in the village square
+pic_12: bar — Supermarket aisle with the red-vested character shouting while pushing the red MARKET shopping cart under aisle signs
+pic_13: ours — Back of the orange-hatted villager's head and arm beside the blue blueprint board in front of the steel gate
+pic_14: ours — Tall steel gate with X-bracing, a crane hook on the left, wall lights, and a calendar reading «1 سنة» at the bottom
+pic_15: bar — Supermarket aisle with the red-vested character tipping on the shopping cart into stacked FRESH cardboard boxes
+pic_16: ours — Suited villager in the right foreground with the grey-haired mayor behind in the village square
+pic_17: ours — Tall steel gate with X-bracing, a hanging crane hook on the left, and a glowing yellow arrow at the bottom right
+pic_18: ours — Close-up of the dark-suited mayor's torso with his head cropped above the top edge in the village square
+BLIND SORT: bar taken for ours: 0 · ours taken for bar: 0
