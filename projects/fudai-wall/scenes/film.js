@@ -98,7 +98,7 @@ const SHOTS3=[
  chunk3Shot('SH22','line:20.start','line:20.end','COAST_WALL',[[0,16.86,9],[0,16.86,0]],[[4,18.8,16],[0,18.2,0]],[28,36]),
  chunk3Shot('SH23','line:21.start','line:21.end','NEIGHBOR_COAST',[[-26,26,24],[-4,10,-4]],[[22,24,28],[4,11,6]],[44,46]),
  chunk3Shot('SH24','line:22.start','line:22.end','COAST_WALL',[[10,20.5,-50],[0,11,-14]],[[6,19.5,-44],[0,8,-10]],[42,48]),
- chunk3Shot('SH25','line:23.start','line:23.end','COAST_WALL',[[0,19.6,1],[0,3.5,22]],[[0,23.5,5],[0,2.5,24]],46),
+ chunk3Shot('SH25','line:23.start','line:23.end','COAST_WALL',[[0,19.6,2],[0,19,24]],[[0,19.6,6],[0,6,22]],[48,30]),
  chunk3Shot('SH26','line:24.start','line:24.end','HILL_GRAVE',[[0,2.3,7],[0,1.65,-1.2]],[[0,3.2,11.2],[0,2.2,-3]],[42,44])
 ];
 const lines=[
