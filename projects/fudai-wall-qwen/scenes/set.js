@@ -166,7 +166,7 @@ export async function buildSet(THREE, scene, opts, kit) {
     rig,
     lightDir: [0.4, -0.6, 0.8],
     casters: [],
-    bounds: { min: [-2000, 0, -2000], max: [2000, 40, 2000] },
+    bounds: { x: [-2000, 2000], z: [-2000, 2000] },
     update(t) { base.update?.(t); rig.update(t); },
     ready: Promise.resolve()
   };
