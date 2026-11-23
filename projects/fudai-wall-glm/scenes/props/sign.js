@@ -1,21 +1,17 @@
+import * as THREE from 'three';
+
 // scenes/props/sign.js — two printed hangings, one kind:
 //   banner : cloth banner "3,000" floating over the village (scene 2 pan)
 //   plank  : burned wooden plank "أغبى مشروع في البلد" hanging from the wall top (scene 4)
 // State: { sway } rot, { kind }. Origin at the top rope anchor.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const kind = o.style || 'plank';
   const sway = (typeof o.sway === 'number') ? o.sway : 0;

@@ -1,20 +1,16 @@
+import * as THREE from 'three';
+
 // scenes/props/wallmark.js — the fresh pencil height-mark above the kid's head, with the
 // little measure scrawl beside it. The wall's faint old marks are set geometry; this is the
 // one new line drawn on screen. Fetch on the cut at the analogy line.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const g = new T.Group();
   const markT = cnv(T, 256, 128, (g2) => {
     g2.clearRect(0, 0, 256, 128);

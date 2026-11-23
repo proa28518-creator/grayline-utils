@@ -1,19 +1,15 @@
+import * as THREE from 'three';
+
 // scenes/props/gravestone.js — the mayor's stone: rounded top, engraved name plate,
 // a carved wave-and-wall relief, flowers cup, moss. Origin at the base centre.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const g = new T.Group();
   const stone = new T.MeshStandardMaterial({ map: cnv(T, 256, 256, (g2) => {
     g2.fillStyle = '#a8a49a'; g2.fillRect(0, 0, 256, 256);

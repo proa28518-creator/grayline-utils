@@ -1,14 +1,10 @@
+import * as THREE from 'three';
+
 // scenes/props/oldflood.js — the remembered flood: grey old-wave slabs over the distant
 // mini village in the sepia flashback. State: { in: 0..1 } opacity/height. Fetch on a cut.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const inn = (typeof o.in === 'number') ? Math.max(0, Math.min(1, o.in)) : 1;
   const g = new T.Group();

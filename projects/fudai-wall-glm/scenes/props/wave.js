@@ -1,20 +1,16 @@
+import * as THREE from 'three';
+
 // scenes/props/wave.js — the wave machinery: a curved wall of water with a foam lip.
 // All motion is opts-driven (pure in t): { rise: 0..1 } height, { adv: 0..n } approach along +z,
 // { mark: 0|1 } the glowing 15M measure line on its face. Origin at the base centre.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const rise = (typeof o.rise === 'number') ? Math.max(0, Math.min(1, o.rise)) : 1;
   const adv = (typeof o.adv === 'number') ? o.adv : 0;

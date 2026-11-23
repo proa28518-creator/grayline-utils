@@ -1,14 +1,10 @@
+import * as THREE from 'three';
+
 // scenes/props/sunmoon.js — the time-lapse wheel: sun on one end, moon on the other,
 // spinning around a pivot. State: { spin: 0..2.4 } turns. Origin at the pivot.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const spin = (typeof o.spin === 'number') ? o.spin : 0;
   const g = new T.Group();

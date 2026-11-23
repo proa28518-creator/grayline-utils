@@ -1,23 +1,19 @@
+import * as THREE from 'three';
+
 // scenes/props/measure.js — the member's on-screen measure graphics, one kind, four modes:
 //   stores  : transparent 5-storey overlay, digits 1–5 (scene 1 tilt-up)
 //   arrow   : glowing climbing arrow + "15.5M" plate (construction datum)
 //   sticker : white plate "10M" on the neighbours' low walls
 //   line    : glow line + "15M بالظبط" on the wave face
 // Motion is opts-driven only: { climb: 0..1 }, { sway }, { vis }. Origin at the base/grip.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const mode = o.mode || 'arrow';
   const climb = (typeof o.climb === 'number') ? Math.max(0, Math.min(1, o.climb)) : 1;

@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 // scenes/set.js — Fudai Wall, Build pass. The film's own set: six places, 400 D apart,
 // each in its own dome, each with depth along the look (far end 25 D+) and 2+ visible practicals.
 // Pure and static: geometry is a function of nothing; no Math.random, no Date, no state.
@@ -17,8 +19,20 @@ export const points = {
   graveView: [2000, 6, -72],
 };
 
-export async function buildSet(THREE, scene, opts, kit) {
-  const T = THREE;
+export async function buildSet(a, b, c, d) {
+  // Repair round 1: this file imports THREE itself and never assumes the host passes it in.
+  // The host's scene is located by shape across the call shapes the loader may use:
+  // (THREE, scene, opts, kit) as documented in SKILL.md, (scene, opts, kit), or
+  // ({ THREE, scene, opts, kit }) — construction always uses the module-scoped THREE.
+  const args = [a, b, c, d].filter((v) => v !== undefined && v !== null);
+  const scene = args.reduce((found, v) => {
+    if (found) return found;
+    if (v && v.isObject3D && typeof v.add === 'function') return v;
+    if (v && v.scene && v.scene.isObject3D && typeof v.scene.add === 'function') return v.scene;
+    return found;
+  }, null);
+  if (!scene) throw new Error('scenes/set.js: the host provided no scene to build into');
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const G = (o) => { const g = new T.Group(); return g; };
   const std = (c, r = 0.85, m = 0.0, e = null, ei = 0) => new T.MeshStandardMaterial({ color: c, roughness: r, metalness: m, emissive: e || 0x000000, emissiveIntensity: ei });
   const basic = (c, fog = true) => new T.MeshBasicMaterial({ color: c, fog: fog });

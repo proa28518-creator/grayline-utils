@@ -1,17 +1,13 @@
+import * as THREE from 'three';
+
 // scenes/props/debris.js — the small story debris, one kind, three variants:
 //   coins : the mock's imagined money falling into the sea (staggered fall via { fall })
 //   leaf  : the single leaf that falls by the gravestone (slow fall via { fall })
 //   flock : the birds that burst up in the quake (arc via { fly })
 // All motion opts-driven and deterministic. Origin at the variant's anchor.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const variant = o.variant || 'coins';
   const p = (typeof o.fall === 'number') ? Math.max(0, Math.min(1, o.fall)) : (typeof o.fly === 'number') ? Math.max(0, Math.min(1, o.fly)) : 0;

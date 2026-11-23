@@ -1,14 +1,10 @@
+import * as THREE from 'three';
+
 // scenes/props/stormclouds.js — the storm arriving (and parting): three dark cloud layers
 // over the village plus faint rain streaks. State: { in: 0..1 } arrival, { part: 0..1 } opening.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const inn = (typeof o.in === 'number') ? Math.max(0, Math.min(1, o.in)) : 1;
   const part = (typeof o.part === 'number') ? Math.max(0, Math.min(1, o.part)) : 0;

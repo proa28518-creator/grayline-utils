@@ -1,14 +1,10 @@
+import * as THREE from 'three';
+
 // scenes/props/swaypole.js — the street lamp that sways in the quake.
 // State: { sway: 0..1 } wobble envelope; origin at the base so the top swings.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const sway = (typeof o.sway === 'number') ? Math.max(0, Math.min(1, o.sway)) : 0;
   const g = new T.Group();

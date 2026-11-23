@@ -1,20 +1,16 @@
+import * as THREE from 'three';
+
 // scenes/props/wallrise.js — the growing concrete body of the gate wall inside the scaffold.
 // State: { h } in D (3 → 24.8). Print: lift-line concrete, pour streaks, tie holes.
 // Origin at the base centre; the body scales in height so the top edge is always exact.
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const h = Math.max(0.3, Math.min(24.8, (typeof o.h === 'number') ? o.h : 24.8));
   const g = new T.Group();

@@ -1,19 +1,15 @@
+import * as THREE from 'three';
+
 // scenes/drybed.js lives in scenes/props/drybed.js — the pulled-back sea: wet sand flat,
 // stranded tilted boat, exposed rocks, ripple ridges. Appears whole (fetch on a cut).
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const g = new T.Group();
   const sand = new T.MeshStandardMaterial({
     map: cnv(T, 512, 512, (g2) => {

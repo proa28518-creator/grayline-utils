@@ -1,19 +1,15 @@
+import * as THREE from 'three';
+
 // scenes/props/gate.js — the steel floodgate in the seawall opening.
 // Print: rivet fields, cross ribs, wheel, plaque "15.5 م". State: closed (opts.rust wear).
-function pickT(opts, THREE) {
-  if (opts && opts.Group) return opts;
-  if (THREE && THREE.Group) return THREE;
-  if (typeof THREE !== 'undefined') return THREE;
-  return null;
-}
 function cnv(T, w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
   const t = new T.CanvasTexture(c); t.anisotropy = 4; return t;
 }
 
-export function build(opts, THREE) {
-  const T = pickT(opts, THREE);
+export function build(opts) {
+  const T = THREE; // imported by this file — the host passes no objects in (repair round 1)
   const o = opts || {};
   const g = new T.Group();
   const steel = new T.MeshStandardMaterial({

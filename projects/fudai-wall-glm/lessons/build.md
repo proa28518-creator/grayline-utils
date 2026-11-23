@@ -67,9 +67,45 @@ the opening critic round and the whole-film rounds are the desk's to run.
 7. **Shot 22 (rock track) keeps the young mayor's head out of frame right** (arm-only insert) so no face
    is cut by the edge; verify on the full-rate strip that the head stays fully out and the hand reads.
 
+## Repair round 1 (desk render fleet — measured faults, fixed at the cause)
+- **FAULT 1 — all 8 sampled frames died at boot: `Cannot read properties of null (reading
+  'Group')`, zero frames rendered.** **Tried** a defensive `pickT(opts, THREE)` chain in all 18
+  prop files (THREE as 2nd arg, via `opts`, or as a global) and `buildSet(THREE, scene, opts,
+  kit)` trusting arg 1 — written at authoring time because no loader contract was available at
+  this desk. **Saw** the host passes no THREE in at all: the documented prop contract is
+  `export function build(opts) -> Object3D` (film.md), so every fallback path returned null and
+  the first `new T.Group()` read `.Group` off null — the exact boot error, on every frame.
+  **Fixed** at the cause with the lanes' working pattern: every `scenes/props/*.js` now begins
+  with `import * as THREE from 'three';`, exports the one-argument `build(opts)`, and uses the
+  module-scoped THREE (`const T = THREE`); `pickT` is deleted everywhere — no fallback chain
+  that can return null remains (swept: zero `pickT` / `opts.Group` / `THREE.Group` /
+  `typeof THREE` reads anywhere in scenes/). `scenes/set.js` likewise self-imports THREE and no
+  longer trusts arg 1: `buildSet` locates the host's scene by shape — the documented
+  `(THREE, scene, opts, kit)`, `(scene, opts, kit)`, or a `{ scene }` context, all probes
+  null-guarded — and throws a named error if no scene arrives; the params were renamed
+  (`a, b, c, d`) so no parameter can shadow the import. **Verified locally against a real
+  `three` install** (`scripts/smoke/smoke_props.mjs`): all 18 kinds build under `{}` and under
+  the film's own opts (46 build calls), `buildSet` boots under all four call shapes with a real
+  Scene (6 places, points, root attached), and the word/timing suite still passes untouched.
+- **FAULT 2 — `kind: 'box'` at film.js line 408, first reported as "no engine built-in 'box'".**
+  **Saw** the owner addendum govern over the first fleet report: the current engine's built-in
+  list (`lab/film/props.js`: cane, loaf, bread_loaf, half_loaf, bread_half, mug, newspaper,
+  box) includes `box`, matching the mounted film.md list that also names `box` — so the beat
+  resolves via the built-in and needs no change. This desk has no engine copy mounted (the
+  authoring-time copy was lost with the recycled sandbox), so `lab/film/props.js` itself could
+  not be opened here; the addendum's citation is the authority and was followed.
+  **Fixed** by NOT delivering `scenes/props/box.js` — none was ever written (the stopped reply
+  preceded it) — and leaving film.js line 408, the BIBLE registry row (`built-in \`box\``) and
+  the HANDOVER's built-in list exactly as delivered. Fallback on record: if the fleet still
+  reports `box` unresolved, the repair is one file — `scenes/props/box.js`, self-importing
+  THREE, `export function build(opts) -> Object3D`, origin at the grip, worn cardboard with
+  FUDAI stencil + municipal seal + label lines + tape, `open`/`worn` state — keeping the beat's
+  timing and meaning unchanged.
+
 ## Pending verifications (first desk run)
-- Prop builder signature: `build(opts, THREE)` written defensively (accepts THREE as 2nd arg, via
-  `opts`, or as a global). If the loader calls a different shape, adapt at that error, not by guessing.
+- **Resolved in repair round 1 (above):** the prop-builder signature — the host passes no THREE
+  in; every scenes file self-imports (`import * as THREE from 'three'`) and exports the
+  documented one-argument contract `build(opts)`. Closed, not carried.
 - Hand props (`box_b`, `pen_p`, `ruler_r`, `flowers_v1/v4`) appear via fetch keys with a static `in` —
   confirm the stage attaches them to the owner's hand at the fetch (fallback: attach on the cut).
 - `endHold: 0.2` (the member's loop-cut wish) — confirm the key's semantics on the resolved film.
