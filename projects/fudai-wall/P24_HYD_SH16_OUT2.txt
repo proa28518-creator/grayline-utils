@@ -1,0 +1,18 @@
+HYDROGEN SEAT OUTPUT — SH16 camera, CORRECTIVE round (cause 5)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/c622adb75d42a65c
+Run by Layla via browser seat, 2026-11-23 13:16–13:24 EET.
+Context: candidate 1 (west ground lane) passed every staging reading near-exactly but failed D1/D2 inside village house @(-8,11) — a solid the original brief never carried. This round's brief carried the COMPLETE 18-solid D2-CLEAR set.
+
+CANDIDATE (verbatim):
+chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-5.4,7.6,9.8],[-1.1,2.5,0.9]],[[-5.2,7.5,9.5],[-1.1,2.4,0.9]],49)
+World: pos [-5.4,7.6,11.8] → [-5.2,7.5,11.5]; target [-1.1,2.5,2.9] → [-1.1,2.4,2.9]; fov 49.
+Design: ABOVE-THE-ROOFTOPS lane — sampled y ∈ [7.5,7.6] clears every village-area solid (house tops 6.0 by +1.5m; town hall top 6.4 by +1.1m) at any x/z; x also threads between the west house flank (x_max -5.55) and the hall (x_min -4.5). Sightlines checked: villager rays cross the hall front plane west of its wall; the birds ray crosses above the hall roof (+0.417m).
+
+PREDICTED READINGS (seat's arithmetic):
+- D2-CLEAR: PASS against the full 18-solid set; D1/D2 → FAIL (1) (SH13 only). Target bound PASS (y 2.5 / 2.4).
+- F1131 body: PASS — 386.8px; corners 8/8 (min edge margin +90.1px).
+- F1137 birds: PASS — in frustum, min margin +72.7px; 104.2px at the audit's size 0.5 (baseline read 130px at the same size convention).
+- F1155 head: PASS — face 34.67°; head sphere fully in (min margin +82.7px); 215.7px ≥ 80px.
+
+(Full arithmetic preserved in the browser report of 2026-11-23 13:24 EET; the driver's audit run is the judge.)
