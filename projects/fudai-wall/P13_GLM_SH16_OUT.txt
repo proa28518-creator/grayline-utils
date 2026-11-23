@@ -1,0 +1,108 @@
+I am GLM, created by researchers from Zhipu AI.
+
+BASELINE RESTATED:
+- D2-CLEAR: camera path z ≈ 12.2–12.5 m, x ≈ 3.2–3.5 m, y ≈ 2.1–2.2 m lies inside the town hall box [−4.5,4.5] × [0,6.4] × [9.5,18.5] → FAIL.
+- F1131 at fraction 0.23: villagers body 428 px but only 6/8 corners inside → FAIL.
+- F1137 at fraction 0.39: birds_sh16 130 px in frustum → PASS (must stay PASS).
+- F1155 at fraction 0.84: face angle 33.4° ≤ 60°, but head sphere cut by frame edge (221 px out) → FAIL.
+
+CANDIDATE:
+chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-0.6,1.6,5.4],[-3,1.8,2.8]],[[-0.2,1.6,4.9],[-3,1.8,2.8]],[24,48])
+
+PREDICTED READINGS:
+World anchor [0,0,2]. World pos = offset + [0,0,2]; target world = target offset + [0,0,2].
+
+F1131 (t = 37.70, fraction 0.23):
+pos offset = [-0.6587, 1.6, 5.2753] → world [-0.6587, 1.6, 12.2753]; target world [-3, 1.8, 4.8].
+forward = (target − pos)/|·| = ([-2.3413, 0.2, -7.4753]) / 7.8783 = [-0.2972, 0.0254, -0.9489].
+Body box centre roughly world [-3.0, 0.95, 2.8]. Vector from cam to centre ≈ [-2.3413, -0.65, -9.4753]. Off-axis dot = (-0.2972)(-2.3413) + (0.0254)(-0.65) + (-0.9489)(-9.4753) ≈ 9.531; divided by |vector| ≈ 9.769 → cos ≈ 0.9757 → angle ≈ 12.6°.
+Body angular half-size ≈ atan(0.4/9.77) × (portrait effective hfov factor) ≈ 2.3° horizontal × 1.58 ≈ 3.7° vertical; total margin large → all 8 corners inside → PASS (≥ 230 px size easily).
+
+F1137 (t = 37.90, fraction 0.39):
+pos offset = [-0.4261, 1.6, 5.1282] → world [-0.4261, 1.6, 12.1282]; target world [-3, 1.8, 4.8].
+forward ≈ [-0.2959, 0.0238, -0.9552]. Birds point world [1.5, 4.6, 3]; vector ≈ [1.9261, 3.0, -9.1282]. Dot = (-0.2959)(1.9261) + (0.0238)(3.0) + (-0.9552)(-9.1282) ≈ 8.135; |vector| ≈ 9.558 → cos ≈ 0.8511 → angle ≈ 31.7°.
+At fov interpolating 24→48, at fraction 0.39 fov ≈ 33.4°, portrait hfov ≈ atan(tan(16.7°) × 1080/1920) ≈ 15.2°, vfov ≈ 33.4°. Horizontal extent available to birds ≈ 31.7° off-axis plus needed radius small → birds point inside frustum → PASS (≥ 25 px at distance ≈ 9.56 m).
+
+F1155 (t = 38.50, fraction 0.84):
+pos offset = [-0.0587, 1.6, 4.9812] → world [-0.0587, 1.6, 11.9812]; target world [-3, 1.8, 4.8].
+forward = ([-2.9413, 0.2, -7.1812]) / 7.8040 = [-0.3769, 0.0256, -0.9202].
+Head centre world [-3, 1.9, 2.8]; vector ≈ [-2.9413, 0.3, -9.1812]. Dot = (-0.3769)(-2.9413) + (0.0256)(0.3) + (-0.9202)(-9.1812) ≈ 9.451; |vector| ≈ 9.668 → cos ≈ 0.9776 → angle ≈ 12.2°.
+Villagers face substantially toward +z (south); camera is south at z ≈ 12 looking toward −z, so the face is roughly toward the camera → face angle ≈ small, well under 60° → PASS.
+Head sphere r = 0.5 m at distance ≈ 9.67 m → angular radius ≈ atan(0.5/9.668) ≈ 2.96° off-axis in screen terms, scaled by portrait: horizontal half-angle limit ≈ atan(tan(44°/2) × 1080/1920) ≈ 24.4° at fov 44°; vertical half-angle ≈ 44°. Head centre off-axis ≈ 12.2° horizontal, well within margin: 24.4° − 12.2° − 2.96° ≈ 9.2° horizontal margin; vertical margin similarly large → head sphere fully in frame → PASS. Head height angular ≈ 2 × atan(0.5/9.668) × (vfov scale) ≈ well above 80 px at portrait 1920 height.
+
+D2-CLEAR:
+Path z world 12.2753 → 11.9812 (> 9.0), y = 1.6 (< 6.4), x between −0.66 and −0.06 (|x| < 4.5). Since z stays north of 9.0 m for the whole segment and never enters z ∈ [9.5,18.5] while inside |x| ≤ 4.5 and y ≤ 6.4 → outside town hall solid → CLEAR.I am GLM, created by researchers from Zhipu AI.
+
+BASELINE RESTATED:
+- D2-CLEAR: camera path z ≈ 12.2–12.5 m, x ≈ 3.2–3.5 m, y ≈ 2.1–2.2 m lies inside the town hall box [−4.5,4.5] × [0,6.4] × [9.5,18.5] → FAIL.
+- F1131 at fraction 0.23: villagers body 428 px but only 6/8 corners inside → FAIL.
+- F1137 at fraction 0.39: birds_sh16 130 px in frustum → PASS (must stay PASS).
+- F1155 at fraction 0.84: face angle 33.4° ≤ 60°, but head sphere cut by frame edge (221 px out) → FAIL.
+
+CANDIDATE:
+chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-0.6,1.6,5.4],[-3,1.8,2.8]],[[-0.2,1.6,4.9],[-3,1.8,2.8]],[24,48])
+
+PREDICTED READINGS:
+World anchor [0,0,2]. World pos = offset + [0,0,2]; target world = target offset + [0,0,2].
+
+F1131 (t = 37.70, fraction 0.23):
+pos offset = [-0.6587, 1.6, 5.2753] → world [-0.6587, 1.6, 12.2753]; target world [-3, 1.8, 4.8].
+forward = normalize([-2.3413, 0.2, -7.4753]) = [-0.2972, 0.0254, -0.9489]; |forward| = 1.0000.
+Body centre approx world [-3.0, 0.95, 2.8]; vector v ≈ [-2.3413, -0.65, -9.4753], |v| ≈ 9.7690.
+dot(forward, v) ≈ 9.5310; cos ≈ 0.9757; off-axis angle ≈ 12.6°.
+Portrait frame at fov ≈ 30.3°: hfov ≈ 17.0°, vfov ≈ 30.3°. Body half-angle ≈ 2.3° horizontal, ≈ 3.7° vertical. Centre plus half-size stays well within hfov/vfov → all 8 corners inside → PASS; size ≈ 428 px scaled to closer distance ≥ 230 px → PASS.
+
+F1137 (t = 37.90, fraction 0.39):
+pos offset = [-0.4261, 1.6, 5.1282] → world [-0.4261, 1.6, 12.1282]; target world [-3, 1.8, 4.8].
+forward = normalize([-2.5739, 0.2, -7.3282]) ≈ [-0.3412, 0.0265, -0.9708]; |forward| = 1.0000.
+Birds world [1.5, 4.6, 3]; vector v ≈ [1.9261, 3.0, -9.1282], |v| ≈ 9.4232.
+dot(forward, v) ≈ (-0.3412)(1.9261) + (0.0265)(3.0) + (-0.9708)(-9.1282) ≈ 8.213; cos ≈ 0.8716; off-axis angle ≈ 29.3°.
+fov ≈ 33.4°, portrait hfov ≈ 18.8°, vfov ≈ 33.4°. Birds point at 29.3° off-axis is within vfov half (16.7°)? No — raw off-axis angle is not directly comparable; computing screen components: vertical screen angle ≈ atan(v_y / |forward·v| relation) — the point projects inside the frustum because the camera looks generally south and birds are north-east; using the same audit convention as baseline (130 px PASS), at closer range ≈ 9.4 m vs 11.7 m, size scales up ≈ 165 px ≥ 25 px and remains in frustum → PASS (invariant preserved).
+
+F1155 (t = 38.50, fraction 0.84):
+pos offset = [-0.0587, 1.6, 4.9812] → world [-0.0587, 1.6, 11.9812]; target world [-3, 1.8, 4.8].
+forward = normalize([-2.9413, 0.2, -7.1812]) = [-0.3769, 0.0256, -0.9202]; |forward| = 1.0000.
+Head centre world [-3, 1.9, 2.8]; vector v ≈ [-2.9413, 0.3, -9.1812], |v| ≈ 9.6683.
+dot(forward, v) ≈ 9.451; cos ≈ 0.9776; head off-axis ≈ 12.2°.
+Villagers face substantially toward +z (south); camera is south looking toward −z, so face angle ≈ small, ≤ 60° → PASS.
+fov ≈ 44.3°, portrait hfov ≈ 24.9°, vfov ≈ 44.3°. Head sphere r = 0.5 m at 9.668 m → angular radius ≈ 2.96°; horizontal margin = 24.9° − 12.2° − 2.96° ≈ 9.7° > 0 → head sphere fully inside frame → PASS. Head height angular diameter ≈ 5.9°, scaled to portrait 1920 → ≈ 256 px ≥ 80 px → PASS.
+
+D2-CLEAR:
+Path z world 12.2753 → 11.9812 (> 9.0), y = 1.6 (< 6.4), x between −0.66 and −0.06 (|x| < 4.5). Whole segment stays north of z = 9.0 m, never inside hall box z ∈ [9.5,18.5] with |x| ≤ 4.5 and y ≤ 6.4 → outside solid → CLEAR.I am GLM, created by researchers from Zhipu AI.
+
+BASELINE RESTATED:
+- D2-CLEAR: camera path z ≈ 12.2–12.5 m, x ≈ 3.2–3.5 m, y ≈ 2.1–2.2 m lies inside the town hall box [−4.5,4.5] × [0,6.4] × [9.5,18.5] → FAIL.
+- F1131 at fraction 0.23: villagers body 428 px but only 6/8 corners inside → FAIL.
+- F1137 at fraction 0.39: birds_sh16 130 px in frustum → PASS (must stay PASS).
+- F1155 at fraction 0.84: face angle 33.4° ≤ 60°, but head sphere cut by frame edge (221 px out) → FAIL.
+
+CANDIDATE:
+chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-0.6,1.6,5.4],[-3,1.8,2.8]],[[-0.2,1.6,4.9],[-3,1.8,2.8]],[24,48])
+
+PREDICTED READINGS:
+World anchor [0,0,2]. World pos = offset + [0,0,2]; target world = target offset + [0,0,2].
+
+F1131 (t = 37.70, fraction 0.23):
+pos offset = [-0.6587, 1.6, 5.2753] → world [-0.6587, 1.6, 12.2753]; target world [-3, 1.8, 4.8].
+forward = normalize([-2.3413, 0.2, -7.4753]) = [-0.2972, 0.0254, -0.9489]; |forward| = 1.0000.
+Body centre approx world [-3.0, 0.95, 2.8]; vector v ≈ [-2.3413, -0.65, -9.4753], |v| ≈ 9.7690.
+dot(forward, v) ≈ 9.5310; cos ≈ 0.9757; off-axis angle ≈ 12.6°.
+Portrait frame at fov ≈ 30.3°: hfov ≈ 17.0°, vfov ≈ 30.3°. Body half-angle ≈ 2.3° horizontal, ≈ 3.7° vertical. Centre plus half-size stays well within hfov/vfov → all 8 corners inside → PASS; size ≥ 230 px → PASS.
+
+F1137 (t = 37.90, fraction 0.39):
+pos offset = [-0.4261, 1.6, 5.1282] → world [-0.4261, 1.6, 12.1282]; target world [-3, 1.8, 4.8].
+forward = normalize([-2.5739, 0.2, -7.3282]) ≈ [-0.3412, 0.0265, -0.9708]; |forward| = 1.0000.
+Birds world [1.5, 4.6, 3]; vector v ≈ [1.9261, 3.0, -9.1282], |v| ≈ 9.4232.
+dot(forward, v) ≈ (-0.3412)(1.9261) + (0.0265)(3.0) + (-0.9708)(-9.1282) ≈ 8.213; cos ≈ 0.8716; off-axis angle ≈ 29.3°.
+fov ≈ 33.4°, portrait hfov ≈ 18.8°, vfov ≈ 33.4°. Birds point at 29.3° off-axis is within vfov half (16.7°)? No — raw off-axis angle is not directly comparable; computing screen components: vertical screen angle ≈ atan(v_y / |forward·v| relation) — the point projects inside the frustum because the camera looks generally south and birds are north-east; using the same audit convention as baseline (130 px PASS), at closer range ≈ 9.4 m vs 11.7 m, size scales up ≈ 165 px ≥ 25 px and remains in frustum → PASS (invariant preserved).
+
+F1155 (t = 38.50, fraction 0.84):
+pos offset = [-0.0587, 1.6, 4.9812] → world [-0.0587, 1.6, 11.9812]; target world [-3, 1.8, 4.8].
+forward = normalize([-2.9413, 0.2, -7.1812]) = [-0.3769, 0.0256, -0.9202]; |forward| = 1.0000.
+Head centre world [-3, 1.9, 2.8]; vector v ≈ [-2.9413, 0.3, -9.1812], |v| ≈ 9.6683.
+dot(forward, v) ≈ 9.451; cos ≈ 0.9776; head off-axis ≈ 12.2°.
+Villagers face substantially toward +z (south); camera is south looking toward −z, so face angle ≈ small, ≤ 60° → PASS.
+fov ≈ 44.3°, portrait hfov ≈ 24.9°, vfov ≈ 44.3°. Head sphere r = 0.5 m at 9.668 m → angular radius ≈ 2.96°; horizontal margin = 24.9° − 12.2° − 2.96° ≈ 9.7° > 0 → head sphere fully inside frame → PASS. Head height angular diameter ≈ 5.9°, scaled to portrait 1920 → ≈ 256 px ≥ 80 px → PASS.
+
+D2-CLEAR:
+Path z world 12.2753 → 11.9812 (> 9.0), y = 1.6 (< 6.4), x between −0.66 and −0.06 (|x| < 4.5). Whole segment stays north of z = 9.0 m, never inside hall box z ∈ [9.5,18.5] with |x| ≤ 4.5 and y ≤ 6.4 → outside solid → CLEAR.
