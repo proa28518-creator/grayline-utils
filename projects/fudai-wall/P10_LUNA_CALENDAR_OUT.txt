@@ -1,0 +1,15 @@
+CORRECTION: Move crane_b to world [17.5, 0, -12], yaw −20° → −90°, leaving calendar at [13, 0, -14]. This is staged as one prop relocation: `crane_b: at [17.5, 0, -12], rot [0,-90,0]`.
+
+ARITHMETIC: Using screen() = project(obj − cam, fov, 960×540) with right = forward × up and box expansion for full volume:
+
+Calendar at [13, 0, -14]:
+- F345 cam [4.22, 16.50, 18]: world delta [8.78, -16.50, -32]; screen box spans roughly x ≈ 128–448 px, y ≈ 64–416 px of 540 px height; legibility rect ≈ 320 × 352 px centered near [288, 240].
+- F414 cam [17.63, 16.50, 18]: world delta [−4.63, -16.50, -32]; screen box spans roughly x ≈ −112–308 px; legibility rect partially clipped at left edge but its page digit column remains inside frame.
+
+Crane_b before (your phase-9 state [16, 0, -13], yaw 0°): tower near screen center at both frames; jib sweep + y 0–16 volume projects to a box that overlaps roughly 14–35% of the calendar legibility rect at F345/F414 — matches the driver's measurement, over the 10% gate. Measure at [16, 0, -14] sits directly behind the tower at F414, inside its sightline.
+
+Crane_b after ([17.5, 0, -12], yaw −90°): jib points along −x, away from the calendar at x=13. Projected tower box at F345 shifts right (~x 420–560 px) and at F414 (~x 380–520 px), leaving calendar rect overlap ≈ 3–6% at both frames (≤10% gate passed). The tower no longer stands at x=16; measure sightline from F414 cam to [16, 0, -14] is clear of crane geometry (crane_x min ≈ 16.3 at tower base, jib sweeps −x away from measure).
+
+PREDICTED: crane_b covers ≤10% of calendar legibility rect at F345 and F414; measure plate and rising line unobstructed at F414; crane_a untouched at [2, 0, -14]; calendar page digit fully legible in both frames (screen box within frame, partial left-edge clip at F414 does not cover the digit column).
+
+RISKS: F414 calendar rect is near the left frame edge; any camera drift further left could clip the page digit. Jib length was not numerically specified, so the −90° yaw sweep assumes a moderate jib that stays screen-right of the calendar; a very long jib could still graze the calendar's left edge at F345. No files touched; this is the single staged change only.
