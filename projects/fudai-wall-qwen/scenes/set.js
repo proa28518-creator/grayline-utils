@@ -14,7 +14,7 @@ const PLACES = [
   { name: 'villageStreet', at: [-800, -400], far: 28, sky: [0.6, 0.62, 0.7], ground: [0.42, 0.44, 0.46], fog: { color: '#a8b0c0', density: 0.02 }, practicals: [['houseLamp', [1, 1.4, -10]], ['streetFlicker', [-3, 1.2, -14]]] },
   { name: 'coastline', at: [-400, 400], far: 40, sky: [0.58, 0.6, 0.68], ground: [0.4, 0.42, 0.44], fog: { color: '#98a0b0', density: 0.022 }, practicals: [['pierLantern', [4, 0.6, -22]], ['boatLight', [-4, 0.5, -26]]] },
   { name: 'flashbackHill', at: [0, 400], far: 35, sky: [0.96, 0.88, 0.7], ground: [0.6, 0.52, 0.42], fog: { color: '#f0e0c0', density: 0.005 }, practicals: [['hillLantern', [0, 1, -16]], ['windowLight', [-3, 1.4, -20]]] },
-  { name: 'rock', at: [400, 400], far: 14, sky: [0.94, 0.86, 0.68], ground: [0.58, 0.5, 0.42], fog: { color: '#e8d8b8', density: 0.006 }, practicals: [['rockLamp', [1, 0.8, -8]], []] },
+  { name: 'rock', at: [400, 400], far: 14, sky: [0.94, 0.86, 0.68], ground: [0.58, 0.5, 0.42], fog: { color: '#e8d8b8', density: 0.006 }, practicals: [['rockLamp', [1, 0.8, -8]]] },
   { name: 'room', at: [800, 400], far: 14, sky: [0.92, 0.86, 0.78], ground: [0.55, 0.5, 0.44], fog: { color: '#e8e0d0', density: 0.004 }, practicals: [['deskLamp2', [0, 1.6, -8]], ['roomWindow', [-2, 2, -12]]] },
   { name: 'wallTop', at: [1200, 0], far: 28, sky: [0.9, 0.86, 0.76], ground: [0.56, 0.52, 0.46], fog: { color: '#e8e0d0', density: 0.0055 }, practicals: [['workLamp1', [2, 1, -12]], ['workLamp2', [-2, 1, -12]]] },
   { name: 'neighbouringTowns', at: [1200, -400], far: 45, sky: [0.56, 0.58, 0.66], ground: [0.4, 0.42, 0.44], fog: { color: '#98a0b0', density: 0.024 }, practicals: [['lowWallLamp', [3, 0.6, -22]], ['townLight', [-3, 0.5, -26]]] },
@@ -52,8 +52,8 @@ const LIGHTS = {
     { id: 'streetPanel', kind: 'point', color: '#e8e0d0', power: 40, pos: [3, 1.4, -14], fall: 0.06, range: 14, wrap: 0.2 }
   ],
   graveHill: [
-    { id: 'graveLantern', kind: 'point', color: '#ffd699', power: 45, pos: [-2, 1.4, -18], fall: 0.06, range: 16, wrap: 0.2 },
-    { id: 'villageLight', kind: 'point', color: '#ffe2a8', power: 35, pos: [2, 1.2, -30], fall: 0.06, range: 22, wrap: 0.2 }
+    { id: 'graveLantern', kind: 'point', color: '#ffd699', power: 45, pos: [-2, 1.4, -18], fall: .06, range: 16, wrap: 0.2 },
+    { id: 'villageLight', kind: 'point', color: '#ffe2a8', power: 35, pos: [2, 1.2, -30], fall: .06, range: 22, wrap: 0.2 }
   ],
   villageStreet: [
     { id: 'houseLamp', kind: 'point', color: '#c8d0e8', power: 40, pos: [1, 2, -10], fall: 0.06, range: 14, wrap: 0.2 },
