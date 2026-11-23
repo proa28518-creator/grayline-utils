@@ -1,0 +1,13 @@
+@fudai-wall-critic
+
+STEP A — BLIND SORT (round 9, chunk 2: SH04–SH12)
+
+You are shown 25 stills (pic_01 … pic_25), uploaded in three batches (10 + 10 + 5). Some are frames from OUR film (fudai-wall); the rest are frames from a finished reference production (the bar). You are not told which is which.
+
+For EACH picture, reply with exactly one line:
+pic_NN: ours — <one short clause describing what the still shows>
+or
+pic_NN: bar — <one short clause describing what the still shows>
+
+Judge only what you see: staging, faces, props, readability. End with the single summary line:
+BLIND SORT: bar taken for ours: X · ours taken for bar: Y

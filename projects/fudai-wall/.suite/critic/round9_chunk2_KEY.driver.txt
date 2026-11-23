@@ -1,0 +1,25 @@
+pic_01: ours — OURS frame 345
+pic_02: bar — BAR S04
+pic_03: ours — OURS frame 414
+pic_04: ours — OURS frame 621
+pic_05: bar — BAR S18
+pic_06: ours — OURS frame 288
+pic_07: ours — OURS frame 768
+pic_08: ours — OURS frame 723
+pic_09: ours — OURS frame 687
+pic_10: bar — BAR S01
+pic_11: ours — OURS frame 570
+pic_12: ours — OURS frame 639
+pic_13: bar — BAR S09
+pic_14: ours — OURS frame 798
+pic_15: ours — OURS frame 474
+pic_16: ours — OURS frame 590
+pic_17: bar — BAR S06
+pic_18: bar — BAR S12
+pic_19: ours — OURS frame 822
+pic_20: ours — OURS frame 219
+pic_21: ours — OURS frame 870
+pic_22: ours — OURS frame 241
+pic_23: ours — OURS frame 669
+pic_24: ours — OURS frame 711
+pic_25: ours — OURS frame 537

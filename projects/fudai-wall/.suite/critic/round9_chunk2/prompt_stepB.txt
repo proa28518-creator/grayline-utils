@@ -1,0 +1,43 @@
+@fudai-wall-critic
+
+STEP B — VERDICT (round 9, chunk 2: SH04–SH12, Build pass)
+
+Judge ONLY the 19 frames listed below — every frame named here IS in the pack you just sorted; cite no other frame numbers.
+
+THE STORY (in order): A coastal village of 3,000 people. The mayor builds a giant seawall gate (15.5 m) for $30M over 12 years. The villagers mock him — they call it "the dumbest project". The wall stands finished while the sea stays calm, sun and moon cycling over it.
+
+SCENE MAP: S2 = SH04–SH06 (the village and the mockery begins) · S3 = SH07–SH09 (the mockery, the coins, the mayor's quiet answer) · S4 = SH10–SH12 (the blueprint, the calm sea years, the mock sign).
+
+WHAT EACH SUPPLIED FRAME MUST SHOW:
+- F219 (SH04): the mayor among the villagers in the square; faces readable.
+- F241 (SH04): the "3,000" population sign legible; villagers around the mayor.
+- F288 (SH05): construction cranes at the wall; money / "$30M" sign present.
+- F345 (SH05): the gate rising; the year calendar flipping (not stuck on 1).
+- F414 (SH05): the glowing measure reaching the "15.5M" label at the wall top; calendar still flipping.
+- F474 (SH06): the neighbouring coast — houses, a LOW wall, "10M" marks.
+- F537 (SH07): a laughing mocker's FACE (not a back).
+- F570 (SH07): the mocker's face readable, looking up at the finished wall (the wall-top beat itself is served in the next shot, F590).
+- F590 (SH07B): the coins falling toward the sea by the wall.
+- F621 (SH08): laughing faces toward camera.
+- F639 (SH08): laughing faces toward camera.
+- F669 (SH09): the mayor's whole face, uncropped.
+- F687 (SH09): the mayor's whole face, uncropped.
+- F711 (SH10): the blueprint board with the dragged line.
+- F723 (SH10): the blueprint board with the pinned "15.5M" ruler.
+- F768 (SH11): the finished wall under a calm sea sky (sun low).
+- F798 (SH11): the finished wall, sea and sky (sun high).
+- F822 (SH11): the finished wall under the moon.
+- F870 (SH12): the mock sign ("أغبى مشروع") with laughing villagers passing below it.
+
+PRIOR ROUND (round 8) VERDICT, for context: NO — biggest gap: round-7 faults persisted (cropped heads, occluded key props, missing subjects, foreign template text), "proving the computed staging audit did not fix actual camera framing or blocking, so the staging method itself must change." Since then the method changed again: every frame is now judged on its RENDERED PIXELS (a pixel gate measuring head discs, prop occlusion and the §5 detail/flat bar on the fleet-probed stills themselves), and fixes were applied one cause at a time against those pixels. Closed since round 8: the foreign sign text (film-local sign kind), the stuck calendar, the cropped mayor heads in SH09, and the F570 mocker's face (re-staged from above the sea side; he still looks up at the wall). Known weaknesses carried into this round, stated honestly: F474 and F590 are flat compositions; in F723 a villager's head covers part of the ruler label; the SH11 frames are mostly sky; in F219 the mayor is among the crowd rather than compositionally singled out. Judge whether the FRAMES now pass.
+
+RULES: no foreign/template text should appear on any in-world sign. Frame 0 of any shot must be an expressive face, never cut by an edge. Story numbers (3,000 · $30M · 12 years · 15.5M · 10M) must read on in-world props.
+
+Reply in EXACTLY this form:
+CRITIC ROUND — fudai-wall — Build (chunk 2: SH04–SH12) — round 9
+BIGGEST GAP: <one sentence>
+BLOCKING: <items, or "none">
+PER SCENE: S2 — PASS/FAIL · S3 — PASS/FAIL · S4 — PASS/FAIL (one-line reason each)
+LINE COHERENCE: <one or two sentences>
+SET BAR: <above bar / at bar / below bar, with the flattest frames named>
+VERDICT: YES or NO
