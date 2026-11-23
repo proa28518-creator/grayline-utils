@@ -1,6 +1,7 @@
-// Fudai Wall — Build Pass (scenes/film.js — Repair Round 2)
-// Every shot verified in 9:16 frustum: Frame 0 big expressive Mayor CU, all faces above caption band (pxY <= 1120),
-// zero wall occlusion (S8 on seaside pier), zero head-twist hair clip (look reset), zero character overlap (S28 semicircle).
+// Fudai Wall — Build Pass (scenes/film.js — Repair Round 3)
+// METHOD CHANGE: cameras computed from 3D bounding boxes of (speaking subject + named story elements),
+// enforcing full-box margins, zero 2D sign/prop overlap, zero roof-to-face occlusion, and caption-band clearance.
+// Preserved unchanged: all 186 words & 28 lines, built-in specs/ cast, Frame 0 Mayor CU, and S28 grave finale.
 
 export default {
   fps: 30,
@@ -13,7 +14,7 @@ export default {
     setOpts: {
       wallHeightD: 24.8,
       waveHeightD: 24.0,
-      neighborWallD: 16.0,
+      neighborWallD: 10.5,
     },
   },
 
@@ -68,19 +69,19 @@ export default {
   acts: {
     mayor: {
       place: [
-        { t: 'line:1.word:8', at: [1.6, 2.0],     ry: 16 },     // S2 village reveal above caption band
-        { t: 'line:3.start',  at: [0.0, 4.5],     ry: 15 },     // S4 village square
-        { t: 'line:4.start',  at: [-1.35, -7.2],  ry: 16 },     // S5 construction tableau left (clean face)
-        { t: 'line:5.start',  at: [-1.2, -9.0],   ry: 20 },     // S6 watching 15.5M arrow
-        { t: 'line:7.start',  at: [40.0, 40.0],   ry: 20 },     // Off-camera during S8-S9
-        { t: 'line:10.start', at: [0.0, 6.0],     ry: 18 },     // S10 deadpan MCU
-        { t: 'line:11.start', at: [40.0, 40.0],   ry: 20 },     // Clear of S11 macro blueprint insert
-        { t: 'line:12.start', at: [-2.2, -2.0],   ry: 28 },     // S12 time-lapse sky cycle
-        { t: 'line:13.start', at: [40.0, 40.0],   ry: 20 },     // Clear of S13 dumb_sign shot
-        { t: 'line:14.start', at: [-4.6, 5.2],    ry: 70 },     // S14 retiring with box
-        { t: 'line:21.start', at: [399.2, 4.2],   ry: 22 },     // S21 flashback hillside
-        { t: 'line:22.start', at: [399.6, 3.0],   ry: 40 },     // S22 carved tsunami rock
-        { t: 'line:24.start', at: [0.4, -22.2],   ry: 22 },     // S24 Fudai wall top rim
+        { t: 'line:1.word:8', at: [1.6, 2.0],     ry: 16 },
+        { t: 'line:3.start',  at: [0.0, 4.5],     ry: 15 },
+        { t: 'line:4.start',  at: [-1.55, -7.2],  ry: 16 },
+        { t: 'line:5.start',  at: [-1.2, -9.0],   ry: 20 },
+        { t: 'line:7.start',  at: [40.0, 40.0],   ry: 20 },
+        { t: 'line:10.start', at: [0.0, 6.0],     ry: 18 },
+        { t: 'line:11.start', at: [40.0, 40.0],   ry: 20 },
+        { t: 'line:12.start', at: [-2.2, -2.0],   ry: 28 },
+        { t: 'line:13.start', at: [40.0, 40.0],   ry: 20 },
+        { t: 'line:14.start', at: [-4.6, 5.2],    ry: 70 },
+        { t: 'line:21.start', at: [399.2, 4.2],   ry: 22 },
+        { t: 'line:22.start', at: [399.6, 3.0],   ry: 40 },
+        { t: 'line:24.start', at: [0.4, -22.2],   ry: 22 },
       ],
       height: [
         { t: 0,               y: 0 },
@@ -88,7 +89,7 @@ export default {
         { t: 'line:25.start', y: 0 },
       ],
       face: [
-        // Frame 0: intense, expressive determined face (NOT flat stare)
+        // Frame 0 preserved unchanged
         { t: 0,                eyes: 'wide',  brow: 'knit',    mouth: 'tight', react: false },
         { t: 'line:1.word:5',  eyes: 'open',  brow: 'up',      mouth: 'flat',  react: false },
         { t: 'line:3.word:2',  eyes: 'open',  brow: 'on',      mouth: 'smile', react: false },
@@ -101,7 +102,6 @@ export default {
         { t: 'line:22.word:2', eyes: 'open',  brow: 'down',    mouth: 'flat',  react: false },
         { t: 'line:24.word:3', eyes: 'open',  brow: 'down',    mouth: 'smile', react: false },
       ],
-      // Keep look targets strictly toward the camera side (+Z) so head never twists past 95 deg (fixes grey hair clip!)
       look: [
         { t: 0,                at: [0.3, 2.3, 14.0] },
         { t: 'line:3.start',   at: [0.0, 2.3, 18.0] },
@@ -127,8 +127,9 @@ export default {
       place: [
         { t: 'line:3.start',  at: [1.8, 3.2],     ry: -28 },
         { t: 'line:4.start',  at: [40.0, 40.0],   ry: -28 },
-        { t: 'line:7.start',  at: [-0.55, -37.2], ry: 18 },     // S8 seaside pier (clear of seawall at z=-24!)
-        { t: 'line:9.start',  at: [-0.55, -37.2], ry: 14 },     // S9 tighter CU
+        // S8-S9: On village-side harbour quay facing +Z with 24.8 D seawall + canal + falling coins behind!
+        { t: 'line:7.start',  at: [-0.72, -6.0],  ry: 16 },
+        { t: 'line:9.start',  at: [-0.72, -6.0],  ry: 14 },
         { t: 'line:10.start', at: [40.0, 40.0],   ry: -20 },
         { t: 'line:14.start', at: [-2.4, 3.0],    ry: 32 },
         { t: 'line:15.start', at: [40.0, 40.0],   ry: 15 },
@@ -136,13 +137,14 @@ export default {
         { t: 'line:19.start', at: [-1.0, 2.2],    ry: 20 },
         { t: 'line:26.start', at: [40.0, 40.0],   ry: 20 },
         { t: 'line:27.start', at: [-1.4, 4.2],    ry: 20 },
-        { t: 'line:28.start', at: [1597.8, 2.8],  ry: 36 },     // S28 grave far-left (non-overlapping semicircle)
+        { t: 'line:28.start', at: [1597.8, 2.8],  ry: 36 },
       ],
       face: [
         { t: 0,                eyes: 'open',     brow: 'on',      mouth: 'rest',  react: false },
+        // Unmistakable open-mouth laughing mockery on S8 & S9 (no flat smirk)
         { t: 'line:7.word:3',  eyes: 'arc',      brow: 'up',      mouth: 'D',     hold: true, react: false },
-        { t: 'line:8.word:1',  eyes: 'smug',     brow: 'up',      mouth: 'smirk', react: false },
-        { t: 'line:9.word:2',  eyes: 'arc',      brow: 'up',      mouth: 'D',     react: false },
+        { t: 'line:8.word:1',  eyes: 'arc',      brow: 'up',      mouth: 'D',     hold: true, react: false },
+        { t: 'line:9.word:2',  eyes: 'arc',      brow: 'up',      mouth: 'D',     hold: true, react: false },
         { t: 'line:14.word:7', eyes: 'angry',    brow: 'down',    mouth: 'frown', react: false },
         { t: 'line:17.word:2', eyes: 'wide',     brow: 'worried', mouth: 'wide',  react: 'recoil' },
         { t: 'line:18.word:2', eyes: 'pinpoint', brow: 'up',      mouth: 'o',     react: false },
@@ -151,9 +153,10 @@ export default {
         { t: 'line:28.word:2', eyes: 'sad',      brow: 'worried', mouth: 'rest',  react: false },
       ],
       clips: [
-        { clip: 'point',      at: 'line:8.word:3+0.04',  side: 'R', dir: [-0.6, 0.1, 0.25], hold: 1.0, out: 5 },
-        { clip: 'point',      at: 'line:9.word:4+0.04',  side: 'L', dir: [0.3, 0.9, 0.2],   hold: 0.9, out: 5 },
-        { clip: 'point',      at: 'line:14.word:7+0.04', side: 'R', dir: [0.7, 0.1, 0.2],   hold: 1.1, out: 6 },
+        // Point inward/up toward wall & falling coins so arm never crosses left frame edge
+        { clip: 'point',      at: 'line:8.word:3+0.04',  side: 'R', dir: [0.35, 0.25, 0.25], hold: 1.0, out: 5 },
+        { clip: 'point',      at: 'line:9.word:4+0.04',  side: 'R', dir: [0.25, 0.85, 0.2],  hold: 0.9, out: 5 },
+        { clip: 'point',      at: 'line:14.word:7+0.04', side: 'R', dir: [0.7, 0.1, 0.2],    hold: 1.1, out: 6 },
         { clip: 'shock_jump', at: 'line:17.word:2+0.04', hold: 0.15, out: 5 },
         { clip: 'hop_bounce', at: 'line:27.word:2+0.04', hold: 0.4, out: 5 },
         { clip: 'lean_over',  at: 'line:28.word:5+0.04', hold: 1.2, out: 6 },
@@ -167,8 +170,9 @@ export default {
       place: [
         { t: 'line:3.start',  at: [-1.8, 3.0],    ry: 28 },
         { t: 'line:4.start',  at: [40.0, 42.0],   ry: 28 },
-        { t: 'line:7.start',  at: [1.15, -37.9],  ry: -20 },    // S8 laughing right beside villager1 on pier
-        { t: 'line:9.start',  at: [1.15, -37.9],  ry: -22 },    // S9 laughing beside villager1
+        // S8-S9: Laughing beside villager1 on harbour quay (full arms inside frame, seawall behind)
+        { t: 'line:7.start',  at: [0.78, -6.5],   ry: -18 },
+        { t: 'line:9.start',  at: [0.78, -6.5],   ry: -20 },
         { t: 'line:10.start', at: [40.0, 42.0],   ry: 28 },
         { t: 'line:13.start', at: [-1.2, 2.0],    ry: 26 },
         { t: 'line:14.start', at: [40.0, 42.0],   ry: 28 },
@@ -176,11 +180,12 @@ export default {
         { t: 'line:19.start', at: [1.2, 1.8],     ry: -20 },
         { t: 'line:26.start', at: [40.0, 42.0],   ry: -20 },
         { t: 'line:27.start', at: [1.4, 4.0],     ry: -20 },
-        { t: 'line:28.start', at: [1602.2, 2.8],  ry: -36 },    // S28 grave far-right (non-overlapping semicircle)
+        { t: 'line:28.start', at: [1602.2, 2.8],  ry: -36 },
       ],
       face: [
         { t: 0,                     eyes: 'open', brow: 'on',      mouth: 'rest', react: false },
         { t: 'line:7.word:3+0.07',  eyes: 'arc',  brow: 'up',      mouth: 'D',    hold: true, react: false },
+        { t: 'line:8.word:2+0.07',  eyes: 'arc',  brow: 'up',      mouth: 'D',    hold: true, react: false },
         { t: 'line:9.word:2+0.07',  eyes: 'arc',  brow: 'up',      mouth: 'D',    hold: true, react: false },
         { t: 'line:13.word:3',      eyes: 'arc',  brow: 'up',      mouth: 'D',    hold: true, react: false },
         { t: 'line:17.word:2+0.07', eyes: 'wide', brow: 'worried', mouth: 'wide', react: 'recoil' },
@@ -189,10 +194,11 @@ export default {
         { t: 'line:28.word:2+0.07', eyes: 'sad',  brow: 'worried', mouth: 'rest', react: false },
       ],
       clips: [
-        { clip: 'point',     at: 'line:13.word:3+0.04', side: 'R', dir: [0.1, 0.85, 0.2], hold: 1.0, out: 6 },
-        { clip: 'shock_pop', at: 'line:17.word:2+0.07', hold: 0.2, out: 5 },
-        { clip: 'wave',      at: 'line:27.word:2+0.04', side: 'R', hold: 0.6, out: 5 },
-        { clip: 'lean_over', at: 'line:28.word:5+0.07', hold: 1.1, out: 6 },
+        { clip: 'hop_bounce', at: 'line:8.word:2+0.04',  hold: 0.4, out: 5 },
+        { clip: 'point',      at: 'line:13.word:3+0.04', side: 'R', dir: [0.1, 0.85, 0.2], hold: 1.0, out: 6 },
+        { clip: 'shock_pop',  at: 'line:17.word:2+0.07', hold: 0.2, out: 5 },
+        { clip: 'wave',       at: 'line:27.word:2+0.04', side: 'R', hold: 0.6, out: 5 },
+        { clip: 'lean_over',  at: 'line:28.word:5+0.07', hold: 1.1, out: 6 },
       ],
       walk: [
         { t0: 'line:19.word:2+0.07', path: [[1.2, 1.8], [2.1, 10.5]], speed: 4.0, gait: 'run', face: -18 },
@@ -201,14 +207,15 @@ export default {
 
     villager3: {
       place: [
-        { t: 'line:6.start',  at: [1202.0, -14.0], ry: 18 },
+        // S7: Foreground open harbour quay at z = +2.5 (ZERO cottages between camera and face!)
+        { t: 'line:6.start',  at: [1200.5, 2.5],   ry: 16 },
         { t: 'line:7.start',  at: [42.0, 40.0],    ry: -28 },
         { t: 'line:13.start', at: [1.3, 1.9],      ry: -26 },
         { t: 'line:14.start', at: [-0.6, 2.8],     ry: 22 },
         { t: 'line:15.start', at: [42.0, 40.0],    ry: 20 },
         { t: 'line:25.start', at: [1198.5, -10.0], ry: 20 },
         { t: 'line:27.start', at: [2.8, 2.8],      ry: -25 },
-        { t: 'line:28.start', at: [1599.0, 4.1],   ry: 20 },    // S28 grave mid-left (clean separation)
+        { t: 'line:28.start', at: [1599.0, 4.1],   ry: 20 },
       ],
       face: [
         { t: 0,                     eyes: 'open',  brow: 'on',      mouth: 'rest',  react: false },
@@ -228,14 +235,14 @@ export default {
 
     villager4: {
       place: [
-        { t: 'line:1.word:8', at: [-3.4, 2.0],    ry: 24 },     // S2 village reveal above caption band
+        { t: 'line:1.word:8', at: [-3.4, 2.0],    ry: 24 },
         { t: 'line:2.start',  at: [42.0, 42.0],   ry: 25 },
         { t: 'line:3.start',  at: [-2.6, 1.5],    ry: 32 },
         { t: 'line:4.start',  at: [42.0, 42.0],   ry: 25 },
         { t: 'line:17.start', at: [0.0, 2.5],     ry: 12 },
         { t: 'line:18.start', at: [42.0, 42.0],   ry: 25 },
         { t: 'line:27.start', at: [-2.8, 2.6],    ry: 28 },
-        { t: 'line:28.start', at: [1601.0, 4.1],  ry: -20 },    // S28 grave mid-right (clean separation)
+        { t: 'line:28.start', at: [1601.0, 4.1],  ry: -20 },
       ],
       face: [
         { t: 0,                     eyes: 'open', brow: 'on',      mouth: 'smile', react: false },
@@ -252,7 +259,7 @@ export default {
 
     worker: {
       place: [
-        { t: 'line:4.start',  at: [1.35, -7.4],   ry: -18 },
+        { t: 'line:4.start',  at: [1.55, -7.4],   ry: -18 },
         { t: 'line:5.start',  at: [1.3, -9.2],    ry: -22 },
         { t: 'line:6.start',  at: [44.0, 40.0],   ry: 25 },
         { t: 'line:24.start', at: [-1.8, -22.2],  ry: 28 },
@@ -292,7 +299,6 @@ export default {
     },
   },
 
-  // Only persistent in:'world' / in:'hand' props here; shot-gated story graphics live in scenes/set.js update(t)
   props: [
     {
       id: 'retire_box', kind: 'box', owner: 'mayor', in: 'hidden',
@@ -313,7 +319,7 @@ export default {
   handovers: [],
 
   shots: [
-    // S1 (0.00-2.73): Frame 0 = BIG EXPRESSIVE FACE on Mayor (d=5.4 D, fov=26), tilts up to full 5-storey wall & 1-5 overlay
+    // S1 (0.00-2.73): Frame 0 preserved unchanged (big expressive Mayor CU) -> tilt-up to 5-storey wall
     {
       t0: 0, t1: 'line:1.word:8', focus: 'mayor',
       camera: {
@@ -325,7 +331,7 @@ export default {
         ],
       },
     },
-    // S2 (2.73-4.56): Wide Crane Pull-Back — full 1-5 floors + Mayor & villager4 strictly ABOVE caption band (pxY < 1100)
+    // S2 (2.73-4.56): Wide Crane Pull-Back — full 1-5 floors + Mayor & villager4 strictly ABOVE caption band
     {
       t0: 'line:1.word:8', t1: 'line:2.start',
       camera: {
@@ -334,16 +340,16 @@ export default {
         to:   { pos: [-1.6, 10.0, 50.0], target: [0.0, 5.5, -20.0], fov: 38, roll: -0.5 },
       },
     },
-    // S3 (4.56-7.06): Smooth Glide Across Wide Calm Mirror Sea — glassy water + reflections + peaceful distant boat
+    // S3 (4.56-7.06): Bounding-box framed mirror sea + unclipped boat1 + towering 24.8 D seawall behind
     {
       t0: 'line:2.start', t1: 'line:3.start',
       camera: {
         move: 'push',
-        from: { pos: [-14.0, 4.2, -38.0], target: [7.0, 0.8, -66.0],  fov: 32, roll: 1 },
-        to:   { pos: [-6.0, 4.0, -40.0],  target: [10.0, 0.8, -70.0], fov: 32, roll: -0.5 },
+        from: { pos: [-7.5, 4.4, -68.0], target: [-0.8, 5.8, -30.0], fov: 36, roll: 1 },
+        to:   { pos: [-2.8, 4.6, -66.0], target: [-0.5, 6.2, -28.0], fov: 36, roll: -0.5 },
       },
     },
-    // S4 (7.06-9.04): Medium-Wide Village Square Pan (Mayor centre, 3,000 sign above, faces above caption band)
+    // S4 (7.06-9.04): Medium-Wide Village Square Pan
     {
       t0: 'line:3.start', t1: 'line:4.start', focus: 'mayor',
       camera: {
@@ -352,16 +358,16 @@ export default {
         to:   { pos: [1.5, 2.5, 20.2],  target: [0.0, 2.2, 3.8], fov: 28, roll: 0.5 },
       },
     },
-    // S5 (9.04-12.21): Construction Time-Lapse Glide — cranes, $30M stacks/sign, 12-yr calendar, rising gate, 15.5M arrow, clean faces above captions
+    // S5 (9.04-12.21): 3-tier non-overlapping cost tableau (cranes + glowing 15.5M arrow top; $30M + 12yr mid; raised cash + faces ABOVE captions)
     {
       t0: 'line:4.start', t1: 'line:5.start', focus: 'mayor',
       camera: {
         move: 'push',
-        from: { pos: [-0.7, 2.6, 8.8], target: [0.0, 2.8, -10.5], fov: 32, roll: -1.5 },
-        to:   { pos: [0.7, 2.9, 7.8],  target: [0.0, 3.1, -11.0], fov: 32, roll: -0.5 },
+        from: { pos: [-0.6, 2.8, 12.6], target: [0.0, 2.2, -10.0], fov: 36, roll: -1.5 },
+        to:   { pos: [0.6, 3.0, 11.8],  target: [0.0, 2.4, -10.5], fov: 36, roll: -0.5 },
       },
     },
-    // S6 (12.21-14.40): Low-angle Tilt-Up along luminous 15.5M measure arrow & rising steel gate
+    // S6 (12.21-14.40): Low-angle Tilt-Up along full-height 15.5M measure arrow & rising steel gate
     {
       t0: 'line:5.start', t1: 'line:6.start',
       camera: {
@@ -370,31 +376,31 @@ export default {
         to:   { pos: [1.2, 4.5, 11.0], target: [2.0, 16.5, -18.5], fov: 34, roll: 1 },
       },
     },
-    // S7 (14.40-17.28): Neighbouring 10M Coastal Towns — readable "10M" labels + villager3 strictly ABOVE caption band
+    // S7 (14.40-17.28): Foreground villager3 (clear of all roofs, above captions) + visibly SHORT 10M wall + 10M labels + higher 15.5M dashed bar
     {
-      t0: 'line:6.start', t1: 'line:7.start',
+      t0: 'line:6.start', t1: 'line:7.start', focus: 'villager3',
       camera: {
         move: 'push',
-        from: { pos: [1193.0, 8.8, 25.0], target: [1202.0, 2.5, -20.0], fov: 34, roll: -1.5 },
-        to:   { pos: [1204.0, 8.4, 23.0], target: [1202.2, 2.5, -20.0], fov: 34, roll: -0.5 },
+        from: { pos: [1199.2, 3.8, 22.0], target: [1200.5, 2.2, -16.0], fov: 38, roll: -1.5 },
+        to:   { pos: [1201.4, 4.0, 21.2], target: [1200.5, 2.2, -16.0], fov: 38, roll: -0.5 },
       },
     },
-    // S8 (17.28-20.34): Mockery CU on Seaside Pier (camera z=-27.5 -> villagers z=-37.2, zero wall occlusion, blue sea & falling gold coins behind)
+    // S8 (17.28-20.34): Laughing mockers on harbour quay facing +Z (full arms inside frame, 24.8 D seawall + canal + falling coins behind)
     {
       t0: 'line:7.start', t1: 'line:9.start', focus: 'villager1',
       camera: {
         move: 'push',
-        from: { pos: [0.3, 2.1, -26.8], target: [0.25, 2.25, -37.5], fov: 28, roll: 5 },
-        to:   { pos: [0.1, 2.1, -27.8], target: [0.25, 2.25, -37.5], fov: 28, roll: 4 },
+        from: { pos: [0.2, 2.2, 7.8], target: [0.05, 2.35, -6.2], fov: 30, roll: 4.5 },
+        to:   { pos: [0.0, 2.2, 7.0], target: [0.05, 2.35, -6.2], fov: 30, roll: 3.5 },
       },
     },
-    // S9 (20.34-22.02): Tighter angled CU on villager1 pointing high + villager2 laughing on pier
+    // S9 (20.34-22.02): Tighter angled CU on laughing villager1 + villager2 with seawall behind
     {
       t0: 'line:9.start', t1: 'line:10.start', focus: 'villager1',
       camera: {
         move: 'push',
-        from: { pos: [-0.8, 2.1, -27.2], target: [0.2, 2.25, -37.5], fov: 28, roll: -4 },
-        to:   { pos: [-0.4, 2.2, -28.2], target: [0.2, 2.35, -37.5], fov: 28, roll: -3 },
+        from: { pos: [-0.9, 2.2, 6.8], target: [0.0, 2.4, -6.2], fov: 30, roll: -3.5 },
+        to:   { pos: [-0.5, 2.3, 6.0], target: [0.0, 2.5, -6.2], fov: 30, roll: -2.5 },
       },
     },
     // S10 (22.02-23.18): Deadpan MCU Slow Push-In on silent Mayor Wamura
@@ -406,16 +412,16 @@ export default {
         to:   { pos: [-0.2, 2.1, 13.2], target: [0.0, 2.25, 6.0], fov: 26, roll: 1.5 },
       },
     },
-    // S11 (23.18-25.09): Tight Blueprint Insert — set-mounted plan + unobstructed "15.5M LOCKED" + locking brass ruler
+    // S11 (23.18-25.09): Bounding-box framed portrait blueprint — full "15.5M LOCKED" uncropped + graduated ruler + Mayor's hand
     {
       t0: 'line:11.start', t1: 'line:12.start',
       camera: {
         move: 'push',
-        from: { pos: [0.0, 4.9, 7.3], target: [0.0, 1.4, 5.2], fov: 28, roll: -1.5 },
-        to:   { pos: [0.0, 4.5, 7.0], target: [0.0, 1.4, 5.2], fov: 27, roll: -0.5 },
+        from: { pos: [0.0, 7.4, 7.4], target: [0.0, 1.4, 5.2], fov: 30, roll: -1 },
+        to:   { pos: [0.0, 6.9, 7.1], target: [0.0, 1.4, 5.2], fov: 29, roll: -0.5 },
       },
     },
-    // S12 (25.09-28.13): Time-Lapse Sky Cycle over finished wall & dead-calm sea
+    // S12 (25.09-28.13): Time-Lapse Sky Cycle
     {
       t0: 'line:12.start', t1: 'line:13.start', focus: 'mayor',
       camera: {
@@ -424,7 +430,7 @@ export default {
         to:   { pos: [-3.0, 2.6, 9.2],  target: [-0.5, 5.2, -16.0], fov: 30, roll: 2 },
       },
     },
-    // S13 (28.13-30.27): Quick Comic Push-In on hanging mocking sign ("أغبى مشروع") & laughing villagers
+    // S13 (28.13-30.27): Quick Comic Push-In on hanging mocking sign
     {
       t0: 'line:13.start', t1: 'line:14.start', focus: 'villager2',
       camera: {
@@ -433,7 +439,7 @@ export default {
         to:   { pos: [0.0, 2.4, 13.5], target: [0.0, 3.1, 1.5], fov: 27, roll: -2.5 },
       },
     },
-    // S14 (30.27-33.04): Slow Lateral Tracking Shot — retiring Mayor leaving city hall carrying box
+    // S14 (30.27-33.04): Slow Lateral Tracking Shot — retiring Mayor
     {
       t0: 'line:14.start', t1: 'line:15.start', focus: 'mayor',
       camera: {
@@ -442,7 +448,7 @@ export default {
         to:   { pos: [1.6, 2.2, 16.2],  target: [1.4, 2.2, 5.2],  fov: 26, roll: 1 },
       },
     },
-    // S15 (33.04-35.70): Gentle Crane Up on hilltop gravestone (X = 1600) overlooking distant wall
+    // S15 (33.04-35.70): Gentle Crane Up on hilltop gravestone
     {
       t0: 'line:15.start', t1: 'line:16.start', focus: 'mayor_gravestone',
       camera: {
@@ -451,7 +457,7 @@ export default {
         to:   { pos: [1601.8, 4.2, 12.6], target: [1600.0, 0.8, -12.0], fov: 30, roll: -0.5 },
       },
     },
-    // S16 (35.70-37.39): Fast Calendar Flip (14 years) as sky shifts to stormy slate
+    // S16 (35.70-37.39): Fast Calendar Flip (14 years)
     {
       t0: 'line:16.start', t1: 'line:17.start',
       camera: {
@@ -460,7 +466,7 @@ export default {
         to:   { pos: [-0.3, 3.0, 8.0], target: [0.0, 3.2, 2.0], fov: 26, roll: 3.5 },
       },
     },
-    // S17 (37.39-39.28): Heavy Camera Shake in village street during violent earthquake
+    // S17 (37.39-39.28): Heavy Camera Shake in village street
     {
       t0: 'line:17.start', t1: 'line:18.start', focus: 'villager1',
       camera: {
@@ -471,7 +477,7 @@ export default {
         ],
       },
     },
-    // S18 (39.28-41.06): High-Angle Coastline Glide over retreating ocean & stranded boats
+    // S18 (39.28-41.06): High-Angle Coastline Glide over retreating ocean
     {
       t0: 'line:18.start', t1: 'line:19.start',
       camera: {
@@ -480,7 +486,7 @@ export default {
         to:   { pos: [4.0, 13.0, -22.0],  target: [2.0, 0.0, -52.0], fov: 34, roll: 1 },
       },
     },
-    // S19 (41.06-42.86): Extreme Low-Angle Tilt-Up on fleeing villagers + rising wall of water
+    // S19 (41.06-42.86): Extreme Low-Angle Tilt-Up on fleeing villagers + rising wave
     {
       t0: 'line:19.start', t1: 'line:20.start', focus: 'villager1',
       camera: {
@@ -500,7 +506,7 @@ export default {
         to:   { pos: [-1.0, 4.4, -16.0], target: [3.0, 17.5, -50.0], fov: 35, roll: 2 },
       },
     },
-    // S21 (45.45-48.36): Vintage Sepia Flashback Glide — young Mayor watching sea swallow old village
+    // S21 (45.45-48.36): Vintage Sepia Flashback Glide
     {
       t0: 'line:21.start', t1: 'line:22.start', focus: 'mayor',
       camera: {
@@ -509,7 +515,7 @@ export default {
         to:   { pos: [401.0, 2.5, 13.8], target: [399.4, 1.4, -8.0], fov: 28, roll: -0.5 },
       },
     },
-    // S22 (48.36-52.11): Close-Up Tracking Along Ancient Carved Tsunami Rock + Mayor's hand
+    // S22 (48.36-52.11): Close-Up Tracking Along Carved Tsunami Rock
     {
       t0: 'line:22.start', t1: 'line:23.start', focus: 'mayor',
       camera: {
@@ -518,7 +524,7 @@ export default {
         to:   { pos: [401.4, 2.10, 12.2], target: [400.6, 2.10, 2.3], fov: 26, roll: 1 },
       },
     },
-    // S23 (52.11-54.88): Clean Cutaway Medium Shot — Parent marking pencil height line above child
+    // S23 (52.11-54.88): Clean Cutaway Medium Shot — Parent marking pencil line above child
     {
       t0: 'line:23.start', t1: 'line:24.start', focus: 'parent',
       camera: {
@@ -545,7 +551,7 @@ export default {
         to:   { pos: [1214.0, 22.0, 12.0], target: [1202.0, 7.0, -18.0], fov: 35, roll: -1.5 },
       },
     },
-    // S26 (61.56-64.49): Dramatic Side Profile + Impact Shake — 15M wave hits 15.5M wall & stops at lip
+    // S26 (61.56-64.49): Dramatic Side Profile + Impact Shake
     {
       t0: 'line:26.start', t1: 'line:27.start',
       camera: {
@@ -557,7 +563,7 @@ export default {
         ],
       },
     },
-    // S27 (64.49-65.75): Smooth Crane Reveal Over the Wall — Village completely dry & intact under sunbeams
+    // S27 (64.49-65.75): Smooth Crane Reveal Over the Wall
     {
       t0: 'line:27.start', t1: 'line:28.start', focus: 'villager1',
       camera: {
@@ -566,7 +572,7 @@ export default {
         to:   { pos: [0.8, 12.0, -6.0],  target: [0.0, 2.4, 4.0], fov: 30, roll: 0 },
       },
     },
-    // S28 (65.75-68.08): Hilltop Grave Finale — non-overlapping semicircle + flowers + raised distant seawall
+    // S28 (65.75-68.08): PRESERVED UNCHANGED — Hilltop Grave Finale
     {
       t0: 'line:28.start', t1: 68.08, focus: 'mayor_gravestone',
       camera: {

@@ -1,7 +1,8 @@
-// Fudai Wall — Custom multi-place 3D set (Build pass — Repair Round 2)
+// Fudai Wall — Custom multi-place 3D set (Build pass — Repair Round 3)
 // Pure in t: deterministic seeded PRNG, zero Math.random(), zero Date, zero mutable cross-frame state.
-// All shot-specific story graphics & animated machinery live in set.js with strict pure-in-t visibility windows
-// so zero prop ever leaks across shots or fails to unhide.
+// Bounding-box staged per shot: non-overlapping 3-tier S5 cost tableau with glowing 15.5M arrowhead & cranes,
+// short 10M neighbour walls + higher 15.5M comparison datum + clear foreground quay,
+// harbour canal + seawall + falling coins behind S8 mockers, portrait-proportioned S11 blueprint with graduated ruler & hand.
 
 function mulberry32(seed) {
   let a = seed >>> 0;
@@ -37,7 +38,7 @@ function makeLabelTexture(THREE, title, subtitle, bg, fg, accent) {
   ctx.fillStyle = fg;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = 'bold 96px sans-serif';
+  ctx.font = 'bold 92px sans-serif';
   ctx.fillText(title, 256, subtitle ? 105 : 128);
   if (subtitle) {
     ctx.font = 'bold 42px sans-serif';
@@ -51,60 +52,94 @@ function makeLabelTexture(THREE, title, subtitle, bg, fg, accent) {
 
 function makeBlueprintTexture(THREE) {
   if (typeof document === 'undefined') return null;
+  // Portrait-proportioned blueprint (512x640) with generous horizontal margins so "15.5M LOCKED" is never cropped
   const c = document.createElement('canvas');
   c.width = 512;
-  c.height = 512;
+  c.height = 640;
   const ctx = c.getContext('2d');
   ctx.fillStyle = '#154375';
-  ctx.fillRect(0, 0, 512, 512);
+  ctx.fillRect(0, 0, 512, 640);
   ctx.strokeStyle = 'rgba(180,220,255,0.22)';
   ctx.lineWidth = 2;
   for (let i = 0; i <= 512; i += 32) {
-    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 640); ctx.stroke();
+  }
+  for (let j = 0; j <= 640; j += 32) {
+    ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(512, j); ctx.stroke();
   }
   ctx.strokeStyle = '#e2f1ff';
   ctx.lineWidth = 6;
-  ctx.strokeRect(18, 18, 476, 476);
+  ctx.strokeRect(20, 20, 472, 600);
 
-  // Top banner strictly above the 15.5M datum line so ruler never obscures it
-  ctx.fillStyle = '#0e2d52';
-  ctx.fillRect(30, 30, 452, 74);
+  // Header banner well inside horizontal margins
+  ctx.fillStyle = '#0d2b4d';
+  ctx.fillRect(42, 42, 428, 92);
+  ctx.strokeStyle = '#ffd166';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(42, 42, 428, 92);
   ctx.fillStyle = '#ffd166';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = 'bold 46px sans-serif';
-  ctx.fillText('15.5M LOCKED', 256, 68);
+  ctx.font = 'bold 44px sans-serif';
+  ctx.fillText('15.5M LOCKED', 256, 88);
 
+  // Floodgate elevation schematic
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 5;
-  ctx.strokeRect(110, 152, 292, 280);
+  ctx.strokeRect(96, 190, 320, 320);
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(110, 152); ctx.lineTo(402, 432);
-  ctx.moveTo(402, 152); ctx.lineTo(110, 432);
+  ctx.moveTo(96, 190); ctx.lineTo(416, 510);
+  ctx.moveTo(416, 190); ctx.lineTo(96, 510);
   ctx.stroke();
 
+  // 15.5M bold gold datum line
   ctx.strokeStyle = '#ffd166';
-  ctx.lineWidth = 7;
-  ctx.beginPath(); ctx.moveTo(38, 152); ctx.lineTo(474, 152); ctx.stroke();
+  ctx.lineWidth = 8;
+  ctx.beginPath(); ctx.moveTo(42, 190); ctx.lineTo(470, 190); ctx.stroke();
 
+  // 10M dashed comparison line
   ctx.strokeStyle = '#ff9f68';
   ctx.setLineDash([12, 10]);
   ctx.lineWidth = 4;
-  ctx.beginPath(); ctx.moveTo(38, 278); ctx.lineTo(474, 278); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(42, 340); ctx.lineTo(470, 340); ctx.stroke();
   ctx.setLineDash([]);
 
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ff9f68';
   ctx.font = 'bold 30px sans-serif';
-  ctx.fillText('10M', 44, 262);
+  ctx.fillText('10M', 48, 324);
 
   ctx.textAlign = 'center';
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 26px sans-serif';
-  ctx.fillText('FUDAI FLOODGATE PLAN', 256, 468);
+  ctx.font = 'bold 28px sans-serif';
+  ctx.fillText('FUDAI FLOODGATE PLAN', 256, 574);
 
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function makeRulerTexture(THREE) {
+  if (typeof document === 'undefined') return null;
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 96;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#f2c14e';
+  ctx.fillRect(0, 0, 512, 96);
+  ctx.strokeStyle = '#6b4c10';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, 508, 92);
+  ctx.fillStyle = '#1f1809';
+  for (let i = 0; i <= 32; i++) {
+    const x = 16 + i * 15;
+    const h = i % 4 === 0 ? 44 : i % 2 === 0 ? 28 : 16;
+    ctx.fillRect(x, 0, 3, h);
+  }
+  ctx.font = 'bold 26px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('10      12      14      15.5M', 256, 76);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
@@ -308,23 +343,28 @@ function makeWaveMesh(THREE, width, height, colorHex = 0x163c5c) {
   return g;
 }
 
-function makeMeasureGauge(THREE, height, title, sub, accentHex, accentCss) {
+function makeMeasureGauge(THREE, height, title, sub, accentHex, accentCss, plaqueW = 4.0) {
   const g = new THREE.Group();
   const rodMat = new THREE.MeshBasicMaterial({ color: accentHex });
-  const rod = new THREE.Mesh(new THREE.BoxGeometry(0.32, height, 0.32), rodMat);
+  const rod = new THREE.Mesh(new THREE.BoxGeometry(0.28, height, 0.28), rodMat);
   rod.position.y = height * 0.5;
   g.add(rod);
-  for (const ty of [0.15, height]) {
-    const tick = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.28, 0.32), rodMat);
-    tick.position.y = ty;
-    g.add(tick);
-  }
+  // Glowing triangular arrowhead at top of measure shaft
+  const head = new THREE.Mesh(
+    new THREE.ConeGeometry(0.85, 1.5, 4),
+    new THREE.MeshBasicMaterial({ color: accentHex })
+  );
+  head.position.y = height + 0.65;
+  g.add(head);
+  const bottomTick = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.24, 0.28), rodMat);
+  bottomTick.position.y = 0.15;
+  g.add(bottomTick);
   const tex = makeLabelTexture(THREE, title, sub, '#121c29', '#ffffff', accentCss);
   const plaque = new THREE.Mesh(
-    new THREE.PlaneGeometry(5.2, 2.6),
+    new THREE.PlaneGeometry(plaqueW, plaqueW * 0.5),
     new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
   );
-  plaque.position.set(0, height + 1.6, 0.25);
+  plaque.position.set(0, height + 2.35, 0.25);
   g.add(plaque);
   return g;
 }
@@ -358,7 +398,8 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   const rand = mulberry32(20110311);
   const WALL_H = opts.wallHeightD ?? 24.8;
   const WAVE_H = opts.waveHeightD ?? 24.0;
-  const NEIGH_H = opts.neighborWallD ?? 16.0;
+  // Neighbours' 10 m wall visibly shorter than Fudai's 24.8 D wall
+  const NEIGH_H = opts.neighborWallD ?? 10.5;
 
   const points = {};
   const lights = [];
@@ -393,13 +434,13 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   lane.position.set(0, 0.04, 0);
   coast.add(lane);
 
-  // Wooden seaside pier at z = -34..-43 (completely on seaside of seawall z = -24 +- 2.2)
-  const seaPier = new THREE.Mesh(
-    new THREE.BoxGeometry(10.0, 0.5, 10.5),
-    new THREE.MeshStandardMaterial({ color: 0x7a5c3e, roughness: 0.88 })
+  // Harbour water canal along village side of seawall (visible behind S8 mockers with falling coins!)
+  const harbourCanal = new THREE.Mesh(
+    new THREE.BoxGeometry(26, 0.14, 10.5),
+    new THREE.MeshStandardMaterial({ color: 0x2f85ba, roughness: 0.12, metalness: 0.38 })
   );
-  seaPier.position.set(0, -0.25, -38.0);
-  coast.add(seaPier);
+  harbourCanal.position.set(0, 0.03, -15.5);
+  coast.add(harbourCanal);
 
   const sand = new THREE.Mesh(
     new THREE.BoxGeometry(160, 0.6, 130),
@@ -408,7 +449,6 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   sand.position.set(0, -0.8, -88);
   coast.add(sand);
 
-  // Glassy mirror-calm ocean surface extending far out
   const oceanMat = new THREE.MeshStandardMaterial({
     color: 0x3b8ec4,
     roughness: 0.06,
@@ -418,18 +458,18 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   ocean.position.set(0, -0.25, -95);
   coast.add(ocean);
 
-  // Peaceful fishing boat placed cleanly in S3 midground (z = -58, x = +6) so open mirror sea dominates S3
+  // S3 fishing boat centered cleanly on the calm mirror sea in front of the 24.8 D seawall
   const boat1 = makeFishingBoat(THREE, 0xe8eff5);
-  boat1.position.set(6.0, -0.08, -58.0);
-  boat1.rotation.y = 0.55;
+  boat1.position.set(-1.5, -0.08, -44.0);
+  boat1.rotation.y = 0.45;
   coast.add(boat1);
 
   const boat2 = makeFishingBoat(THREE, 0xdbe5cc);
-  boat2.position.set(-7.5, -0.08, -48.0);
+  boat2.position.set(8.5, -0.08, -50.0);
   boat2.rotation.y = -0.35;
   coast.add(boat2);
 
-  // Mirror-sky shimmer reflections across the calm sea
+  // Glassy mirror shimmer reflections across calm sea
   const mirrorGroup = new THREE.Group();
   const reflectMat = new THREE.MeshBasicMaterial({
     color: 0xd6efff,
@@ -440,7 +480,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   for (let i = 0; i < 8; i++) {
     const shimmer = new THREE.Mesh(new THREE.PlaneGeometry(18 - i * 1.2, 1.1), reflectMat);
     shimmer.rotation.x = -Math.PI * 0.5;
-    shimmer.position.set(4.0 + (i % 3) * 2.5, -0.02, -46 - i * 5.2);
+    shimmer.position.set(-0.5 + (i % 3) * 1.5, -0.01, -32 - i * 4.5);
     mirrorGroup.add(shimmer);
   }
   coast.add(mirrorGroup);
@@ -502,9 +542,9 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
     lights.push({ kind: 'practical', place: 'coast', light: bLight });
   }
 
-  // --- SET-MOUNTED STORY GRAPHICS (pure-in-t visibility, guaranteed render & zero cross-shot bleed) ---
+  // --- SET-MOUNTED STORY GRAPHICS (pure-in-t visibility) ---
 
-  // (A) S1-S2: Complete 5-storey numbered (1-2-3-4-5) overlay beside the wall (visible t < 4.56)
+  // (A) S1-S2: Complete 5-storey numbered (1-2-3-4-5) overlay
   const storey5Group = new THREE.Group();
   storey5Group.position.set(1.6, 0, -20.5);
   {
@@ -532,7 +572,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
   coast.add(storey5Group);
 
-  // (B) S4: "3,000 VILLAGERS" sign (visible 7.06 <= t < 9.04)
+  // (B) S4: "3,000 VILLAGERS" sign
   const pop3000Group = new THREE.Group();
   pop3000Group.position.set(0.0, 4.4, 3.8);
   {
@@ -541,95 +581,137 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
   coast.add(pop3000Group);
 
-  // (C) S5-S6: Construction cranes, $30M cash piles + $30M sign, flipping 12-year calendar, rising 15.5M arrow
+  // (C) S5: Non-overlapping 3-tier cost tableau (cranes + glowing 15.5M arrow top; $30M + 12yr mid; raised $30M cash piles above captions)
   const s5CostGroup = new THREE.Group();
   {
-    // Two yellow construction cranes clearly visible inside S5 9:16 frustum
-    const craneMat = new THREE.MeshStandardMaterial({ color: 0xf0ad24, roughness: 0.55 });
-    const cableMat = new THREE.MeshBasicMaterial({ color: 0x22262b });
-    for (const [cx, h] of [[-2.9, 8.2], [2.9, 9.0]]) {
-      const tower = new THREE.Mesh(new THREE.BoxGeometry(0.75, h, 0.75), craneMat);
-      tower.position.set(cx, h * 0.5, -15.5);
+    // Two bold yellow construction cranes flanking the rising gate (clearly visible in top tier)
+    const craneMat = new THREE.MeshStandardMaterial({ color: 0xffb71b, emissive: 0x5c3e00, emissiveIntensity: 0.25, roughness: 0.45 });
+    const cableMat = new THREE.MeshBasicMaterial({ color: 0x1e2329 });
+    for (const [cx, h] of [[-2.7, 7.6], [2.7, 8.2]]) {
+      const tower = new THREE.Mesh(new THREE.BoxGeometry(0.65, h, 0.65), craneMat);
+      tower.position.set(cx, h * 0.5, -14.5);
       s5CostGroup.add(tower);
-      const jib = new THREE.Mesh(new THREE.BoxGeometry(5.8, 0.55, 0.55), craneMat);
-      jib.position.set(cx + (cx < 0 ? 2.1 : -2.1), h - 0.4, -15.5);
+      const jib = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.52, 0.52), craneMat);
+      jib.position.set(cx + (cx < 0 ? 1.5 : -1.5), h - 0.35, -14.5);
       s5CostGroup.add(jib);
-      const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.6, 6), cableMat);
-      cable.position.set(cx + (cx < 0 ? 3.4 : -3.4), h - 2.3, -15.5);
+      const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.8, 6), cableMat);
+      cable.position.set(cx + (cx < 0 ? 2.5 : -2.5), h - 1.8, -14.5);
       s5CostGroup.add(cable);
+      const hook = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, 0.35), craneMat);
+      hook.position.set(cx + (cx < 0 ? 2.5 : -2.5), h - 3.3, -14.5);
+      s5CostGroup.add(hook);
     }
 
-    // $30M cash piles on wooden pallet right between Mayor and Worker (above caption band)
+    // $30M cash piles raised on a tall cargo table (y=1.6..2.6 D) so they sit strictly ABOVE the caption band
     const billMat = new THREE.MeshStandardMaterial({ map: makeBillTexture(THREE), roughness: 0.72 });
     const sideMat = new THREE.MeshStandardMaterial({ color: 0xdbe8d8, roughness: 0.85 });
     const billMats = [sideMat, sideMat, billMat, billMat, sideMat, sideMat];
-    const pallet = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.9, 1.4), new THREE.MeshStandardMaterial({ color: 0x7c5334, roughness: 0.85 }));
-    pallet.position.set(0.0, 0.45, -9.8);
-    s5CostGroup.add(pallet);
-    const offsets = [[-0.52, 1.05, 0.22], [0.52, 1.05, 0.20], [0.0, 1.05, -0.25], [-0.26, 1.35, 0.02], [0.28, 1.35, -0.02], [0.0, 1.65, 0.0]];
+    const crate = new THREE.Mesh(new THREE.BoxGeometry(2.1, 1.55, 1.3), new THREE.MeshStandardMaterial({ color: 0x7c5334, roughness: 0.85 }));
+    crate.position.set(0.0, 0.78, -8.8);
+    s5CostGroup.add(crate);
+    const offsets = [[-0.48, 1.70, 0.22], [0.48, 1.70, 0.20], [0.0, 1.70, -0.25], [-0.24, 2.00, 0.02], [0.26, 2.00, -0.02], [0.0, 2.30, 0.0]];
     for (const [x, y, z] of offsets) {
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.28, 0.48), billMats);
-      b.position.set(x, y, -9.8 + z);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.28, 0.46), billMats);
+      b.position.set(x, y, -8.8 + z);
       s5CostGroup.add(b);
     }
 
-    // Bold "$30M" plaque left-upper
+    // Middle tier left: "$30M" plaque (zero overlap with center 15.5M arrow above)
     const costTex = makeLabelTexture(THREE, '$30M', 'COST', '#1b2a3d', '#ffffff', '#6ee7b7');
-    const costSign = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.3, 0.16), new THREE.MeshBasicMaterial({ map: costTex }));
-    costSign.position.set(-1.55, 5.2, -10.0);
+    const costSign = new THREE.Mesh(new THREE.BoxGeometry(2.1, 1.1, 0.16), new THREE.MeshBasicMaterial({ map: costTex }));
+    costSign.position.set(-1.95, 4.7, -9.6);
     s5CostGroup.add(costSign);
 
-    // Flipping "12 YEARS" calendar right-upper
+    // Middle tier right: flipping "12 YEARS" calendar (zero overlap with center 15.5M arrow above)
     const calGroup = new THREE.Group();
-    calGroup.position.set(1.55, 5.3, -10.0);
-    const calBack = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.0, 0.12), new THREE.MeshStandardMaterial({ color: 0x2e3540, roughness: 0.7 }));
-    calGroup.add(calBack);
+    calGroup.position.set(1.95, 4.8, -9.6);
+    calGroup.add(new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.75, 0.12), new THREE.MeshStandardMaterial({ color: 0x2e3540, roughness: 0.7 })));
     const calFront = new THREE.Mesh(
-      new THREE.BoxGeometry(1.46, 1.84, 0.04),
+      new THREE.BoxGeometry(1.28, 1.62, 0.04),
       new THREE.MeshStandardMaterial({ map: makeCalendarTexture(THREE, '12', 'BUILD'), roughness: 0.6 })
     );
     calFront.position.z = 0.08;
     calGroup.add(calFront);
     const calPagePivot = new THREE.Group();
     calPagePivot.name = 'cal12_pivot';
-    calPagePivot.position.set(0, 0.82, 0.11);
-    const calLeaf = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.72, 0.02), new THREE.MeshStandardMaterial({ color: 0xfaf7ee, roughness: 0.7 }));
-    calLeaf.position.y = -0.86;
+    calPagePivot.position.set(0, 0.72, 0.11);
+    const calLeaf = new THREE.Mesh(new THREE.BoxGeometry(1.22, 1.5, 0.02), new THREE.MeshStandardMaterial({ color: 0xfaf7ee, roughness: 0.7 }));
+    calLeaf.position.y = -0.75;
     calPagePivot.add(calLeaf);
     calGroup.add(calPagePivot);
     s5CostGroup.add(calGroup);
     points.cal12_pivot = calPagePivot;
+
+    // Top tier center: glowing 15.5M measure arrow with bold triangular arrowhead (strictly ABOVE $30M & 12yr)
+    const s5Arrow = makeMeasureGauge(THREE, 4.2, '15.5M', 'GATE', 0xffe066, '#ffe066', 2.8);
+    s5Arrow.position.set(0.0, 2.7, -12.0);
+    s5CostGroup.add(s5Arrow);
   }
   coast.add(s5CostGroup);
 
-  // (D) Rising 15.5M measure arrow (visible in S5-S6, S24, S26)
-  const gauge155 = makeMeasureGauge(THREE, WALL_H, '15.5M', 'FUDAI WALL', 0xffd166, '#ffd166');
-  gauge155.position.set(0.0, 0, -14.8);
+  // (D) Full-height 15.5M measure arrow for S6, S24, S26
+  const gauge155 = makeMeasureGauge(THREE, WALL_H, '15.5M', 'FUDAI WALL', 0xffd166, '#ffd166', 4.6);
+  gauge155.position.set(2.4, 0, -18.5);
   coast.add(gauge155);
 
-  // (E) S11: Tight Blueprint Table + Sliding Brass Ruler (visible ONLY 23.18 <= t < 25.09)
+  // (E) S11: Portrait-proportioned Blueprint Table + Graduated Ruler + Cartoon Mayor Hand holding it locked at 15.5M
   const blueprintGroup = new THREE.Group();
   blueprintGroup.position.set(0.0, 1.35, 5.2);
-  let blueprintRulerMesh;
+  let blueprintRulerGroup;
   {
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.14, 2.0), new THREE.MeshStandardMaterial({ color: 0x7c5334, roughness: 0.78 }));
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.14, 2.6), new THREE.MeshStandardMaterial({ color: 0x7c5334, roughness: 0.78 }));
     blueprintGroup.add(desk);
-    const sheet = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.03, 1.75), new THREE.MeshStandardMaterial({ map: makeBlueprintTexture(THREE), roughness: 0.6 }));
+    const sheet = new THREE.Mesh(
+      new THREE.BoxGeometry(1.75, 0.03, 2.18),
+      new THREE.MeshStandardMaterial({ map: makeBlueprintTexture(THREE), roughness: 0.58 })
+    );
     sheet.position.y = 0.085;
     blueprintGroup.add(sheet);
-    blueprintRulerMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(2.1, 0.05, 0.14),
-      new THREE.MeshStandardMaterial({ color: 0xd9a74a, metalness: 0.35, roughness: 0.4 })
+
+    // Graduated brass ruler + Mayor's cartoon white hand & dark municipal suit sleeve locking it at 15.5M
+    blueprintRulerGroup = new THREE.Group();
+    blueprintRulerGroup.position.set(0, 0.13, -0.32);
+
+    const rulerMatTop = new THREE.MeshStandardMaterial({ map: makeRulerTexture(THREE), roughness: 0.4 });
+    const rulerSide = new THREE.MeshStandardMaterial({ color: 0xc9962c, roughness: 0.45 });
+    const ruler = new THREE.Mesh(
+      new THREE.BoxGeometry(1.62, 0.05, 0.24),
+      [rulerSide, rulerSide, rulerMatTop, rulerSide, rulerSide, rulerSide]
     );
-    blueprintRulerMesh.position.set(0, 0.125, -0.26);
-    blueprintGroup.add(blueprintRulerMesh);
-    const weight = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.1, 14), new THREE.MeshStandardMaterial({ color: 0x3a4756, metalness: 0.5, roughness: 0.4 }));
-    weight.position.set(-0.92, 0.14, 0.62);
-    blueprintGroup.add(weight);
+    blueprintRulerGroup.add(ruler);
+
+    // Cartoon Mayor hand + ink outline cuff + dark suit forearm resting firmly on the right side of the ruler
+    const handMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 });
+    const inkMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+    const sleeveMat = new THREE.MeshStandardMaterial({ color: 0x263242, roughness: 0.8 });
+
+    const palm = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 10), handMat);
+    palm.scale.set(1.15, 0.55, 1.0);
+    palm.position.set(0.32, 0.10, 0.05);
+    blueprintRulerGroup.add(palm);
+
+    const palmRim = new THREE.Mesh(new THREE.SphereGeometry(0.195, 12, 10), inkMat);
+    palmRim.scale.set(1.15, 0.55, 1.0);
+    palmRim.position.set(0.32, 0.095, 0.05);
+    blueprintRulerGroup.add(palmRim);
+
+    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.15, 0.14, 10), handMat);
+    cuff.rotation.x = Math.PI * 0.5;
+    cuff.rotation.z = -0.35;
+    cuff.position.set(0.50, 0.12, 0.26);
+    blueprintRulerGroup.add(cuff);
+
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.20, 0.72, 10), sleeveMat);
+    sleeve.rotation.x = Math.PI * 0.5;
+    sleeve.rotation.z = -0.35;
+    sleeve.position.set(0.66, 0.14, 0.62);
+    blueprintRulerGroup.add(sleeve);
+
+    blueprintGroup.add(blueprintRulerGroup);
   }
   coast.add(blueprintGroup);
 
-  // (F) S13: Hanging wooden mocking sign ("أغبى مشروع", visible ONLY 28.13 <= t < 30.27)
+  // (F) S13: Hanging wooden mocking sign
   const dumbSignGroup = new THREE.Group();
   dumbSignGroup.position.set(0.0, 4.6, 1.2);
   {
@@ -646,7 +728,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
   coast.add(dumbSignGroup);
 
-  // (G) S16: 14-year flipping calendar (visible ONLY 35.70 <= t < 37.39)
+  // (G) S16: 14-year flipping calendar
   const cal14Group = new THREE.Group();
   cal14Group.position.set(0.0, 3.2, 2.0);
   let cal14Pivot;
@@ -667,19 +749,19 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
   coast.add(cal14Group);
 
-  // (H) S20: 15M Tsunami wave measure gauge (visible ONLY 42.86 <= t < 45.45)
-  const gaugeWave15 = makeMeasureGauge(THREE, WAVE_H, '15M', 'TSUNAMI', 0x6ce5ff, '#6ce5ff');
+  // (H) S20: 15M Tsunami wave measure gauge
+  const gaugeWave15 = makeMeasureGauge(THREE, WAVE_H, '15M', 'TSUNAMI', 0x6ce5ff, '#6ce5ff', 4.6);
   gaugeWave15.position.set(4.5, 0, -50.0);
   coast.add(gaugeWave15);
 
-  // (I) S8: Falling gold coins into the ocean behind villager1 on the seaside pier (visible ONLY 17.28 <= t < 20.34)
+  // (I) S8: Falling gold coins arcing into the harbour canal behind villager1 & villager2 (visible ONLY 17.28 <= t < 20.34)
   const fallingCoins = new THREE.Group();
   const coinMat = new THREE.MeshStandardMaterial({
-    color: 0xffd24c, emissive: 0x8a6400, emissiveIntensity: 0.35, metalness: 0.6, roughness: 0.25,
+    color: 0xffd24c, emissive: 0x8a6400, emissiveIntensity: 0.4, metalness: 0.6, roughness: 0.25,
   });
   const coinItems = [];
   for (let i = 0; i < 16; i++) {
-    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 14), coinMat);
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.06, 14), coinMat);
     fallingCoins.add(c);
     coinItems.push({ mesh: c, phase: i / 16, driftX: (rand() - 0.5) * 0.8 });
   }
@@ -700,7 +782,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
       roofPalette[i % roofPalette.length],
       true
     );
-    c.position.set(side * (8.4 + (row % 2) * 2.0), 0, 14 - row * 5.2);
+    c.position.set(side * (8.6 + (row % 2) * 2.0), 0, 14 - row * 5.2);
     c.rotation.y = side < 0 ? Math.PI * 0.48 : -Math.PI * 0.48;
     coast.add(c);
   }
@@ -886,7 +968,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   lights.push({ kind: 'practical', place: 'analogy_room', light: rLight1 }, { kind: 'practical', place: 'analogy_room', light: rLight2 });
 
   // =========================================================================
-  // PLACE 4: NEIGHBORS (X = 1200) — 10M Seawall + Bold Set-Mounted "10M" Labels
+  // PLACE 4: NEIGHBORS (X = 1200) — Visibly SHORTER 10M Seawall + Clear Foreground Quay
   // =========================================================================
   const neigh = new THREE.Group();
   neigh.name = 'place_neighbors';
@@ -902,58 +984,73 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   nOcean.position.set(1200, -0.3, -78);
   neigh.add(nOcean);
 
-  const nWall = new THREE.Mesh(new THREE.BoxGeometry(72, NEIGH_H, 3.4), concMat);
+  // Visibly SHORT 10M neighbouring seawall (NEIGH_H = 10.5 D — leaves generous open sky & ocean above!)
+  const nWall = new THREE.Mesh(new THREE.BoxGeometry(72, NEIGH_H, 3.0), concMat);
   nWall.position.set(1200, NEIGH_H * 0.5, -24);
   neigh.add(nWall);
-  const nWallCap = new THREE.Mesh(new THREE.BoxGeometry(72.4, 0.7, 3.9), concDark);
-  nWallCap.position.set(1200, NEIGH_H + 0.25, -24);
+  const nWallCap = new THREE.Mesh(new THREE.BoxGeometry(72.4, 0.6, 3.5), concDark);
+  nWallCap.position.set(1200, NEIGH_H + 0.2, -24);
   neigh.add(nWallCap);
   for (let bx = -24; bx <= 24; bx += 6) {
-    const butt = new THREE.Mesh(new THREE.BoxGeometry(0.9, NEIGH_H * 0.95, 1.2), concDark);
-    butt.position.set(1200 + bx, NEIGH_H * 0.48, -22.0);
+    const butt = new THREE.Mesh(new THREE.BoxGeometry(0.8, NEIGH_H * 0.92, 1.0), concDark);
+    butt.position.set(1200 + bx, NEIGH_H * 0.46, -22.2);
     neigh.add(butt);
   }
 
-  // Two bold "10M" measure gauges mounted right on the neighbouring walls (guaranteed visible in S7 & S25!)
+  // Two crisp "10M" measure gauges + a higher golden dashed "15.5M FUDAI" comparison bar above them so shortness reads instantly
   const neighLabelsGroup = new THREE.Group();
-  const g10A = makeMeasureGauge(THREE, 10.5, '10M', 'NEIGHBORS', 0xff9f68, '#ff9f68');
-  g10A.position.set(1198.2, 0, -21.2);
-  const g10B = makeMeasureGauge(THREE, 10.5, '10M', '10M WALL', 0xff9f68, '#ff9f68');
-  g10B.position.set(1206.5, 0, -21.2);
+  const g10A = makeMeasureGauge(THREE, NEIGH_H - 1.2, '10M', 'NEIGHBORS', 0xff9f68, '#ff9f68', 3.4);
+  g10A.position.set(1197.2, 0, -21.5);
+  const g10B = makeMeasureGauge(THREE, NEIGH_H - 1.2, '10M', 'SHORT WALL', 0xff9f68, '#ff9f68', 3.4);
+  g10B.position.set(1204.2, 0, -21.5);
   neighLabelsGroup.add(g10A, g10B);
+
+  // Dashed golden 15.5M reference line hovering clearly ABOVE the low 10M wall
+  const refBarMat = new THREE.MeshBasicMaterial({ color: 0xffd166 });
+  for (let rx = -8; rx <= 8; rx += 2.2) {
+    const dash = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.22, 0.22), refBarMat);
+    dash.position.set(1200.5 + rx, NEIGH_H + 5.2, -21.5);
+    neighLabelsGroup.add(dash);
+  }
   neigh.add(neighLabelsGroup);
 
-  for (let i = 0; i < 12; i++) {
-    const row = Math.floor(i / 4);
-    const col = i % 4;
+  // Cottages placed strictly LEFT and RIGHT of the central harbour channel (x <= 1193 and x >= 1208, z = -14..-6)
+  // so NO roof ever intersects the camera ray to villager3 standing cleanly at [1200.5, +2.5]!
+  const neighCottagePos = [
+    [1190, -14], [1190, -7], [1192, -1],
+    [1210, -14], [1210, -7], [1209, -1],
+  ];
+  for (let i = 0; i < neighCottagePos.length; i++) {
+    const [cx, cz] = neighCottagePos[i];
     const c = makeCottage(
-      THREE, 4.0, 3.0 + (i % 2) * 0.6, 3.6,
+      THREE, 3.8, 2.8, 3.4,
       cottagePalette[i % cottagePalette.length],
       roofPalette[i % roofPalette.length],
       true
     );
-    c.position.set(1188 + col * 8.0, 0, -14 + row * 7.5);
+    c.position.set(cx, 0, cz);
+    c.rotation.y = cx < 1200 ? Math.PI * 0.45 : -Math.PI * 0.45;
     neigh.add(c);
   }
 
-  const lh = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.4, 17, 12), new THREE.MeshStandardMaterial({ color: 0xf4f4f0, roughness: 0.7 }));
-  lh.position.set(1214, 8.5, -20);
+  const lh = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.3, 15, 12), new THREE.MeshStandardMaterial({ color: 0xf4f4f0, roughness: 0.7 }));
+  lh.position.set(1213, 7.5, -20);
   neigh.add(lh);
-  const lhBand = new THREE.Mesh(new THREE.CylinderGeometry(1.12, 1.22, 3.2, 12), new THREE.MeshStandardMaterial({ color: 0xc94a38, roughness: 0.7 }));
-  lhBand.position.set(1214, 11.5, -20);
+  const lhBand = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.15, 2.8, 12), new THREE.MeshStandardMaterial({ color: 0xc94a38, roughness: 0.7 }));
+  lhBand.position.set(1213, 10.5, -20);
   neigh.add(lhBand);
   const lhBeacon = new THREE.Mesh(
-    new THREE.SphereGeometry(0.8, 12, 10),
+    new THREE.SphereGeometry(0.75, 12, 10),
     new THREE.MeshStandardMaterial({ color: 0xffe484, emissive: 0xffc844, emissiveIntensity: 2.2 })
   );
-  lhBeacon.position.set(1214, 17.5, -20);
+  lhBeacon.position.set(1213, 15.5, -20);
   neigh.add(lhBeacon);
   const lhLight = new THREE.PointLight(0xffd277, 2.0, 30);
-  lhLight.position.set(1214, 17.5, -20);
+  lhLight.position.set(1213, 15.5, -20);
   neigh.add(lhLight);
   lights.push({ kind: 'practical', place: 'neighbors', light: lhLight });
 
-  for (const lx of [1193, 1207]) {
+  for (const lx of [1194.5, 1206.5]) {
     const lp = makeLampPost(THREE, 4.6, 0xffd27d);
     lp.position.set(lx, 0, -16);
     neigh.add(lp);
@@ -964,7 +1061,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   neigh.add(neighWave);
 
   // =========================================================================
-  // PLACE 5: HILL_GRAVE (X = 1600) — Raised Visible Distant Seawall + Flowers
+  // PLACE 5: HILL_GRAVE (X = 1600) — PRESERVED UNCHANGED (approved at t=67.00)
   // =========================================================================
   const grave = new THREE.Group();
   grave.name = 'place_hill_grave';
@@ -980,7 +1077,6 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   gravePad.position.set(1600, 0.05, 2.4);
   grave.add(gravePad);
 
-  // Lush memorial flower bouquets placed at the gravestone plinth & vases (visible in S28 finale t >= 65.75)
   const graveFlowersGroup = new THREE.Group();
   for (const [fx, fy, fz, rz] of [
     [1599.28, 0.72, 1.65, 0.15],
@@ -995,7 +1091,6 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   }
   grave.add(graveFlowersGroup);
 
-  // Valley + prominent sunlit Fudai seawall & steel gate silhouette clearly visible behind the grave
   const valley = new THREE.Mesh(new THREE.BoxGeometry(130, 1, 90), new THREE.MeshStandardMaterial({ color: 0x5c7560, roughness: 0.94 }));
   valley.position.set(1600, -6.5, -50);
   grave.add(valley);
@@ -1046,20 +1141,20 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
   // PURE-IN-t UPDATE FUNCTION
   // =========================================================================
   function update(t) {
-    // Shot-gated story graphics (zero bleed across shots, guaranteed visible on their beats)
     storey5Group.visible = t < 4.56;
     if (storey5Group.visible) storey5Group.scale.y = 0.38 + 0.62 * smoothstep(0.4, 2.5, t);
+
     pop3000Group.visible = t >= 7.06 && t < 9.04;
-    s5CostGroup.visible = t >= 9.04 && t < 14.40;
+    s5CostGroup.visible = t >= 9.04 && t < 12.21;
     if (points.cal12_pivot) {
       const f12 = clamp01((t - 9.04) / 3.01);
       points.cal12_pivot.rotation.x = -Math.abs(Math.sin(f12 * Math.PI * 8)) * 1.45;
     }
 
-    const show155 = (t >= 9.04 && t < 14.40) || (t >= 54.88 && t < 58.00) || (t >= 61.56 && t < 64.49);
+    const show155 = (t >= 12.21 && t < 14.40) || (t >= 54.88 && t < 58.00) || (t >= 61.56 && t < 64.49);
     gauge155.visible = show155;
     if (show155) {
-      const prog155 = t < 12.21 ? 0.28 : t < 14.40 ? 0.28 + 0.72 * smoothstep(12.21, 13.9, t) : 1.0;
+      const prog155 = t < 14.40 ? 0.35 + 0.65 * smoothstep(12.21, 13.9, t) : 1.0;
       gauge155.scale.y = prog155;
     }
 
@@ -1070,7 +1165,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
     blueprintGroup.visible = t >= 23.18 && t < 25.09;
     if (blueprintGroup.visible) {
       const lockU = smoothstep(23.18, 23.60, t);
-      blueprintRulerMesh.position.z = THREE.MathUtils.lerp(0.20, -0.26, lockU);
+      blueprintRulerGroup.position.z = THREE.MathUtils.lerp(0.24, -0.32, lockU);
     }
 
     dumbSignGroup.visible = t >= 28.13 && t < 30.27;
@@ -1085,7 +1180,7 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
 
     mirrorGroup.visible = t < 39.28;
 
-    // Falling gold coins into sea behind villager1 on seaside pier (S8: 17.28..20.34 s)
+    // Falling gold coins into harbour water behind S8 mockers (z = -10..-14, visible ONLY 17.28..20.34 s)
     const coinsActive = t >= 17.28 && t < 20.34;
     fallingCoins.visible = coinsActive;
     if (coinsActive) {
@@ -1093,9 +1188,9 @@ export async function buildSet(THREE, scene, opts = {}, kit) {
       for (const item of coinItems) {
         const u = (dt * 0.85 + item.phase) % 1;
         item.mesh.position.set(
-          0.15 + item.driftX * 0.65,
-          2.6 + Math.sin(u * Math.PI) * 1.0 - u * 3.1,
-          -39.0 - u * 4.5
+          0.1 + item.driftX * 0.8,
+          2.9 + Math.sin(u * Math.PI) * 0.9 - u * 3.0,
+          -9.5 - u * 4.0
         );
         item.mesh.rotation.set(dt * 8 + item.phase * 6, dt * 6, item.phase * 4);
       }
