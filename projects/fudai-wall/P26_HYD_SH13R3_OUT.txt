@@ -1,0 +1,18 @@
+HYDROGEN SEAT OUTPUT — SH13 camera, corrective round 3 (cause 4)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/96141d2e49edd6a4
+Run by Layla via browser seat, 2026-11-23 13:52–14:05 EET.
+Context: round 2 cleared D1/D2 to ZERO lines and passed F942/F969, failing only F933 — because every brief since phase 12 placed mocker_b's hand tip at the phantom [4,1.2,-1]; the audited tip is [-5,2.5,-8] (phase-26 measurement). This round's brief carried the corrected fact + the loader facts (empirical ease governs F933; autoMove TO re-lane).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[-15.8,2.4,-28],[-4.8,2.8,-10]],[[3.6,4.6,-6.8],[-5.6,1.7,2.3]],44)
+World: FROM pos [-15.8,2.4,-26.0] target [-4.8,2.8,-8.0]; TO pos [3.6,4.6,-4.8] target [-5.6,1.7,4.3]; fov 44.
+Design: a long southern sweep — the camera starts far south, looking north with the real tip nearly on-axis at the empirical-eased F933 sample, then drifts north-east to land on lane B's mayor ray for F969.
+
+PREDICTED READINGS (seat's arithmetic, empirical ease primary):
+- D2-CLEAR: 0 intersections on all 18 solids (min clearance 1.950m to house @8,-4); D1/D2 → ZERO lines; target bounds PASS both ends.
+- F933 real tip [-5,2.5,-8]: PASS under the empirical ease — off-axis 4.40°, screen (538.8, 1143.0), unoccluded (min sightline clearance 3.210m). NOTE: under pure outCubic the same point reads OUT of frame (38.63°) — the design bets on phase 26's measured fact that the empirical ease governs this fraction; the audit decides.
+- F942 box: PASS — 82.1px ≥ 60px (93.2px under outCubic).
+- F969: PASS — head 186.7px, sphere margin 442.2px; face ~49.9° anchored to lane B's ray (48.0° under outCubic).
+
+(Full arithmetic preserved in the browser report of 2026-11-23 14:05 EET; the driver's audit run is the judge.)
