@@ -14,7 +14,13 @@ against the current set.js and is already in place there; it is NOT part
 of this session.)
 
 Previous cause's verdict commit (hard-gate citation, filled by the driver
-at firing): <PENDING — driver fills before this brief fires>.
+at firing): `c9247da` — F711/F723 round-3 verdict NOT CLOSED (validated
+conflict, escalated to Layla with priced options; cause parked). No
+judgement is pending: this brief may fire.
+
+**HARD RULE (guard flag 6 standing correction): NO LOCAL RENDERS.** Do
+not run any render, board script, screenshot tool, or suite page on
+this machine. Audits only; the driver fleet-probes and judges.
 
 ASTRA REVIEW INPUT (2026-11-23, batch 2) — GOVERNING: the root cause is
 too much frame allocated to UNIFORM SKY. The correction reframes around
