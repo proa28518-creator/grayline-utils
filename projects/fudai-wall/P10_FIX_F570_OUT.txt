@@ -1,0 +1,438 @@
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a20660-a293-70d2-b5ce-88ddfd758714
+--------
+user
+Execute the brief in P10_FIX_F570_BRIEF.md in this project directory, exactly as written. Touch only the file it names. When done, paste the complete audit outputs and a diff summary in your reply. Do not commit.
+codex
+I’ll read the brief and the repository’s standing project spec, then make only the named file change. I’ll run the exact audits the brief requires and include their complete outputs plus a diff summary.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P10_FIX_F570_BRIEF.md' -g 'orch/UI_BRIEF.md' -g 'AGENTS.md' -g '*F570*'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P10_FIX_F570_OUT.txt
+P10_FIX_F570_BRIEF.md
+P9_GLM_F570_OUT.txt
+P9_GLM_F570_BRIEF.md
+
+exec
+/bin/bash -lc 'cat P10_FIX_F570_BRIEF.md && cat P10_FIX_F570_OUT.txt && cat P9_GLM_F570_BRIEF.md && cat P9_GLM_F570_OUT.txt && git status --short' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+# CODEX SEAT — APPLY BRIEF · phase 10 · cause: F570 MOCKER ILLEGIBLE (SH07 TO POSE)
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md`; RULES.md §3
+(one cause, one change), §4, §5; `lessons/build.md`. This session applies
+ONE cause: at F570 mocker_a renders as an illegible back-of-head against
+the blueprint grid (critic rounds 7+8; pixel gate: no skin disc segments).
+The GLM seat computed the correction (`P9_GLM_F570_OUT.txt`): move SH07's
+TO camera pose village-side/east so the camera stands south-east of
+mocker_a and his face turns to it; the wall-top point stays in frame.
+
+APPLY EXACTLY — the SH07 `to` pose is written INLINE in the SH07 shot entry
+(`scenes/film.js`, line ~117) and duplicated as SH07B's `from` pose
+(line ~118); the two copies are ONE shared pose and change together:
+- `to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}` (SH07)
+  → `to:{pos:add(PLACES.COAST_VILLAGE,[3.6,2.6,-4.6]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}`
+- `from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}` (SH07B)
+  → `from:{pos:add(PLACES.COAST_VILLAGE,[3.6,2.6,-4.6]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}`
+(World result: pos [3.6,2.6,-2.6], target [1,7.5,-16] — the target const is
+unchanged in value; only the pos offset changes.) Nothing else: SH07's
+from pose (F537), mocker_a's look keys, SH07B's to pose (F590) unchanged.
+
+Then verify: `node --check scenes/film.js`, run
+`node tools/audit_staging.mjs` (full) and `node tools/audit_d1_d2.mjs`, and
+paste their complete outputs in your reply, plus a diff summary. Do NOT
+commit (the driver commits). Do not touch any other file.
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a20660-a293-70d2-b5ce-88ddfd758714
+--------
+user
+Execute the brief in P10_FIX_F570_BRIEF.md in this project directory, exactly as written. Touch only the file it names. When done, paste the complete audit outputs and a diff summary in your reply. Do not commit.
+codex
+I’ll read the brief and the repository’s standing project spec, then make only the named file change. I’ll run the exact audits the brief requires and include their complete outputs plus a diff summary.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P10_FIX_F570_BRIEF.md' -g 'orch/UI_BRIEF.md' -g 'AGENTS.md' -g '*F570*'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P10_FIX_F570_OUT.txt
+P10_FIX_F570_BRIEF.md
+P9_GLM_F570_OUT.txt
+P9_GLM_F570_BRIEF.md
+
+# GLM — COMPUTE BRIEF · phase 9 · cause: F570 (mocker illegible behind the blueprint)
+
+You are GLM, a build seat in Layla's production office for the film
+"fudai-wall" (chunk 2). Standing method — read and obey, do not re-derive:
+studio `AGENTS.md`; `~/workspace/Production and rules/RULES.md` §3 (one cause,
+one change), §4, §5; `.suite/critic/CRITIC_PROTOCOL.md` §7; `lessons/build.md`.
+ONE cause. Return computed values only — you touch no files. Plain text only,
+no tool calls, no simulated execution. A complete correction block in the
+output form below is the only acceptable deliverable (a diagnosis alone was
+round 1's outcome and does not close this task).
+
+## The beat (owner's bible, S3)
+
+Frame 570 (t=19.0 s, shot SH07): the mocker, mid-laugh, points at the wall
+top — the frame must read: mocker_a's laughing FACE, big, with the wall top
+in frame. Critic rounds 7–8 (BLOCKING): the mocker is hidden/illegible —
+round 8: "mocker hidden behind blueprint in F570".
+
+## Scene data (verbatim from scenes/film.js)
+
+- SH07 (after the line-6 split): t0 line:6.start → t1 line:6.word:9, camera
+  t1 19.0, ease inExpo, roll [-5,-2]; from pos CAM_SH07_A =
+  COAST_VILLAGE+[4,2.5,-7] (world [4,2.5,-5]), target CAM_SH07_TA =
+  COAST_VILLAGE+[4,1.9,-2] (world [4,1.9,0]), fov 50 → to pos
+  COAST_VILLAGE+[5.5,2.2,2.2] (world [5.5,2.2,4.2]), target
+  COAST_WALL+[1,7.5,0] (world [1,7.5,-16]), fov 50.
+- Audit sampled pose at F570: pos [5.50,2.20,4.20], target [1.00,7.50,-16.00],
+  fov 50. Audit checks PASS: mocker_a head centre in frustum, 520px; wall-top
+  point [3,18,-15.42] in frustum. The audit does NOT test facing/legibility
+  at this moment and does NOT model the blueprint as an occluder/backdrop.
+- mocker_a stands at world [4,0,0]; head centre [4,1.9,0]. His look keys:
+  line:6.word:3 → WALLTOP [0,17,-16]; line:6.word:8 → [2,19.5,-17.5]. At
+  t=19.0 the active look target is [2,19.5,-17.5] (north, toward the wall) —
+  his face turns AWAY from a village-side camera.
+- blueprint prop: at BLUEPRINT = COAST_VILLAGE+[5.2,0,-1.5] = world
+  [5.2,0,0.5]; board 3.4×3.4, centre [5.2,1.7,0.5]. It stands 1.2 D east and
+  0.5 D north of mocker_a — directly behind him from the F570 camera.
+- Cast spread near him: mocker_b [4,0,-1], mocker_c [6,0,0.5] (world).
+- Pixel truth on the probed still: only an edge-cropped head renders at
+  x 916–1000 (the frame's right edge); the blueprint grid fills the frame's
+  lower half; the mocker does not read as a laughing face. (Phase-8 driver
+  eye-verdict: FAIL.)
+
+## Your computation
+
+Propose ONE correction. The cause has two coupled parts — name which lever
+solves which part: (a) BACKDROP: from the F570 camera, the blueprint board
+sits behind mocker_a's head; (b) FACING: his active look target turns his
+face north, away from the camera, at this moment. Levers: SH07's TO pose
+(pos/target/fov — the pose F570 samples, u≈1 under inExpo at t=19.0 against
+the camera t1 of 19.0); mocker_a's look key at line:6.word:8 (its target is
+shared with the F590 coin beat's story point [2,19.5,-17.5] — if you move
+it, price that); the blueprint may NOT move (story geography: the mayor's
+board stands in the square; SH10 is built around it) and mocker_a may NOT
+move (SH08's face pair is staged on his position). Constraints: wall-top
+point [3,18,-15.42] stays in frame; head ≥ 265px target (230px floor + the
+20% margin rule from Opus hunt #1); face angle to camera ≤ 60° (aim ≤ 35°);
+fov within [24,50]; F537 (the from-pose close-up, currently PASS at 480px /
+15°) must not regress — the from pose is not yours to change. Show the
+projection arithmetic (1080×1920): head screen centre + size, face angle,
+blueprint board screen box vs the head disc, wall-top screen position.
+
+## Output form
+
+`CORRECTION:` exact const/key-level changes (which expressions, to what) ·
+`ARITHMETIC:` the projections · `PREDICTED:` F570 head disc, face angle,
+backdrop behind the head, wall-top position · `RISKS:` F537/F590/SH08
+effects. Plain text only.
+CORRECTION: Shift SH07's camera TO pose to pos COAST_VILLAGE+[4,2.8,-5] (world [4,2.8,-5]) and target COAST_WALL+[1,7.5,-8] (world [1,7.5,-24]), keeping fov 50. Keep mocker_a's look key at line:6.word:8 unchanged at [2,19.5,-17.5] to preserve the F590 coin beat story point.
+
+ARITHMETIC: Camera pos [4,2.8,-5], target [1,7.5,-24]. Forward f ≈ [-.116,.265,-.951], right r ≈ [-.967,-.031,.251], up u ≈ [-.236,-.963,-.166]. Head centre [4,1.9,0] → relative [0,-.9,5], camera-space z ≈ 4.755, vertical screen y ≈ +404px (centre y≈1566px), screen x≈86px. Head disc radius ≈ (0.18/4.755)*(960/tan25°) ≈ 173px → diameter ≈ 346px (≥265 target). Face vector to look target [2,19.5,-17.5] from head [4,1.9,0] is [-2,17.6,-17.5]; view direction from head to camera [0,.9,-5]; cos angle ≈ .742 → angle ≈ 42°. To reach ≤35°, rotate mocker_a's look target toward the camera while preserving its northward intent by moving line:6.word:8's target to [2.6,16.5,-13.5] (keeps the same y/height band and story neighborhood as [2,19.5,-17.5], minimal price to F590). Blueprint board centre [5.2,1.7,0.5] → camera-space z ≈ 5.45, screen x ≈ +177px, y ≈ +560px, board half-width ≈ (1.7/5.45)*(960/tan25°) ≈ 216px → box x ≈ -39..393px, y ≈ 344..776px; head disc at x≈86±173px sits mostly inside the board's screen box, so the blueprint remains a screen-overlapping backdrop behind the head but the head disc now reads at the upper edge of the board rather than fully hidden behind it. Wall-top [3,18,-15.42] → camera-space z ≈ 10.1, screen x ≈ -245px (off left edge), y ≈ -783px — fails wall-top in frame.
+
+REVISED CORRECTION: To keep wall-top [3,18,-15.42] in frame while moving the camera east/south, shift the TO target to COAST_WALL+[1,7.5,-16] (world [1,7.5,-16]) — actually that is the original target. Recompute: target [1,7.5,-16], pos [4,2.8,-5]. Forward f ≈ [-.287,.451,-.848], r ≈ [-.956,-.055,.287], u ≈ [-.077,-.890,-.442]. Wall-top relative [-1,15.2,-10.42] → z≈8.84, x≈-291px (still off-frame left). A target east of the wall-top pushes it off-screen left. Therefore keep target pointing at wall-top region but move camera pos west instead: pos COAST_VILLAGE+[2.5,2.8,-5] = world [2.5,2.8,-5], target COAST_WALL+[1,7.5,-16] = world [1,7.5,-16]. Forward f ≈ [-.146,.453,-.879], r ≈ [-.987,-.039,.152], u ≈ [-.086,-.890,-.447]. Wall-top relative [.5,15.2,-10.42] → z≈9.15, screen x≈+48px, y≈-500px (still above frame top; wall-top at y=18 is high). Original audit had wall-top [3,18,-15.42] passing at pos [5.5,2.2,4.2] target [1,7.5,-16]: relative [-2.5,15.8,-19.62], z≈? compute: f=[.287,.451,-.848] wait original target [1,7.5,-16] minus pos [5.5,2.2,4.2]=[-4.5,5.3,-20.2], norm≈21.0, f≈[-.214,.252,-.962]. Wall-top rel [-2.5,15.8,-19.62] → z≈18.9, screen x≈(-2.5*r - ...) compute r≈[-.976,-.013,.216], u≈[-.086,-.967,-.158]: x_cam = dot(rel,r)≈ 2.44-.21-4.24≈-2.0, y_cam=dot(rel,u)≈.22-15.3+3.1≈-12.0 → screen x≈-2.0/18.9*960/tan25≈-246px off-frame? But audit said PASS. My manual basis math is unreliable without exact code; I should not over-claim exact pixel values.
+
+Given the strict instruction "you touch no files" and "plain text only, no tool calls", and that precise projection arithmetic requires exact basis computation I cannot reliably perform by hand, I must present the correction with the lever logic and note the arithmetic must be verified against the actual engine. However the user demands show the projection arithmetic. I'll provide best-effort arithmetic with clearly stated assumptions.
+
+FINAL PLAN (single change to SH07 TO pose): move camera TO pos eastward closer to mocker so he looms larger, and aim slightly lower/right so wall-top stays in frame and the camera sees his face rather than its back. Exact: pos COAST_VILLAGE+[4.2,2.6,-3.5] = world [4.2,2.6,-3.5], target COAST_WALL+[2,9,-15] = world [2,9,-15.42-ish], fov 50 → head bigger, wall-top in frame, face more toward camera. Blueprint at world [5.2,0,0.5] board centre [5.2,1.7,0.5] — from camera [4.2,2.6,-3.5] looking toward [2,9,-15], blueprint is to the right/east and slightly behind head; head at [4,1.9,0] is between camera and blueprint partially. Face: mocker looks at [2,19.5,-17.5] (north), camera now at [4.2,2.6,-3.5] is south-east of him; angle between face-to-north and face-to-camera: camera-relative vector [.2,.7,-3.5] vs face [-2,17.6,-17.5]; dot≈ .2*-2+.7*17.6+(-3.5)*(-17.5)= -.4+12.3+61.25=73.1; norms |face|≈24.8, |cam|≈3.6 → cos≈73.1/(89.3)=.819 → angle≈35°. Good ≤35 target, ≤60 constraint.
+
+Head size: distance cam→head ≈ sqrt(.2²+.7²+3.5²)≈3.57. head radius .18 → screen radius = (.18/3.57)*(960/tan25°)=(.0504)*2058≈104px → diameter 208px <265 target. Too small. Need closer: move cam to [4.2,2.6,-2.0] → distance to head sqrt(.2²+.7²+2²)=2.14 → diameter ≈ 348px ≥265. Wall-top [3,18,-15.42] from cam [4.2,2.6,-2]: rel[-1.2,15.4,-13.42]; forward target [2,9,-15] minus cam=[-2.2,6.4,-13], norm≈14.7, f≈[-.15,.435,-.884]. r≈[-.988,-.02,.167], u≈[.05,-.9,-.43]. z_cam=dot(rel,f)= .18+6.7+11.86≈18.7; x_cam=dot(rel,r)=1.19-.31-2.24≈-1.36 → screen x≈ -1.36/18.7*2058≈-149px off left. Hmm wall-top goes off left when camera moves east. Original camera at x=5.5 looking at wall x=1 had wall-top in frame per audit. Moving camera west to x=4.2 makes wall-top (x=3) more left relative... Actually camera at 5.5, wall-top at 3: wall-top is west (left) of camera; moving camera to 4.2 brings it closer in x to wall-top (3), reducing the leftward angle — should help, not hurt. My basis math sign is off. I'll stop precise pixel claims and present formulaic arithmetic with the note that exact pixels are engine-computed.
+
+Given constraints, I'll write the correction block with the single lever (SH07 TO pose) plus a secondary minimal look-target tweak, present approximate arithmetic with explicit "approx", and risks. Keep plain text. No Chinese.CORRECTION: Change only SH07's camera TO pose — set pos to COAST_VILLAGE+[3.6,2.6,-2.6] (world [3.6,2.6,-2.6]), target to COAST_WALL+[1,7.5,-16] (world [1,7.5,-16]), fov stays 50. Lever (a) BACKDROP solved by camera pose: from the new camera the blueprint board at world [5.2,1.7,0.5] falls to the head's right/behind rather than directly behind the head disc. Lever (b) FACING solved by the same pose: the camera now stands roughly south-east of mocker_a while his look target [2,19.5,-17.5] is north, so his face turns toward the camera instead of away. mocker_a's look key at line:6.word:8 is NOT touched, so the F590 coin-beat story point is preserved. Neither mocker_a nor the blueprint moves. The from pose (F537) is untouched.
+
+ARITHMETIC (1080×1920, fov 50, per-pixel scale ≈ 960/tan25° ≈ 2058px per camera-space unit): Camera pos [3.6,2.6,-2.6], target [1,7.5,-16] → forward f≈[-.28,.45,-.85], right r≈[-.96,-.05,.28], up u≈[.05,-.89,-.44]. Head centre [4,1.9,0]: relative [.4,-.7,2.6]; camera-space z≈dot(rel,f)≈-.11-.32-2.21≈2.64, x≈dot(rel,r)≈-.38+.03+.73≈.38, y≈dot(rel,u)≈.02+.62-1.14≈-.50. Screen: x≈.38/2.64*2058≈+296px (centre 960 → ≈1256px), y≈-.50/2.64*2058≈-390px (centre 1536 → ≈1146px). Head disc radius ≈(.18/2.64)*2058≈140px → diameter ≈280px (≥265 target, above 230 floor). Face: look vector to [2,19.5,-17.5] is [-2,17.6,-17.5], view-to-camera vector [-.4,.7,-2.6]; cos≈(0.8+12.3+45.5)/(24.8*2.72)≈58.6/67.5≈.868 → face angle ≈30° (≤35 aim, ≤60 constraint). Blueprint board centre [5.2,1.7,0.5]: relative [1.6,-.9,3.1]; z≈dot(rel,f)≈-.45-.41-2.64≈3.50, x≈dot(rel,r)≈-1.54+.05+.87≈-.62 → screen x≈-.62/3.50*2058≈-364px (≈596px), board half-width ≈(1.7/3.50)*2058≈1006px → board spans x roughly -410..1602px across full width, y centre ≈dot(rel,u)≈.08+.80-1.36≈-.48 → ≈-.48/3.50*2058≈-283px (≈1253px), half-height ≈(1.7/3.50)*2058≈1006px → board fills lower half vertically; head at y≈1146px sits at the board's upper zone, head disc x≈1256px lies inside board x-range but the head is between camera and board plane, so the head reads in front of the blueprint grid rather than hidden behind it. Wall-top [3,18,-15.42]: relative [-.6,15.4,-12.82]; z≈dot(rel,f)≈.17+6.93+10.90≈18.0, x≈dot(rel,r)≈.58-.77-3.59≈-3.78 → screen x≈-3.78/18.0*2058≈-432px (≈528px), y≈dot(rel,u)≈-.03-13.7+5.64≈-8.1 → screen y≈-8.1/18.0*2058≈-927px (≈609px). Wall-top at ≈[528,609] — in frame, upper area. Head screen centre ≈[1256,1146], disc radius ≈140px.
+
+PREDICTED: F570 head disc ≈280px diameter (target ≥265, floor 230 met), face angle ≈30° (≤35 aim, ≤60 constraint), blueprint board now flanks/sits behind the head to its right rather than occluding it (head reads in front of the grid), wall-top at ≈[528,609] in frame. fov stays 50 (within [24,50]).
+
+RISKS: F537 unaffected (from pose unchanged, currently 480px/15° PASS). SH08 unaffected (mocker_a position unchanged). F590 coin beat preserved because line:6.word:8 look target [2,19.5,-17.5] is unchanged — no story-point price. The board still overlaps much of the frame horizontally (lower half grid per the probed still), so the blueprint remains visually dominant behind/near the head; the fix relies on the head being positioned in front of and above the board's bulk rather than the board moving. Exact pixels are engine-computed; values here are hand-projected and should be re-verified against the actual camera matrices.
+?? P10_FIX_F474_BRIEF.md
+?? P10_FIX_F570_BRIEF.md
+?? P10_FIX_F570_OUT.txt
+?? P10_FIX_F590_BRIEF.md
+?? P10_FIX_F711_BRIEF.md
+?? P10_FIX_SH11_BRIEF.md
+?? P10_OPUS_F711_OUT.md
+?? P10_OPUS_F711_PROMPT.md
+
+exec
+/bin/bash -lc "sed -n '108,124p' scenes/film.js && rg -n 'audit_staging|audit_d1_d2|F570|SH07' RULES.md lessons/build.md orch/UI_BRIEF.md 2>/dev/null" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 2 in 0ms:
+ ],
+ handovers:[],
+ shots:[
+  {id:'SH01',t0:0,t1:2.6,camera:{move:'push',from:{pos:CLOSE_POS,target:MAYOR_HEAD,fov:34},to:{pos:TILT_POS,target:TILT_TARGET,fov:38}}},
+  {id:'SH02',t0:2.6,t1:'line:1.end',camera:{move:'push',from:{pos:TILT_POS,target:TILT_TARGET,fov:38},to:{pos:WIDE_POS,target:WIDE_TARGET,fov:48}}},
+  {id:'SH03',t0:'line:2.start',t1:'line:2.end',camera:{move:'push',from:{pos:SEA_FROM,target:BOAT,fov:42},to:{pos:SEA_TO,target:BOAT,fov:42}}},
+  {id:'SH04',t0:'line:3.start',t1:'line:3.end',camera:{move:'push',from:{pos:CAM_SH04_A,target:CAM_SQUARE,fov:50},to:{pos:CAM_SH04_B,target:CAM_SQUARE,fov:50}}},
+  {id:'SH05',t0:'line:4.start',t1:'line:4.end',camera:{move:'push',ease:'inQuad',from:{pos:CAM_SH05_A,target:CAM_SH05_TA,fov:50},to:{pos:CAM_SH05_B,target:CAM_SH05_TB,fov:34}}},
+  {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}},
+  {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
+  {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[2,21.5,-15]),target:add(PLACES.COAST_WALL,[2,19.5,-19]),fov:24}}},
+  {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
+  {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
+  {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
+  {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}},
+  {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}}
+ ],
+lessons/build.md:36:- D2-CLEAR (tools/audit_d1_d2.mjs): camera paths are audited against building solids — town hall + 10 village houses + 3 neighbour houses at MAXIMUM dims. SH01–SH03 are exempt (frozen/critic-passed; their paths were fleet-probe-verified, and the max-dim box overstates the town-hall cone). A path clearing the conservative boxes clears the real buildings.
+lessons/build.md:44:- Measured restage limit: SH07 F537 close-up passes, but the full-window move reaches F570 at camera `[2.51,15.55,-10.22]`, with the mocker behind the camera and the wall-top point out of frame; F590's fixed coin drop passes at 390 px. Do not trade away either story beat or the pinned drop to force one camera interpolation through both.
+lessons/build.md:49:- SH07's F570 and F590 requirements pull the camera to opposite sides of a depth constraint. The mocker head `[4,1.9,0]` and wall-top `[3,18,-16]` need a village-side low camera near `[4.1,0.2,1.6]` for a shared narrow frustum. From that region, the pinned coin at about `[2.1,19.73,-17.5]` is roughly 19 depth units away; at fov 24 the audit's 230px occupancy threshold requires depth about 11 or less (the 0.5m coin box projects only about 75–81px in the tested F590 village-side samples). The F590 passing reference camera had z=-11.74, on the seawall/coin side; a straight camera interpolation cannot move from z≈+1.6 at F570 to that near coin-side position by F590 while also keeping F537's face close-up. Do not move the coin drop or alter audit occupancy to conceal this conflict.
+lessons/build.md:50:- Verified result for this iteration: SH11 passes all three probes; SH07 fails F537, F570 and F590 in the final camera attempt. `audit_d1_d2.mjs` remains PASS. The constrained SH07 camera requirements need an authorized change to the one-move camera model or one of the pinned checks before this audit can reach 19/19.
+lessons/build.md:52:## Phase-8 lessons — 2026-11-23 (SH07 line-6 split attempt)
+lessons/build.md:53:- Restore the SH07 baseline endpoints before splitting: close-up from `CAM_SH07_A` / `CAM_SH07_TA`, and the coin-side finish at `CAM_SH07_B` / `CAM_SH07_TB`, with fov 50→24 and roll -5→-2. SH11 stays at its passing park.
+lessons/build.md:55:- The current audit hard-codes F537, F570 and F590 to `shotById('SH07')`, and `shotById` returns the first matching shot by id. After adding SH07B, F590 is still measured on SH07 at its end pose; it never samples SH07B. The resulting F590 CAM row `[5.50, 1.80, 4.20]`, fov 50 and 43 px coins is evidence that the split's second shot is not bound. Correct time-to-shot lookup is needed before the audit can judge the split as intended.
+lessons/build.md:56:- This attempt did not reach 19/19: F537 passed, while F570's head sphere and wall-top point remained outside the frustum and F590 remained bound to SH07. Do not report a passing split from a run where the sampled shot id does not match the moment's active interval.
+lessons/build.md:58:## Phase-8 lesson — SH07 split binding and F570 occlusion limit (2026-11-23)
+lessons/build.md:59:- A split shot needs every sampled audit moment rebound to the shot ID active at that time. `shotById` returns the first matching ID, so leaving F590 bound to `SH07` silently audits the pull-back instead of `SH07B`; rebind the F590 moment to `SH07B` when the split is introduced.
+lessons/build.md:60:- With that binding, SH07B can pass F590 by lifting its camera above the seawall and aiming between the wall-top point and coin drop. The measured passing F590 camera is `[2.51,18.71,-10.51]`, target `[1.86,17.76,-32.25]`, fov `31.19`; coins are 254px and the wall-top point is in-frame.
+lessons/build.md:61:- F570's fixed head and wall-top checks conflict under the current seawall occluder model: from the village side the ray to `[3,18,-16]` intersects the seawall; from the sea side the mocker head cannot meet the 230px occupancy threshold. Do not claim 19/19 or change audit checks under a camera-only split brief; this requires an owner-authorized audit/geometry decision.
+lessons/build.md:74:- Gate validation on the unrepaired chunk2d stills: PASS exactly on the frames the critic/driver judged good (F288, F537, F621, F639, F870) and FAIL on every faulted frame, each with its cause named (F219/F241 mayor not identifiable; F345/F414 calendar under crane_b 100%; F474 set 13.7%/85.1%; F570 no disc segments — the back-of-head does not read as skin; F590 set 14.5%/84.4%; F669/F687 skin touches the top edge; F711/F723 blueprint 46% geometric / 74% measured-disc overlap by villager_4; F768/F798/F822 set ~14%/81%). Chunk-scope set bar: median shot detail 26.7% (< 28% film bar), 3/10 shots under.
+lessons/build.md:78:- The audit does not model FACING/legibility: at F570 the mocker's head passed geometrically (520px) but renders as an illegible back-of-head against the blueprint grid that fills the frame's lower half. A passing subject must also READ.
+
+codex
+The brief names two copies of one SH07 pose in `scenes/film.js`; both currently contain the old position. I’ll update only those position offsets, leave both targets and the other shot endpoints intact, then run the requested syntax check and audits.
+exec
+/bin/bash -lc "python3 - <<'PY'
+from pathlib import Path
+p = Path('scenes/film.js')
+s = p.read_text()
+old = 'pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50'
+new = 'pos:add(PLACES.COAST_VILLAGE,[3.6,2.6,-4.6]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50'
+assert s.count(old) == 2, f'expected 2 shared pose copies, found {s.count(old)}'
+p.write_text(s.replace(old, new))
+PY
+node --check scenes/film.js
+git diff -- scenes/film.js" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 26ms:
+diff --git a/projects/fudai-wall/scenes/film.js b/projects/fudai-wall/scenes/film.js
+index 713ea24..6fa1f20 100644
+--- a/projects/fudai-wall/scenes/film.js
++++ b/projects/fudai-wall/scenes/film.js
+@@ -114,8 +114,8 @@ export default {
+   {id:'SH04',t0:'line:3.start',t1:'line:3.end',camera:{move:'push',from:{pos:CAM_SH04_A,target:CAM_SQUARE,fov:50},to:{pos:CAM_SH04_B,target:CAM_SQUARE,fov:50}}},
+   {id:'SH05',t0:'line:4.start',t1:'line:4.end',camera:{move:'push',ease:'inQuad',from:{pos:CAM_SH05_A,target:CAM_SH05_TA,fov:50},to:{pos:CAM_SH05_B,target:CAM_SH05_TB,fov:34}}},
+   {id:'SH06',t0:'line:5.start',t1:'line:5.end',camera:{move:'push',from:{pos:CAM_SH06_A,target:CAM_SH06_TA,fov:50},to:{pos:CAM_SH06_B,target:CAM_SH06_TB,fov:50}}},
+-  {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
+-  {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[5.5,2.2,2.2]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[2,21.5,-15]),target:add(PLACES.COAST_WALL,[2,19.5,-19]),fov:24}}},
++  {id:'SH07',t0:'line:6.start',t1:'line:6.word:9',camera:{move:'push',ease:'inExpo',t1:19.0,roll:[-5,-2],from:{pos:CAM_SH07_A,target:CAM_SH07_TA,fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[3.6,2.6,-4.6]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50}}},
++  {id:'SH07B',t0:'line:6.word:9',t1:'line:6.end',camera:{move:'push',ease:'outCubic',roll:[-2,-2],from:{pos:add(PLACES.COAST_VILLAGE,[3.6,2.6,-4.6]),target:add(PLACES.COAST_WALL,[1,7.5,0]),fov:50},to:{pos:add(PLACES.COAST_VILLAGE,[2,21.5,-15]),target:add(PLACES.COAST_WALL,[2,19.5,-19]),fov:24}}},
+   {id:'SH08',t0:'line:7.start',t1:'line:7.end',camera:{move:'push',from:{pos:CAM_SH08_A,target:CAM_SH08_TA,fov:34},to:{pos:CAM_SH08_B,target:CAM_SH08_TA,fov:34}}},
+   {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
+   {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
+
+exec
+/bin/bash -lc 'node tools/audit_staging.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+exec
+/bin/bash -lc 'node tools/audit_d1_d2.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 93ms:
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+
+ exited 1 in 256ms:
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [605.81, 8.50, 15.00] target [600.00, 4.00, 3.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 1056px corners 2/8; sticker_a PASS 139px corners 8/8; sticker_b PASS 166px corners 4/8; neighbour houses PASS 1/1
+CAM F537 pos [3.98, 2.51, -4.88] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 13.8° head in 447px
+CAM F570 pos [3.60, 2.60, -2.60] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | FAIL | mocker_a head FAIL centre behind camera frustum n/a; wall top FAIL point out frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F590 pos [2.23, 18.76, -11.49] target [1.86, 17.76, -32.25] fov 27.76
+F590 | 19.67 | SH07B | PASS | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 333px corners 6/8; wall top PASS point in frustum
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 0.64, 2.00] fov 31.18
+F669 | 22.30 | SH09 | FAIL | mayor face FAIL angle 5.6° head out 860px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 0.64, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 935px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (3/19 moments)
+
+exec
+/bin/bash -lc 'git diff --stat -- scenes/film.js && git status --short && git diff --numstat -- scenes/film.js' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+ projects/fudai-wall/scenes/film.js | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+ M scenes/film.js
+?? P10_FIX_F474_BRIEF.md
+?? P10_FIX_F570_BRIEF.md
+?? P10_FIX_F570_OUT.txt
+?? P10_FIX_F590_BRIEF.md
+?? P10_FIX_F711_BRIEF.md
+?? P10_FIX_SH11_BRIEF.md
+?? P10_OPUS_F711_OUT.md
+?? P10_OPUS_F711_PROMPT.md
+2	2	projects/fudai-wall/scenes/film.js
+
+codex
+Applied the requested shared SH07 pose change in [scenes/film.js](/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/scenes/film.js). `node --check scenes/film.js` passed (exit 0, no output).
+
+Diff summary: 1 file changed, 2 insertions, 2 deletions. Only `scenes/film.js` was modified; no commit was made.
+
+**Complete `node tools/audit_staging.mjs` output** (exit 1):
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [605.81, 8.50, 15.00] target [600.00, 4.00, 3.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 1056px corners 2/8; sticker_a PASS 139px corners 8/8; sticker_b PASS 166px corners 4/8; neighbour houses PASS 1/1
+CAM F537 pos [3.98, 2.51, -4.88] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 13.8° head in 447px
+CAM F570 pos [3.60, 2.60, -2.60] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | FAIL | mocker_a head FAIL centre behind camera frustum n/a; wall top FAIL point out frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F590 pos [2.23, 18.76, -11.49] target [1.86, 17.76, -32.25] fov 27.76
+F590 | 19.67 | SH07B | PASS | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 333px corners 6/8; wall top PASS point in frustum
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 0.64, 2.00] fov 31.18
+F669 | 22.30 | SH09 | FAIL | mayor face FAIL angle 5.6° head out 860px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 0.64, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 935px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (3/19 moments)
+```
+
+**Complete `node tools/audit_d1_d2.mjs` output** (exit 0):
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+The staging audit still reports F570 failing: the sampled head is behind the camera frustum and the wall top is out of frame.
+tokens used
+32,745
+Applied the requested shared SH07 pose change in [scenes/film.js](/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/scenes/film.js). `node --check scenes/film.js` passed (exit 0, no output).
+
+Diff summary: 1 file changed, 2 insertions, 2 deletions. Only `scenes/film.js` was modified; no commit was made.
+
+**Complete `node tools/audit_staging.mjs` output** (exit 1):
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (mayor's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; BODY PASS 2/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 4.80, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 265px; popsign PASS 351px corners 8/8; BODY PASS 2/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [605.81, 8.50, 15.00] target [600.00, 4.00, 3.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 1056px corners 2/8; sticker_a PASS 139px corners 8/8; sticker_b PASS 166px corners 4/8; neighbour houses PASS 1/1
+CAM F537 pos [3.98, 2.51, -4.88] target [3.85, 2.18, -0.80] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 13.8° head in 447px
+CAM F570 pos [3.60, 2.60, -2.60] target [1.00, 7.50, -16.00] fov 50.00
+F570 | 19.00 | SH07 | FAIL | mocker_a head FAIL centre behind camera frustum n/a; wall top FAIL point out frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F590 pos [2.23, 18.76, -11.49] target [1.86, 17.76, -32.25] fov 27.76
+F590 | 19.67 | SH07B | PASS | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 333px corners 6/8; wall top PASS point in frustum
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 0.64, 2.00] fov 31.18
+F669 | 22.30 | SH09 | FAIL | mayor face FAIL angle 5.6° head out 860px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 0.64, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 935px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [5.20, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 847px corners 8/8; blueprint ruler PASS 522px corners 8/8; blueprint label PASS 73px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (3/19 moments)
+```
+
+**Complete `node tools/audit_d1_d2.mjs` output** (exit 0):
+
+```text
+— D1/D2 AUDIT —
+note: D1: no belongings-box prop yet (expected at opening stage; fetch:true check arms when it lands)
+note: D2-CLEAR: 14 building solids checked per shot
+PASS: D1 schema + purity, D2 zones/frustum pre-audit, format locks.
+places: COAST_WALL@0,0,-16 · COAST_VILLAGE@0,0,2 · SEA@0,0,-44 · NEIGHBOR_COAST@600,0,0 · FLASHBACK_ROCK@1200,0,0 · ROOM@1800,0,0 · HILL_GRAVE@2400,0,0
+```
+
+The staging audit still reports F570 failing: the sampled head is behind the camera frustum and the wall top is out of frame.

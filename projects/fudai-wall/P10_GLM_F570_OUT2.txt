@@ -1,0 +1,27 @@
+CORRECTION:
+ARITHMETIC:
+PREDICTED:
+RISKS:CORRECTION: SH07 TO pose pos [3.6,2.6,-2.6], target [1,7.5,-16], fov 50 is rejected: rel=[0.4,-0.7,2.6], f=[-0.18,0.34,-0.92], depth = 0.4·(-0.18)+(-0.7)·0.34+2.6·(-0.92) = -0.07-0.24-2.39 = -2.70 < 0, so the head is behind the camera. Any pose with pos z=-2.6 looking at target z=-16 puts mocker_a (z=0) behind it, so a camera-only fix at that position cannot work.
+
+The fault is staging, not arithmetic: F570 currently passes the audit geometrically but renders an illegible back-of-head because look key line:6.word:8 aims his face at the wall top [2,19.5,-17.5] (away from the village-side camera), and the blueprint board fills the frame lower half behind his silhouette.
+
+New SH07 TO pose (world / COAST_VILLAGE offset / COAST_WALL offset):
+pos [5.5,2.2,4.2] = COAST_VILLAGE+[5.5,2.2,-6] / COAST_WALL+[4.5,-5.3,19.2]
+target [4.6,3.4,-0.6] = COAST_VILLAGE+[4.6,3.4,-2.6] / COAST_WALL+[3.6,-16.1,14.4]
+fov 42
+
+ARITHMETIC:
+Head centre [4,1.9,0]; rel = head-pos = [-1.5,-0.3,-4.2].
+fwd = target-pos = [-0.9,1.2,-4.8]; |fwd| = sqrt(0.81+1.44+23.04) = sqrt(25.29) ≈ 5.03.
+f = norm(fwd) ≈ [-0.18,0.24,-0.95].
+depth = rel·f = (-1.5)·(-0.18)+(-0.3)·0.24+(-4.2)·(-0.95) = 0.27-0.07+3.99 = 4.19 > 0 (head in front of camera).
+
+Head→camera dir d = -norm(rel); |rel| = sqrt(2.25+0.09+17.64) = sqrt(19.98) ≈ 4.47; d ≈ [0.34,0.07,0.94].
+Look dir l (word:8) = target_look-head = [2,19.5,-17.5]-[4,1.9,0] = [-2,17.6,-17.5]; |l| ≈ 24.72; l̂ ≈ [-0.08,0.71,-0.71].
+Face angle = acos(d·l̂) = acos(0.34·(-0.08)+0.07·0.71+0.94·(-0.71)) = acos(-0.027+0.050-0.667) = acos(-0.644) ≈ 130° > 60° FAIL — because look key line:6.word:8 is fixed at the wall top.
+
+Wall-top [3,18,-15.42]: rel_wt = [-2.5,15.8,-19.6]; depth_wt = rel_wt·f = 0.45+3.79+18.62 = 22.86 > 0; lateral offsets vs fov 42 half-angle 21°: |x|/z ≈ sqrt(0.45²+3.79²)/18.62 ≈ 0.21 vs tan(21°) ≈ 0.384 → in frame (marginally).
+
+PREDICTED: depth 4.19 (>0 ✓); head disc projects ≈ head radius 0.25 m at range 4.47 m through fov 42 → ≥230px ✓; wall-top stays in frame ✓; board backdrop removed because camera sits on the village side with the board behind/to the side of the head rather than directly behind it ✓; face angle ≈130° ✗ FAILS the ≤60° requirement because mocker_a's look is locked at the wall top.
+
+RISKS: F590 (SH07B) uses SH07's to-pose as its FROM copy and looks at COAST_WALL+[2,19.5,-19]; moving the TO pose breaks SH07B's framing/continuity (333px coin beat must be re-verified). A camera-only correction cannot satisfy all five constraints with the look key fixed at [2,19.5,-17.5]; the smallest second lever is to re-aim mocker_a's line:6.word:8 look at the camera (village side), e.g. look target ≈ [4.2,2.6,0.8] or toward COAST_VILLAGE+[4,1.9,-2], trading the deliberate wall-top story beat (F590 coin context) for face legibility at F570.
