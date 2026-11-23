@@ -1,4 +1,5 @@
 // AUTHORSHIP: Codex seat; brief: P9_PIXEL_GATE_REDERIVE_BRIEF.md; date: 2026-11-23.
+// Phase-15 P15_GLM_GATEFIX_BRIEF.md (GLM seat): posAt place-key semantics mirrored from tools/audit_staging.mjs — the gate now measures cast at keyed posAt(t), not base positions.
 // PIXEL GATE — fudai-wall method change #3 (phase 9, on critic round 8's
 // demand + RULES S3: the same fault twice changes the METHOD).
 // The scene-data staging audit (tools/audit_staging.mjs) stays as a PRE-CHECK.
@@ -65,9 +66,15 @@ const characters = Object.entries(cast).map(([name, c]) => {
 });
 const rests = Object.fromEntries(characters.map(ch => [ch.name, ch.rest]));
 function posAt(id, t) {
-  const c = cast[id], base = c.at, walks = (acts[id]?.walk || []).filter(w => t >= w.t0).sort((a,b)=>a.t0-b.t0);
-  if (!walks.length) return [base[0], 0, base[1]];
-  const w = walks.at(-1), path = w.path, speed = w.speed || 1;
+  const c = cast[id], base = c.at, a = acts[id] || {};
+  const events = [
+    ...(a.place || []).filter(k => t >= k.t).map(k => ({ ...k, kind: 'place', order: 0 })),
+    ...(a.walk || []).filter(w => t >= w.t0).map(w => ({ ...w, t: w.t0, kind: 'walk', order: 1 }))
+  ].sort((x,y) => x.t-y.t || x.order-y.order);
+  const event = events.at(-1);
+  if (!event) return [base[0], 0, base[1]];
+  if (event.kind === 'place') return [event.at[0], event.y ?? 0, event.at[1]];
+  const w = event, path = w.path, speed = w.speed || 1;
   let remain = Math.max(0, t - w.t0) * speed;
   for (let i=1;i<path.length;i++) {
     const a=path[i-1], b=path[i], d=Math.hypot(b[0]-a[0],b[1]-a[1]);
