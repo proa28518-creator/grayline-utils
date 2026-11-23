@@ -11,6 +11,7 @@
 // Phase-12 P12_FIX_CAST_PLACE_BRIEF.md (Codex seat): root place keys are measured
 // as snaps, per engine/compose.js place layer and engine/height.js addPlace.
 // Phase-14 P14_GLM_CAUSE7_BRIEF.md (GLM seat): F1197 sea_sheet state rider restored per Qwen's declared moment.
+// Phase-14 P14_GLM_ITEM16_REBRIEF.md (GLM seat): neighbour village widened — seven houses at the wall's foot (set.js + mirrors).
 // D2-CLEAR solids are copied from tools/audit_d1_d2.mjs (town hall, ten village
 // houses, three neighbour houses); wall and gateleaf are additional occluders.
 import { readFileSync } from 'node:fs';
@@ -110,7 +111,7 @@ function segBox(p0,p1,b){let lo=0,hi=1;for(let i=0;i<3;i++){const d=p1[i]-p0[i];
 function occluder(p0,p1,t,exclude){return occs(t).filter(o=>o.name!==exclude).map(o=>({name:o.name,k:segBox(p0,p1,o)})).filter(x=>x.k!=null).sort((a,b)=>a.k-b.k)[0]?.name||null;}
 const solids=[{name:'town hall',min:[-4.5,0,9.5],max:[4.5,6.4,18.5]}];
 for(const [x,z] of [[-16,-3],[-10,-4],[-20,3],[-14,7],[-8,11],[8,-4],[14,-2],[20,3],[14,10],[6,12]])solids.push({name:`village house @${x},${z}`,min:[x-2.45,0,z-2.05],max:[x+2.45,6,z+2.05]});
-for(const x of [580,600,620])solids.push({name:`neighbour house @${x}`,min:[x-2.45,0,8-2.05],max:[x+2.45,5.6,8+2.05]});
+for(const x of [585,590,595,600,605,610,615])solids.push({name:`neighbour house @${x}`,min:[x-2.45,0,-2-2.05],max:[x+2.45,5.6,-2+2.05]});
 function occs(t){const out=solids.map(b=>({...b}));out.push({name:'seawall',...box([0,9,-16],[90,18,1.15])});const g=props.find(p=>p.id==='gateleaf');if(g){const st=propState(g,t);if(st.visible)out.push({name:'gateleaf',...box(add(st.at,[0,17.88*(st.lift-.5),0]),[7,17.88,.36])});}return out;}
 function propState(p,t){const ks=p.keys||[], before=ks.filter(k=>k.t<=t).sort((a,b)=>a.t-b.t), key=before.at(-1)||{};const lastField=f=>before.filter(k=>k[f]!=null).at(-1)?.[f];const visible=key.drop?true:(lastField('in')??p.in??'world')==='world';const at=[...(lastField('at')??p.at)],rot=[...(lastField('rot')??p.rot??[0,0,0])];
   const val=(field,def)=>{if(p[field]==null)return def;const keyed=before.filter(k=>k[field]!=null);if(!keyed.length)return p[field];const prev=keyed.at(-1),ix=keyed.length-1,ease=prev.ease;if(ease!=null&&ix>0){const prior=keyed[ix-1],u=clamp((t-prev.t)/ease);const sm=u*u*(3-2*u);return lerp(prior[field],prev[field],sm);}return prev[field];};
@@ -131,7 +132,7 @@ function propBox(id,t){const p=props.find(x=>x.id===id);if(!p)return null;const 
   if(kind==='coins'){const q=dropState(p,t);return q?{box:box(q,[.5,.5,.5]),state:s}:null;}
   return B?{box:B,state:s}:null;
 }
-const houseBoxes=[580,600,620].map(x=>box([x,2.1,8],[4,4.2,3.5]));
+const houseBoxes=[585,590,595,600,605,610,615].map(x=>box([x,2.1,-2],[4,4.2,3.5]));
 const wallBox=box([600,6,-10],[24,12,.8]);
 const moments=[
  [219,7.3,'SH04'],[241,8.0333333333,'SH04'],[288,9.6,'SH05'],[345,11.5,'SH05'],[414,13.8,'SH05'],[474,15.8,'SH06'],[537,17.9,'SH07'],[570,19,'SH07'],[590,19.6666667,'SH07B'],[621,20.7,'SH08'],[639,21.3,'SH08'],[669,22.3,'SH09'],[687,22.9,'SH09'],[711,23.7,'SH10'],[723,24.1,'SH10'],[768,25.6,'SH11'],[798,26.6,'SH11'],[822,27.4,'SH11'],[870,29,'SH12']

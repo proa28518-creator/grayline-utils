@@ -119,8 +119,8 @@ for (const [i, s] of (film.shots || []).entries()) {
 const SOLIDS = [{ name: 'town hall', min: [-4.5, 0, 9.5], max: [4.5, 6.4, 18.5] }];
 for (const [hx, hz] of [[-16, -3], [-10, -4], [-20, 3], [-14, 7], [-8, 11], [8, -4], [14, -2], [20, 3], [14, 10], [6, 12]])
   SOLIDS.push({ name: `village house @${hx},${hz}`, min: [hx - 2.45, 0, hz - 2.05], max: [hx + 2.45, 6.0, hz + 2.05] });
-for (const hx of [580, 600, 620])
-  SOLIDS.push({ name: `neighbour house @${hx}`, min: [hx - 2.45, 0, 8 - 2.05], max: [hx + 2.45, 5.6, 8 + 2.05] });
+for (const hx of [585, 590, 595, 600, 605, 610, 615])
+  SOLIDS.push({ name: `neighbour house @${hx}`, min: [hx - 2.45, 0, -2 - 2.05], max: [hx + 2.45, 5.6, -2 + 2.05] });
 function segHitsBox(p0, p1, b) {
   let t0 = 0, t1 = 1;
   for (let i = 0; i < 3; i++) {

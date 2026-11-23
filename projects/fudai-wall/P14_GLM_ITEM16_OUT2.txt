@@ -1,0 +1,25 @@
+ERROR RESTATED: Round 1 used the total horizontal FOV of 29.4° as the half-angle instead of the true half-angle of 14.7°.
+
+SET LINE:
+```
+for(const x of [nc[0]-15,nc[0]-10,nc[0]-5,nc[0],nc[0]+5,nc[0]+10,nc[0]+15]){box(F.plaster,x,2.1,nc[2]-2,4,4.2,3.5);add(new THREE.ConeGeometry(2.8,1,4),F.roof,x,4.7,nc[2]-2);}
+```
+
+MIRROR LINES audit_staging.mjs:
+```
+// Phase-14 P14_GLM_ITEM16_REBRIEF.md (GLM seat): neighbour village widened — seven houses at the wall's foot (set.js + mirrors).
+for(const x of [585,590,595,600,605,610,615])solids.push({name:`neighbour house @${x}`,min:[x-2.45,0,-2-2.05],max:[x+2.45,5.6,-2+2.05]});
+const houseBoxes=[585,590,595,600,605,610,615].map(x=>box([x,2.1,-2],[4,4.2,3.5]));
+```
+
+MIRROR LINES audit_d1_d2.mjs:
+```
+for (const hx of [585, 590, 595, 600, 605, 610, 615])
+  SOLIDS.push({ name: `neighbour house @${hx}`, min: [hx - 2.45, 0, -2 - 2.05], max: [hx + 2.45, 5.6, -2 + 2.05] });
+```
+
+PREDICTED READINGS:
+F474 audit houses count: 3/1
+D1/D2: FAIL (2)
+Chunk totals: neighbours solid chunk count 7, solids count 9
+Pixel-gate direction: improved on 12.9% / 86.6%

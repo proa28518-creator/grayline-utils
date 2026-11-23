@@ -54,7 +54,7 @@ function buildWorld(){
  const sea=box(F.water,sc[0],-.18,sc[2],116,.16,52);sea.userData.shimmer=true;
  box(F.water,0,-.08,-67,118,.08,3); // distant horizon strip
  // Distant place pads and one recognizable silhouette per place.
- const nc=PLACES.NEIGHBOR_COAST.at;box(F.sand,nc[0],-.12,nc[2],100,.24,48);box(F.stone,nc[0],6,nc[2]-10,24,12,.8);for(const x of [nc[0]-20,nc[0],nc[0]+20]){box(F.plaster,x,2.1,nc[2]+8,4,4.2,3.5);add(new THREE.ConeGeometry(2.8,1,4),F.roof,x,4.7,nc[2]+8);}
+ const nc=PLACES.NEIGHBOR_COAST.at;box(F.sand,nc[0],-.12,nc[2],100,.24,48);box(F.stone,nc[0],6,nc[2]-10,24,12,.8);for(const x of [nc[0]-15,nc[0]-10,nc[0]-5,nc[0],nc[0]+5,nc[0]+10,nc[0]+15]){box(F.plaster,x,2.1,nc[2]-2,4,4.2,3.5);add(new THREE.ConeGeometry(2.8,1,4),F.roof,x,4.7,nc[2]-2);}
  const rc=PLACES.FLASHBACK_ROCK.at;box(F.sand,rc[0],-.12,rc[2],78,.24,48);add(new THREE.DodecahedronGeometry(9,0),F.stone,rc[0],5,rc[2]-5,0,.03);
  const ic=PLACES.ROOM.at;box(F.wood,ic[0],1.5,ic[2]-3,8,3, .35);box(F.plaster,ic[0],1.5,ic[2]+3,8,3,.35);
  const hc=PLACES.HILL_GRAVE.at;add(new THREE.SphereGeometry(19,20,10),F.green,hc[0],-5,hc[2],0,0);box(F.stone,hc[0],.8,hc[2],1.1,1.6,.35);
