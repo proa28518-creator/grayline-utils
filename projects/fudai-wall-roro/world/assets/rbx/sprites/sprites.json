@@ -1,0 +1,1040 @@
+{
+ "_doc": "rbx V4 sprite cards (world/rbx/dress.js). Painted props from templates/proplib (made by us, AI Studio), cropped to their alpha, <= 512 px. Written by experiments/roblox-style/v4/tools/sprites_copy.py.",
+ "sprites": [
+  {
+   "name": "school-backpack",
+   "file": "school-backpack.webp",
+   "height": 0.75,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "school",
+   "source": "templates/proplib/sprites/interior/school/school-backpack.webp"
+  },
+  {
+   "name": "school-stack-of-textbooks",
+   "file": "school-stack-of-textbooks.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "school",
+   "source": "templates/proplib/sprites/interior/school/school-stack-of-textbooks.webp"
+  },
+  {
+   "name": "school-basketball",
+   "file": "school-basketball.webp",
+   "height": 0.375,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "school",
+   "source": "templates/proplib/sprites/interior/school/school-basketball.webp"
+  },
+  {
+   "name": "office-a-paper-pile",
+   "file": "office-a-paper-pile.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "office",
+   "source": "templates/proplib/sprites/interior/office/office-a-paper-pile.webp"
+  },
+  {
+   "name": "office-a-trash-bin-office",
+   "file": "office-a-trash-bin-office.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "office",
+   "source": "templates/proplib/sprites/interior/office/office-a-trash-bin-office.webp"
+  },
+  {
+   "name": "home-small-cardboard-box-closed",
+   "file": "home-small-cardboard-box-closed.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-cardboard-box-closed.webp"
+  },
+  {
+   "name": "office-a-office-plant",
+   "file": "office-a-office-plant.webp",
+   "height": 1.95,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "office",
+   "source": "templates/proplib/sprites/interior/office/office-a-office-plant.webp"
+  },
+  {
+   "name": "school-globe-on-stand",
+   "file": "school-globe-on-stand.webp",
+   "height": 0.75,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "school",
+   "source": "templates/proplib/sprites/interior/school/school-globe-on-stand.webp"
+  },
+  {
+   "name": "sports-football",
+   "file": "sports-football.webp",
+   "height": 0.33,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "sports and play",
+   "source": "templates/proplib/sprites/items/sports-and-play/sports-football.webp"
+  },
+  {
+   "name": "street-c-crushed-can",
+   "file": "street-c-crushed-can.webp",
+   "height": 0.12,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "trash and clutter",
+   "source": "templates/proplib/sprites/street/trash-and-clutter/street-c-crushed-can.webp"
+  },
+  {
+   "name": "home-small-open-book",
+   "file": "home-small-open-book.webp",
+   "height": 0.12,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-open-book.webp"
+  },
+  {
+   "name": "kitchenware-bucket-metal",
+   "file": "kitchenware-bucket-metal.webp",
+   "height": 0.525,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "kitchenware",
+   "source": "templates/proplib/sprites/items/kitchenware/kitchenware-bucket-metal.webp"
+  },
+  {
+   "name": "home-small-mug",
+   "file": "home-small-mug.webp",
+   "height": 0.15,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-mug.webp"
+  },
+  {
+   "name": "office-b-stack-of-folders",
+   "file": "office-b-stack-of-folders.webp",
+   "height": 0.375,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "office",
+   "source": "templates/proplib/sprites/interior/office/office-b-stack-of-folders.webp"
+  },
+  {
+   "name": "home-small-table-lamp",
+   "file": "home-small-table-lamp.webp",
+   "height": 0.75,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-table-lamp.webp"
+  },
+  {
+   "name": "home-small-alarm-clock",
+   "file": "home-small-alarm-clock.webp",
+   "height": 0.18,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-alarm-clock.webp"
+  },
+  {
+   "name": "school-microscope",
+   "file": "school-microscope.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "school",
+   "source": "templates/proplib/sprites/interior/school/school-microscope.webp"
+  },
+  {
+   "name": "build-wall-a-blank-poster-torn-edges",
+   "file": "build-wall-a-blank-poster-torn-edges.webp",
+   "height": 1.35,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-blank-poster-torn-edges.webp"
+  },
+  {
+   "name": "build-wall-a-cork-board-with-blank-notes",
+   "file": "build-wall-a-cork-board-with-blank-notes.webp",
+   "height": 1.2,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-cork-board-with-blank-notes.webp"
+  },
+  {
+   "name": "build-wall-b-fire-extinguisher-on-wall",
+   "file": "build-wall-b-fire-extinguisher-on-wall.webp",
+   "height": 0.9,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-b-fire-extinguisher-on-wall.webp"
+  },
+  {
+   "name": "build-wall-b-light-switch-and-outlet",
+   "file": "build-wall-b-light-switch-and-outlet.webp",
+   "height": 0.3,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-b-light-switch-and-outlet.webp"
+  },
+  {
+   "name": "build-wall-b-wall-vent-grille",
+   "file": "build-wall-b-wall-vent-grille.webp",
+   "height": 0.6,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-b-wall-vent-grille.webp"
+  },
+  {
+   "name": "build-wall-a-wall-calendar-blank",
+   "file": "build-wall-a-wall-calendar-blank.webp",
+   "height": 0.75,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-wall-calendar-blank.webp"
+  },
+  {
+   "name": "build-wall-a-small-framed-photo",
+   "file": "build-wall-a-small-framed-photo.webp",
+   "height": 0.45,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-small-framed-photo.webp"
+  },
+  {
+   "name": "build-wall-a-framed-landscape-painting",
+   "file": "build-wall-a-framed-landscape-painting.webp",
+   "height": 1.2,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-framed-landscape-painting.webp"
+  },
+  {
+   "name": "build-wall-a-wall-shelf-with-plants",
+   "file": "build-wall-a-wall-shelf-with-plants.webp",
+   "height": 0.75,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-wall-shelf-with-plants.webp"
+  },
+  {
+   "name": "build-wall-a-coat-hooks-with-coats",
+   "file": "build-wall-a-coat-hooks-with-coats.webp",
+   "height": 1.65,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-coat-hooks-with-coats.webp"
+  },
+  {
+   "name": "build-wall-b-world-map-poster-no-text",
+   "file": "build-wall-b-world-map-poster-no-text.webp",
+   "height": 1.5,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-b-world-map-poster-no-text.webp"
+  },
+  {
+   "name": "build-wall-a-abstract-poster-no-text",
+   "file": "build-wall-a-abstract-poster-no-text.webp",
+   "height": 1.35,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-abstract-poster-no-text.webp"
+  },
+  {
+   "name": "build-wall-a-wooden-wall-shelf-with-books",
+   "file": "build-wall-a-wooden-wall-shelf-with-books.webp",
+   "height": 0.75,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-wooden-wall-shelf-with-books.webp"
+  },
+  {
+   "name": "build-wall-b-electric-panel-box",
+   "file": "build-wall-b-electric-panel-box.webp",
+   "height": 0.9,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-b-electric-panel-box.webp"
+  },
+  {
+   "name": "home-bedroom-pile-of-clothes",
+   "file": "home-bedroom-pile-of-clothes.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "bedroom",
+   "source": "templates/proplib/sprites/interior/bedroom/home-bedroom-pile-of-clothes.webp"
+  },
+  {
+   "name": "home-bedroom-teddy-bear",
+   "file": "home-bedroom-teddy-bear.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "bedroom",
+   "source": "templates/proplib/sprites/interior/bedroom/home-bedroom-teddy-bear.webp"
+  },
+  {
+   "name": "home-bedroom-laundry-basket",
+   "file": "home-bedroom-laundry-basket.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "bedroom",
+   "source": "templates/proplib/sprites/interior/bedroom/home-bedroom-laundry-basket.webp"
+  },
+  {
+   "name": "home-bedroom-toy-box",
+   "file": "home-bedroom-toy-box.webp",
+   "height": 0.75,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "bedroom",
+   "source": "templates/proplib/sprites/interior/bedroom/home-bedroom-toy-box.webp"
+  },
+  {
+   "name": "home-living-potted-house-plant-tall",
+   "file": "home-living-potted-house-plant-tall.webp",
+   "height": 2.25,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "living room",
+   "source": "templates/proplib/sprites/interior/living-room/home-living-potted-house-plant-tall.webp"
+  },
+  {
+   "name": "home-small-vase-with-flowers",
+   "file": "home-small-vase-with-flowers.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-vase-with-flowers.webp"
+  },
+  {
+   "name": "home-small-stack-of-books",
+   "file": "home-small-stack-of-books.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-stack-of-books.webp"
+  },
+  {
+   "name": "sports-skateboard",
+   "file": "sports-skateboard.webp",
+   "height": 0.18,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "sports and play",
+   "source": "templates/proplib/sprites/items/sports-and-play/sports-skateboard.webp"
+  },
+  {
+   "name": "home-kitchen-trash-bin-with-pedal",
+   "file": "home-kitchen-trash-bin-with-pedal.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "kitchen",
+   "source": "templates/proplib/sprites/interior/kitchen/home-kitchen-trash-bin-with-pedal.webp"
+  },
+  {
+   "name": "kitchenware-stack-of-plates",
+   "file": "kitchenware-stack-of-plates.webp",
+   "height": 0.225,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "kitchenware",
+   "source": "templates/proplib/sprites/items/kitchenware/kitchenware-stack-of-plates.webp"
+  },
+  {
+   "name": "kitchenware-spice-jars-group",
+   "file": "kitchenware-spice-jars-group.webp",
+   "height": 0.18,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "kitchenware",
+   "source": "templates/proplib/sprites/items/kitchenware/kitchenware-spice-jars-group.webp"
+  },
+  {
+   "name": "kitchenware-teapot",
+   "file": "kitchenware-teapot.webp",
+   "height": 0.3,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "kitchenware",
+   "source": "templates/proplib/sprites/items/kitchenware/kitchenware-teapot.webp"
+  },
+  {
+   "name": "food-apple-basket",
+   "file": "food-apple-basket.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "food",
+   "source": "templates/proplib/sprites/items/food/food-apple-basket.webp"
+  },
+  {
+   "name": "home-small-candle-holder",
+   "file": "home-small-candle-holder.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-candle-holder.webp"
+  },
+  {
+   "name": "home-small-umbrella-stand",
+   "file": "home-small-umbrella-stand.webp",
+   "height": 1.05,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "small items",
+   "source": "templates/proplib/sprites/interior/small-items/home-small-umbrella-stand.webp"
+  },
+  {
+   "name": "home-living-rug-rolled",
+   "file": "home-living-rug-rolled.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "living room",
+   "source": "templates/proplib/sprites/interior/living-room/home-living-rug-rolled.webp"
+  },
+  {
+   "name": "fol-bushes-a-round-leafy-bush",
+   "file": "fol-bushes-a-round-leafy-bush.webp",
+   "height": 1.8,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-a-round-leafy-bush.webp"
+  },
+  {
+   "name": "fol-bushes-a-small-young-bush",
+   "file": "fol-bushes-a-small-young-bush.webp",
+   "height": 0.75,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-a-small-young-bush.webp"
+  },
+  {
+   "name": "fol-flowers-tulip-cluster",
+   "file": "fol-flowers-tulip-cluster.webp",
+   "height": 0.675,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-tulip-cluster.webp"
+  },
+  {
+   "name": "fol-flowers-daisy-patch",
+   "file": "fol-flowers-daisy-patch.webp",
+   "height": 0.525,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-daisy-patch.webp"
+  },
+  {
+   "name": "fol-grass-weeds-with-dandelions",
+   "file": "fol-grass-weeds-with-dandelions.webp",
+   "height": 0.525,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "grass",
+   "source": "templates/proplib/sprites/nature/grass/fol-grass-weeds-with-dandelions.webp"
+  },
+  {
+   "name": "fol-grass-short-grass-tuft",
+   "file": "fol-grass-short-grass-tuft.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "grass",
+   "source": "templates/proplib/sprites/nature/grass/fol-grass-short-grass-tuft.webp"
+  },
+  {
+   "name": "fol-grass-tall-grass-tuft",
+   "file": "fol-grass-tall-grass-tuft.webp",
+   "height": 1.05,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "grass",
+   "source": "templates/proplib/sprites/nature/grass/fol-grass-tall-grass-tuft.webp"
+  },
+  {
+   "name": "fol-flowers-wildflower-patch-mixed-colours",
+   "file": "fol-flowers-wildflower-patch-mixed-colours.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-wildflower-patch-mixed-colours.webp"
+  },
+  {
+   "name": "fol-grass-clover-patch",
+   "file": "fol-grass-clover-patch.webp",
+   "height": 0.225,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "grass",
+   "source": "templates/proplib/sprites/nature/grass/fol-grass-clover-patch.webp"
+  },
+  {
+   "name": "fol-flowers-marigolds",
+   "file": "fol-flowers-marigolds.webp",
+   "height": 0.525,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-marigolds.webp"
+  },
+  {
+   "name": "fol-bushes-b-hydrangea-bush-with-blue-flowers",
+   "file": "fol-bushes-b-hydrangea-bush-with-blue-flowers.webp",
+   "height": 1.65,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-b-hydrangea-bush-with-blue-flowers.webp"
+  },
+  {
+   "name": "street-a-traffic-cone",
+   "file": "street-a-traffic-cone.webp",
+   "height": 1.05,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-a-traffic-cone.webp"
+  },
+  {
+   "name": "street-a-fire-hydrant",
+   "file": "street-a-fire-hydrant.webp",
+   "height": 1.2,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-a-fire-hydrant.webp"
+  },
+  {
+   "name": "street-c-cardboard-boxes-pile",
+   "file": "street-c-cardboard-boxes-pile.webp",
+   "height": 1.35,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "trash and clutter",
+   "source": "templates/proplib/sprites/street/trash-and-clutter/street-c-cardboard-boxes-pile.webp"
+  },
+  {
+   "name": "street-c-trash-bags-pile",
+   "file": "street-c-trash-bags-pile.webp",
+   "height": 1.2,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "trash and clutter",
+   "source": "templates/proplib/sprites/street/trash-and-clutter/street-c-trash-bags-pile.webp"
+  },
+  {
+   "name": "street-c-overflowing-trash-can",
+   "file": "street-c-overflowing-trash-can.webp",
+   "height": 1.65,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "trash and clutter",
+   "source": "templates/proplib/sprites/street/trash-and-clutter/street-c-overflowing-trash-can.webp"
+  },
+  {
+   "name": "street-b-sandbags-pile",
+   "file": "street-b-sandbags-pile.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-b-sandbags-pile.webp"
+  },
+  {
+   "name": "fol-grass-wide-grass-clump",
+   "file": "fol-grass-wide-grass-clump.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "grass",
+   "source": "templates/proplib/sprites/nature/grass/fol-grass-wide-grass-clump.webp"
+  },
+  {
+   "name": "fol-trees-a-round-lollipop-street-tree",
+   "file": "fol-trees-a-round-lollipop-street-tree.webp",
+   "height": 6.0,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-a-round-lollipop-street-tree.webp"
+  },
+  {
+   "name": "fol-trees-a-maple-tree",
+   "file": "fol-trees-a-maple-tree.webp",
+   "height": 10.5,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-a-maple-tree.webp"
+  },
+  {
+   "name": "fol-trees-a-oak-tree",
+   "file": "fol-trees-a-oak-tree.webp",
+   "height": 10.5,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-a-oak-tree.webp"
+  },
+  {
+   "name": "fol-trees-a-birch-tree",
+   "file": "fol-trees-a-birch-tree.webp",
+   "height": 10.5,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-a-birch-tree.webp"
+  },
+  {
+   "name": "fol-trees-b-cherry-blossom-tree",
+   "file": "fol-trees-b-cherry-blossom-tree.webp",
+   "height": 7.5,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-b-cherry-blossom-tree.webp"
+  },
+  {
+   "name": "fol-trees-a-apple-tree-with-apples",
+   "file": "fol-trees-a-apple-tree-with-apples.webp",
+   "height": 6.0,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-a-apple-tree-with-apples.webp"
+  },
+  {
+   "name": "fol-trees-a-cypress",
+   "file": "fol-trees-a-cypress.webp",
+   "height": 12.0,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-a-cypress.webp"
+  },
+  {
+   "name": "fol-trees-b-small-fruit-tree",
+   "file": "fol-trees-b-small-fruit-tree.webp",
+   "height": 4.5,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "trees",
+   "source": "templates/proplib/sprites/nature/trees/fol-trees-b-small-fruit-tree.webp"
+  },
+  {
+   "name": "fol-bushes-a-flowering-bush-with-white-blossoms",
+   "file": "fol-bushes-a-flowering-bush-with-white-blossoms.webp",
+   "height": 1.8,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-a-flowering-bush-with-white-blossoms.webp"
+  },
+  {
+   "name": "fol-bushes-b-rhododendron-with-pink-flowers",
+   "file": "fol-bushes-b-rhododendron-with-pink-flowers.webp",
+   "height": 2.1,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-b-rhododendron-with-pink-flowers.webp"
+  },
+  {
+   "name": "fol-bushes-a-boxwood-ball",
+   "file": "fol-bushes-a-boxwood-ball.webp",
+   "height": 1.05,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-a-boxwood-ball.webp"
+  },
+  {
+   "name": "fol-bushes-b-gorse-bush-with-yellow-flowers",
+   "file": "fol-bushes-b-gorse-bush-with-yellow-flowers.webp",
+   "height": 1.5,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "bushes",
+   "source": "templates/proplib/sprites/nature/bushes/fol-bushes-b-gorse-bush-with-yellow-flowers.webp"
+  },
+  {
+   "name": "fol-flowers-red-poppies",
+   "file": "fol-flowers-red-poppies.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-red-poppies.webp"
+  },
+  {
+   "name": "fol-flowers-lavender-bush",
+   "file": "fol-flowers-lavender-bush.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-lavender-bush.webp"
+  },
+  {
+   "name": "fol-flowers-rose-bush",
+   "file": "fol-flowers-rose-bush.webp",
+   "height": 1.65,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-rose-bush.webp"
+  },
+  {
+   "name": "fol-flowers-bluebells",
+   "file": "fol-flowers-bluebells.webp",
+   "height": 0.525,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-bluebells.webp"
+  },
+  {
+   "name": "fol-flowers-sunflower",
+   "file": "fol-flowers-sunflower.webp",
+   "height": 2.4,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "flowers",
+   "source": "templates/proplib/sprites/nature/flowers/fol-flowers-sunflower.webp"
+  },
+  {
+   "name": "fol-grass-grass-with-small-white-flowers",
+   "file": "fol-grass-grass-with-small-white-flowers.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "nature",
+   "sub": "grass",
+   "source": "templates/proplib/sprites/nature/grass/fol-grass-grass-with-small-white-flowers.webp"
+  },
+  {
+   "name": "street-a-mailbox-blue",
+   "file": "street-a-mailbox-blue.webp",
+   "height": 1.95,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-a-mailbox-blue.webp"
+  },
+  {
+   "name": "street-a-park-bench",
+   "file": "street-a-park-bench.webp",
+   "height": 1.35,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-a-park-bench.webp"
+  },
+  {
+   "name": "street-b-bike-rack-with-bike",
+   "file": "street-b-bike-rack-with-bike.webp",
+   "height": 1.5,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-b-bike-rack-with-bike.webp"
+  },
+  {
+   "name": "street-a-newspaper-box-no-text",
+   "file": "street-a-newspaper-box-no-text.webp",
+   "height": 1.65,
+   "kind": "floor",
+   "cat": "street",
+   "sub": "street furniture",
+   "source": "templates/proplib/sprites/street/street-furniture/street-a-newspaper-box-no-text.webp"
+  },
+  {
+   "name": "farm-b-flower-pot-terracotta",
+   "file": "farm-b-flower-pot-terracotta.webp",
+   "height": 0.6,
+   "kind": "floor",
+   "cat": "farm",
+   "sub": "garden",
+   "source": "templates/proplib/sprites/farm/garden/farm-b-flower-pot-terracotta.webp"
+  },
+  {
+   "name": "farm-b-big-plant-pot-with-shrub",
+   "file": "farm-b-big-plant-pot-with-shrub.webp",
+   "height": 1.8,
+   "kind": "floor",
+   "cat": "farm",
+   "sub": "garden",
+   "source": "templates/proplib/sprites/farm/garden/farm-b-big-plant-pot-with-shrub.webp"
+  },
+  {
+   "name": "shop-a-flower-stall-buckets",
+   "file": "shop-a-flower-stall-buckets.webp",
+   "height": 1.5,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "shop",
+   "source": "templates/proplib/sprites/interior/shop/shop-a-flower-stall-buckets.webp"
+  },
+  {
+   "name": "fol-wall-plants-ivy-patch-on-wall",
+   "file": "fol-wall-plants-ivy-patch-on-wall.webp",
+   "height": 2.25,
+   "kind": "wall",
+   "cat": "nature",
+   "sub": "wall plants",
+   "source": "templates/proplib/sprites/nature/wall-plants/fol-wall-plants-ivy-patch-on-wall.webp"
+  },
+  {
+   "name": "fol-wall-plants-climbing-rose-on-wall",
+   "file": "fol-wall-plants-climbing-rose-on-wall.webp",
+   "height": 3.0,
+   "kind": "wall",
+   "cat": "nature",
+   "sub": "wall plants",
+   "source": "templates/proplib/sprites/nature/wall-plants/fol-wall-plants-climbing-rose-on-wall.webp"
+  },
+  {
+   "name": "fol-wall-plants-wall-flowers-climbing",
+   "file": "fol-wall-plants-wall-flowers-climbing.webp",
+   "height": 2.7,
+   "kind": "wall",
+   "cat": "nature",
+   "sub": "wall plants",
+   "source": "templates/proplib/sprites/nature/wall-plants/fol-wall-plants-wall-flowers-climbing.webp"
+  },
+  {
+   "name": "fol-wall-plants-moss-patch",
+   "file": "fol-wall-plants-moss-patch.webp",
+   "height": 0.9,
+   "kind": "wall",
+   "cat": "nature",
+   "sub": "wall plants",
+   "source": "templates/proplib/sprites/nature/wall-plants/fol-wall-plants-moss-patch.webp"
+  },
+  {
+   "name": "fol-wall-plants-small-ivy-sprig",
+   "file": "fol-wall-plants-small-ivy-sprig.webp",
+   "height": 0.75,
+   "kind": "wall",
+   "cat": "nature",
+   "sub": "wall plants",
+   "source": "templates/proplib/sprites/nature/wall-plants/fol-wall-plants-small-ivy-sprig.webp"
+  },
+  {
+   "name": "build-parts-air-conditioner-unit",
+   "file": "build-parts-air-conditioner-unit.webp",
+   "height": 0.9,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "exterior parts",
+   "source": "templates/proplib/sprites/building/exterior-parts/build-parts-air-conditioner-unit.webp"
+  },
+  {
+   "name": "build-parts-wall-lamp",
+   "file": "build-parts-wall-lamp.webp",
+   "height": 0.75,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "exterior parts",
+   "source": "templates/proplib/sprites/building/exterior-parts/build-parts-wall-lamp.webp"
+  },
+  {
+   "name": "home-hang-string-lights",
+   "file": "home-hang-string-lights.webp",
+   "height": 1.2,
+   "kind": "hang",
+   "cat": "interior",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/interior/hanging/home-hang-string-lights.webp"
+  },
+  {
+   "name": "home-hang-paper-lantern",
+   "file": "home-hang-paper-lantern.webp",
+   "height": 0.9,
+   "kind": "hang",
+   "cat": "interior",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/interior/hanging/home-hang-paper-lantern.webp"
+  },
+  {
+   "name": "home-hang-hanging-plant-in-macrame",
+   "file": "home-hang-hanging-plant-in-macrame.webp",
+   "height": 1.5,
+   "kind": "hang",
+   "cat": "interior",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/interior/hanging/home-hang-hanging-plant-in-macrame.webp"
+  },
+  {
+   "name": "home-hang-hanging-pendant-lamp",
+   "file": "home-hang-hanging-pendant-lamp.webp",
+   "height": 1.2,
+   "kind": "hang",
+   "cat": "interior",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/interior/hanging/home-hang-hanging-pendant-lamp.webp"
+  },
+  {
+   "name": "home-hang-hanging-mobile-toy",
+   "file": "home-hang-hanging-mobile-toy.webp",
+   "height": 1.05,
+   "kind": "hang",
+   "cat": "interior",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/interior/hanging/home-hang-hanging-mobile-toy.webp"
+  },
+  {
+   "name": "outdoor-hang-hanging-flower-basket",
+   "file": "outdoor-hang-hanging-flower-basket.webp",
+   "height": 1.2,
+   "kind": "hang",
+   "cat": "street",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/street/hanging/outdoor-hang-hanging-flower-basket.webp"
+  },
+  {
+   "name": "outdoor-hang-bunting-flags",
+   "file": "outdoor-hang-bunting-flags.webp",
+   "height": 0.9,
+   "kind": "hang",
+   "cat": "street",
+   "sub": "hanging",
+   "source": "templates/proplib/sprites/street/hanging/outdoor-hang-bunting-flags.webp"
+  },
+  {
+   "name": "build-wall-a-round-wall-clock",
+   "file": "build-wall-a-round-wall-clock.webp",
+   "height": 0.6,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-round-wall-clock.webp"
+  },
+  {
+   "name": "build-wall-a-framed-portrait-painting",
+   "file": "build-wall-a-framed-portrait-painting.webp",
+   "height": 1.35,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-framed-portrait-painting.webp"
+  },
+  {
+   "name": "build-wall-a-wall-mirror",
+   "file": "build-wall-a-wall-mirror.webp",
+   "height": 1.5,
+   "kind": "wall",
+   "cat": "building",
+   "sub": "wall decor",
+   "source": "templates/proplib/sprites/building/wall-decor/build-wall-a-wall-mirror.webp"
+  },
+  {
+   "name": "home-living-floor-lamp",
+   "file": "home-living-floor-lamp.webp",
+   "height": 2.4,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "living room",
+   "source": "templates/proplib/sprites/interior/living-room/home-living-floor-lamp.webp"
+  },
+  {
+   "name": "home-living-bean-bag",
+   "file": "home-living-bean-bag.webp",
+   "height": 1.05,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "living room",
+   "source": "templates/proplib/sprites/interior/living-room/home-living-bean-bag.webp"
+  },
+  {
+   "name": "office-b-boxes-of-files",
+   "file": "office-b-boxes-of-files.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "office",
+   "source": "templates/proplib/sprites/interior/office/office-b-boxes-of-files.webp"
+  },
+  {
+   "name": "sports-tennis-racket-and-balls",
+   "file": "sports-tennis-racket-and-balls.webp",
+   "height": 0.9,
+   "kind": "floor",
+   "cat": "items",
+   "sub": "sports and play",
+   "source": "templates/proplib/sprites/items/sports-and-play/sports-tennis-racket-and-balls.webp"
+  },
+  {
+   "name": "home-bath-small-bin",
+   "file": "home-bath-small-bin.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "bathroom",
+   "source": "templates/proplib/sprites/interior/bathroom/home-bath-small-bin.webp"
+  },
+  {
+   "name": "shop-a-shopping-basket",
+   "file": "shop-a-shopping-basket.webp",
+   "height": 0.45,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "shop",
+   "source": "templates/proplib/sprites/interior/shop/shop-a-shopping-basket.webp"
+  },
+  {
+   "name": "school-classroom-bookshelf",
+   "file": "school-classroom-bookshelf.webp",
+   "height": 1.8,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "school",
+   "source": "templates/proplib/sprites/interior/school/school-classroom-bookshelf.webp"
+  },
+  {
+   "name": "home-living-bookshelf-full",
+   "file": "home-living-bookshelf-full.webp",
+   "height": 3.0,
+   "kind": "floor",
+   "cat": "interior",
+   "sub": "living room",
+   "source": "templates/proplib/sprites/interior/living-room/home-living-bookshelf-full.webp"
+  }
+ ]
+}
