@@ -8,10 +8,9 @@ change), §4 (ONE PLACES table in `scenes/set.js`; no bare coordinates).
 **NO LOCAL RENDERS. No fleet dispatch. Audits only.**
 
 ## Previous verdict this brief cites (hard-gate requirement)
-The phase-12 cause-1 verdict commit (D1 fetch matcher — armed and
-PASS on the belongings_box entry; recorded in RUN_RECORD phase 12).
-No judgement is pending when this brief fires; the driver fills the
-exact hash into RUN_RECORD — cite "phase-12 cause 1" in your reply.
+Commit `b55442e` — phase-12 cause 1 CLOSED (D1 fetch matcher armed
+and PASS on the belongings_box entry; recorded in RUN_RECORD
+phase 12). No judgement is pending; this brief may fire.
 
 ## The cause (one cause, one value)
 D1/D2 audit FAILs:

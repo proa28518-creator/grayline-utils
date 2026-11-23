@@ -22,7 +22,8 @@ export const PLACES = {
   NEIGHBOR_COAST:{at:[600,0,0],bounds:{x:[560,660],z:[-30,20]},sky:[.48,.59,.76],ground:[.43,.38,.31],fog:{color:'#c9d8df',density:.004},ao:{floor:0,h:1.8,amt:.25},lights:[{id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1,wrap:.3},{id:'windows',kind:'point',pos:[600,2,0],color:[1,.65,.35],power:.4,fall:.1,range:24}]},
   FLASHBACK_ROCK:{at:[1200,0,0],bounds:{x:[1160,1240],z:[-30,20]},sky:[.62,.46,.30],ground:[.36,.27,.19],fog:{color:'#b58a5d',density:.003},ao:{floor:0,h:2,amt:.3},lights:[{id:'sepia_sun',kind:'sun',dir:[-.5,.3,.8],color:[1,.68,.35],power:.9,wrap:.3}]},
   ROOM:{at:[1800,0,0],bounds:{x:[1796,1804],z:[-4,4]},sky:[.32,.25,.18],ground:[.28,.19,.12],fog:{color:'#4b3425',density:.002},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'room_key',kind:'sun',dir:[-.4,.7,.5],color:[1,.68,.36],power:.85,wrap:.3},{id:'lamp',kind:'point',pos:[1800,2.8,1],color:[1,.57,.25],power:.7,fall:.12,range:8}]},
-  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-20,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
+  // Codex seat · P12 D2 bounds · horizon silhouettes at z −140/−58, Layla-accepted staging · 2026-11-23.
+  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-150,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
 };
 const F={shore:flat('#d0b58b','#9c8260'),stone:flat('#89877e','#5f615e'),sand:flat('#d7c39b','#b19b72'),water:flat('#4e91aa','#28647f'),wood:flat('#9a7047','#61452f'),roof:flat('#78533b','#50382c'),plaster:flat('#d4b58b','#a78968'),dark:flat('#403a35','#292b2d'),green:flat('#71905a','#4c6c43'),metal:flat('#59656a','#37434a'),warm:basic('#ffd18a')};
 function buildWorld(){

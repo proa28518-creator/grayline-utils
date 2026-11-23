@@ -1,0 +1,744 @@
+Reading prompt from stdin...
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a2070f-eaf7-73f3-8e82-e85f9f7553d8
+--------
+user
+Execute the brief in P12_FIX_D2_BOUNDS_BRIEF.md in this project directory, exactly as written. NO LOCAL RENDERS. Paste the diff and the complete D1/D2 audit output in your reply. Do not commit.
+codex
+I’ll read the D2 brief and its referenced project instructions first, then make only the authorized code changes and run the specified audits without rendering locally. I’ll leave the work uncommitted and include the full diff plus audit output in my reply.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P12_FIX_D2_BOUNDS_BRIEF.md' -g 'AGENTS.md' -g 'UI_BRIEF.md' -g '*D1*' -g '*D2*'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P12_FIX_D2_BOUNDS_OUT.txt
+P12_FIX_D2_BOUNDS_BRIEF.md
+P12_FIX_D1_MATCHER_OUT.txt
+P12_FIX_D1_MATCHER_BRIEF.md
+
+exec
+/bin/bash -lc "cat P12_FIX_D2_BOUNDS_BRIEF.md && printf '\\n---D1 BRIEF---\\n' && cat P12_FIX_D1_MATCHER_BRIEF.md && printf '\\n---STATUS---\\n' && git status --short --branch && printf '\\n---TRACKED INSTRUCTIONS---\\n' && rg --files -g 'AGENTS.md' -g 'UI_BRIEF.md' .. /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall 2>/dev/null | head -80" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+# CODEX SEAT — BRIEF · phase 12 · cause 2 (set data): HILL_GRAVE bounds vs the distant-wall silhouettes
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md` (you author
+ALL code; seat-attribution headers), RULES.md §3 (one cause, one
+change), §4 (ONE PLACES table in `scenes/set.js`; no bare coordinates).
+**NO LOCAL RENDERS. No fleet dispatch. Audits only.**
+
+## Previous verdict this brief cites (hard-gate requirement)
+Commit `b55442e` — phase-12 cause 1 CLOSED (D1 fetch matcher armed
+and PASS on the belongings_box entry; recorded in RUN_RECORD
+phase 12). No judgement is pending; this brief may fire.
+
+## The cause (one cause, one value)
+D1/D2 audit FAILs:
+- `D2: prop wall_distant_sh14 at [2400,0,-140] is outside every place's bounds`
+- `D2: prop wall_distant_sh26 at [2400,-6,-58] is outside every place's bounds`
+
+Both props ARE PLACES-anchored (`p('HILL_GRAVE',[0,0,-140])` and
+`p('HILL_GRAVE',[0,-6,-58])` in `scenes/film.js`) — the D2
+no-bare-coordinates law is satisfied. What is stale is the place's
+declared bounds: `HILL_GRAVE` in `scenes/set.js` carries
+`bounds:{x:[2360,2440],z:[-20,20]}` — written for the hilltop pad
+before the horizon-silhouette staging existed. That staging is
+SETTLED and may not move: Qwen's SH14 design places an 18 D seawall
+silhouette 140 D seaward on the hill's horizon, and Layla ruled
+ACCEPT (the literal 2400 D sightline is geometrically impossible;
+the beat needs a wall on the horizon). SH26's silhouette sits 58 D
+seaward on the same horizon line.
+
+Driver verification (evidence for the disposition): `bounds` is
+consumed ONLY by `tools/audit_d1_d2.mjs`'s zone audit — no renderer,
+post, shade, or set-build code reads it (grep `.bounds` across
+`scenes/` and `lib/`: no consumer). Extending the bounds therefore
+changes NO rendered pixel; it makes the bookkeeping honest.
+
+## The change (exactly this, nothing else)
+In `scenes/set.js`, HILL_GRAVE only: `bounds.z` from `[-20,20]` to
+`[-150,20]` (covers both silhouettes: −140 and −58; x already inside
+[2360,2440]). Add a one-line comment at the entry recording why
+(horizon silhouettes at z −140/−58, Layla's accepted staging,
+2026-11-23). Refresh the seat-attribution note if the file carries
+one. Do NOT move the props, do NOT touch any other place, any other
+value, or any other file.
+
+## Verify + reply
+Run `node --check scenes/set.js`, `node tools/audit_d1_d2.mjs`, and
+`node tools/audit_staging.mjs` (full). In your reply paste: the diff
+and the complete D1/D2 output. Expected: both D2 bounds FAILs gone;
+the remaining FAILs are exactly the two D2-CLEAR town-hall items
+(SH13/SH16); the staging audit's chunk-2 section still reads 19/19
+and chunk 3 still reads 17/40 (this change must not alter any moment
+reading). If anything else moves, STOP and report it — do not tune.
+Do NOT commit.
+
+---D1 BRIEF---
+# CODEX SEAT — BRIEF · phase 12 · cause 1 (tooling): the stale D1 fetch matcher
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md` (you author
+ALL code; seat-attribution headers), RULES.md §3 (one cause, one
+change), §4. **NO LOCAL RENDERS. No fleet dispatch. Audits only.**
+
+## Previous verdict this brief cites (hard-gate requirement)
+Commit `e5131de` — phase 11 CLOSE: every chunk-2 cause CLOSED or
+formally parked; the chunk-3 merge (`db405c0`) + boot fix (`7bd9527`)
+are in; no judgement is pending. This brief may fire.
+
+## The cause (one cause, one file)
+`tools/audit_d1_d2.mjs` arms its D1 belongings-box fetch check on
+`p.id === 'box' || p.kind === 'box'` (the check + the "not present"
+note near the end of the D1 section). The film's actual entry — in
+`scenes/film.js` since the chunk-3 merge — is
+`{id:'box_sh13', kind:'belongings_box', in:'world', at:…, fetch:true, keys:[…]}`.
+The matcher never matches it, so the D1 gate's fetch:true protection
+(the SH13 arms beat: the mayor's belongings box must keep `fetch:true`)
+silently never arms. The audit currently prints the misleading note
+"D1: no belongings-box prop yet".
+
+## The change (exactly this, nothing else)
+In `tools/audit_d1_d2.mjs`:
+1. Arm the fetch check on the real entry: a prop whose
+   `kind === 'belongings_box'` (match on kind; if more than one such
+   prop ever exists, the check applies to each). Keep the check's
+   semantics: it FAILs if any belongings_box entry's `fetch` is not
+   exactly `true`.
+2. The "not present" note may remain for the genuinely-absent case,
+   worded so it cannot be confused with the present case.
+3. If the file header comment describes the old matcher, update that
+   one comment line to match.
+4. Add/refresh the seat-attribution note for this change in the file
+   header (author: Codex seat; brief: this file; date: 2026-11-23).
+
+Do NOT change any threshold, any other check, or any other file.
+Do NOT touch `scenes/`, `lib/`, `engine/`.
+
+## Verify + reply
+Run `node --check tools/audit_d1_d2.mjs` and
+`node tools/audit_d1_d2.mjs`. In your reply paste: the diff, and the
+complete audit output. Expected: the D1 fetch check is ARMED and
+PASSes (the entry carries fetch:true), the stale note is gone, and
+the remaining FAIL list is exactly the 4 known items (D2 bounds ×2 —
+wall_distant_sh14/sh26; D2-CLEAR ×2 — SH13/SH16 town hall). If the
+armed check FAILs or anything else changes, STOP and report the
+measured discrepancy — do not tune anything to force the expectation.
+Do NOT commit.
+
+---STATUS---
+## ui/unified-interface...origin/ui/unified-interface
+ M P12_FIX_D2_BOUNDS_BRIEF.md
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P12_FIX_D2_BOUNDS_OUT.txt
+
+---TRACKED INSTRUCTIONS---
+
+codex
+The brief authorizes one value change and one explanatory comment in `scenes/set.js`. The working tree already has unrelated changes in the brief file plus two untracked files; I’ll preserve all of them and check the target file’s current header and HILL_GRAVE entry before editing.
+exec
+/bin/bash -lc "rg -n -C 7 'HILL_GRAVE|Codex seat|seat-attribution|bounds' scenes/set.js && printf '\\n--- RULES ---\\n' && (cat RULES.md 2>/dev/null || true) && printf '\\n--- CURRENT D2 OUTPUT FILE ---\\n' && cat P12_FIX_D2_BOUNDS_OUT.txt" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+1-// Fudai own set: one shared anchor table drives staging, lighting, post and shade.
+2-import { createLightRig } from '../world/look/lights.js';
+3-import { createPost } from '../world/look/post.js';
+4-import { createRigShade } from '../world/look/rigshade.js';
+5-import { THREE, flat, basic, part, rng } from '../engine/props/_kit.js';
+6-
+7-export const PLACES = {
+8:  COAST_WALL: { at:[0,0,-16], bounds:{x:[-40,40],z:[-20,-12]}, sky:[.48,.59,.76], ground:[.42,.38,.31], fog:{color:'#c9d8df',density:.0035}, ao:{floor:0,h:1.8,amt:.28}, states:[{from:25.09,sky:[.52,.60,.74],lights:{sun:{power:.85,dir:[-.85,.28,.45],color:[1,.80,.55]}}},{from:25.75,sky:[.42,.58,.80],lights:{sun:{power:1.20,dir:[-.20,.85,.40],color:[1,.90,.70]}}},{from:26.40,sky:[.78,.52,.38],ground:[.45,.36,.28],lights:{sun:{power:.65,dir:[.80,.18,.40],color:[1,.55,.30]}}},{from:27.05,sky:[.07,.10,.22],ground:[.10,.12,.18],fog:{color:'#1c2733',density:.0040},lights:{sun:{power:.14,dir:[.30,.60,.30],color:[.65,.75,1.00]}}},{from:27.45,sky:[.55,.58,.70],ground:[.42,.38,.31],fog:{color:'#c9d8df',density:.0035},lights:{sun:{power:.80,dir:[-.85,.25,.45],color:[1,.75,.50]}}},{from:27.72,sky:[.48,.59,.76],ground:[.42,.38,.31],fog:{color:'#c9d8df',density:.0035},lights:{sun:{power:1.05,dir:[-.48,.35,.82],color:[1,.78,.52]}}}], lights:[
+9-    {id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1.05,wrap:.32},
+10-    {id:'gate_l',kind:'point',pos:[-3.8,7.5,-14.6],color:[1,.62,.28],power:.9,fall:.08,range:15,wrap:.25},
+11-    {id:'gate_r',kind:'point',pos:[3.8,7.5,-14.6],color:[1,.62,.28],power:.9,fall:.08,range:15,wrap:.25},
+12-  ]},
+13:  COAST_VILLAGE: { at:[0,0,2], bounds:{x:[-30,30],z:[-10,14]}, sky:[.48,.59,.76],ground:[.52,.43,.32],fog:{color:'#c9d8df',density:.0035},ao:{floor:0,h:1.8,amt:.28},lights:[
+14-    {id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1.05,wrap:.32},
+15-    {id:'windows',kind:'point',pos:[-7,2.1,1],color:[1,.67,.34],power:.35,fall:.12,range:12,wrap:.2},
+16-    {id:'harbour',kind:'point',pos:[9,2.8,-5],color:[1,.7,.4],power:.45,fall:.1,range:16,wrap:.2},
+17-  ]},
+18:  SEA:{at:[0,0,-44],bounds:{x:[-60,60],z:[-70,-18]},sky:[.40,.56,.72],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},ao:{floor:0,h:1,amt:.12},states:[{from:25.09,sky:[.46,.58,.72],lights:{sun:{power:.85,dir:[-.85,.28,.45],color:[1,.80,.55]}}},{from:25.75,sky:[.36,.56,.78],lights:{sun:{power:1.15,dir:[-.20,.85,.40],color:[1,.90,.70]}}},{from:26.40,sky:[.62,.44,.34],ground:[.20,.30,.40],lights:{sun:{power:.60,dir:[.80,.18,.40],color:[1,.55,.30]}}},{from:27.05,sky:[.05,.08,.18],ground:[.04,.08,.16],fog:{color:'#16202c',density:.0030},lights:{sun:{power:.12,dir:[.30,.60,.30],color:[.65,.75,1.00]}}},{from:27.45,sky:[.48,.56,.68],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},lights:{sun:{power:.80,dir:[-.85,.25,.45],color:[1,.75,.50]}}},{from:27.72,sky:[.40,.56,.72],ground:[.16,.39,.53],fog:{color:'#aac8d4',density:.0025},lights:{sun:{power:1.00,dir:[-.48,.35,.82],color:[1,.78,.52]}}}],lights:[
+19-    {id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1.0,wrap:.3},
+20-    {id:'glitter',kind:'point',pos:[0,5,-42],color:[.55,.82,1],power:.75,fall:.025,range:45,wrap:.2},
+21-  ]},
+22:  NEIGHBOR_COAST:{at:[600,0,0],bounds:{x:[560,660],z:[-30,20]},sky:[.48,.59,.76],ground:[.43,.38,.31],fog:{color:'#c9d8df',density:.004},ao:{floor:0,h:1.8,amt:.25},lights:[{id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1,wrap:.3},{id:'windows',kind:'point',pos:[600,2,0],color:[1,.65,.35],power:.4,fall:.1,range:24}]},
+23:  FLASHBACK_ROCK:{at:[1200,0,0],bounds:{x:[1160,1240],z:[-30,20]},sky:[.62,.46,.30],ground:[.36,.27,.19],fog:{color:'#b58a5d',density:.003},ao:{floor:0,h:2,amt:.3},lights:[{id:'sepia_sun',kind:'sun',dir:[-.5,.3,.8],color:[1,.68,.35],power:.9,wrap:.3}]},
+24:  ROOM:{at:[1800,0,0],bounds:{x:[1796,1804],z:[-4,4]},sky:[.32,.25,.18],ground:[.28,.19,.12],fog:{color:'#4b3425',density:.002},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'room_key',kind:'sun',dir:[-.4,.7,.5],color:[1,.68,.36],power:.85,wrap:.3},{id:'lamp',kind:'point',pos:[1800,2.8,1],color:[1,.57,.25],power:.7,fall:.12,range:8}]},
+25:  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-20,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
+26-};
+27-const F={shore:flat('#d0b58b','#9c8260'),stone:flat('#89877e','#5f615e'),sand:flat('#d7c39b','#b19b72'),water:flat('#4e91aa','#28647f'),wood:flat('#9a7047','#61452f'),roof:flat('#78533b','#50382c'),plaster:flat('#d4b58b','#a78968'),dark:flat('#403a35','#292b2d'),green:flat('#71905a','#4c6c43'),metal:flat('#59656a','#37434a'),warm:basic('#ffd18a')};
+28-function buildWorld(){
+29- const g=new THREE.Group(), R=rng(1122);
+30- const add=(geo,mat,x,y,z,ry=0,iw=.014)=>{const m=part(geo,mat,iw);m.position.set(x,y,z);m.rotation.y=ry;g.add(m);return m;};
+31- const box=(mat,x,y,z,w,h,d,ry=0)=>add(new THREE.BoxGeometry(w,h,d),mat,x,y,z,ry);
+32- const cylinder=(mat,x,y,z,r,h)=>add(new THREE.CylinderGeometry(r,r,h,10),mat,x,y,z);
+--
+52- // Sea and a narrow sun-glitter ribbon; no set overlap with wall prop.
+53- const sea=box(F.water,sc[0],-.18,sc[2],116,.16,52);sea.userData.shimmer=true;
+54- box(F.water,0,-.08,-67,118,.08,3); // distant horizon strip
+55- // Distant place pads and one recognizable silhouette per place.
+56- const nc=PLACES.NEIGHBOR_COAST.at;box(F.sand,nc[0],-.12,nc[2],100,.24,48);box(F.stone,nc[0],6,nc[2]-10,24,12,.8);for(const x of [nc[0]-20,nc[0],nc[0]+20]){box(F.plaster,x,2.1,nc[2]+8,4,4.2,3.5);add(new THREE.ConeGeometry(2.8,1,4),F.roof,x,4.7,nc[2]+8);}
+57- const rc=PLACES.FLASHBACK_ROCK.at;box(F.sand,rc[0],-.12,rc[2],78,.24,48);add(new THREE.DodecahedronGeometry(9,0),F.stone,rc[0],5,rc[2]-5,0,.03);
+58- const ic=PLACES.ROOM.at;box(F.wood,ic[0],1.5,ic[2]-3,8,3, .35);box(F.plaster,ic[0],1.5,ic[2]+3,8,3,.35);
+59: const hc=PLACES.HILL_GRAVE.at;add(new THREE.SphereGeometry(19,20,10),F.green,hc[0],-5,hc[2],0,0);box(F.stone,hc[0],.8,hc[2],1.1,1.6,.35);
+60- g.traverse(m=>{m.frustumCulled=false;});return {group:g,sea};
+61-}
+62-export async function buildSet(THREEArg,scene,opts={},kit){
+63- const rig=createLightRig(THREE,PLACES), look=opts.post?createPost(THREE,rig,opts.post):undefined;
+64- if(look&&opts.post.shade)look.shading=createRigShade(THREE,rig,opts.post.shade);
+65- const {group,sea}=buildWorld();scene.add(group);
+66- const wall=PLACES.COAST_WALL.at,v=PLACES.COAST_VILLAGE.at,s=PLACES.SEA.at;
+
+--- RULES ---
+
+--- CURRENT D2 OUTPUT FILE ---
+Reading prompt from stdin...
+OpenAI Codex v0.171.0-alpha.13
+--------
+workdir: /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+model: gpt-6-luna
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: none
+reasoning summaries: none
+session id: 01a2070f-eaf7-73f3-8e82-e85f9f7553d8
+--------
+user
+Execute the brief in P12_FIX_D2_BOUNDS_BRIEF.md in this project directory, exactly as written. NO LOCAL RENDERS. Paste the diff and the complete D1/D2 audit output in your reply. Do not commit.
+codex
+I’ll read the D2 brief and its referenced project instructions first, then make only the authorized code changes and run the specified audits without rendering locally. I’ll leave the work uncommitted and include the full diff plus audit output in my reply.
+exec
+/bin/bash -lc "pwd && rg --files -g 'P12_FIX_D2_BOUNDS_BRIEF.md' -g 'AGENTS.md' -g 'UI_BRIEF.md' -g '*D1*' -g '*D2*'" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+P12_FIX_D2_BOUNDS_OUT.txt
+P12_FIX_D2_BOUNDS_BRIEF.md
+P12_FIX_D1_MATCHER_OUT.txt
+P12_FIX_D1_MATCHER_BRIEF.md
+
+exec
+/bin/bash -lc "cat P12_FIX_D2_BOUNDS_BRIEF.md && printf '\\n---D1 BRIEF---\\n' && cat P12_FIX_D1_MATCHER_BRIEF.md && printf '\\n---STATUS---\\n' && git status --short --branch && printf '\\n---TRACKED INSTRUCTIONS---\\n' && rg --files -g 'AGENTS.md' -g 'UI_BRIEF.md' .. /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall 2>/dev/null | head -80" in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+# CODEX SEAT — BRIEF · phase 12 · cause 2 (set data): HILL_GRAVE bounds vs the distant-wall silhouettes
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md` (you author
+ALL code; seat-attribution headers), RULES.md §3 (one cause, one
+change), §4 (ONE PLACES table in `scenes/set.js`; no bare coordinates).
+**NO LOCAL RENDERS. No fleet dispatch. Audits only.**
+
+## Previous verdict this brief cites (hard-gate requirement)
+Commit `b55442e` — phase-12 cause 1 CLOSED (D1 fetch matcher armed
+and PASS on the belongings_box entry; recorded in RUN_RECORD
+phase 12). No judgement is pending; this brief may fire.
+
+## The cause (one cause, one value)
+D1/D2 audit FAILs:
+- `D2: prop wall_distant_sh14 at [2400,0,-140] is outside every place's bounds`
+- `D2: prop wall_distant_sh26 at [2400,-6,-58] is outside every place's bounds`
+
+Both props ARE PLACES-anchored (`p('HILL_GRAVE',[0,0,-140])` and
+`p('HILL_GRAVE',[0,-6,-58])` in `scenes/film.js`) — the D2
+no-bare-coordinates law is satisfied. What is stale is the place's
+declared bounds: `HILL_GRAVE` in `scenes/set.js` carries
+`bounds:{x:[2360,2440],z:[-20,20]}` — written for the hilltop pad
+before the horizon-silhouette staging existed. That staging is
+SETTLED and may not move: Qwen's SH14 design places an 18 D seawall
+silhouette 140 D seaward on the hill's horizon, and Layla ruled
+ACCEPT (the literal 2400 D sightline is geometrically impossible;
+the beat needs a wall on the horizon). SH26's silhouette sits 58 D
+seaward on the same horizon line.
+
+Driver verification (evidence for the disposition): `bounds` is
+consumed ONLY by `tools/audit_d1_d2.mjs`'s zone audit — no renderer,
+post, shade, or set-build code reads it (grep `.bounds` across
+`scenes/` and `lib/`: no consumer). Extending the bounds therefore
+changes NO rendered pixel; it makes the bookkeeping honest.
+
+## The change (exactly this, nothing else)
+In `scenes/set.js`, HILL_GRAVE only: `bounds.z` from `[-20,20]` to
+`[-150,20]` (covers both silhouettes: −140 and −58; x already inside
+[2360,2440]). Add a one-line comment at the entry recording why
+(horizon silhouettes at z −140/−58, Layla's accepted staging,
+2026-11-23). Refresh the seat-attribution note if the file carries
+one. Do NOT move the props, do NOT touch any other place, any other
+value, or any other file.
+
+## Verify + reply
+Run `node --check scenes/set.js`, `node tools/audit_d1_d2.mjs`, and
+`node tools/audit_staging.mjs` (full). In your reply paste: the diff
+and the complete D1/D2 output. Expected: both D2 bounds FAILs gone;
+the remaining FAILs are exactly the two D2-CLEAR town-hall items
+(SH13/SH16); the staging audit's chunk-2 section still reads 19/19
+and chunk 3 still reads 17/40 (this change must not alter any moment
+reading). If anything else moves, STOP and report it — do not tune.
+Do NOT commit.
+
+---D1 BRIEF---
+# CODEX SEAT — BRIEF · phase 12 · cause 1 (tooling): the stale D1 fetch matcher
+
+You are the Codex seat for the film "fudai-wall", project
+`~/workspace/fudai-rebuild/studio/projects/fudai-wall/`, branch
+`ui/unified-interface`. Standing method: studio `AGENTS.md` (you author
+ALL code; seat-attribution headers), RULES.md §3 (one cause, one
+change), §4. **NO LOCAL RENDERS. No fleet dispatch. Audits only.**
+
+## Previous verdict this brief cites (hard-gate requirement)
+Commit `e5131de` — phase 11 CLOSE: every chunk-2 cause CLOSED or
+formally parked; the chunk-3 merge (`db405c0`) + boot fix (`7bd9527`)
+are in; no judgement is pending. This brief may fire.
+
+## The cause (one cause, one file)
+`tools/audit_d1_d2.mjs` arms its D1 belongings-box fetch check on
+`p.id === 'box' || p.kind === 'box'` (the check + the "not present"
+note near the end of the D1 section). The film's actual entry — in
+`scenes/film.js` since the chunk-3 merge — is
+`{id:'box_sh13', kind:'belongings_box', in:'world', at:…, fetch:true, keys:[…]}`.
+The matcher never matches it, so the D1 gate's fetch:true protection
+(the SH13 arms beat: the mayor's belongings box must keep `fetch:true`)
+silently never arms. The audit currently prints the misleading note
+"D1: no belongings-box prop yet".
+
+## The change (exactly this, nothing else)
+In `tools/audit_d1_d2.mjs`:
+1. Arm the fetch check on the real entry: a prop whose
+   `kind === 'belongings_box'` (match on kind; if more than one such
+   prop ever exists, the check applies to each). Keep the check's
+   semantics: it FAILs if any belongings_box entry's `fetch` is not
+   exactly `true`.
+2. The "not present" note may remain for the genuinely-absent case,
+   worded so it cannot be confused with the present case.
+3. If the file header comment describes the old matcher, update that
+   one comment line to match.
+4. Add/refresh the seat-attribution note for this change in the file
+   header (author: Codex seat; brief: this file; date: 2026-11-23).
+
+Do NOT change any threshold, any other check, or any other file.
+Do NOT touch `scenes/`, `lib/`, `engine/`.
+
+## Verify + reply
+Run `node --check tools/audit_d1_d2.mjs` and
+`node tools/audit_d1_d2.mjs`. In your reply paste: the diff, and the
+complete audit output. Expected: the D1 fetch check is ARMED and
+PASSes (the entry carries fetch:true), the stale note is gone, and
+the remaining FAIL list is exactly the 4 known items (D2 bounds ×2 —
+wall_distant_sh14/sh26; D2-CLEAR ×2 — SH13/SH16 town hall). If the
+armed check FAILs or anything else changes, STOP and report the
+measured discrepancy — do not tune anything to force the expectation.
+Do NOT commit.
+
+---STATUS---
+## ui/unified-interface...origin/ui/unified-interface
+ M P12_FIX_D2_BOUNDS_BRIEF.md
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P12_FIX_D2_BOUNDS_OUT.txt
+
+---TRACKED INSTRUCTIONS---
+
+codex
+The brief authorizes one value change and one explanatory comment in `scenes/set.js`. The working tree already has unrelated changes in the brief file plus two untracked files; I’ll preserve all of them and check the target file’s current header and HILL_GRAVE entry before editing.
+
+apply patch
+patch: completed
+/home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall/scenes/set.js
+diff --git a/projects/fudai-wall/scenes/set.js b/projects/fudai-wall/scenes/set.js
+index a4fb8344ab4edfd012d7e4293c52d62832ba6184..699cf820eb6280185f3c4522de08cf12180e4182
+--- a/projects/fudai-wall/scenes/set.js
++++ b/projects/fudai-wall/scenes/set.js
+@@ -22,7 +22,8 @@
+   NEIGHBOR_COAST:{at:[600,0,0],bounds:{x:[560,660],z:[-30,20]},sky:[.48,.59,.76],ground:[.43,.38,.31],fog:{color:'#c9d8df',density:.004},ao:{floor:0,h:1.8,amt:.25},lights:[{id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1,wrap:.3},{id:'windows',kind:'point',pos:[600,2,0],color:[1,.65,.35],power:.4,fall:.1,range:24}]},
+   FLASHBACK_ROCK:{at:[1200,0,0],bounds:{x:[1160,1240],z:[-30,20]},sky:[.62,.46,.30],ground:[.36,.27,.19],fog:{color:'#b58a5d',density:.003},ao:{floor:0,h:2,amt:.3},lights:[{id:'sepia_sun',kind:'sun',dir:[-.5,.3,.8],color:[1,.68,.35],power:.9,wrap:.3}]},
+   ROOM:{at:[1800,0,0],bounds:{x:[1796,1804],z:[-4,4]},sky:[.32,.25,.18],ground:[.28,.19,.12],fog:{color:'#4b3425',density:.002},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'room_key',kind:'sun',dir:[-.4,.7,.5],color:[1,.68,.36],power:.85,wrap:.3},{id:'lamp',kind:'point',pos:[1800,2.8,1],color:[1,.57,.25],power:.7,fall:.12,range:8}]},
+-  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-20,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
++  // Codex seat · P12 D2 bounds · horizon silhouettes at z −140/−58, Layla-accepted staging · 2026-11-23.
++  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-150,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
+ };
+ const F={shore:flat('#d0b58b','#9c8260'),stone:flat('#89877e','#5f615e'),sand:flat('#d7c39b','#b19b72'),water:flat('#4e91aa','#28647f'),wood:flat('#9a7047','#61452f'),roof:flat('#78533b','#50382c'),plaster:flat('#d4b58b','#a78968'),dark:flat('#403a35','#292b2d'),green:flat('#71905a','#4c6c43'),metal:flat('#59656a','#37434a'),warm:basic('#ffd18a')};
+ function buildWorld(){
+
+codex
+The single HILL_GRAVE bounds update and attribution comment are in place. I’m running the exact syntax check and both audits now; no render or dispatch will run.
+exec
+/bin/bash -lc 'node --check scenes/set.js && node tools/audit_d1_d2.mjs && node tools/audit_staging.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 140ms:
+— D1/D2 AUDIT —
+note: D2-CLEAR: 14 building solids checked per shot
+FAIL (2):
+  ✗ D2-CLEAR: shot 14 (SH13) camera path intersects town hall
+  ✗ D2-CLEAR: shot 17 (SH16) camera path intersects town hall
+
+exec
+/bin/bash -lc 'node tools/audit_staging.mjs' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ exited 1 in 250ms:
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (workers's chest; was 0.9)
+  camera floor: S15 camera raised to y 1.25 (child's chest; was 0.9)
+  camera floor: S19 camera raised to y 1.26 (villagers_shore's chest; was 0.65)
+  camera floor: S20 camera raised to y 1.61 (mayor_young's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; BODY PASS 3/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; popsign PASS 359px corners 8/8; BODY PASS 3/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.02, 2.67, -4.76] target [4.00, 1.90, 0.00] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 14.2° head in 454px
+CAM F570 pos [4.30, 5.82, -0.30] target [4.00, 1.90, 0.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a face PASS angle 51.5° head in 555px
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (2/19 moments)
+CHUNK 3 | FRAME | TIME | SHOT | RESULT | CHECKS
+CHUNK3 F933 | 31.10 | SH13 | PASS | mocker_b hand tip PASS point in frustum
+CHUNK3 F942 | 31.40 | SH13 | FAIL | box_sh13 FAIL 195px out of frustum
+CHUNK3 F969 | 32.30 | SH13 | FAIL | mayor_old face FAIL angle 61.5° head out 343px
+CHUNK3 F993 | 33.10 | SH14 | PASS | gravestone_sh14 PASS 692px in frustum
+CHUNK3 F1026 | 34.20 | SH14 | PASS | leaf_sh14 PASS 75px in frustum
+CHUNK3 F1056 | 35.20 | SH14 | FAIL | wall_distant_sh14 FAIL 357px out of frustum
+CHUNK3 F1083 | 36.10 | SH15 | PASS | calendar state PASS page 14 >= 14
+CHUNK3 F1101 | 36.70 | SH15 | PASS | calendar PASS 3810px in frustum
+CHUNK3 F1110 | 37.00 | SH15 | PASS | calendar PASS 3878px in frustum
+CHUNK3 F1131 | 37.70 | SH16 | FAIL | villagers body FAIL 428px corners 2/8
+CHUNK3 F1137 | 37.90 | SH16 | PASS | birds_sh16 PASS 130px in frustum
+CHUNK3 F1155 | 38.50 | SH16 | FAIL | villagers face FAIL angle 33.4° head out 221px
+CHUNK3 F1188 | 39.60 | SH17 | FAIL | sea_sheet_sh17 state FAIL pull 0 >= 6
+CHUNK3 F1197 | 39.90 | SH17 | PASS | boat_sh17_a PASS 512px in frustum
+CHUNK3 F1215 | 40.50 | SH17 | FAIL | boat_sh17_b FAIL 638px out of frustum
+CHUNK3 F1257 | 41.90 | SH18 | PASS | wave_sh18 PASS 1833px in frustum
+CHUNK3 F1302 | 43.40 | SH18 | FAIL | measure_wave FAIL 2082px out of frustum
+CHUNK3 F1335 | 44.50 | SH18 | FAIL | wave_sh18 FAIL 2094px out of frustum
+CHUNK3 F1367 | 45.57 | SH19 | PASS | mayor_young face PASS angle 8.1° head in 106px
+CHUNK3 F1410 | 47.00 | SH19 | FAIL | mayor_young face FAIL angle 10.3° head out 131px
+CHUNK3 F1428 | 47.60 | SH19 | FAIL | wave_old_sh19 FAIL 6216px out of frustum
+CHUNK3 F1497 | 49.90 | SH20 | FAIL | carved_line_sh20 FAIL 151px out of frustum
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 103.4° head out 1799px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 3337px corners 0/8
+CHUNK3 F1599 | 53.30 | SH21 | PASS | pencil_mark_sh21 PASS 254px in frustum
+CHUNK3 F1635 | 54.50 | SH21 | FAIL | child face PASS angle 0.0° head in 854px; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.275 (target +0.062 on both)
+CHUNK3 F1647 | 54.90 | SH22 | FAIL | seawall FAIL 216px out of frustum; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.275 (target +0.062 on both)
+CHUNK3 F1677 | 55.90 | SH22 | FAIL | pour_sh22 FAIL 155px in frustum
+CHUNK3 F1716 | 57.20 | SH22 | FAIL | workers body FAIL 243px corners 0/8
+CHUNK3 F1764 | 58.80 | SH23 | PASS | wave_neighbor_sh23 PASS 741px in frustum
+CHUNK3 F1806 | 60.20 | SH23 | PASS | wave_neighbor_sh23 PASS 1191px in frustum
+CHUNK3 F1827 | 60.90 | SH23 | PASS | wave_neighbor_sh23 PASS 1098px in frustum occupancy subject
+CHUNK3 F1863 | 62.10 | SH24 | PASS | spray_hero_sh24 PASS 663px in frustum
+CHUNK3 F1896 | 63.20 | SH24 | FAIL | wave_hero_sh24 FAIL 3310px out of frustum
+CHUNK3 F1908 | 63.60 | SH24 | FAIL | SH24 crest margin FAIL wave crest 17.50 <= 17.50; wall top 18.00; wall-top in frame no
+CHUNK3 F1944 | 64.80 | SH25 | FAIL | sunbeam_sh25 FAIL 2522px out of frustum
+CHUNK3 F1953 | 65.10 | SH25 | FAIL | villagers occupancy FAIL 170px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | FAIL | mocker_a face FAIL angle 96.7° head out 320px occluded by village house @14,-2
+CHUNK3 F2001 | 66.70 | SH26 | PASS | gravestone_sh26 PASS 408px in frustum
+CHUNK3 F2022 | 67.40 | SH26 | PASS | wall_distant_sh26 PASS 644px in frustum
+CHUNK 3: FAIL (23/40 moments)
+
+exec
+/bin/bash -lc 'git diff -- scenes/set.js && git status --short --branch' in /home/hatch/workspace/fudai-rebuild/studio/projects/fudai-wall
+ succeeded in 0ms:
+diff --git a/projects/fudai-wall/scenes/set.js b/projects/fudai-wall/scenes/set.js
+index a4fb834..699cf82 100644
+--- a/projects/fudai-wall/scenes/set.js
++++ b/projects/fudai-wall/scenes/set.js
+@@ -22,7 +22,8 @@ export const PLACES = {
+   NEIGHBOR_COAST:{at:[600,0,0],bounds:{x:[560,660],z:[-30,20]},sky:[.48,.59,.76],ground:[.43,.38,.31],fog:{color:'#c9d8df',density:.004},ao:{floor:0,h:1.8,amt:.25},lights:[{id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1,wrap:.3},{id:'windows',kind:'point',pos:[600,2,0],color:[1,.65,.35],power:.4,fall:.1,range:24}]},
+   FLASHBACK_ROCK:{at:[1200,0,0],bounds:{x:[1160,1240],z:[-30,20]},sky:[.62,.46,.30],ground:[.36,.27,.19],fog:{color:'#b58a5d',density:.003},ao:{floor:0,h:2,amt:.3},lights:[{id:'sepia_sun',kind:'sun',dir:[-.5,.3,.8],color:[1,.68,.35],power:.9,wrap:.3}]},
+   ROOM:{at:[1800,0,0],bounds:{x:[1796,1804],z:[-4,4]},sky:[.32,.25,.18],ground:[.28,.19,.12],fog:{color:'#4b3425',density:.002},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'room_key',kind:'sun',dir:[-.4,.7,.5],color:[1,.68,.36],power:.85,wrap:.3},{id:'lamp',kind:'point',pos:[1800,2.8,1],color:[1,.57,.25],power:.7,fall:.12,range:8}]},
+-  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-20,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
++  // Codex seat · P12 D2 bounds · horizon silhouettes at z −140/−58, Layla-accepted staging · 2026-11-23.
++  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-150,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
+ };
+ const F={shore:flat('#d0b58b','#9c8260'),stone:flat('#89877e','#5f615e'),sand:flat('#d7c39b','#b19b72'),water:flat('#4e91aa','#28647f'),wood:flat('#9a7047','#61452f'),roof:flat('#78533b','#50382c'),plaster:flat('#d4b58b','#a78968'),dark:flat('#403a35','#292b2d'),green:flat('#71905a','#4c6c43'),metal:flat('#59656a','#37434a'),warm:basic('#ffd18a')};
+ function buildWorld(){
+## ui/unified-interface...origin/ui/unified-interface
+ M P12_FIX_D2_BOUNDS_BRIEF.md
+ M scenes/set.js
+?? NVIDIA_BAKEOFF_PROMPT.md
+?? P12_FIX_D2_BOUNDS_OUT.txt
+
+codex
+Updated only `HILL_GRAVE` in `scenes/set.js`: its z bounds now extend to `-150`, with the requested attribution comment. `node --check scenes/set.js` passed. No local render or fleet dispatch was run, and nothing was committed.
+
+The D1/D2 audit cleared both HILL_GRAVE bounds failures. Its complete output:
+
+```text
+— D1/D2 AUDIT —
+note: D2-CLEAR: 14 building solids checked per shot
+FAIL (2):
+  ✗ D2-CLEAR: shot 14 (SH13) camera path intersects town hall
+  ✗ D2-CLEAR: shot 17 (SH16) camera path intersects town hall
+```
+
+The staging audit did **not** match the brief’s expected counts: chunk 2 reported `FAIL (2/19 moments)` instead of 19/19, and chunk 3 reported `FAIL (23/40 moments)` instead of 17/40. I stopped without tuning. Its full output is included below.
+
+Diff:
+
+```diff
+diff --git a/projects/fudai-wall/scenes/set.js b/projects/fudai-wall/scenes/set.js
+index a4fb834..699cf82 100644
+--- a/projects/fudai-wall/scenes/set.js
++++ b/projects/fudai-wall/scenes/set.js
+@@ -22,7 +22,8 @@ export const PLACES = {
+   NEIGHBOR_COAST:{at:[600,0,0],bounds:{x:[560,660],z:[-30,20]},sky:[.48,.59,.76],ground:[.43,.38,.31],fog:{color:'#c9d8df',density:.004},ao:{floor:0,h:1.8,amt:.25},lights:[{id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1,wrap:.3},{id:'windows',kind:'point',pos:[600,2,0],color:[1,.65,.35],power:.4,fall:.1,range:24}]},
+   FLASHBACK_ROCK:{at:[1200,0,0],bounds:{x:[1160,1240],z:[-30,20]},sky:[.62,.46,.30],ground:[.36,.27,.19],fog:{color:'#b58a5d',density:.003},ao:{floor:0,h:2,amt:.3},lights:[{id:'sepia_sun',kind:'sun',dir:[-.5,.3,.8],color:[1,.68,.35],power:.9,wrap:.3}]},
+   ROOM:{at:[1800,0,0],bounds:{x:[1796,1804],z:[-4,4]},sky:[.32,.25,.18],ground:[.28,.19,.12],fog:{color:'#4b3425',density:.002},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'room_key',kind:'sun',dir:[-.4,.7,.5],color:[1,.68,.36],power:.85,wrap:.3},{id:'lamp',kind:'point',pos:[1800,2.8,1],color:[1,.57,.25],power:.7,fall:.12,range:8}]},
+-  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-20,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
++  // Codex seat · P12 D2 bounds · horizon silhouettes at z −140/−58, Layla-accepted staging · 2026-11-23.
++  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-150,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
+ };
+ const F={shore:flat('#d0b58b','#9c8260'),stone:flat('#89877e','#5f615e'),sand:flat('#d7c39b','#b19b72'),water:flat('#4e91aa','#28647f'),wood:flat('#9a7047','#61452f'),roof:flat('#78533b','#50382c'),plaster:flat('#d4b58b','#a78968'),dark:flat('#403a35','#292b2d'),green:flat('#71905a','#4c6c43'),metal:flat('#59656a','#37434a'),warm:basic('#ffd18a')};
+ function buildWorld(){
+```
+
+Complete staging audit output:
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (workers's chest; was 0.9)
+  camera floor: S15 camera raised to y 1.25 (child's chest; was 0.9)
+  camera floor: S19 camera raised to y 1.26 (villagers_shore's chest; was 0.65)
+  camera floor: S20 camera raised to y 1.61 (mayor_young's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; BODY PASS 3/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; popsign PASS 359px corners 8/8; BODY PASS 3/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.02, 2.67, -4.76] target [4.00, 1.90, 0.00] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 14.2° head in 454px
+CAM F570 pos [4.30, 5.82, -0.30] target [4.00, 1.90, 0.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a face PASS angle 51.5° head in 555px
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (2/19 moments)
+CHUNK 3 | FRAME | TIME | SHOT | RESULT | CHECKS
+CHUNK3 F933 | 31.10 | SH13 | PASS | mocker_b hand tip PASS point in frustum
+CHUNK3 F942 | 31.40 | SH13 | FAIL | box_sh13 FAIL 195px out of frustum
+CHUNK3 F969 | 32.30 | SH13 | FAIL | mayor_old face FAIL angle 61.5° head out 343px
+CHUNK3 F993 | 33.10 | SH14 | PASS | gravestone_sh14 PASS 692px in frustum
+CHUNK3 F1026 | 34.20 | SH14 | PASS | leaf_sh14 PASS 75px in frustum
+CHUNK3 F1056 | 35.20 | SH14 | FAIL | wall_distant_sh14 FAIL 357px out of frustum
+CHUNK3 F1083 | 36.10 | SH15 | PASS | calendar state PASS page 14 >= 14
+CHUNK3 F1101 | 36.70 | SH15 | PASS | calendar PASS 3810px in frustum
+CHUNK3 F1110 | 37.00 | SH15 | PASS | calendar PASS 3878px in frustum
+CHUNK3 F1131 | 37.70 | SH16 | FAIL | villagers body FAIL 428px corners 2/8
+CHUNK3 F1137 | 37.90 | SH16 | PASS | birds_sh16 PASS 130px in frustum
+CHUNK3 F1155 | 38.50 | SH16 | FAIL | villagers face FAIL angle 33.4° head out 221px
+CHUNK3 F1188 | 39.60 | SH17 | FAIL | sea_sheet_sh17 state FAIL pull 0 >= 6
+CHUNK3 F1197 | 39.90 | SH17 | PASS | boat_sh17_a PASS 512px in frustum
+CHUNK3 F1215 | 40.50 | SH17 | FAIL | boat_sh17_b FAIL 638px out of frustum
+CHUNK3 F1257 | 41.90 | SH18 | PASS | wave_sh18 PASS 1833px in frustum
+CHUNK3 F1302 | 43.40 | SH18 | FAIL | measure_wave FAIL 2082px out of frustum
+CHUNK3 F1335 | 44.50 | SH18 | FAIL | wave_sh18 FAIL 2094px out of frustum
+CHUNK3 F1367 | 45.57 | SH19 | PASS | mayor_young face PASS angle 8.1° head in 106px
+CHUNK3 F1410 | 47.00 | SH19 | FAIL | mayor_young face FAIL angle 10.3° head out 131px
+CHUNK3 F1428 | 47.60 | SH19 | FAIL | wave_old_sh19 FAIL 6216px out of frustum
+CHUNK3 F1497 | 49.90 | SH20 | FAIL | carved_line_sh20 FAIL 151px out of frustum
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 103.4° head out 1799px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 3337px corners 0/8
+CHUNK3 F1599 | 53.30 | SH21 | PASS | pencil_mark_sh21 PASS 254px in frustum
+CHUNK3 F1635 | 54.50 | SH21 | FAIL | child face PASS angle 0.0° head in 854px; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.275 (target +0.062 on both)
+CHUNK3 F1647 | 54.90 | SH22 | FAIL | seawall FAIL 216px out of frustum; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.275 (target +0.062 on both)
+CHUNK3 F1677 | 55.90 | SH22 | FAIL | pour_sh22 FAIL 155px in frustum
+CHUNK3 F1716 | 57.20 | SH22 | FAIL | workers body FAIL 243px corners 0/8
+CHUNK3 F1764 | 58.80 | SH23 | PASS | wave_neighbor_sh23 PASS 741px in frustum
+CHUNK3 F1806 | 60.20 | SH23 | PASS | wave_neighbor_sh23 PASS 1191px in frustum
+CHUNK3 F1827 | 60.90 | SH23 | PASS | wave_neighbor_sh23 PASS 1098px in frustum occupancy subject
+CHUNK3 F1863 | 62.10 | SH24 | PASS | spray_hero_sh24 PASS 663px in frustum
+CHUNK3 F1896 | 63.20 | SH24 | FAIL | wave_hero_sh24 FAIL 3310px out of frustum
+CHUNK3 F1908 | 63.60 | SH24 | FAIL | SH24 crest margin FAIL wave crest 17.50 <= 17.50; wall top 18.00; wall-top in frame no
+CHUNK3 F1944 | 64.80 | SH25 | FAIL | sunbeam_sh25 FAIL 2522px out of frustum
+CHUNK3 F1953 | 65.10 | SH25 | FAIL | villagers occupancy FAIL 170px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | FAIL | mocker_a face FAIL angle 96.7° head out 320px occluded by village house @14,-2
+CHUNK3 F2001 | 66.70 | SH26 | PASS | gravestone_sh26 PASS 408px in frustum
+CHUNK3 F2022 | 67.40 | SH26 | PASS | wall_distant_sh26 PASS 644px in frustum
+CHUNK 3: FAIL (23/40 moments)
+```
+tokens used
+54,938
+Updated only `HILL_GRAVE` in `scenes/set.js`: its z bounds now extend to `-150`, with the requested attribution comment. `node --check scenes/set.js` passed. No local render or fleet dispatch was run, and nothing was committed.
+
+The D1/D2 audit cleared both HILL_GRAVE bounds failures. Its complete output:
+
+```text
+— D1/D2 AUDIT —
+note: D2-CLEAR: 14 building solids checked per shot
+FAIL (2):
+  ✗ D2-CLEAR: shot 14 (SH13) camera path intersects town hall
+  ✗ D2-CLEAR: shot 17 (SH16) camera path intersects town hall
+```
+
+The staging audit did **not** match the brief’s expected counts: chunk 2 reported `FAIL (2/19 moments)` instead of 19/19, and chunk 3 reported `FAIL (23/40 moments)` instead of 17/40. I stopped without tuning. Its full output is included below.
+
+Diff:
+
+```diff
+diff --git a/projects/fudai-wall/scenes/set.js b/projects/fudai-wall/scenes/set.js
+index a4fb834..699cf82 100644
+--- a/projects/fudai-wall/scenes/set.js
++++ b/projects/fudai-wall/scenes/set.js
+@@ -22,7 +22,8 @@ export const PLACES = {
+   NEIGHBOR_COAST:{at:[600,0,0],bounds:{x:[560,660],z:[-30,20]},sky:[.48,.59,.76],ground:[.43,.38,.31],fog:{color:'#c9d8df',density:.004},ao:{floor:0,h:1.8,amt:.25},lights:[{id:'sun',kind:'sun',dir:[-.48,.35,.82],color:[1,.78,.52],power:1,wrap:.3},{id:'windows',kind:'point',pos:[600,2,0],color:[1,.65,.35],power:.4,fall:.1,range:24}]},
+   FLASHBACK_ROCK:{at:[1200,0,0],bounds:{x:[1160,1240],z:[-30,20]},sky:[.62,.46,.30],ground:[.36,.27,.19],fog:{color:'#b58a5d',density:.003},ao:{floor:0,h:2,amt:.3},lights:[{id:'sepia_sun',kind:'sun',dir:[-.5,.3,.8],color:[1,.68,.35],power:.9,wrap:.3}]},
+   ROOM:{at:[1800,0,0],bounds:{x:[1796,1804],z:[-4,4]},sky:[.32,.25,.18],ground:[.28,.19,.12],fog:{color:'#4b3425',density:.002},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'room_key',kind:'sun',dir:[-.4,.7,.5],color:[1,.68,.36],power:.85,wrap:.3},{id:'lamp',kind:'point',pos:[1800,2.8,1],color:[1,.57,.25],power:.7,fall:.12,range:8}]},
+-  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-20,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
++  // Codex seat · P12 D2 bounds · horizon silhouettes at z −140/−58, Layla-accepted staging · 2026-11-23.
++  HILL_GRAVE:{at:[2400,0,0],bounds:{x:[2360,2440],z:[-150,20]},sky:[.48,.55,.65],ground:[.28,.42,.24],fog:{color:'#b8c2be',density:.004},ao:{floor:0,h:1.8,amt:.3},lights:[{id:'low_sun',kind:'sun',dir:[-.7,.22,.45],color:[1,.7,.44],power:.8,wrap:.3}]},
+ };
+ const F={shore:flat('#d0b58b','#9c8260'),stone:flat('#89877e','#5f615e'),sand:flat('#d7c39b','#b19b72'),water:flat('#4e91aa','#28647f'),wood:flat('#9a7047','#61452f'),roof:flat('#78533b','#50382c'),plaster:flat('#d4b58b','#a78968'),dark:flat('#403a35','#292b2d'),green:flat('#71905a','#4c6c43'),metal:flat('#59656a','#37434a'),warm:basic('#ffd18a')};
+ function buildWorld(){
+```
+
+Complete staging audit output:
+
+```text
+LOWCAMS raises:
+  camera floor: S1 camera raised to y 1.61 (workers's chest; was 0.9)
+  camera floor: S15 camera raised to y 1.25 (child's chest; was 0.9)
+  camera floor: S19 camera raised to y 1.26 (villagers_shore's chest; was 0.65)
+  camera floor: S20 camera raised to y 1.61 (mayor_young's chest; was 0.9)
+FRAME | TIME | SHOT | RESULT | CHECKS
+CAM F219 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F219 | 7.30 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; BODY PASS 3/2
+CAM F241 pos [-5.00, 3.50, 9.00] target [0.00, 1.50, 1.00] fov 50.00
+F241 | 8.03 | SH04 | PASS | mayor face PASS angle 35.5° head in 252px; popsign PASS 359px corners 8/8; BODY PASS 3/2
+CAM F288 pos [-3.37, 16.50, 18.00] target [4.56, 10.50, -14.00] fov 48.95
+F288 | 9.60 | SH05 | PASS | crane_a PASS 1079px corners 8/8; money PASS 78px corners 8/8; moneysign PASS 76px corners 8/8
+CAM F345 pos [4.22, 16.50, 18.00] target [7.17, 10.50, -14.00] fov 44.10
+F345 | 11.50 | SH05 | PASS | calendar PASS 251px corners 8/8; calendar effPage 7.0 PASS; seawall_gate PASS 1294px corners 4/8
+CAM F414 pos [17.63, 16.50, 18.00] target [11.78, 10.50, -14.00] fov 35.52
+F414 | 13.80 | SH05 | PASS | measure_plate PASS 42px corners 8/8; measure effH 18.0 PASS; calendar PASS 315px corners 8/8; calendar effPage 11.0 PASS; gateleaf effLift 1.00 PASS
+CAM F474 pos [600.00, 14.00, 20.00] target [600.00, 5.00, 5.00] fov 50.00
+F474 | 15.80 | SH06 | PASS | neighbour wall PASS 873px corners 0/8; sticker_a PASS 111px corners 8/8; sticker_b PASS 111px corners 8/8; neighbour houses PASS 1/1
+CAM F537 pos [4.02, 2.67, -4.76] target [4.00, 1.90, 0.00] fov 50.00
+F537 | 17.90 | SH07 | PASS | mocker_a face PASS angle 14.2° head in 454px
+CAM F570 pos [4.30, 5.82, -0.30] target [4.00, 1.90, 0.00] fov 50.00
+F570 | 19.00 | SH07 | PASS | mocker_a face PASS angle 51.5° head in 555px
+CAM F590 pos [2.51, 37.95, -30.61] target [0.14, 13.06, -16.00] fov 39.74
+F590 | 19.67 | SH07B | FAIL | coins drop-start 19.500s position [2.10, 19.73, -17.50]; coins PASS 62px corners 8/8; wall top PASS point in frustum; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F621 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F621 | 20.70 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F639 pos [4.00, 3.00, -4.00] target [4.00, 1.90, 0.00] fov 34.00
+F639 | 21.30 | SH08 | PASS | faces PASS 2/2 (angle threshold 60°); mocker_a angle 6.5° head in 776px; mocker_b angle 0.0° head in 1008px; mocker_c angle 24.0° head out 696px; villager_2 angle 159.4° head out 404px; villager_4 angle 154.8° head in 297px
+CAM F669 pos [0.42, 1.86, 6.24] target [0.00, 2.47, 2.00] fov 31.18
+F669 | 22.30 | SH09 | PASS | mayor face PASS angle 5.6° head in 832px
+CAM F687 pos [0.32, 2.06, 6.04] target [0.00, 2.47, 2.00] fov 30.20
+F687 | 22.90 | SH09 | FAIL | mayor face FAIL angle 4.5° head out 903px; FAIL subjects do not occupy the frame (no required subject ≥230px)
+CAM F711 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F711 | 23.70 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint line PASS point in frustum; blueprint palm PASS point in frustum
+CAM F723 pos [7.00, 3.00, 9.50] target [5.20, 1.55, 0.50] fov 48.00
+F723 | 24.10 | SH10 | PASS | blueprint PASS 831px corners 8/8; blueprint ruler PASS 526px corners 8/8; blueprint label PASS 74px corners 8/8
+CAM F768 pos [-5.00, 39.72, 1.71] target [-5.50, 9.00, -30.00] fov 50.00
+F768 | 25.60 | SH11 | PASS | seawall PASS 1138px corners 0/8; sea patch PASS 674px centre in; sunorb PASS 112px corners -/8
+CAM F798 pos [-5.02, 39.05, 1.02] target [-5.50, 9.00, -30.00] fov 50.00
+F798 | 26.60 | SH11 | PASS | seawall PASS 1169px corners 0/8; sea patch PASS 690px centre in; sunorb PASS 125px corners -/8
+CAM F822 pos [-5.02, 38.54, 0.49] target [-5.50, 9.00, -30.00] fov 50.00
+F822 | 27.40 | SH11 | PASS | seawall PASS 1194px corners 0/8; sea patch PASS 702px centre in; moonorb PASS 86px corners -/8
+CAM F870 pos [-5.00, 5.00, 6.00] target [-5.00, 6.50, -10.00] fov 50.00
+F870 | 29.00 | SH12 | PASS | mocksign PASS 252px corners 8/8; passers-by PASS 4/2
+FAIL (2/19 moments)
+CHUNK 3 | FRAME | TIME | SHOT | RESULT | CHECKS
+CHUNK3 F933 | 31.10 | SH13 | PASS | mocker_b hand tip PASS point in frustum
+CHUNK3 F942 | 31.40 | SH13 | FAIL | box_sh13 FAIL 195px out of frustum
+CHUNK3 F969 | 32.30 | SH13 | FAIL | mayor_old face FAIL angle 61.5° head out 343px
+CHUNK3 F993 | 33.10 | SH14 | PASS | gravestone_sh14 PASS 692px in frustum
+CHUNK3 F1026 | 34.20 | SH14 | PASS | leaf_sh14 PASS 75px in frustum
+CHUNK3 F1056 | 35.20 | SH14 | FAIL | wall_distant_sh14 FAIL 357px out of frustum
+CHUNK3 F1083 | 36.10 | SH15 | PASS | calendar state PASS page 14 >= 14
+CHUNK3 F1101 | 36.70 | SH15 | PASS | calendar PASS 3810px in frustum
+CHUNK3 F1110 | 37.00 | SH15 | PASS | calendar PASS 3878px in frustum
+CHUNK3 F1131 | 37.70 | SH16 | FAIL | villagers body FAIL 428px corners 2/8
+CHUNK3 F1137 | 37.90 | SH16 | PASS | birds_sh16 PASS 130px in frustum
+CHUNK3 F1155 | 38.50 | SH16 | FAIL | villagers face FAIL angle 33.4° head out 221px
+CHUNK3 F1188 | 39.60 | SH17 | FAIL | sea_sheet_sh17 state FAIL pull 0 >= 6
+CHUNK3 F1197 | 39.90 | SH17 | PASS | boat_sh17_a PASS 512px in frustum
+CHUNK3 F1215 | 40.50 | SH17 | FAIL | boat_sh17_b FAIL 638px out of frustum
+CHUNK3 F1257 | 41.90 | SH18 | PASS | wave_sh18 PASS 1833px in frustum
+CHUNK3 F1302 | 43.40 | SH18 | FAIL | measure_wave FAIL 2082px out of frustum
+CHUNK3 F1335 | 44.50 | SH18 | FAIL | wave_sh18 FAIL 2094px out of frustum
+CHUNK3 F1367 | 45.57 | SH19 | PASS | mayor_young face PASS angle 8.1° head in 106px
+CHUNK3 F1410 | 47.00 | SH19 | FAIL | mayor_young face FAIL angle 10.3° head out 131px
+CHUNK3 F1428 | 47.60 | SH19 | FAIL | wave_old_sh19 FAIL 6216px out of frustum
+CHUNK3 F1497 | 49.90 | SH20 | FAIL | carved_line_sh20 FAIL 151px out of frustum
+CHUNK3 F1518 | 50.60 | SH20 | FAIL | mayor_young face FAIL angle 103.4° head out 1799px
+CHUNK3 F1542 | 51.40 | SH20 | FAIL | mayor_young body FAIL 3337px corners 0/8
+CHUNK3 F1599 | 53.30 | SH21 | PASS | pencil_mark_sh21 PASS 254px in frustum
+CHUNK3 F1635 | 54.50 | SH21 | FAIL | child face PASS angle 0.0° head in 854px; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.275 (target +0.062 on both)
+CHUNK3 F1647 | 54.90 | SH22 | FAIL | seawall FAIL 216px out of frustum; SH21→SH22 match-cut NDC_y +0.062 FAIL: 0.062 / 0.275 (target +0.062 on both)
+CHUNK3 F1677 | 55.90 | SH22 | FAIL | pour_sh22 FAIL 155px in frustum
+CHUNK3 F1716 | 57.20 | SH22 | FAIL | workers body FAIL 243px corners 0/8
+CHUNK3 F1764 | 58.80 | SH23 | PASS | wave_neighbor_sh23 PASS 741px in frustum
+CHUNK3 F1806 | 60.20 | SH23 | PASS | wave_neighbor_sh23 PASS 1191px in frustum
+CHUNK3 F1827 | 60.90 | SH23 | PASS | wave_neighbor_sh23 PASS 1098px in frustum occupancy subject
+CHUNK3 F1863 | 62.10 | SH24 | PASS | spray_hero_sh24 PASS 663px in frustum
+CHUNK3 F1896 | 63.20 | SH24 | FAIL | wave_hero_sh24 FAIL 3310px out of frustum
+CHUNK3 F1908 | 63.60 | SH24 | FAIL | SH24 crest margin FAIL wave crest 17.50 <= 17.50; wall top 18.00; wall-top in frame no
+CHUNK3 F1944 | 64.80 | SH25 | FAIL | sunbeam_sh25 FAIL 2522px out of frustum
+CHUNK3 F1953 | 65.10 | SH25 | FAIL | villagers occupancy FAIL 170px corners 8/8
+CHUNK3 F1980 | 66.00 | SH26 | FAIL | mocker_a face FAIL angle 96.7° head out 320px occluded by village house @14,-2
+CHUNK3 F2001 | 66.70 | SH26 | PASS | gravestone_sh26 PASS 408px in frustum
+CHUNK3 F2022 | 67.40 | SH26 | PASS | wall_distant_sh26 PASS 644px in frustum
+CHUNK 3: FAIL (23/40 moments)
+```
