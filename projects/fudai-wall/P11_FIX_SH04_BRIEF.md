@@ -6,9 +6,10 @@ You are the Codex seat for the film "fudai-wall", project
 (one cause, one change), §4, §5; `lessons/build.md`.
 
 ## Previous verdict this brief cites (hard-gate requirement)
-To be filled by the driver at firing time with the recorded verdict
-commit of the cause judged immediately before this one. This brief does
-not go out without that citation.
+Commit `56b8081` — SH11 round-2 verdict NOT CLOSED (seat validated its
+sampler, found no winning park; cause parked at the y=40 park and
+escalated to Layla with priced options). No judgement is pending: this
+brief may fire.
 
 ## The cause — a composition fault the staging audit cannot see
 SH04 is a STATIC shot (from == to): pos `CAM_SH04_A/B` =
