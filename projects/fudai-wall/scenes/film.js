@@ -86,7 +86,7 @@ const PROP3=[
  {id:'wall_distant_sh26',kind:'seawall',in:'world',at:p('HILL_GRAVE',[0,-6,-58]),h:18,keys:[{t:'line:24.start'}]}
 ];
 const SHOTS3=[
- chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[13,5,-9.5],[12,1.5,-6]],[[4.8,5,-8.2],[-4.6,1.9,2.2]],50),
+ chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[-5.4,1.62,8.2],[-6,1.55,1.6]],[[-2,1.62,8.2],[-2.6,1.5,2.9]],40),
  chunk3Shot('SH14','line:12.start','line:12.end','HILL_GRAVE',[[2.6,.9,5.2],[0,1,0]],[[2.2,3.4,6.4],[0,1.2,-2]],40),
  chunk3Shot('SH15','line:13.start','line:13.end','COAST_VILLAGE',[[-1.5,1.7,3.6],[-1.5,1.7,.25]],[[-1.5,1.7,3],[-1.5,1.7,.25]],32),
  chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-5.4,7.6,9.8],[-1.1,2.5,0.9]],[[-5.2,7.5,9.5],[-1.1,2.4,0.9]],49),
