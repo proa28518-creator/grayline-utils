@@ -89,7 +89,7 @@ const SHOTS3=[
  chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[-5.4,1.62,8.2],[-6,1.55,1.6]],[[-2,1.62,8.2],[-2.6,1.5,2.9]],40),
  chunk3Shot('SH14','line:12.start','line:12.end','HILL_GRAVE',[[2.6,.9,5.2],[0,1,0]],[[2.2,3.4,6.4],[0,1.2,-2]],40),
  chunk3Shot('SH15','line:13.start','line:13.end','COAST_VILLAGE',[[-1.5,1.7,3.6],[-1.5,1.7,.25]],[[-1.5,1.7,3],[-1.5,1.7,.25]],32),
- chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[-8.2,2.3,9.5],[-1.5,2.4,0.9]],[[-7.9,2.2,9.2],[-1.5,2.3,0.9]],48),
+ chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[3.5,2.2,10.5],[0,1.4,0]],[[3.2,2.1,10.2],[0,1.3,0]],46),
  chunk3Shot('SH17','line:15.start','line:15.end','SEA',[[-6,13.5,15],[0,0,-2]],[[2,12.5,14],[0,0,-6]],44),
  chunk3Shot('SH18','line:16.start','line:16.end','SEA',[[-1.5,.65,2.5],[0,2.2,-20]],[[-1,.9,1.5],[0,16.5,-20]],[46,50]),
  chunk3Shot('SH19','line:17.start','line:17.end','FLASHBACK_ROCK',[[-2.5,.9,-21],[-2,1,-4]],[[-1,1.3,-16],[-4,1.2,-4]],46),
