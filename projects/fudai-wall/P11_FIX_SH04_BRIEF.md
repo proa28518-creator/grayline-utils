@@ -89,3 +89,23 @@ vertical fov; check full-head bounds / angle / occlusion; then
 reconcile with the measured rendered head (the calibration offsets in
 this brief). A composition that passes the model but crowds the mayor's
 head region with villager heads fails this brief.
+
+## NVIDIA BAKE-OFF INPUT — Gemma-4-31b-it (2026-11-23, Layla's run) — ONE COMPUTE INPUT, UNVERIFIED
+
+Gemma (the only NVIDIA model that completed a reply in the bake-off)
+proposed, in its exact format:
+- CAMERA: pos [-1.2, 2.1, 6.5], target [0.0, 1.8, 0.0], FOV 38
+- CROWD: villagers to a lower-third arc centred [2.0, 0.0, -2.0], all
+  head-tops below y=800px
+- CHECK (ASSERTED, not measured): F219 head x[310,650] y[420,760];
+  F241 head x[340,680] y[450,790]
+Binding rules for this input: (1) treat the camera line as ONE candidate
+— run it through YOUR sampler and report its measured table (sampled
+camera at t, calibration shift applied) BEFORE adopting or rejecting it;
+if the asserted CHECK numbers do not reproduce, reject it on evidence
+and say so. Note the coordinate question: state whether you read the
+values as world or PLACES-relative, and test the reading you choose.
+(2) The CROWD line is OUT OF SCOPE for this camera cause (cast base
+positions are shared across shots) — do not apply it; if your sampler
+shows the camera alone cannot satisfy the brief, report the crowd move
+as a separately-priced option in your reply, do not widen the change.
