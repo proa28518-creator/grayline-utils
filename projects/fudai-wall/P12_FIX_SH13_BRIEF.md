@@ -13,10 +13,9 @@ lowCams/autoMove intervene, so never trust a hand projection that the
 audit does not reproduce).
 
 ## Previous verdict this brief cites (hard-gate requirement)
-The phase-12 cause-3 verdict commit (cast place keys restored;
-recorded in RUN_RECORD phase 12). No judgement is pending when this
-brief fires; the driver records the exact hash in RUN_RECORD — cite
-"phase-12 cause 3" in your reply.
+Commit `5215713` — phase-12 cause 3 CLOSED (cast place keys
+restored; chunk 3 at 19/40). No judgement is pending; this brief
+may fire.
 
 ## The cause (ONE shot's camera line — SH13, in `scenes/film.js` SHOTS3)
 Three readings, one mechanism (the shot's camera line):
