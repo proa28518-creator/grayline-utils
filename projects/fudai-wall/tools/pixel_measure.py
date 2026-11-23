@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# AUTHORSHIP: DRIVER-AUTHORED (phase-9 driver, local agent, 2026-11-23) —
+# NOT a Codex seat session. Pending Codex re-derivation per brief
+# P9_PIXEL_GATE_REDERIVE_BRIEF.md; until the seat version lands this file is
+# a driver harness, not seat-authored production code. (Guard question 04:46.)
 """Pixel measurements for one probed still (fudai-wall pixel gate).
 
 Usage: pixel_measure.py <still.png>

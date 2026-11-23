@@ -1,0 +1,7 @@
+CORRECTION: SH06 from [600,8.5,15], target [600,4,3], fov 50 → from [588,9,18], target [600,4,2], fov 34; keep SH06 to [612,9,18], target [600,4,2], fov 34.
+
+ARITHMETIC at F474: interp 79% between corrected endpoints gives cam [603.84,9,18]. yaw is off-axis +82.4°, pitch -7.7°. Projection: wall [588,0,612]x[-0.8,6.8]z[0,-10] projects y top ≈742 px, y bottom ≈1293 px, x 103–1638 px; sticker_a at [597,7,2] projects ≈[644–915, 1392–1678]; sticker_b at [603,7,2] projects ≈[984–1255, 1392–1678]; house at 580 projects ≈[120–615, 1360–1844], house at 600 projects ≈[674–1169, 1360–1844], house at 620 projects ≈[1227–1723, 1360–1844]; 1080×1920 canvas, all signs fully inside with margins, two houses show full facades and roofs, sky remains above wall top.
+
+PREDICTED: wall top edge well below frame top with sky above; both 10M signs fully readable; houses at 580, 600, and 620 carry roof+wall detail; non-sky carriers: wall, three houses, two signs, shore strip.
+
+RISKS: at t=14.4 open, the +82.4° off-axis pan from x 588 starts looking across the same neighbour coast, so the opening beat is preserved; at t=16.77 end, x 612 keeps the far edge of the neighbour coast in frame without crossing into the next geography; off-axis yaw is steeper than the original axis-aligned move, so edge sharpness and motion blur should be checked at the start and end keys.

@@ -1,3 +1,7 @@
+// AUTHORSHIP: DRIVER-AUTHORED (phase-9 driver, local agent, 2026-11-23) —
+// NOT a Codex seat session. Pending Codex re-derivation per brief
+// P9_PIXEL_GATE_REDERIVE_BRIEF.md; until the seat version lands this file is
+// a driver harness, not seat-authored production code. (Guard question 04:46.)
 // PIXEL GATE — fudai-wall method change #3 (phase 9, on critic round 8's
 // demand + RULES S3: the same fault twice changes the METHOD).
 // The scene-data staging audit (tools/audit_staging.mjs) stays as a PRE-CHECK.
