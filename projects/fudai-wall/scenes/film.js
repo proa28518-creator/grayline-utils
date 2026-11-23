@@ -47,7 +47,7 @@ const cam=(place,pos,look,fov)=>({pos:p(place,pos),target:p(place,look),fov});
 const chunk3Shot=(id,t0,t1,place,a,b,fov=40)=>({id,t0,t1,camera:{move:'push',from:cam(place,a[0],a[1],Array.isArray(fov)?fov[0]:fov),to:cam(place,b[0],b[1],Array.isArray(fov)?fov[1]:fov)}});
 const CAST3={
  mayor_old:{spec:'cast/mayor_old.json',at:[p('COAST_VILLAGE',[-6,0,1])[0],p('COAST_VILLAGE',[-6,0,1])[2]],ry:30},
- mayor_young:{spec:'cast/mayor_young.json',at:[p('FLASHBACK_ROCK',[0,0,4.5])[0],p('FLASHBACK_ROCK',[0,0,4.5])[2]],ry:0},
+ mayor_young:{spec:'cast/mayor_young.json',at:[p('FLASHBACK_ROCK',[0,0,2])[0],p('FLASHBACK_ROCK',[0,0,2])[2]],ry:0},
  child:{spec:'cast/child.json',at:[p('ROOM',[0,0,-1.15])[0],p('ROOM',[0,0,-1.15])[2]],ry:180},
  workers:{spec:'cast/workers.json',at:[p('COAST_WALL',[0,17,.2])[0],p('COAST_WALL',[0,17,.2])[2]],ry:0},
  villagers:{spec:'cast/villagers.json',at:[p('COAST_VILLAGE',[-3,0,.8])[0],p('COAST_VILLAGE',[-3,0,.8])[2]],ry:0},
@@ -55,7 +55,7 @@ const CAST3={
 };
 const ACTS3={
  mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
- mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,4.5])[0],p('FLASHBACK_ROCK',[.9,0,4.5])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
+ mayor_young:{place:[{t:'line:18.start',at:[p('FLASHBACK_ROCK',[.9,0,-1.10])[0],p('FLASHBACK_ROCK',[.9,0,-1.10])[2]]}],face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])},{t:'line:18.start',at:p('FLASHBACK_ROCK',[-1.4,1.68,-.60])},{t:50.60,at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85])}]},
  child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
  workers:{place:[{t:'line:20.start',at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:17},{t:57.10,at:[p('COAST_WALL',[0,0,.20])[0],p('COAST_WALL',[0,0,.20])[2]],y:18}],look:[{t:'line:20.start',at:p('COAST_WALL',[0,17.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
  villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
