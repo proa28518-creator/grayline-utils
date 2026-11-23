@@ -1,0 +1,26 @@
+pic_01: ours — concrete wall, single yellow crane, glowing 15.5M measure line, calendar at base, caption «متر ونص»
+pic_02: ours — overhead view of seawall and cross-braced gate, flat calm sea, yellow sun, caption «والبحر فضل»
+pic_03: ours — close-up of smiling grey-vested villager with blurred blueprint board and beanie villager behind, caption «سنتّي واحد»
+pic_04: bar — blue-lit supermarket aisle, red-vested character pushing red MARKET cart with bespectacled character behind, caption «معايا»
+pic_05: ours — seawall with two yellow cranes, $30M sign and money stacks at base, caption «وصرف 30»
+pic_06: ours — medium close-up of smiling red-capped villager in blue vest before dark blue panel and village house, caption «ضحكوا»
+pic_07: ours — 3,000 sign ("RED CANYON SHORT LINE") before seawall, villagers clustered in bottom-right corner, caption «فيها 3000»
+pic_08: bar — supermarket aisle with flying tomato soup cans around red-vested character behind red cart, caption «ورايّا»
+pic_09: bar — red-vested character standing on sparking red MARKET cart amid scattered soup cans, caption «بيصرخ في»
+pic_10: ours — seawall with two yellow cranes, lamp post, $30M sign on left and calendar on right, caption «على بوابة»
+pic_11: ours — seawall and glowing lamp posts with villagers crowded into bottom-right corner, caption «كان عمدة»
+pic_12: bar — supermarket aisle under «ممر ٢» and «ممر ٣» signs, shouting red-vested character pushing red MARKET cart
+pic_13: ours — overhead view of seawall gate, flat calm sea, yellow sun near horizon, caption «السور خلص»
+pic_14: ours — tight shot of deadpan mayor in dark suit with top of head cropped off at upper edge, caption «بس العمدة»
+pic_15: ours — close-up of smiling grey-vested villager in front of blurred blue grid blueprint board, caption «السور»
+pic_16: bar — supermarket aisle, bespectacled character holding milk carton beside red-vested character on sparking MARKET cart, caption «خانتني»
+pic_17: ours — gold coins falling from top edge across empty blue sky above wall ledge, caption «البحر؟»
+pic_18: ours — overhead view of seawall gate, flat dark blue sea, pale moon on horizon, caption «هادي سنين»
+pic_19: ours — tight close-up of laughing red-capped villager in blue vest, cap grazing top edge, caption «عمره ما»
+pic_20: ours — seawall with «أغبى مشروع» sign ("RED CANYON SHORT LINE") above four standing villagers, caption «سموه أغبى»
+pic_21: bar — supermarket aisle, red-vested character tipping on red MARKET cart past stacked FRESH boxes, caption «الصناديق في»
+pic_22: ours — dark grey neighbour wall with two 10M signs ("RED CANYON SHORT LINE") and house roof foreground, caption «اللي حواليه»
+pic_23: ours — blue grid blueprint board with glowing yellow horizontal bar in front of cross-braced wall gate, caption «بترمي»
+pic_24: ours — tight close-up of laughing red-capped villager in blue vest against flat dark blue panel, caption «هيوصل»
+pic_25: ours — tight shot of deadpan mayor in dark suit with upper head cropped off by top edge, caption «ما ردش»
+BLIND SORT: bar taken for ours: 0 · ours taken for bar: 0

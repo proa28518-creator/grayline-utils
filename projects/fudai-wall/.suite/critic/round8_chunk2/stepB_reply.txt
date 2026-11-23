@@ -1,0 +1,10 @@
+CRITIC ROUND — fudai-wall — Build (chunk 2: SH04–SH12) — round 8
+BIGGEST GAP: Repeat round-7 faults—cropped heads, occluded key props, missing subjects, and foreign template text—persist across the frames, proving the computed staging audit did not fix actual camera framing or blocking, so the staging method itself must change.
+BLOCKING: Foreign template text ("RED CANYON SHORT LINE") on signs in F241, F288, F474, and F870; cropped heads/faces in F219, F241, F570, F669, F687, F711, and F723; missing or occluded subjects and props—mayor absent in F219–F241, calendar blocked by crane with no legible 12-year count in F345–F414, no coastal houses/low wall and clipped "10M" sign in F474, mocker hidden behind blueprint in F570, no sea under coins in F590, and blueprint/"15.5M" ruler blurred and occluded to "5M" by a foreground villager in F711–F723.
+PER SCENE:
+S2 — FAIL: Mayor is missing in F219–F241, foreign text remains on signs in F241/F288/F474, the crane obscures the calendar in F345–F414, and F474 shows a flat slab instead of a neighbouring coast.
+S3 — FAIL: F570 buries the mocker behind the blueprint rather than framing mocker plus wall top, F590 omits the sea beneath the coins, and F669–F687 crop the mayor's upper head and eyebrows.
+S4 — FAIL: F711–F723 block the blueprint and "15.5M" ruler behind a cropped villager, F768–F822 stay flat with a daytime-blue moon sky, and F870 keeps foreign template text on the mock sign.
+LINE COHERENCE: Key windows mismatch their visuals—F219 names the mayor without showing him, F570 pairs throwing-money dialogue with a blueprint, F590 references the sea with no water present, and F711–F723 put a smiling villager over the blueprint beat. Other windows match topically but lose readability to occlusion and cropping.
+SET BAR: below bar — flattest frames are F590, F474, F768, F798, F822, and F621–F639, dominated by empty sky, bare slabs, and flat backdrops behind faces.
+VERDICT: NO
