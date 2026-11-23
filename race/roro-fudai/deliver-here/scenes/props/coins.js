@@ -1,7 +1,7 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: centre of the handful
 // (the grip — the coins are held, then dropped).
@@ -9,6 +9,8 @@
 // opts: { count: 5, open: 0..1 } — 0 = stacked handful, 1 = fanned out.
 // Each coin is its own child group (coin_1..coin_N) so film.js can drop them
 // one by one with `drop` keys.
+
+import * as THREE from 'three';
 
 function coinFace(THREE) {
   const canvas = document.createElement('canvas');
@@ -35,7 +37,6 @@ function coinFace(THREE) {
 }
 
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const count = opts.count ?? 5;
   const open = opts.open ?? 0; // 0 = stacked handful, 1 = fanned out
 

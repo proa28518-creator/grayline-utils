@@ -1,7 +1,7 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state (`open`) is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6).
 // The measure graphics: the 5-storey overlay (1-2-3-4-5), the glowing height marks
@@ -9,6 +9,8 @@
 // Variants via opts.variant: 'storeys' | 'mark15_5' | 'mark10' | 'mark15' | 'sign3000'.
 // Origin: base centre of the measure line (ground) for the mark/storey variants;
 // centre of the board for 'sign3000'.
+
+import * as THREE from 'three';
 
 function label(THREE, text, { w = 2, h = 1, fg = '#ffd34d', bg = null, glow = true } = {}) {
   const canvas = document.createElement('canvas');
@@ -32,7 +34,6 @@ function label(THREE, text, { w = 2, h = 1, fg = '#ffd34d', bg = null, glow = tr
 }
 
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const variant = opts.variant || 'mark15_5';
   const open = opts.open ?? 1; // 0 = hidden, 1 = fully lit
   const heights = { mark15_5: 24.8, mark10: 16, mark15: 24, storeys: 24.8 };

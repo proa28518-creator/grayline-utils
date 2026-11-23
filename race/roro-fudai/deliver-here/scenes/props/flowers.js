@@ -1,7 +1,7 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: the tied stems' base
 // (the grip — the bouquet is held, then laid on the grave).
@@ -10,8 +10,9 @@
 // Note: a built-in `flowers` kind exists in the engine; this is the film's own
 // bouquet (white blossoms + red ribbon) so the grave flowers read as one prop.
 
+import * as THREE from 'three';
+
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const count = opts.count ?? 4;
   const open = opts.open ?? 1; // 0 = buds, 1 = open blooms
 

@@ -1,12 +1,14 @@
 // Seat: Roro / Muse (lane 4) — Fudai Wall Build pass, 2026-11-23.
 // Method source: cartoon-shorts tree only. «Production and rules» not touched.
-// Assumption (film.md does not say how THREE reaches build): the engine passes
-// THREE via opts.THREE, or exposes it as globalThis.THREE. build(opts) is a pure
+// THREE is imported by this file (repair round 2026-11-23, office): the host does
+// not pass THREE to props, so the file imports it itself, like Neon's props.
 // function of opts; state (`open`) is re-built by the engine from opts over time.
 // Units: D (1 D = 1 head; D = metres x 1.6). Origin: base centre of the gate,
 // ground level, middle of the gate — so it plants on the wall deck.
 // The steel gate in the giant wall: 15.5 m = 24.8 D tall, ~8 m = 12.8 D wide.
 // Bible lines 1, 4, 8, 20, 22. Place A.
+
+import * as THREE from 'three';
 
 function label(THREE, text, { w = 2, h = 1, fg = '#111111', bg = '#f5efdc' } = {}) {
   const canvas = document.createElement('canvas');
@@ -41,7 +43,6 @@ function ink(THREE, mesh, color = 0x111111) {
 }
 
 export function build(opts = {}) {
-  const THREE = opts.THREE || globalThis.THREE;
   const open = opts.open ?? 0; // 0 = gate closed, 1 = both leaves swung open
   const H = 24.8; // 15.5 m
   const W = 12.8; // ~8 m
