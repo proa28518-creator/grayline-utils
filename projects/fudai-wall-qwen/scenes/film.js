@@ -56,8 +56,7 @@ export default {
         { clip: 'point', side: 'right', dir: [0.2, 0.6, 0.3], t0: 'line:4.word:7', hold: 0.5, out: 6 },
         { clip: 'akimbo', side: 'both', t0: 'line:8.word:3', eyes: 'angry', hold: 0.6, out: 6 },
         { clip: 'sit_down', t0: 'line:11.start', hold: 0.6, out: 6 },
-        { clip: 'stand_up', t0: 'line:16.start', hold: 0.4, out: 6 },
-        { clip: 'bow', side: 'right', t0: 'line:24.word:2', hold: 0.5, out: 6 }
+        { clip: 'stand_up', t0: 'line:16.start', hold: 0.4, out: 6 }
       ],
       look: [
         { t: 'line:1.start+0.03', at: [-0.4, 2.4, 6] },
@@ -80,7 +79,8 @@ export default {
       ],
       clips: [
         { clip: 'point', side: 'right', dir: [0.2, 0.6, 0.3], t0: 'line:7.word:4', hold: 0.4, out: 6 },
-        { clip: 'shake', side: 'right', t0: 'line:24.word:1', hold: 0.3, out: 6 }
+        { clip: 'shake', side: 'right', t0: 'line:24.word:1', hold: 0.3, out: 6 },
+        { clip: 'kneel', side: 'right', t0: 'line:24.word:2', hold: 0.5, out: 6 }
       ],
       look: [
         { t: 'line:6.start+0.03', at: [-1.0, 2.4, 0.8] },
