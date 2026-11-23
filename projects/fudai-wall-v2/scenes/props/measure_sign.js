@@ -1,3 +1,5 @@
+// Custom prop: reusable story measure graphic & signage
+// Reads top-level prop options (signType, progress) — never collides with prop `kind: 'measure_sign'`.
 import * as THREE from 'three';
 
 function makeLabelTexture(title, subtitle, bg, fg, accent) {
@@ -36,12 +38,17 @@ export function build(opts = {}) {
   const progress = opts.progress ?? (opts.opts && opts.opts.progress) ?? 1;
 
   if (signType === 'storey5') {
+    // Transparent 5-storey architectural overlay beside the 24.8 D wall (numbered 1-2-3-4-5)
     const totalH = 24.8 * Math.max(0.05, Math.min(1, progress));
     const floors = 5;
     const floorH = 24.8 / floors;
     const frameMat = new THREE.MeshBasicMaterial({ color: 0xffe49e, transparent: true, opacity: 0.85 });
     const glassMat = new THREE.MeshBasicMaterial({
-      color: 0x8ec8ff, transparent: true, opacity: 0.2, depthWrite: false, side: THREE.DoubleSide,
+      color: 0x8ec8ff,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
+      side: THREE.DoubleSide,
     });
     const slab = new THREE.Mesh(new THREE.BoxGeometry(5.6, totalH, 0.25), glassMat);
     slab.position.set(0, totalH * 0.5, 0);
@@ -119,14 +126,21 @@ export function build(opts = {}) {
 
   if (signType === 'cost30m') {
     const tex = makeLabelTexture('$30M', '12 YEARS', '#1b2a3d', '#ffffff', '#6ee7b7');
-    const sign = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.3, 0.16), new THREE.MeshBasicMaterial({ map: tex }));
+    const sign = new THREE.Mesh(
+      new THREE.BoxGeometry(2.6, 1.3, 0.16),
+      new THREE.MeshBasicMaterial({ map: tex })
+    );
     sign.position.set(0, 0.65, 0);
     inner.add(sign);
     return root;
   }
 
+  // pop3000
   const tex = makeLabelTexture('3,000', 'VILLAGERS', '#1b2a3d', '#ffffff', '#ffd166');
-  const sign = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.6, 0.18), new THREE.MeshBasicMaterial({ map: tex }));
+  const sign = new THREE.Mesh(
+    new THREE.BoxGeometry(3.2, 1.6, 0.18),
+    new THREE.MeshBasicMaterial({ map: tex })
+  );
   sign.position.set(0, 0.8, 0);
   inner.add(sign);
   return root;

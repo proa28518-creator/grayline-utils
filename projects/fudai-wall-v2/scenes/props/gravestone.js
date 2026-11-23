@@ -1,3 +1,4 @@
+// Custom prop: Mayor Wamura's carved stone headstone on hilltop plinth (Scene 4 & Scene 7)
 import * as THREE from 'three';
 
 function makeStoneInscription() {
