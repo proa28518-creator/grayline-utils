@@ -1,0 +1,19 @@
+HYDROGEN SEAT OUTPUT — phase 17 · cause 11: SH22 camera + the SH21→SH22 match-cut
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/43f24c96310489db
+Run by Layla via browser seat, 2026-11-23 10:20–10:30 EET. Brief: P17_HYD_SH22_BRIEF.md (cites verdict commit 2cc52dc).
+
+HEADLINE: the seat returned an UNSATISFIABILITY PROOF for the four checks together (any above-ground camera, fov ∈ [24,50]) + a candidate that passes everything except F1647's centre-in-frustum half. The conflict sits in the audit's proxy for id `seawall`: no CHUNK3_SIZE entry → size [1,1,1] measured at the wall's BASE centre [0,0,-16] with a 400px threshold, while the match-cut pins the wall TOP (17 units directly above the base point) at NDC_y +0.062 from the same start pose. Proof sketch (seat's numbers): T at NDC_y ≤ 0.082 and B in frustum caps ∠B-P-T ≤ 27.19° (fov 50), forcing horizontal distance r ≥ 33.1 and capping height(1,B) ≤ 73.35px — a 5.45× deficit vs 400px. Conversely depth(B) ≤ 11.45 forces ∠B-P-T ≥ 56°, pushing B out of frustum. Only intersection: underground (y ≤ −1.1), which violates ground clearance / triggers lowCams.
+
+CANDIDATE (verbatim):
+chunk3Shot('SH22','line:20.start','line:20.end','COAST_WALL',[[0,16.86,9],[0,16.86,0]],[[4,18.8,16],[0,18.2,0]],[28,36])
+World: fromPos [0,16.86,-7], fromTarget [0,16.86,-16], toPos [4,18.8,0], toTarget [0,18.2,-16], fov 28→36.
+
+PREDICTED READINGS (seat's arithmetic, outCubic-sampled):
+- Match-cut SH22 side: PASS — NDC_y +0.0624 (target +0.062 ± 0.02); SH21 side untouched at 0.062.
+- F1647: CONFLICT — size 421.1px ≥ 400px PASS, centre OUT of frustum (off-axis 61.33° vs 14.12° vertical half-FOV at the sampled pose).
+- F1677: PASS — pour 219.6px ≥ 180px, in frustum, off-axis 3.43°.
+- F1716: PASS — workers 375.6px ≥ 240px, corners 8/8, face 15.57°.
+- D2-CLEAR / solids: PASS — path x∈[0,4], y∈[16.86,18.8], z∈[-7,0]; ≥8.425 units clear of the seawall front face.
+
+(Full arithmetic preserved in the browser report of 2026-11-23 10:30 EET and in this file's summary; the driver's audit run is the judge.)
