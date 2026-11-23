@@ -1,4 +1,4 @@
-// Fudai Wall — Build Pass (scenes/film.js — Repair Round 3)
+// Fudai Wall — Build Pass (scenes/film.js — Repair Round 4)
 // METHOD CHANGE: cameras computed from 3D bounding boxes of (speaking subject + named story elements),
 // enforcing full-box margins, zero 2D sign/prop overlap, zero roof-to-face occlusion, and caption-band clearance.
 // Preserved unchanged: all 186 words & 28 lines, built-in specs/ cast, Frame 0 Mayor CU, and S28 grave finale.
@@ -124,12 +124,17 @@ export default {
     },
 
     villager1: {
+      height: [
+        { t: 0, y: 0 },
+        { t: 'line:7.start', y: 7.60 },
+        { t: 'line:10.start', y: 0 },
+      ],
       place: [
         { t: 'line:3.start',  at: [1.8, 3.2],     ry: -28 },
         { t: 'line:4.start',  at: [40.0, 40.0],   ry: -28 },
         // S8-S9: On village-side harbour quay facing +Z with 24.8 D seawall + canal + falling coins behind!
-        { t: 'line:7.start',  at: [-0.72, -6.0],  ry: 16 },
-        { t: 'line:9.start',  at: [-0.72, -6.0],  ry: 14 },
+        { t: 'line:7.start',  at: [-0.85, 2.5],   ry: 16 },
+        { t: 'line:9.start',  at: [-0.85, 2.5],   ry: 14 },
         { t: 'line:10.start', at: [40.0, 40.0],   ry: -20 },
         { t: 'line:14.start', at: [-2.4, 3.0],    ry: 32 },
         { t: 'line:15.start', at: [40.0, 40.0],   ry: 15 },
@@ -154,7 +159,7 @@ export default {
       ],
       clips: [
         // Point inward/up toward wall & falling coins so arm never crosses left frame edge
-        { clip: 'point',      at: 'line:8.word:3+0.04',  side: 'R', dir: [0.35, 0.25, 0.25], hold: 1.0, out: 5 },
+        { clip: 'point',      at: 'line:8.word:3+0.04',  side: 'R', dir: [0.22, 0.65, -0.2], hold: 1.0, out: 5 },
         { clip: 'point',      at: 'line:9.word:4+0.04',  side: 'R', dir: [0.25, 0.85, 0.2],  hold: 0.9, out: 5 },
         { clip: 'point',      at: 'line:14.word:7+0.04', side: 'R', dir: [0.7, 0.1, 0.2],    hold: 1.1, out: 6 },
         { clip: 'shock_jump', at: 'line:17.word:2+0.04', hold: 0.15, out: 5 },
@@ -167,12 +172,17 @@ export default {
     },
 
     villager2: {
+      height: [
+        { t: 0, y: 0 },
+        { t: 'line:7.start', y: 7.60 },
+        { t: 'line:10.start', y: 0 },
+      ],
       place: [
         { t: 'line:3.start',  at: [-1.8, 3.0],    ry: 28 },
         { t: 'line:4.start',  at: [40.0, 42.0],   ry: 28 },
         // S8-S9: Laughing beside villager1 on harbour quay (full arms inside frame, seawall behind)
-        { t: 'line:7.start',  at: [0.78, -6.5],   ry: -18 },
-        { t: 'line:9.start',  at: [0.78, -6.5],   ry: -20 },
+        { t: 'line:7.start',  at: [0.85, 2.0],    ry: -18 },
+        { t: 'line:9.start',  at: [0.85, 2.0],    ry: -20 },
         { t: 'line:10.start', at: [40.0, 42.0],   ry: 28 },
         { t: 'line:13.start', at: [-1.2, 2.0],    ry: 26 },
         { t: 'line:14.start', at: [40.0, 42.0],   ry: 28 },
@@ -345,8 +355,8 @@ export default {
       t0: 'line:2.start', t1: 'line:3.start',
       camera: {
         move: 'push',
-        from: { pos: [-7.5, 4.4, -68.0], target: [-0.8, 5.8, -30.0], fov: 36, roll: 1 },
-        to:   { pos: [-2.8, 4.6, -66.0], target: [-0.5, 6.2, -28.0], fov: 36, roll: -0.5 },
+        from: { pos: [-8.0, 5.4, -36.0], target: [2.0, 0.2, -80.0], fov: 36, roll: 0.8 },
+        to:   { pos: [-3.0, 5.2, -38.0], target: [3.2, 0.2, -84.0], fov: 36, roll: -0.4 },
       },
     },
     // S4 (7.06-9.04): Medium-Wide Village Square Pan
@@ -390,8 +400,8 @@ export default {
       t0: 'line:7.start', t1: 'line:9.start', focus: 'villager1',
       camera: {
         move: 'push',
-        from: { pos: [0.2, 2.2, 7.8], target: [0.05, 2.35, -6.2], fov: 30, roll: 4.5 },
-        to:   { pos: [0.0, 2.2, 7.0], target: [0.05, 2.35, -6.2], fov: 30, roll: 3.5 },
+        from: { pos: [0.2, 9.8, 17.6], target: [0.0, 11.8, -24.0], fov: 40, roll: 3.5 },
+        to:   { pos: [0.0, 9.8, 16.8], target: [0.0, 11.9, -24.0], fov: 40, roll: 2.5 },
       },
     },
     // S9 (20.34-22.02): Tighter angled CU on laughing villager1 + villager2 with seawall behind
@@ -399,8 +409,8 @@ export default {
       t0: 'line:9.start', t1: 'line:10.start', focus: 'villager1',
       camera: {
         move: 'push',
-        from: { pos: [-0.9, 2.2, 6.8], target: [0.0, 2.4, -6.2], fov: 30, roll: -3.5 },
-        to:   { pos: [-0.5, 2.3, 6.0], target: [0.0, 2.5, -6.2], fov: 30, roll: -2.5 },
+        from: { pos: [-0.8, 9.8, 16.2], target: [0.0, 11.8, -24.0], fov: 40, roll: -3.0 },
+        to:   { pos: [-0.4, 9.9, 15.4], target: [0.0, 11.9, -24.0], fov: 40, roll: -2.0 },
       },
     },
     // S10 (22.02-23.18): Deadpan MCU Slow Push-In on silent Mayor Wamura
