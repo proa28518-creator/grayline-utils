@@ -1,0 +1,17 @@
+HYDROGEN SEAT OUTPUT — phase 17 · cause 14: residuals — SH20 camera (F1497 / F1518 / F1542)
+Seat: Hydrogen (Gemini Neon, Task mode; gemini.google.com, nooaar343@gmail.com)
+Conversation: https://gemini.google.com/app/6ed748d94bbee3b1
+Run by Layla via browser seat, 2026-11-23 10:47–10:53 EET. Brief: P17_HYD_RESIDUALS_BRIEF.md (cites verdict commit 2cc52dc).
+
+CANDIDATE (verbatim):
+chunk3Shot('SH20','line:18.start','line:18.end','FLASHBACK_ROCK',[[-4.2,1.6,-1.55],[.25,1.55,-1.55]],[[-4.7,1.55,-1.65],[.65,1.4,-1.25]],40)
+World: pos [1195.8,1.60,-1.55] → [1195.3,1.55,-1.65]; target [1200.25,1.55,-1.55] → [1200.65,1.40,-1.25]; fov 40.
+Design: the camera moves to the north-west of mayor_young — the side his face turns toward as he carves — low, looking east along the rock face.
+
+PREDICTED READINGS (seat's arithmetic, outCubic sampling; linear also passes):
+- F1497 carved line: PASS — centre IN frustum (off-axis 7.19°); 157.2px ≥ 120px.
+- F1518 face: PASS — face angle vs his t=50.60 look direction 24.93° ≤ 60°; head sphere fully in (margins 5.02° horiz / 9.75° vert); 489.9px ≥ 350px.
+- F1542 body: PASS — centre in; 965.5px ≥ 600px; corners predicted 8/8 ≥ 4/8.
+- D2-CLEAR: predicted clear (path stays north-west of the mayor, in front of the rock plane, 2.0–2.5 m west of the carved line's west edge, non-zero 0.51 m push).
+
+(Full arithmetic preserved in the browser report of 2026-11-23 10:53 EET; the driver's audit run is the judge.)
