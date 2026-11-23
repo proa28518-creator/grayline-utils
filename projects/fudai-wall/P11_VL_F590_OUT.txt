@@ -1,0 +1,5 @@
+(1) The rendered-pixel measurement + eye should govern. Projection shares are unoccluded bounding-box estimates; they ignore foreshortening, flat surface material, and occlusion by nearer geometry, so they cannot establish what detail actually reaches the screen. The pixel gate measures real screen variance (std ≥ 12 over 32×32 blocks), and the eye confirms the ~45% seawall face is one flat dark slab while the sea is only a ~7% strip.
+
+(2) Yes. Measured detail is 18.6%, below the ≥22% bar, so NOT CLOSED is the correct call. The projection’s 55.2% gate-slot / 23.8% sea figures are projected area, not visible detail, and are overridden by the solid-slab geometry and occlusion caveat.
+
+(3) Demand the final-frame pixel-gate detail share (32×32 blocks, grayscale std ≥ 12) measured on the rendered image after occlusion/foreshortening—i.e., visible detail %, not projected bounding-box %.
