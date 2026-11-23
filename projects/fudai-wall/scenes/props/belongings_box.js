@@ -1,0 +1,4 @@
+// AUTHORSHIP: Codex seat; brief: P11_MERGE_CHUNKS_BRIEF.md; date: 2026-11-23.
+import { THREE, flat, part, finish } from '../../engine/props/_kit.js';
+export const free = true;
+export function build(o={}){const g=new THREE.Group(),card=flat('#b58a58','#75563a'),cloth=flat('#c7b79a','#827966');const b=part(new THREE.BoxGeometry(.75,.5,.55),card,.02);b.position.y=.25;g.add(b);const inside=part(new THREE.BoxGeometry(.66,.035,.46),flat('#463d32'),.01);inside.position.y=.49;g.add(inside);for(const [x,z] of [[-.36,0],[.36,0],[0,-.26],[0,.26]]){const s=part(new THREE.BoxGeometry(x? .035:.75,.5,z?.035:.55),card,.018);s.position.set(x,.25,z);g.add(s);}const roll=part(new THREE.CylinderGeometry(.095,.095,.42,10),cloth,.01);roll.rotation.z=Math.PI/2;roll.position.set(-.08,.58,.03);g.add(roll);const book=part(new THREE.BoxGeometry(.18,.07,.22),flat('#75513e','#47352d'),.012);book.position.set(.18,.55,-.08);g.add(book);return finish(g);}

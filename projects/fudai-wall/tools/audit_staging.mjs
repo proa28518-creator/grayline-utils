@@ -1,4 +1,5 @@
-// Static staging audit for Fudai Wall, chunk 2. Pure Node; no renderer/deps.
+// Static staging audit for Fudai Wall, chunks 2–3. Pure Node; no renderer/deps.
+// Chunk 3 moment declarations and reconciliation rules: P11_MERGE_CHUNKS_BRIEF.md.
 // Geometry uses calibrated head centre y=1.9, r=.5, hip=1.35, top=2.4: phase-6
 // engine measurement was ~1.85–1.95; F0 (target 1.55, dist 5.1, fov 34) passes
 // and F687 (dist 2.9, fov 30) crops, consistent with this model and not y=1.55.
@@ -123,6 +124,22 @@ const wallBox=box([600,6,-10],[24,12,.8]);
 const moments=[
  [219,7.3,'SH04'],[241,8.0333333333,'SH04'],[288,9.6,'SH05'],[345,11.5,'SH05'],[414,13.8,'SH05'],[474,15.8,'SH06'],[537,17.9,'SH07'],[570,19,'SH07'],[590,19.6666667,'SH07B'],[621,20.7,'SH08'],[639,21.3,'SH08'],[669,22.3,'SH09'],[687,22.9,'SH09'],[711,23.7,'SH10'],[723,24.1,'SH10'],[768,25.6,'SH11'],[798,26.6,'SH11'],[822,27.4,'SH11'],[870,29,'SH12']
 ];
+const chunk3Moments=[
+ [933,31.10,'SH13','point','mocker_b'],[942,31.40,'SH13','prop','box_sh13',60],[969,32.30,'SH13','face','mayor_old',120],
+ [993,33.10,'SH14','prop','gravestone_sh14',90],[1026,34.20,'SH14','prop','leaf_sh14',25],[1056,35.20,'SH14','prop','wall_distant_sh14',40],
+ [1083,36.10,'SH15','state','calendar',14],[1101,36.70,'SH15','prop','calendar',200],[1110,37.00,'SH15','prop','calendar',220],
+ [1131,37.70,'SH16','body','villagers',230],[1137,37.90,'SH16','prop','birds_sh16',25],[1155,38.50,'SH16','face','villagers',80],
+ [1188,39.60,'SH17','state','sea_sheet_sh17',6],[1197,39.90,'SH17','prop','boat_sh17_a',40],[1215,40.50,'SH17','prop','boat_sh17_b',40],
+ [1257,41.90,'SH18','prop','wave_sh18',300],[1302,43.40,'SH18','prop','measure_wave',200],[1335,44.50,'SH18','prop','wave_sh18',500],
+ [1367,45.57,'SH19','face','mayor_young',45],[1410,47.00,'SH19','face','mayor_young',55],[1428,47.60,'SH19','prop','wave_old_sh19',120],
+ [1497,49.90,'SH20','prop','carved_line_sh20',120],[1518,50.60,'SH20','face','mayor_young',350],[1542,51.40,'SH20','body','mayor_young',600],
+ [1599,53.30,'SH21','prop','pencil_mark_sh21',140],[1635,54.50,'SH21','face','child',380],[1647,54.90,'SH22','prop','seawall',400],
+ [1677,55.90,'SH22','prop','pour_sh22',180],[1716,57.20,'SH22','body','workers',240],[1764,58.80,'SH23','prop','wave_neighbor_sh23',600],
+ [1806,60.20,'SH23','prop','wave_neighbor_sh23',700],[1827,60.90,'SH23','occupancy','wave_neighbor_sh23',230],
+ [1863,62.10,'SH24','prop','spray_hero_sh24',260],[1896,63.20,'SH24','prop','wave_hero_sh24',500],[1908,63.60,'SH24','crest','wave_hero_sh24',17.5],
+ [1944,64.80,'SH25','prop','sunbeam_sh25',400],[1953,65.10,'SH25','occupancy','villagers',230],[1980,66.00,'SH26','face','mocker_a',240],
+ [2001,66.70,'SH26','prop','gravestone_sh26',300],[2022,67.40,'SH26','prop','wall_distant_sh26',450]
+];
 function pointCheck(frame,p){return frame.point(p)&&!occluder(frame.cam.pos,p,currentTime);}
 function screenVerticalSpan(frame, points){const ys=points.map(p=>frame.screen(p)).filter(p=>p!==null).map(p=>p[1]);return ys.length?Math.max(...ys)-Math.min(...ys):0;}
 function faceCheck(frame,id,t,minPx=0){const p=posAt(id,t),head=[p[0],1.9,p[2]],f=faceAt(id,t,p),to=[frame.cam.pos[0]-p[0],frame.cam.pos[2]-p[2]],angle=Math.acos(clamp(dot(norm(f),norm(to)),-1,1))*180/Math.PI;const visible=frame.sphere(head,.5),occ=occluder(frame.cam.pos,head,t),px=frame.height(1,head);return {pass:angle<=60&&visible&&!occ&&px!=null&&px>=minPx,angle,visible,occ,px};}
@@ -161,9 +178,33 @@ for(const [frameNo,t,shotId] of moments){currentTime=t;const shot=shotById(shotI
  if(!occupancy)checks.push('FAIL subjects do not occupy the frame (no required subject ≥230px)');
  results.push({frameNo,t,shotId,checks});
 }
+const CHUNK3_SIZE={box_sh13:[.75,.5,.55],gravestone_sh14:[.9,1.5,.25],leaf_sh14:[.28,.16,.03],wall_distant_sh14:[18,18,1.15],calendar:[2.2,3.5,.2],birds_sh16:[1.2,.5,.2],sea_sheet_sh17:[120,.04,80],boat_sh17_a:[3.1,3.2,1.2],boat_sh17_b:[3.1,3.2,1.2],wave_sh18:[90,17.5,24],measure_wave:[1.5,15,.2],old_village_sh19:[5.2,17,2.4],wave_old_sh19:[14,8,24],carved_line_sh20:[3.6,.24,.08],pencil_mark_sh21:[1.4,.35,.04],pour_sh22:[12,1,3.2],wave_neighbor_sh23:[70,17.5,24],wave_hero_sh24:[70,17.5,24],spray_hero_sh24:[26,4.5,3],sunbeam_sh25:[18,22,18],gravestone_sh26:[.95,1.5,.4],flowers_sh26:[.85,.4,.55],wall_distant_sh26:[90,18,1.15]};
+const chunk3Results=[];
+for(const [frameNo,t,shotId,type,id,threshold] of chunk3Moments){
+ currentTime=t;const shot=shotById(shotId),fr=shot&&makeFrame(camAt(shot,t)),checks=[];
+ if(!shot){checks.push('missing shot');chunk3Results.push({frameNo,t,shotId,checks});continue;}
+ if(type==='occupancy'&&film.cast[id]){const pos=posAt(id,t),q=boxCheck(fr,box([pos[0],1,pos[2]],[1,2,.6]),0,true,id);checks.push(`${id} occupancy ${q.pass&&q.px>=threshold?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);chunk3Results.push({frameNo,t,shotId,checks});continue;}
+ if(type==='prop'||type==='state'||type==='occupancy'||type==='crest'){
+  const p=props.find(x=>x.id===id);
+  if(!p)checks.push(`${id} FAIL absent`);
+  else {const s=propState(p,t),size=CHUNK3_SIZE[id]||[1,1,1],center=s.at,px=fr.height(size[1],center),inFrame=fr.point(center),key=(p.keys||[]).filter(k=>k.t<=t).at(-1)||{},hidden=key.hidden===true||key.in==='hidden';
+   if(type==='state') {const field=id==='calendar'?'page':id==='sea_sheet_sh17'?'pull':'h',val=key[field]??s[field]??p[field]??0;checks.push(`${id} state ${val>=threshold?'PASS':'FAIL'} ${field} ${val} >= ${threshold}`);}
+   else if(type==='crest'){const w=p,wall=film.props.find(x=>x.id==='seawall'),ws=propState(wall,t),crest=key.crestY??key.h??w.crestY??w.h??0;const top=ws.h??wall.h;const topIn=fr.point([0,top,wall.at[2]]);checks.push(`SH24 crest margin ${crest<=17.5&&top===18&&topIn?'PASS':'FAIL'} wave crest ${crest.toFixed(2)} <= 17.50; wall top ${top.toFixed(2)}; wall-top in frame ${topIn?'yes':'no'}`);}
+   else {const pass=!hidden&&inFrame&&px!=null&&px>=threshold;checks.push(`${id} ${pass?'PASS':'FAIL'} ${px?.toFixed(0)??'n/a'}px ${inFrame?'in frustum':'out of frustum'}${hidden?' hidden':''}${type==='occupancy'?' occupancy subject':''}`);}
+  }
+ } else if(type==='face') {const f=faceCheck(fr,id,t,threshold);checks.push(`${id} face ${f.pass?'PASS':'FAIL'} angle ${f.angle.toFixed(1)}° head ${f.visible?'in':'out'} ${f.px?.toFixed(0)??'n/a'}px${f.occ?` occluded by ${f.occ}`:''}`);}
+ else if(type==='body'){const pos=posAt(id,t),b=box([pos[0],1,pos[2]],[1,2,.6]),q=boxCheck(fr,b,threshold,false,id);checks.push(`${id} body ${q.pass?'PASS':'FAIL'} ${q.px?.toFixed(0)??'n/a'}px corners ${q.n}/8`);}
+ else {const pos=posAt(id,t),tip=[pos[0],2.5,pos[2]],pass=pointCheck(fr,tip);checks.push(`${id} hand tip ${pass?'PASS':'FAIL'} point ${pass?'in':'out'} frustum`);}
+ if(frameNo===1635||frameNo===1647){const child=film.props.find(x=>x.id==='pencil_mark_sh21'),wall=film.props.find(x=>x.id==='seawall'),s21=shotById('SH21'),s22=shotById('SH22'),fr21=makeFrame(camAt(s21,s21.t1)),fr22=makeFrame(camAt(s22,s22.t0)),wallState=propState(wall,s22.t0),y1=fr21.screen([child.at[0],child.at[1],child.at[2]]),y2=fr22.screen([wall.at[0],wallState.h,wall.at[2]]),ndc=y=>y?1-y[1]/960:null,n1=ndc(y1),n2=ndc(y2),pass=Math.abs(n1-.062)<.02&&Math.abs(n2-.062)<.02;checks.push(`SH21→SH22 match-cut NDC_y +0.062 ${pass?'PASS':'FAIL'}: ${n1?.toFixed(3)??'n/a'} / ${n2?.toFixed(3)??'n/a'} (target +0.062 on both)`);}
+ chunk3Results.push({frameNo,t,shotId,checks});
+}
 if(raises.length){console.log('LOWCAMS raises:');for(const r of raises)console.log(`  ${r}`);}
 console.log('FRAME | TIME | SHOT | RESULT | CHECKS');
 let failed=0;
 for(const r of results){const bad=r.checks.filter(x=>/FAIL| absent|do not occupy|out of grammar|camera inside/.test(x));if(bad.length)failed++;const shot=shotById(r.shotId),cam=shot&&camAt(shot,r.t);if(cam)console.log(`CAM F${r.frameNo} pos [${cam.pos.map(v=>v.toFixed(2)).join(', ')}] target [${cam.target.map(v=>v.toFixed(2)).join(', ')}] fov ${cam.fov.toFixed(2)}`);console.log(`F${r.frameNo} | ${r.t.toFixed(2)} | ${r.shotId} | ${bad.length?'FAIL':'PASS'} | ${r.checks.join('; ')}`);}
 console.log(`${failed?`FAIL (${failed}/19 moments)`:'PASS (19/19 moments)'}`);
-process.exitCode=failed?1:0;
+console.log('CHUNK 3 | FRAME | TIME | SHOT | RESULT | CHECKS');
+let chunk3Failed=0;
+for(const r of chunk3Results){const bad=r.checks.filter(x=>/FAIL|absent|out of frustum|out frustum/.test(x));if(bad.length)chunk3Failed++;console.log(`CHUNK3 F${r.frameNo} | ${r.t.toFixed(2)} | ${r.shotId} | ${bad.length?'FAIL':'PASS'} | ${r.checks.join('; ')}`);}
+console.log(`CHUNK 3: ${chunk3Failed?`FAIL (${chunk3Failed}/40 moments)`:'PASS (40/40 moments)'}`);
+process.exitCode=failed||chunk3Failed?1:0;

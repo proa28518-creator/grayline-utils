@@ -40,6 +40,67 @@ const CAM_SH10_A=add(BLUEPRINT,[1.8,3,9]), CAM_SH10_T=add(BLUEPRINT,[0,1.55,0]),
 const CAM_SH11=add(PLACES.COAST_VILLAGE,[-5,40,0]), CAM_SH11_T=add(PLACES.SEA,[-5.5,9,14]);
 const CAM_SH12_A=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TA=add(PLACES.COAST_WALL,[-5,6.5,6]);
 const CAM_SH12_B=add(PLACES.COAST_VILLAGE,[-5,5,4]), CAM_SH12_TB=add(PLACES.COAST_WALL,[-5,6.5,6]);
+// Phase 11 chunk merge: SH13–SH26 are translated from the Qwen/Hydrogen
+// records in P11_MERGE_CHUNKS_BRIEF.md. All points remain PLACES anchored.
+const p=(place,offset)=>add(PLACES[place],offset);
+const cam=(place,pos,look,fov)=>({pos:p(place,pos),target:p(place,look),fov});
+const chunk3Shot=(id,t0,t1,place,a,b,fov=40)=>({id,t0,t1,camera:{move:'push',from:cam(place,a[0],a[1],Array.isArray(fov)?fov[0]:fov),to:cam(place,b[0],b[1],Array.isArray(fov)?fov[1]:fov)}});
+const CAST3={
+ mayor_old:{spec:'cast/mayor_old.json',at:[p('COAST_VILLAGE',[-6,0,1])[0],p('COAST_VILLAGE',[-6,0,1])[2]],ry:30},
+ mayor_young:{spec:'cast/mayor_young.json',at:[p('FLASHBACK_ROCK',[0,0,2])[0],p('FLASHBACK_ROCK',[0,0,2])[2]],ry:0},
+ child:{spec:'cast/child.json',at:[p('ROOM',[0,0,-1.15])[0],p('ROOM',[0,0,-1.15])[2]],ry:180},
+ workers:{spec:'cast/workers.json',at:[p('COAST_WALL',[0,17,.2])[0],p('COAST_WALL',[0,17,.2])[2]],ry:0},
+ villagers:{spec:'cast/villagers.json',at:[p('COAST_VILLAGE',[-3,0,.8])[0],p('COAST_VILLAGE',[-3,0,.8])[2]],ry:0},
+ villagers_shore:{spec:'cast/villagers.json',at:[p('SEA',[-5,0,-5])[0],p('SEA',[-5,0,-5])[2]],ry:0}
+};
+const ACTS3={
+ mayor_old:{face:[{t:'line:11.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:11.start',at:p('COAST_VILLAGE',[-2,1.5,9])}],walk:[{t0:'line:11.start',path:[[-6,1],[-5.7,2.4],[-2.6,2.8],[6.5,3.2]],speed:1}]},
+ mayor_young:{face:[{t:'line:17.start',eyes:'open',brow:'down',mouth:'tight'}],look:[{t:'line:17.start',at:p('FLASHBACK_ROCK',[-3.5,-1,-12])}]},
+ child:{look:[{t:'line:19.start',at:p('ROOM',[0,1.52,2.6])}],face:[{t:'line:19.start',eyes:'open',brow:'up',mouth:'smile'}]},
+ workers:{look:[{t:'line:20.start',at:p('COAST_WALL',[0,.5,12])}],face:[{t:'line:20.start',eyes:'open',brow:'down',mouth:'tight'}]},
+ villagers:{walk:[{t0:'line:23.start',path:[[0,6],[0,6]],speed:1}],face:[{t:'line:23.start',eyes:'open',brow:'up',mouth:'smile'}]},
+ villagers_shore:{face:[{t:'line:16.start',eyes:'open',brow:'up',mouth:'D'}],walk:[{t0:'line:16.start',path:[[-5,-5],[-4,6]],speed:1}]}
+};
+const PROP3=[
+ {id:'box_sh13',kind:'belongings_box',in:'world',at:p('COAST_VILLAGE',[-6,1.15,1.45]),fetch:true,keys:[{t:'line:11.start',at:p('COAST_VILLAGE',[-6,1.15,1.45])},{t:'line:11.end',at:p('COAST_VILLAGE',[-2.6,1.15,3.25])}]},
+ {id:'gravestone_sh14',kind:'gravestone',in:'world',at:p('HILL_GRAVE',[0,0,0]),keys:[{t:'line:12.start'}]},
+ {id:'leaf_sh14',kind:'leaf',in:'world',at:p('HILL_GRAVE',[.55,3.3,.25]),keys:[{t:'line:12.start',at:p('HILL_GRAVE',[.55,3.3,.25])},{t:'line:12.end',at:p('HILL_GRAVE',[.18,.06,.55])}]},
+ {id:'wall_distant_sh14',kind:'seawall',in:'world',at:p('HILL_GRAVE',[0,0,-140]),w:18,h:18,keys:[{t:'line:12.start'}]},
+ {id:'birds_sh16',kind:'birds',in:'world',at:p('COAST_VILLAGE',[1.5,4.6,1]),n:7,burst:0,keys:[{t:'line:14.start',burst:0},{t:'line:14.word:2',burst:.15},{t:'line:14.end',burst:1}]},
+ {id:'sea_sheet_sh17',kind:'sea_sheet',in:'world',at:p('SEA',[0,.02,0]),pull:0,keys:[{t:'line:15.start',pull:0},{t:'line:15.word:2',pull:4},{t:'line:15.end',pull:36}]},
+ {id:'boat_sh17_a',kind:'boat',in:'world',at:p('SEA',[-3.5,.15,4]),keys:[{t:'line:15.start',at:p('SEA',[-3.5,.15,4])},{t:'line:15.end',at:p('SEA',[-3.5,.02,4])}]},
+ {id:'boat_sh17_b',kind:'boat',in:'world',at:p('SEA',[2.5,.15,7]),keys:[{t:'line:15.start',at:p('SEA',[2.5,.15,7])},{t:'line:15.end',at:p('SEA',[2.5,.02,7])}]},
+ {id:'wave_sh18',kind:'wave',in:'world',at:p('SEA',[0,0,-20]),h:0,advance:0,w:90,keys:[{t:'line:16.start',h:2,advance:0},{t:'line:16.word:2',h:6},{t:'line:16.end',h:17.5,advance:2}]},
+ {id:'measure_wave',kind:'measure',in:'world',at:p('SEA',[5,0,-16]),lineY:0,keys:[{t:'line:16.start',lineY:0},{t:'line:16.end',lineY:15}]},
+ {id:'old_village_sh19',kind:'storeys',in:'world',at:p('FLASHBACK_ROCK',[-3.5,-1.5,-12]),storeys:3,keys:[{t:'line:17.start'}]},
+ {id:'wave_old_sh19',kind:'wave',in:'world',at:p('FLASHBACK_ROCK',[-9,-1.5,-17]),h:5,advance:0,w:14,keys:[{t:'line:17.start',h:5,advance:0},{t:'line:17.end',h:8,advance:4.5}]},
+ {id:'carved_line_sh20',kind:'carved_line',in:'world',at:p('FLASHBACK_ROCK',[-.4,1.65,-1.85]),length:3.6,reveal:.35,keys:[{t:'line:18.start',reveal:.35},{t:'line:18.end',reveal:1}]},
+ {id:'pencil_mark_sh21',kind:'pencil_mark',in:'world',at:p('ROOM',[0,1.62,-1.55]),lineY:0,draw:0,keys:[{t:'line:19.start',draw:0},{t:'line:19.end',draw:1}]},
+ {id:'pour_sh22',kind:'concrete_pour',in:'world',at:p('COAST_WALL',[0,17,0]),progress:0,keys:[{t:'line:20.start',progress:0},{t:'line:20.end',progress:1}]},
+ {id:'wave_neighbor_sh23',kind:'wave',in:'world',at:p('NEIGHBOR_COAST',[0,0,-26]),hidden:true,h:17.5,width:70,crestY:17.5,curl:.4,keys:[{t:'line:21.start',hidden:false,at:p('NEIGHBOR_COAST',[0,0,-26]),h:17.5,crestY:17.5,curl:.5},{t:60.2,hidden:false,at:p('NEIGHBOR_COAST',[0,0,6]),h:17.5,crestY:17.5,curl:.85},{t:'line:21.end',hidden:false,at:p('NEIGHBOR_COAST',[0,0,18]),h:17.5,crestY:17.5,curl:.95},{t:'line:22.start',hidden:true}]},
+ {id:'wave_hero_sh24',kind:'wave',in:'world',at:p('COAST_WALL',[0,0,-34]),hidden:true,h:17.5,w:70,crestY:15,curl:.6,keys:[{t:'line:22.start',hidden:false,h:17.5,crestY:15.5,curl:.7},{t:62.1,at:p('COAST_WALL',[0,0,-17.5]),crestY:16.8,curl:.9},{t:63.2,at:p('COAST_WALL',[0,0,-17.5]),crestY:17.5,curl:.25},{t:'line:23.start',crestY:16.5},{t:'line:24.start',hidden:true}]},
+ {id:'spray_hero_sh24',kind:'spray',in:'world',at:p('COAST_WALL',[0,17.5,-17.5]),hidden:true,intensity:0,lift:0,keys:[{t:'line:22.start',hidden:false,intensity:0,lift:0},{t:62.1,intensity:1,lift:2.2},{t:63.2,intensity:.35,lift:.4},{t:'line:23.start',hidden:true}]},
+ {id:'sunbeam_sh25',kind:'sunbeam',in:'world',at:p('COAST_VILLAGE',[0,16,6]),hidden:true,opacity:0,keys:[{t:'line:23.start',hidden:false,opacity:.45},{t:64.8,opacity:.85},{t:'line:24.start',hidden:true}]},
+ {id:'gravestone_sh26',kind:'gravestone',in:'world',at:p('HILL_GRAVE',[0,0,1]),h:1.35,keys:[{t:'line:24.start'}]},
+ {id:'flowers_sh26',kind:'flowers',in:'world',at:p('HILL_GRAVE',[0,.05,1.45]),keys:[{t:'line:24.start'}]},
+ {id:'wall_distant_sh26',kind:'seawall',in:'world',at:p('HILL_GRAVE',[0,-6,-58]),h:18,keys:[{t:'line:24.start'}]}
+];
+const SHOTS3=[
+ chunk3Shot('SH13','line:11.start','line:11.end','COAST_VILLAGE',[[-5.4,1.62,8.2],[-6,1.55,1.6]],[[-2,1.62,8.2],[-2.6,1.5,2.9]],40),
+ chunk3Shot('SH14','line:12.start','line:12.end','HILL_GRAVE',[[2.6,.9,5.2],[0,1,0]],[[2.2,3.4,6.4],[0,1.2,-2]],40),
+ chunk3Shot('SH15','line:13.start','line:13.end','COAST_VILLAGE',[[-1.5,1.7,3.6],[-1.5,1.7,.25]],[[-1.5,1.7,3],[-1.5,1.7,.25]],32),
+ chunk3Shot('SH16','line:14.start','line:14.end','COAST_VILLAGE',[[3.5,2.2,10.5],[0,1.4,0]],[[3.2,2.1,10.2],[0,1.3,0]],46),
+ chunk3Shot('SH17','line:15.start','line:15.end','SEA',[[-6,13.5,15],[0,0,-2]],[[2,12.5,14],[0,0,-6]],44),
+ chunk3Shot('SH18','line:16.start','line:16.end','SEA',[[-1.5,.65,2.5],[0,2.2,-20]],[[-1,.9,1.5],[0,16.5,-20]],[46,50]),
+ chunk3Shot('SH19','line:17.start','line:17.end','FLASHBACK_ROCK',[[-2.5,.9,-21],[-2,1,-4]],[[-1,1.3,-16],[-4,1.2,-4]],46),
+ chunk3Shot('SH20','line:18.start','line:18.end','FLASHBACK_ROCK',[[-2.8,1.75,2.4],[-.4,1.68,-1.6]],[[-1.6,1.82,3],[.65,1.78,-1.2]],36),
+ chunk3Shot('SH21','line:19.start','line:19.end','ROOM',[[0,1.52,3],[0,1.52,-1.6]],[[0,1.54,2.4],[0,1.54,-1.6]],[38,36]),
+ chunk3Shot('SH22','line:20.start','line:20.end','COAST_WALL',[[0,16.75,14],[0,16.75,1.5]],[[6,19.2,20],[0,17.5,0]],[36,42]),
+ chunk3Shot('SH23','line:21.start','line:21.end','NEIGHBOR_COAST',[[-26,26,24],[-4,10,-4]],[[22,24,28],[4,11,6]],[44,46]),
+ chunk3Shot('SH24','line:22.start','line:22.end','COAST_WALL',[[24,19.5,-26],[0,14.5,-16.8]],[[15,18.8,-22.5],[0,17.2,-16.8]],[40,28]),
+ chunk3Shot('SH25','line:23.start','line:23.end','COAST_WALL',[[0,19.6,1],[0,3.5,22]],[[0,23.5,5],[0,2.5,24]],46),
+ chunk3Shot('SH26','line:24.start','line:24.end','HILL_GRAVE',[[0,2.3,7],[0,1.65,-1.2]],[[0,3.2,11.2],[0,2.2,-3]],[42,44])
+];
 const lines=[
 'بنى سور خرساني بطول عمارة خمس أدوار قدام قرية صيد صغيرة',
 'والبحر قدامه هادي زي المراية',
@@ -66,10 +127,10 @@ const lines=[
 'القرية كلها نجت',
 'والناس اللي ضحكوا عليه راحوا قبره يشكروه'
 ];
-export default {
+const film = {
  fps:30,size:[1080,1920],endFrame:false,
  world:{set:'own',setOpts:{post:{...makePost(),shade:makeShade()}}},
- cast:{mayor:{spec:'cast/mayor.json',at:[MAYOR[0],MAYOR[2]],ry:0},mocker_a:{spec:'cast/mocker_a.json',at:[MOCK_A[0],MOCK_A[2]],ry:0},mocker_b:{spec:'cast/mocker_b.json',at:[MOCK_B[0],MOCK_B[2]],ry:180},mocker_c:{spec:'cast/mocker_c.json',at:[MOCK_C[0],MOCK_C[2]],ry:180},villager_1:{spec:'cast/villagers.json',at:[V1[0],V1[2]],ry:0},villager_2:{spec:'cast/villagers.json',at:[V2[0],V2[2]],ry:0},villager_3:{spec:'cast/villagers.json',at:[V3[0],V3[2]],ry:20},villager_4:{spec:'cast/villagers.json',at:[V4[0],V4[2]],ry:-20},villager_5:{spec:'cast/villagers.json',at:[V5[0],V5[2]],ry:40},villager_6:{spec:'cast/villagers.json',at:[V6[0],V6[2]],ry:-40}},
+ cast:{mayor:{spec:'cast/mayor.json',at:[MAYOR[0],MAYOR[2]],ry:0},mocker_a:{spec:'cast/mocker_a.json',at:[MOCK_A[0],MOCK_A[2]],ry:0},mocker_b:{spec:'cast/mocker_b.json',at:[MOCK_B[0],MOCK_B[2]],ry:180},mocker_c:{spec:'cast/mocker_c.json',at:[MOCK_C[0],MOCK_C[2]],ry:180},villager_1:{spec:'cast/villagers.json',at:[V1[0],V1[2]],ry:0},villager_2:{spec:'cast/villagers.json',at:[V2[0],V2[2]],ry:0},villager_3:{spec:'cast/villagers.json',at:[V3[0],V3[2]],ry:20},villager_4:{spec:'cast/villagers.json',at:[V4[0],V4[2]],ry:-20},villager_5:{spec:'cast/villagers.json',at:[V5[0],V5[2]],ry:40},villager_6:{spec:'cast/villagers.json',at:[V6[0],V6[2]],ry:-40},...CAST3},
  voice:{file:'voice_owner.wav',words:'audio/clean.json',lines:lines.map(text=>({who:null,text}))},
  acts:{
  mayor:{
@@ -104,7 +165,8 @@ export default {
   {id:'blueprint',kind:'blueprint',in:'world',at:BLUEPRINT,lineY:1,pin:0,keys:[{t:0,at:BLUEPRINT,lineY:1,pin:0},{t:'line:8.word:6',lineY:.62,ease:.5},{t:'line:8.word:8',lineY:1,ease:.3},{t:'line:8.word:8',pin:1}]},
   {id:'mocksign',kind:'boardsign',in:'world',at:add(PLACES.COAST_WALL,[-6,12.8,1.8]),text:'أغبى مشروع',w:4.2,h:2.4,bg:'#9a7047',fg:'#f5e9d0',post:0,rot:[4,0,-2],keys:[{t:0,in:'hidden'},{t:'line:10.start',in:'world',at:add(PLACES.COAST_WALL,[-6,12.8,1.8]),rot:[4,0,-2]}]},
   {id:'sunorb',kind:'orb',in:'world',at:SUNORB,cx:-15,cy:8,color:'#ffd27a',r:1.7,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:8},{t:25.75,cx:0,cy:18,ease:.66},{t:26.40,cx:15,cy:8,ease:.65},{t:27.05,cx:15,cy:-5,ease:.65},{t:27.45,cx:-15,cy:9,ease:.27}]},
-  {id:'moonorb',kind:'orb',in:'world',at:SUNORB,cx:-15,cy:-5,color:'#dfe8ff',r:1.3,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:-5},{t:27.05,cx:-8,cy:14,ease:.65},{t:27.45,cx:6,cy:-5,ease:.27}]}
+  {id:'moonorb',kind:'orb',in:'world',at:SUNORB,cx:-15,cy:-5,color:'#dfe8ff',r:1.3,keys:[{t:0,in:'hidden'},{t:'line:9.start',in:'world',at:SUNORB},{t:'line:10.start',in:'hidden'},{t:'line:9.start',cx:-15,cy:-5},{t:27.05,cx:-8,cy:14,ease:.65},{t:27.45,cx:6,cy:-5,ease:.27}]},
+  ...PROP3
  ],
  handovers:[],
  shots:[
@@ -120,7 +182,12 @@ export default {
   {id:'SH09',t0:'line:8.start',t1:'line:8.word:5',camera:{move:'push',from:{pos:CAM_SH09_A,target:CAM_SH09_T,fov:32},to:{pos:CAM_SH09_B,target:CAM_SH09_T,fov:30}}},
   {id:'SH10',t0:'line:8.word:5',t1:'line:8.end',camera:{move:'push',from:{pos:CAM_SH10_A,target:CAM_SH10_T,fov:48},to:{pos:CAM_SH10_B,target:CAM_SH10_T,fov:48}}},
   {id:'SH11',t0:'line:9.start',t1:'line:9.end',camera:{move:'park',pos:CAM_SH11,target:CAM_SH11_T,fov:50}},
-  {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}}
+  {id:'SH12',t0:'line:10.start',t1:'line:10.end',camera:{move:'push',from:{pos:CAM_SH12_A,target:CAM_SH12_TA,fov:50},to:{pos:CAM_SH12_B,target:CAM_SH12_TB,fov:50}}},
+  ...SHOTS3
  ],
  captions:'words'
 };
+Object.assign(film.acts,ACTS3);
+film.props.find(x=>x.id==='seawall').keys.push({t:'line:20.start',h:17},{t:55.9,h:17.5},{t:57.1,h:18},{t:'line:23.end',h:18});
+film.props.find(x=>x.id==='calendar').keys.push({t:'line:13.start',in:'world',at:p('COAST_VILLAGE',[-1.5,1.7,.25]),page:0},{t:35.95,page:7},{t:36.1,page:14},{t:'line:13.word:4',page:14},{t:'line:13.end',page:14});
+export default film;
