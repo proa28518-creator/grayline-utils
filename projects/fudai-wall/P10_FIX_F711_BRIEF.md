@@ -14,7 +14,13 @@ computed the correction (`P10_OPUS_F711_OUT.md`): shift the SH10 camera
 disc fully out of frame.)
 
 Previous cause's verdict commit (hard-gate citation, filled by the driver
-at firing): <PENDING — driver fills before this brief fires>.
+at firing): `f8a1a13` — F474 round-3 verdict NOT CLOSED (measured
+conflict, escalated to Layla with priced options; cause parked). No
+judgement is pending: this brief may fire.
+
+**HARD RULE (guard flag 6 standing correction): NO LOCAL RENDERS.** Do
+not run any render, board script, screenshot tool, or suite page on
+this machine. Audits + sampler only; the driver fleet-probes and judges.
 
 ASTRA REVIEW INPUT (2026-11-23, batch 2) — the x-offset 1.8 correction is
 ADOPTED, with two pre-approval checks that bind this session's verdict:
