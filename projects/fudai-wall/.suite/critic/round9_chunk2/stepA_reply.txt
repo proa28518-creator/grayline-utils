@@ -1,0 +1,30 @@
+pic_01: ours — flat seawall and crane with cropped "30M" sign, year-8 calendar, and sparse foreground
+pic_02: bar — layered supermarket aisle with expressive faces, milk carton prop, and sparking red shopping cart
+pic_03: ours — flat concrete wall with glowing "15.5M" vertical measure bar and year-12 calendar
+pic_04: ours — tight close-up of laughing red-capped villager against a bare blue-and-tan backdrop
+pic_05: bar — Dutch-angle supermarket chase with dynamic expression, red cart, and stacked "FRESH" boxes
+pic_06: ours — seawall and X-braced gate with crane, "$30M" money-pile sign, and year-2 calendar
+pic_07: ours — tilted high-angle seawall, flat dark-blue sea, and yellow sun over an empty horizon
+pic_08: ours — blue grid blueprint with cropped "5M" ruler blocked by the back of a hard-hatted head
+pic_09: ours — deadpan grey-haired mayor close-up in dark suit framed against the X-braced gate
+pic_10: bar — head-on supermarket aisle shot with glowing aisle signs, depth lighting, and fierce-faced cart driver
+pic_11: ours — steep overhead angle on a laughing brown-hatted villager with a second head clipped at lower right
+pic_12: ours — tight close-up of laughing red-capped villager against a flat blue board and tan wall
+pic_13: bar — chaotic tilted supermarket aisle with wide-eyed driver, red cart, and flying tomato soup cans
+pic_14: ours — high-angle seawall and X-braced gate beside flat calm sea under a high yellow sun
+pic_15: ours — flat top-down view of a single blocky house facing two floating "10M" labels
+pic_16: ours — high-angle seawall edge with flat gold coins, tiny villagers below, and a strip of sea
+pic_17: bar — lit supermarket aisle with shocked cart driver and milk-splashed bespectacled character behind him
+pic_18: bar — tilted aisle shot with wide-eyed driver, sparking red cart, spilled soup cans, and fleeing background figure
+pic_19: ours — high-angle seawall and X-braced gate beside calm sea under a pale white moon
+pic_20: ours — three frowning grey-suited villagers stacked on the right edge facing off-frame
+pic_21: ours — four small villagers lined up in front of the seawall under an elevated "أغبى مشروع" sign
+pic_22: ours — three villagers crowded at the right edge in front of a large "3,000" sign
+pic_23: ours — deadpan mayor close-up against the X-braced gate with a clipped head edge on the right
+pic_24: ours — blueprint board with yellow horizontal bar occluded by the back of a hard-hatted head
+pic_25: ours — medium close-up of smiling red-capped villager against a flat blue board and blocky tan roofs
+BLIND SORT: bar taken for ours: X · ours taken for bar: Y
+
+---
+Run record (Layla): Gemini, nooaar343 (owner signed in personally during takeover), Neon, thinking High, skill fudai-wall-critic indicator visible during uploads. Single candidate reply. Conversation: https://gemini.google.com/app/a636e913b61fe538
+KEY-CHECK BY LAYLA: bar = pic_02, 05, 10, 13, 17, 18 — exactly the KEY's six bar frames. Sort 0·0 (25/25). The reply's own summary line rendered its placeholders as "X · Y" in the returned text; the per-line calls themselves are complete and unambiguous, and the browser report records the summary as 0 · 0.
