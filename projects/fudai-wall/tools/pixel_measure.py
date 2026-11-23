@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-# AUTHORSHIP: DRIVER-AUTHORED (phase-9 driver, local agent, 2026-11-23) —
-# NOT a Codex seat session. Pending Codex re-derivation per brief
-# P9_PIXEL_GATE_REDERIVE_BRIEF.md; until the seat version lands this file is
-# a driver harness, not seat-authored production code. (Guard question 04:46.)
+# AUTHORSHIP: Codex seat; brief: P9_PIXEL_GATE_REDERIVE_BRIEF.md; date: 2026-11-23.
 """Pixel measurements for one probed still (fudai-wall pixel gate).
 
 Usage: pixel_measure.py <still.png>
@@ -73,7 +70,9 @@ def main():
             ex = round(bw * 0.12); ey = round(bh * 0.12)
             discs.append({
                 'skin': [x0, y0, x1, y1],
-                'disc': [max(0, x0 - ex), max(0, y0 - ey), min(W - 1, x1 + ex), min(H - 1, y1 + ey)],
+                # Keep these bounds in image coordinates even when they cross
+                # the raster. The caller needs the overshoot to detect crops.
+                'disc': [x0 - ex, y0 - ey, x1 + ex, y1 + ey],
                 'centre': [round((x0 + x1) / 2), round((y0 + y1) / 2)],
                 'area': area, 'adj': round(adj, 2),
             })

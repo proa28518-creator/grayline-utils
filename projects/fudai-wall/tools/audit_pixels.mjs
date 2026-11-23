@@ -1,7 +1,4 @@
-// AUTHORSHIP: DRIVER-AUTHORED (phase-9 driver, local agent, 2026-11-23) —
-// NOT a Codex seat session. Pending Codex re-derivation per brief
-// P9_PIXEL_GATE_REDERIVE_BRIEF.md; until the seat version lands this file is
-// a driver harness, not seat-authored production code. (Guard question 04:46.)
+// AUTHORSHIP: Codex seat; brief: P9_PIXEL_GATE_REDERIVE_BRIEF.md; date: 2026-11-23.
 // PIXEL GATE — fudai-wall method change #3 (phase 9, on critic round 8's
 // demand + RULES S3: the same fault twice changes the METHOD).
 // The scene-data staging audit (tools/audit_staging.mjs) stays as a PRE-CHECK.
@@ -107,7 +104,17 @@ function propBox(id,t){const p=props.find(x=>x.id===id);if(!p)return null;const 
   if(kind==='seawall')B=box(add(a,[0,9,0]),[90,18,1.15],r);
   if(kind==='blueprint')B=box(add(a,[0,1.7,0]),[3.4,3.4,.2],r);
   if(kind==='orb')return null;
-  if(kind==='coins'){const q=dropState(p,t);return q?{box:box(q,[.5,.5,.5]),state:s}:null;}
+  // The falling coins render as a multi-member cluster. Build bounds from
+  // the sampled drop position/state and the members, not the origin proxy.
+  if(kind==='coins'){const q=dropState(p,t);if(!q)return null;
+    const members=p.members||p.coins||[];
+    const points=members.map(m=>add(q,m.at||m.offset||[0,0,0]));
+    if(!points.length) points.push(q);
+    const radius=Math.max(.05,...members.map(m=>(m.r||m.radius||.12)));
+    const min=[0,1,2].map(i=>Math.min(...points.map(v=>v[i]))-radius), max=[0,1,2].map(i=>Math.max(...points.map(v=>v[i]))+radius);
+    // Reject empty spacing: retain only the tight union around actual members.
+    const center=min.map((v,i)=>(v+max[i])/2), size=min.map((v,i)=>max[i]-v);
+    return {box:{...box(center,size,r),min,max,size},state:s,cluster:true};}
   return B?{box:B,state:s}:null;
 }
 const moments=[
@@ -132,6 +139,18 @@ function overlapFrac(a, b) {
   const x0 = Math.max(a[0], b[0]), y0 = Math.max(a[1], b[1]), x1 = Math.min(a[2], b[2]), y1 = Math.min(a[3], b[3]);
   if (x1 <= x0 || y1 <= y0) return 0;
   return ((x1 - x0) * (y1 - y0)) / Math.max(1, (a[2] - a[0]) * (a[3] - a[1]));
+}
+function matchDisc(id,t,fr,m){
+  const p=posAt(id,t), head=[p[0],1.9,p[2]], proj=fr.screen(head), diam=fr.height(1,head);
+  if(!proj||!diam)return null;
+  const candidates=[];
+  for(const d of m.discs){const dist=Math.hypot(d.centre[0]-proj[0],d.centre[1]-proj[1]);
+    const dh=d.disc[3]-d.disc[1],ratio=dh/diam;
+    if(dist<=780&&ratio>=.45&&ratio<=2.4)candidates.push({d,dist,ratio,score:dist+400*Math.abs(Math.log(Math.max(ratio,.05)))});}
+  candidates.sort((a,b)=>a.score-b.score);
+  if(!candidates.length)return {status:'missing'};
+  if(candidates.length>1&&candidates[1].score-candidates[0].score<150)return {status:'ambiguous',candidates:candidates.slice(0,2)};
+  return {...candidates[0],depth:fr.depth(head),proj,diam};
 }
 function measure(frameNo) {
   const file = join(STILLS, `frame_${String(frameNo).padStart(4, '0')}.png`);
@@ -171,30 +190,21 @@ for (const [frameNo, t, shotId] of moments) {
     const p = posAt(id, t), head = [p[0], 1.9, p[2]];
     const proj = fr.screen(head), diam = fr.height(1, head);
     if (!proj || !diam) { checks.push(`${id} face PIXEL FAIL behind camera`); return false; }
-    let best = null, second = null;
-    for (const d of m.discs) {
-      const dist = Math.hypot(d.centre[0] - proj[0], d.centre[1] - proj[1]);
-      const dh = d.disc[3] - d.disc[1];
-      const ratio = dh / diam;
-      const score = dist + 400 * Math.abs(Math.log(Math.max(ratio, 0.05)));
-      if (dist > 780 || ratio < 0.45 || ratio > 2.4) continue;
-      if (!best || score < best.score) { second = best; best = { d, dist, ratio, score }; }
-      else if (!second || score < second.score) second = { d, dist, ratio, score };
-    }
-    if (!best) { checks.push(`${id} face PIXEL FAIL no rendered disc matches projection (proj centre [${proj.map(v=>v.toFixed(0))}] diam ${diam.toFixed(0)}px; discs found ${m.discs.length})`); return false; }
-    if (second && best.score - second.score > -150) { checks.push(`${id} face PIXEL FAIL ambiguous disc match (two candidates within tolerance)`); return false; }
+    const matched=matchDisc(id,t,fr,m), best=matched?.status?null:matched;
+    if (!best) { checks.push(`${id} face PIXEL FAIL ${matched?.status==='ambiguous'?'ambiguous rendered disc match':'no rendered disc matches projection'} (proj centre [${proj.map(v=>v.toFixed(0))}] diam ${diam.toFixed(0)}px; discs found ${m.discs.length})`); return false; }
     const [x0, y0, x1, y1] = best.d.disc, [sx0, sy0] = best.d.skin;
     const skinCut = sx0 <= 2 || sy0 <= 2 || best.d.skin[2] >= 1077 || best.d.skin[3] >= 1917;
     const cross = Math.max(-x0, -y0, x1 - 1079, y1 - 1919);
     if (skinCut || cross > 24) { checks.push(`${id} face PIXEL FAIL head disc cut by edge (disc [${best.d.disc}] skin [${best.d.skin}] cross ${Math.max(0, cross).toFixed(0)}px)`); return false; }
     checks.push(`${id} face PIXEL PASS disc [${best.d.disc}] dist ${best.dist.toFixed(0)}px size ratio ${best.ratio.toFixed(2)}${cross > 0 ? ` (graze ${cross.toFixed(0)}px — watch)` : ''}`);
-    return true;
+    return best;
   };
   for (const id of FACE_REQ[frameNo] || []) reqFace(id);
   if (PAIR_REQ[frameNo]) {
-    const big = m.discs.filter(d => (d.disc[2] - d.disc[0]) >= 300 && (d.disc[3] - d.disc[1]) >= 300);
-    const cut = big.filter(d => d.skin[0] <= 2 || d.skin[1] <= 2 || d.skin[2] >= 1077 || d.skin[3] >= 1917);
-    checks.push(`face pair PIXEL ${big.length && !cut.length ? 'PASS' : 'FAIL'} (${big.length} large disc(s)${big.length === 1 ? ', merged segmentation — count by eye' : ''}${cut.length ? `, ${cut.length} edge-cut` : ''})`);
+    const pair=PAIR_REQ[frameNo].map(id=>({id,match:matchDisc(id,t,fr,m)}));
+    const unique=new Set(pair.filter(x=>x.match&&!x.match.status).map(x=>x.match.d));
+    const ok=pair.length===2&&unique.size===2&&pair.every(x=>x.match&&!x.match.status&&x.match.d.skin[0]>2&&x.match.d.skin[1]>2&&x.match.d.skin[2]<1077&&x.match.d.skin[3]<1917&&Math.max(-x.match.d.disc[0],-x.match.d.disc[1],x.match.d.disc[2]-1079,x.match.d.disc[3]-1919)<=24);
+    checks.push(`face pair PIXEL ${ok?'PASS':'FAIL'} (${pair.map(x=>`${x.id} ${x.match?.status|| (x.match?'matched':'unmatched')}`).join(', ')}${unique.size!==pair.length?', distinct discs required':''})`);
   }
   // (b) foreground occlusion, screen space
   for (const occ of OCC_REQ[frameNo] || []) {
@@ -221,10 +231,15 @@ for (const [frameNo, t, shotId] of moments) {
       if (f > worst) { worst = f; worstBy = oid; }
     }
     // pixel cross-check: measured skin discs vs the prop rect
-    let pix = 0;
-    for (const d of m.discs) pix = Math.max(pix, overlapFrac(rect, d.disc));
+    // Pixel evidence counts only a disc matched to a cast member that is
+    // demonstrably nearer than this prop. Unmatched/background regions remain
+    // visible in the measurement JSON but cannot be called occluders.
+    let pix = 0, pixBy=null;
+    for (const d of m.discs) for(const id of castIds){const hit=matchDisc(id,t,fr,m);
+      if(!hit||hit.status||hit.d!==d||hit.depth>=pDepth-.05)continue;
+      const f=overlapFrac(rect,d.disc);if(f>pix){pix=f;pixBy=id;}}
     const fail = worst > 0.10 || pix > 0.10;
-    checks.push(`${occ.prop} occlusion PIXEL ${fail ? 'FAIL' : 'PASS'} (geometric overlap ${(worst * 100).toFixed(0)}%${worstBy ? ` by ${worstBy}` : ''}; measured-disc overlap ${(pix * 100).toFixed(0)}%)`);
+    checks.push(`${occ.prop} occlusion PIXEL ${fail ? 'FAIL' : 'PASS'} (geometric overlap ${(worst * 100).toFixed(0)}%${worstBy ? ` by ${worstBy}` : ''}; measured-disc overlap ${(pix * 100).toFixed(0)}%${pixBy?` by ${pixBy}`:''})`);
   }
   const bad = checks.filter(c => c.includes('FAIL'));
   if (bad.length) failed++;
