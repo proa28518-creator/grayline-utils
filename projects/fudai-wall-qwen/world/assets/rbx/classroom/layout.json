@@ -1,0 +1,153 @@
+{
+ "doc": "Roblox V3 classroom (WP-S3). three.js axes, D (a character is 3 D). Walls and marks never move: world/rbx/classroom.PLACES.md.",
+ "walls": {
+  "x": [
+   -9.0,
+   9.0
+  ],
+  "z": [
+   -8.0,
+   8.0
+  ],
+  "ceiling": 5.6
+ },
+ "windows": {
+  "x": -9.0,
+  "z": [
+   [
+    -6.2,
+    -2.8
+   ],
+   [
+    -1.7,
+    1.7
+   ],
+   [
+    2.8,
+    6.2
+   ]
+  ],
+  "sill": 1.4,
+  "top": 4.8
+ },
+ "door": {
+  "x": 9.0,
+  "z": 5.0,
+  "w": 2.2,
+  "h": 4.2
+ },
+ "panels": [
+  [
+   -3.75,
+   5.3,
+   -5.25
+  ],
+  [
+   -3.75,
+   5.3,
+   0.0
+  ],
+  [
+   -3.75,
+   5.3,
+   5.25
+  ],
+  [
+   3.75,
+   5.3,
+   -5.25
+  ],
+  [
+   3.75,
+   5.3,
+   0.0
+  ],
+  [
+   3.75,
+   5.3,
+   5.25
+  ]
+ ],
+ "marks": {
+  "teacher": [
+   0,
+   -5.5
+  ],
+  "board": [
+   0,
+   -7.2
+  ],
+  "aisle": [
+   0,
+   2.5
+  ],
+  "window": [
+   -7.5,
+   0
+  ],
+  "door": [
+   8,
+   5
+  ],
+  "desk_a1": [
+   -5.4,
+   -2.0
+  ],
+  "desk_a2": [
+   -1.8,
+   -2.0
+  ],
+  "desk_a3": [
+   1.8,
+   -2.0
+  ],
+  "desk_a4": [
+   5.4,
+   -2.0
+  ],
+  "desk_b1": [
+   -5.4,
+   1.0
+  ],
+  "desk_b2": [
+   -1.8,
+   1.0
+  ],
+  "desk_b3": [
+   1.8,
+   1.0
+  ],
+  "desk_b4": [
+   5.4,
+   1.0
+  ],
+  "desk_c1": [
+   -5.4,
+   4.0
+  ],
+  "desk_c2": [
+   -1.8,
+   4.0
+  ],
+  "desk_c3": [
+   1.8,
+   4.0
+  ],
+  "desk_c4": [
+   5.4,
+   4.0
+  ]
+ },
+ "seat_height": 1.15,
+ "lane": {
+  "aisle_x": [
+   -0.9,
+   0.9
+  ],
+  "front_z": [
+   -7,
+   -4
+  ]
+ },
+ "kenney": "CC0: Kenney Furniture Kit + Nature Kit (experiments/roblox-style/v3/assets/kenney)"
+}
