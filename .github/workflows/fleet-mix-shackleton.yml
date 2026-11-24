@@ -1,0 +1,44 @@
+name: Fleet Mix Shackleton
+# Seat 5 (audio engineer) — renders the Shackleton "Fourth Man" mix ON THE FLEET
+# (owner's standing condition: no audio/render processing on the desk VM).
+# Design: fleet/mix_shackleton.sh (wind bed + story-beat SFX cues); law: RULES.md §8.
+on:
+  workflow_dispatch:
+    inputs:
+      project: { description: Project name, required: true, default: shackleton-fourth-man, type: string }
+      bed_trim_db: { description: Bed gain trim dB (lower the bed if voice-to-bed ratio misses; never touch the voice), required: false, default: '0', type: string }
+      sfx_trim_db: { description: SFX bus trim dB, required: false, default: '0', type: string }
+jobs:
+  mix:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ui/unified-interface
+      - name: Install ffmpeg
+        run: |
+          if command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null; then ffmpeg -version | head -1; else
+            curl -fsSL -o /tmp/ffmpeg.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz \
+              && mkdir -p /tmp/ffbin && tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/ffbin --strip-components=1 \
+              && echo "/tmp/ffbin/bin" >> "$GITHUB_PATH" && /tmp/ffbin/bin/ffmpeg -version | head -1 \
+            || { sudo apt-get -o Acquire::http::Timeout=30 -o Acquire::Retries=3 update && sudo apt-get install -y --no-install-recommends ffmpeg; }
+          fi
+      - name: Render mix and measure (RULES §8 gates inside the script)
+        env:
+          PROJECT_NAME: ${{ inputs.project }}
+          BED_TRIM_DB: ${{ inputs.bed_trim_db }}
+          SFX_TRIM_DB: ${{ inputs.sfx_trim_db }}
+        run: |
+          set -o pipefail
+          chmod +x fleet/mix_shackleton.sh
+          fleet/mix_shackleton.sh "projects/${PROJECT_NAME}" mix-output 2>&1 | tee mix-output.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fleet-mix-${{ inputs.project }}-${{ github.run_id }}
+          path: |
+            mix-output/shackleton_mix_48k.wav
+            mix-output/mix_report.json
+            mix-output.log
+          if-no-files-found: warn
+          retention-days: 30
