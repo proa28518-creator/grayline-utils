@@ -549,7 +549,7 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   // 2. x = +36 (SH12, Frame 840 @ t=28.0 s): Adze mid-swing biting glacier ice + gripping hands & forearms + flying chips
   const adzeStage = new THREE.Group();
   adzeStage.name = 'macro_adze';
-  adzeStage.position.set(36, 0, -6);
+  adzeStage.position.set(50, 0, -6);
 
   // Sculpted glacier ice shelf — top surface at y = 1.25 so the biting blade at y = 1.32 is ALWAYS cleanly above & biting in
   const iceBlock = new THREE.Mesh(new THREE.BoxGeometry(6.8, 1.5, 4.4), iceMat);
@@ -868,7 +868,7 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   ropeGroup.add(ropeRimLight);
   macro.add(ropeGroup);
 
-  return { group: macro, ropeGroup, ropeStrainGroup, adzePivot, chips, bootPivot };
+  return { group: macro, adzeStage, ropeGroup, ropeStrainGroup, adzePivot, chips, bootPivot };
 }
 
 function makeTitleCard(THREE) {
@@ -1441,6 +1441,10 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
     macroRigs.bootPivot.position.y = 2.38 - bootU * 0.549;
     macroRigs.bootPivot.rotation.z = 0.30 * (1 - bootU) + 0.04 * bootU;
     macroRigs.bootPivot.rotation.x = -0.34 * (1 - bootU) - 0.05 * bootU;
+
+    // SH12 / SH13 shared floor (x = 50, z = -6) visibility gating
+    macroRigs.adzeStage.visible = !(t >= 28.65 && t < 30.00);
+    macroRigs.ropeGroup.visible = !(t >= 27.35 && t < 28.65);
 
     // SH12 (27.35-28.65 s, Frame 840 @ t=28.0 s): Adze pivot swing unchanged; bite cluster & 18 chips static on adzeStage
     const adzeU = smoothstep(27.35, 27.95, t);
