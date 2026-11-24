@@ -558,12 +558,12 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   const iceCrust = new THREE.Mesh(new THREE.BoxGeometry(6.9, 0.14, 4.5), snowMat);
   iceCrust.position.set(0, 1.26, 0.15);
   adzeStage.add(iceCrust);
-  // Dark-blue carved V-notch right at the blade bite point
+  // Dark-blue carved V-notch right at the blade bite point (top face y = 1.38, 0.05 above crust)
   const carvedNotch = new THREE.Mesh(
-    new THREE.BoxGeometry(0.68, 0.18, 0.52),
+    new THREE.BoxGeometry(0.80, 0.19, 0.60),
     new THREE.MeshStandardMaterial({ color: 0x2e5e88, roughness: 0.35 })
   );
-  carvedNotch.position.set(-0.06, 1.27, 0.52);
+  carvedNotch.position.set(-0.06, 1.285, 0.52);
   adzeStage.add(carvedNotch);
   // Crisp glacier ridge backdrop behind the bite
   const adzeBackdrop = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 2.2), snowMat);
@@ -661,44 +661,51 @@ function makeMacroZone(THREE, iceMat, snowMat) {
     return hg;
   }
 
-  // adzePivot anchored right at the blade bite point (-0.06, 1.32, 0.52) so blade NEVER buries or exits frame
-  const adzePivot = new THREE.Group();
-  adzePivot.name = 'macro_adze_pivot';
-  adzePivot.position.set(-0.06, 1.32, 0.52);
-
   const handleMat = new THREE.MeshStandardMaterial({ color: 0x8e592c, roughness: 0.74 });
   const steelMat = new THREE.MeshStandardMaterial({ color: 0xb8c8d8, emissive: 0x1e2a36, roughness: 0.28, metalness: 0.72 });
   const edgeMat = new THREE.MeshStandardMaterial({ color: 0xeef7ff, emissive: 0x2c3c4c, roughness: 0.18, metalness: 0.85 });
 
-  // Forged steel adze blade biting directly into the ice notch at local (0, 0, 0)
+  // Static bite cluster (boot-stage pattern) — direct child of adzeStage
+  const adzeBiteGroup = new THREE.Group();
+  adzeBiteGroup.name = 'adzeBiteGroup';
+
   const blade = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.09, 0.34), steelMat);
-  blade.position.set(-0.04, 0.06, 0);
-  blade.rotation.z = 0.48;
-  adzePivot.add(blade);
+  blade.position.set(-0.102, 1.378, 0.52);
+  blade.rotation.z = 0.52;
+  adzeBiteGroup.add(blade);
+
   const bladeEdge = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.04, 0.35), edgeMat);
-  bladeEdge.position.set(-0.20, -0.02, 0);
-  bladeEdge.rotation.z = 0.48;
-  adzePivot.add(bladeEdge);
+  bladeEdge.position.set(-0.259, 1.292, 0.52);
+  bladeEdge.rotation.z = 0.52;
+  adzeBiteGroup.add(bladeEdge);
+
   const headSocket = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.26, 0.24), steelMat);
-  headSocket.position.set(0.14, 0.22, 0);
-  headSocket.rotation.z = -0.52;
-  adzePivot.add(headSocket);
+  headSocket.position.set(0.071, 1.545, 0.52);
+  headSocket.rotation.z = -0.48;
+  adzeBiteGroup.add(headSocket);
+
   const poll = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 0.20), steelMat);
-  poll.position.set(0.28, 0.16, 0);
-  poll.rotation.z = -0.52;
-  adzePivot.add(poll);
+  poll.position.set(0.213, 1.491, 0.52);
+  poll.rotation.z = -0.48;
+  adzeBiteGroup.add(poll);
+
+  const adzeHandLow = makeGrippingHand(0.85, 0.08, 0.12);
+  adzeHandLow.position.set(0.276, 1.934, 0.58);
+  adzeHandLow.rotation.z = -0.48;
+  adzeBiteGroup.add(adzeHandLow);
+
+  adzeStage.add(adzeBiteGroup);
+
+  // adzePivot keeps handle + adzeHandHigh and unchanged swing animation
+  const adzePivot = new THREE.Group();
+  adzePivot.name = 'macro_adze_pivot';
+  adzePivot.position.set(-0.06, 1.32, 0.52);
 
   // Ash wood handle rising diagonally from socket into the hero's gripping hands
   const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.075, 1.48, 10), handleMat);
   handle.position.set(0.46, 0.76, 0.04);
   handle.rotation.z = -0.52;
   adzePivot.add(handle);
-
-  // Two gloved hands + navy coat forearms gripping the adze handle firmly
-  const adzeHandLow = makeGrippingHand(0.85, 0.08, 0.12);
-  adzeHandLow.position.set(0.36, 0.60, 0.06);
-  adzeHandLow.rotation.z = -0.52;
-  adzePivot.add(adzeHandLow);
 
   const adzeHandHigh = makeGrippingHand(0.82, 0.24, 0.14);
   adzeHandHigh.position.set(0.56, 0.94, 0.08);
@@ -707,19 +714,23 @@ function makeMacroZone(THREE, iceMat, snowMat) {
 
   adzeStage.add(adzePivot);
 
-  // 18 crisp faceted ice chips bursting directly from the blade bite point
+  // 18 crisp faceted ice chips placed once at build (t = 28.0 money-frame burst positions, visible by default)
   const chips = [];
   const chipGeo = new THREE.OctahedronGeometry(0.085, 0);
   const chipMat = new THREE.MeshStandardMaterial({ color: 0xeef9ff, emissive: 0x345874, roughness: 0.22 });
-  for (let i = 0; i < 18; i++) {
+  const chipCoords = [
+    [-0.315, 1.354, 0.635], [-0.335, 1.501, 0.700], [-0.314, 1.613, 0.747],
+    [-0.261, 1.690, 0.605], [-0.129, 1.732, 0.643], [-0.098, 1.433, 0.664],
+    [-0.057, 1.484, 0.635], [ 0.050, 1.617, 0.700], [-0.021, 1.715, 0.747],
+    [ 0.046, 1.778, 0.605], [ 0.102, 1.433, 0.643], [ 0.134, 1.494, 0.664],
+    [ 0.079, 1.613, 0.635], [ 0.153, 1.732, 0.700], [ 0.192, 1.817, 0.747],
+    [ 0.194, 1.425, 0.605], [-0.009, 1.508, 0.643], [-0.007, 1.556, 0.664],
+  ];
+  for (let i = 0; i < chipCoords.length; i++) {
+    const [cx, cy, cz] = chipCoords[i];
     const ch = new THREE.Mesh(chipGeo, chipMat);
-    const ang = -Math.PI * 0.85 + (i / 17) * Math.PI * 1.15;
-    ch.userData = {
-      vx: Math.cos(ang) * (0.55 + (i % 4) * 0.26) - 0.18,
-      vy: 0.95 + (i % 5) * 0.34,
-      vz: 0.25 + (i % 3) * 0.22,
-      delay: (i % 6) * 0.04,
-    };
+    ch.position.set(cx, cy, cz);
+    ch.rotation.set(i * 0.9, i * 1.1, i * 0.7);
     adzeStage.add(ch);
     chips.push(ch);
   }
@@ -1431,22 +1442,10 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
     macroRigs.bootPivot.rotation.z = 0.30 * (1 - bootU) + 0.04 * bootU;
     macroRigs.bootPivot.rotation.x = -0.34 * (1 - bootU) - 0.05 * bootU;
 
-    // SH12 (27.35-28.65 s, Frame 840 @ t=28.0 s): Adze swings down & bites cleanly into ice crest + crisp flying ice chips
+    // SH12 (27.35-28.65 s, Frame 840 @ t=28.0 s): Adze pivot swing unchanged; bite cluster & 18 chips static on adzeStage
     const adzeU = smoothstep(27.35, 27.95, t);
     const adzeStrike = Math.sin(adzeU * Math.PI * 0.5);
     macroRigs.adzePivot.rotation.z = -0.38 * (1 - adzeStrike) + 0.04 * adzeStrike;
-    const chipCycle = Math.max(0, t - 27.62);
-    for (let i = 0; i < macroRigs.chips.length; i++) {
-      const ch = macroRigs.chips[i];
-      const dt = Math.max(0, (chipCycle - ch.userData.delay) % 0.65);
-      ch.visible = t >= 27.60 && t <= 28.70;
-      ch.position.set(
-        -0.06 + ch.userData.vx * dt,
-        1.34 + ch.userData.vy * dt - 2.4 * dt * dt,
-        0.54 + ch.userData.vz * dt
-      );
-      ch.rotation.set(t * 6 + i, t * 5, i * 0.7);
-    }
 
     // SH13 (28.65-30.00 s, Frame 882 @ t=29.4 s): Taut braided rope + gripping hands tremor under load
     macroRigs.ropeStrainGroup.position.x = Math.sin(t * 22.0) * 0.012;
