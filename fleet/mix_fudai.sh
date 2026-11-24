@@ -15,9 +15,9 @@ mkdir -p "$OUT/work"; W="$OUT/work"
 ff(){ ffmpeg -hide_banner -loglevel error -y "$@"; }
 rms_db(){
   local raw v
-  raw=$(ffmpeg -hide_banner -i "$1" -af astats -f null - 2>&1) || { echo "rms_db: ffmpeg failed on $1" >&2; echo "$raw" | tail -5 >&2; exit 1; }
-  v=$(printf '%s\n' "$raw" | awk '/RMS level dBFS/{x=$NF} END{print x}')
-  if [ -z "$v" ]; then echo "rms_db: no RMS line for $1; astats said:" >&2; printf '%s\n' "$raw" | tail -8 >&2; exit 1; fi
+  raw=$(ffmpeg -hide_banner -i "$1" -af "pan=mono|c0=0.5*c0+0.5*c1,astats" -f null - 2>&1) || { echo "rms_db: ffmpeg failed on $1" >&2; echo "$raw" | tail -5 >&2; exit 1; }
+  v=$(printf '%s\n' "$raw" | awk '/RMS level/{x=$NF} END{print x}')
+  if [ -z "$v" ]; then echo "rms_db: no RMS line for $1; astats said:" >&2; printf '%s\n' "$raw" | tail -30 >&2; exit 1; fi
   printf '%s' "$v"
 }
 
