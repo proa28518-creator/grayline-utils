@@ -542,106 +542,233 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   bootStage.add(bootRimLight);
   macro.add(bootStage);
 
-  // 2. x = +36 (SH12, Frame 840 @ t=28.0 s): Carpenter's Adze (فأس) biting glacier ice + chips
+  // 2. x = +36 (SH12, Frame 840 @ t=28.0 s): Adze mid-swing biting glacier ice + gripping hands & forearms + flying chips
   const adzeStage = new THREE.Group();
   adzeStage.name = 'macro_adze';
   adzeStage.position.set(36, 0, -6);
 
-  const iceBlock = new THREE.Mesh(new THREE.BoxGeometry(6.5, 2.2, 4.2), iceMat);
-  iceBlock.position.set(0, 0.7, 0);
+  // Sculpted glacier ice shelf — top surface at y = 1.25 so the biting blade at y = 1.32 is ALWAYS cleanly above & biting in
+  const iceBlock = new THREE.Mesh(new THREE.BoxGeometry(6.8, 1.5, 4.4), iceMat);
+  iceBlock.position.set(0, 0.50, 0.15);
   adzeStage.add(iceBlock);
+  const iceCrust = new THREE.Mesh(new THREE.BoxGeometry(6.9, 0.14, 4.5), snowMat);
+  iceCrust.position.set(0, 1.26, 0.15);
+  adzeStage.add(iceCrust);
+  // Dark-blue carved V-notch right at the blade bite point
   const carvedNotch = new THREE.Mesh(
-    new THREE.BoxGeometry(1.1, 0.42, 1.0),
-    new THREE.MeshStandardMaterial({ color: 0x4a7ea8, roughness: 0.4 })
+    new THREE.BoxGeometry(0.68, 0.18, 0.52),
+    new THREE.MeshStandardMaterial({ color: 0x2e5e88, roughness: 0.35 })
   );
-  carvedNotch.position.set(0, 1.72, 0.45);
+  carvedNotch.position.set(-0.06, 1.27, 0.52);
   adzeStage.add(carvedNotch);
-  const adzeBackdrop = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 2.2), iceMat);
-  adzeBackdrop.position.set(0, 3.8, -5.8);
+  // Crisp glacier ridge backdrop behind the bite
+  const adzeBackdrop = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 2.2), snowMat);
+  adzeBackdrop.position.set(0, 4.2, -5.2);
   adzeStage.add(adzeBackdrop);
 
+  // Helper to build a sculpted leather-gloved hand gripping a cylinder/handle + navy coat forearm
+  const gloveLeatherMat = new THREE.MeshStandardMaterial({ color: 0x6b4528, roughness: 0.78 });
+  const gloveFingerMat = new THREE.MeshStandardMaterial({ color: 0x56351c, roughness: 0.82 });
+  const cuffMat = new THREE.MeshStandardMaterial({ color: 0x382416, roughness: 0.88 });
+  const sleeveMat = new THREE.MeshStandardMaterial({ color: 0x2a3d5c, roughness: 0.84 });
+
+  function makeGrippingHand(armDx, armDy, armDz) {
+    const hg = new THREE.Group();
+    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.22, 0.20), gloveLeatherMat);
+    hg.add(palm);
+    // 4 distinct curled fingers wrapping over the front (+Z) of the grip
+    for (let f = 0; f < 4; f++) {
+      const fy = -0.075 + f * 0.05;
+      const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.024, 0.20, 8), gloveFingerMat);
+      finger.rotation.z = Math.PI / 2;
+      finger.position.set(0.0, fy, 0.095);
+      hg.add(finger);
+    }
+    // Opposing thumb
+    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.026, 0.16, 8), gloveLeatherMat);
+    thumb.rotation.z = 0.55;
+    thumb.position.set(-0.07, 0.11, 0.07);
+    hg.add(thumb);
+    // Stitched glove cuff + woollen coat forearm extending off-frame
+    const armLen = Math.hypot(armDx, armDy, armDz) || 0.8;
+    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.125, 0.18, 10), cuffMat);
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.125, 0.155, armLen, 10), sleeveMat);
+    const armGroup = new THREE.Group();
+    cuff.position.y = 0.16;
+    forearm.position.y = 0.18 + armLen * 0.5;
+    armGroup.add(cuff, forearm);
+    armGroup.rotation.z = -Math.atan2(armDx, armDy);
+    armGroup.rotation.x = Math.atan2(armDz, Math.hypot(armDx, armDy));
+    hg.add(armGroup);
+    return hg;
+  }
+
+  // adzePivot anchored right at the blade bite point (-0.06, 1.32, 0.52) so blade NEVER buries or exits frame
   const adzePivot = new THREE.Group();
-  adzePivot.position.set(0.95, 2.85, 0.35);
-  const handleMat = new THREE.MeshStandardMaterial({ color: 0x8b5a30, roughness: 0.78 });
-  const steelMat = new THREE.MeshStandardMaterial({ color: 0xb6c4d4, emissive: 0x1c242e, roughness: 0.32, metalness: 0.65 });
-  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.095, 2.1, 10), handleMat);
-  handle.rotation.z = 0.75;
-  handle.position.set(-0.45, -0.35, 0);
-  adzePivot.add(handle);
-  const headSocket = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.30, 0.28), steelMat);
-  headSocket.position.set(-1.12, -1.02, 0);
-  adzePivot.add(headSocket);
-  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.12, 0.44), steelMat);
-  blade.position.set(-1.26, -1.16, 0);
-  blade.rotation.z = 0.42;
+  adzePivot.name = 'macro_adze_pivot';
+  adzePivot.position.set(-0.06, 1.32, 0.52);
+
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0x8e592c, roughness: 0.74 });
+  const steelMat = new THREE.MeshStandardMaterial({ color: 0xb8c8d8, emissive: 0x1e2a36, roughness: 0.28, metalness: 0.72 });
+  const edgeMat = new THREE.MeshStandardMaterial({ color: 0xeef7ff, emissive: 0x2c3c4c, roughness: 0.18, metalness: 0.85 });
+
+  // Forged steel adze blade biting directly into the ice notch at local (0, 0, 0)
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.09, 0.34), steelMat);
+  blade.position.set(-0.04, 0.06, 0);
+  blade.rotation.z = 0.48;
   adzePivot.add(blade);
-  const poll = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.18, 0.24), steelMat);
-  poll.position.set(-0.96, -0.94, 0);
+  const bladeEdge = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.04, 0.35), edgeMat);
+  bladeEdge.position.set(-0.20, -0.02, 0);
+  bladeEdge.rotation.z = 0.48;
+  adzePivot.add(bladeEdge);
+  const headSocket = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.26, 0.24), steelMat);
+  headSocket.position.set(0.14, 0.22, 0);
+  headSocket.rotation.z = -0.52;
+  adzePivot.add(headSocket);
+  const poll = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 0.20), steelMat);
+  poll.position.set(0.28, 0.16, 0);
+  poll.rotation.z = -0.52;
   adzePivot.add(poll);
+
+  // Ash wood handle rising diagonally from socket into the hero's gripping hands
+  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.075, 1.48, 10), handleMat);
+  handle.position.set(0.46, 0.76, 0.04);
+  handle.rotation.z = -0.52;
+  adzePivot.add(handle);
+
+  // Two gloved hands + navy coat forearms gripping the adze handle firmly
+  const adzeHandLow = makeGrippingHand(0.85, 0.08, 0.12);
+  adzeHandLow.position.set(0.36, 0.60, 0.06);
+  adzeHandLow.rotation.z = -0.52;
+  adzePivot.add(adzeHandLow);
+
+  const adzeHandHigh = makeGrippingHand(0.82, 0.24, 0.14);
+  adzeHandHigh.position.set(0.56, 0.94, 0.08);
+  adzeHandHigh.rotation.z = -0.52;
+  adzePivot.add(adzeHandHigh);
+
   adzeStage.add(adzePivot);
 
+  // 18 crisp faceted ice chips bursting directly from the blade bite point
   const chips = [];
-  const chipGeo = new THREE.OctahedronGeometry(0.11, 0);
-  const chipMat = new THREE.MeshStandardMaterial({ color: 0xeaf7ff, emissive: 0x243848, roughness: 0.25 });
-  for (let i = 0; i < 12; i++) {
+  const chipGeo = new THREE.OctahedronGeometry(0.085, 0);
+  const chipMat = new THREE.MeshStandardMaterial({ color: 0xeef9ff, emissive: 0x345874, roughness: 0.22 });
+  for (let i = 0; i < 18; i++) {
     const ch = new THREE.Mesh(chipGeo, chipMat);
-    const ang = (i / 12) * Math.PI * 2;
-    ch.userData = { vx: Math.cos(ang) * (1.2 + (i % 3) * 0.5), vy: 1.6 + (i % 4) * 0.45, vz: Math.sin(ang) * 0.9 };
+    const ang = -Math.PI * 0.85 + (i / 17) * Math.PI * 1.15;
+    ch.userData = {
+      vx: Math.cos(ang) * (0.55 + (i % 4) * 0.26) - 0.18,
+      vy: 0.95 + (i % 5) * 0.34,
+      vz: 0.25 + (i % 3) * 0.22,
+      delay: (i % 6) * 0.04,
+    };
     adzeStage.add(ch);
     chips.push(ch);
   }
-  const adzeKeyLight = new THREE.PointLight(0xfff4e0, 8.0, 22, 1);
-  adzeKeyLight.position.set(1.2, 3.0, 3.4);
+  const adzeKeyLight = new THREE.PointLight(0xfff4e0, 10.0, 22, 1);
+  adzeKeyLight.position.set(1.2, 2.8, 3.4);
   adzeStage.add(adzeKeyLight);
+  const adzeRimLight = new THREE.PointLight(0x9ad4ff, 6.0, 20, 1);
+  adzeRimLight.position.set(-1.8, 2.4, 2.2);
+  adzeStage.add(adzeRimLight);
   macro.add(adzeStage);
 
-  // 3. x = +50 (SH13, 28.65-30.00 s): Taut braided rope over coat shoulder + gripping hands
+  // 3. x = +50 (SH13, Frame 882 @ t=29.4 s): Two hands gripping taut diagonal rope over hero's shoulder (fills entire frame)
   const ropeGroup = new THREE.Group();
   ropeGroup.name = 'macro_rope_shoulder';
   ropeGroup.position.set(50, 0, -6);
 
-  const shoulderCoat = new THREE.Mesh(
-    new THREE.SphereGeometry(0.92, 14, 12),
-    new THREE.MeshStandardMaterial({ color: 0x2b3c60, roughness: 0.82 })
-  );
-  shoulderCoat.scale.set(1.15, 0.85, 0.95);
-  shoulderCoat.position.set(0, 1.05, 0);
-  ropeGroup.add(shoulderCoat);
+  // Bright glacier snow & ice backdrop so coat, golden braided rope, and brown gloves pop cleanly
+  const ropeBackdrop = new THREE.Mesh(new THREE.BoxGeometry(16, 12, 2.2), snowMat);
+  ropeBackdrop.position.set(0, 3.5, -4.4);
+  ropeGroup.add(ropeBackdrop);
+  const ropeRidge = new THREE.Mesh(new THREE.ConeGeometry(4.2, 5.5, 5), iceMat);
+  ropeRidge.position.set(2.2, 2.2, -3.0);
+  ropeGroup.add(ropeRidge);
 
-  const ropeMat = new THREE.MeshStandardMaterial({ color: 0xd4ae76, roughness: 0.88 });
-  const ropeCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-2.6, 0.25, -1.4),
-    new THREE.Vector3(-0.35, 1.68, 0.25),
-    new THREE.Vector3(0.45, 1.58, 0.38),
-    new THREE.Vector3(2.8, 0.35, 1.6),
-  ]);
-  ropeGroup.add(new THREE.Mesh(new THREE.TubeGeometry(ropeCurve, 32, 0.11, 10, false), ropeMat));
-  for (let i = 0; i < 18; i++) {
-    const pt = ropeCurve.getPoint(i / 17);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.025, 6, 10), new THREE.MeshStandardMaterial({ color: 0x9c7848, roughness: 0.92 }));
-    ring.position.copy(pt);
-    ring.rotation.y = 0.6;
-    ropeGroup.add(ring);
+  // Hero's torso, shoulder & heavy winter parka collar occupying lower-left / centre-back
+  const coatBodyMat = new THREE.MeshStandardMaterial({ color: 0x2c3f5e, roughness: 0.84 });
+  const coatYokeMat = new THREE.MeshStandardMaterial({ color: 0x3f567a, roughness: 0.80 });
+  const collarMat = new THREE.MeshStandardMaterial({ color: 0xc0a47e, roughness: 0.90 });
+  const buttonMat = new THREE.MeshStandardMaterial({ color: 0xdcb652, roughness: 0.35, metalness: 0.65 });
+
+  const heroTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.72, 1.55, 14), coatBodyMat);
+  heroTorso.position.set(-0.22, 1.15, 0.02);
+  heroTorso.rotation.z = -0.10;
+  ropeGroup.add(heroTorso);
+  const heroShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 12), coatYokeMat);
+  heroShoulder.scale.set(1.18, 0.82, 0.88);
+  heroShoulder.position.set(-0.18, 1.88, 0.08);
+  ropeGroup.add(heroShoulder);
+  const heroCollar = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.11, 8, 14), collarMat);
+  heroCollar.rotation.x = Math.PI * 0.42;
+  heroCollar.position.set(-0.34, 2.22, 0.14);
+  ropeGroup.add(heroCollar);
+  for (const by of [1.18, 1.52]) {
+    const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.03, 10), buttonMat);
+    btn.rotation.x = Math.PI / 2;
+    btn.position.set(-0.38, by, 0.64);
+    ropeGroup.add(btn);
   }
-  const gloveMat = new THREE.MeshStandardMaterial({ color: 0x5c422e, roughness: 0.84 });
-  const handL = new THREE.Mesh(new THREE.SphereGeometry(0.24, 10, 10), gloveMat);
-  handL.scale.set(1.1, 0.85, 1.25);
-  handL.position.set(-0.22, 1.65, 0.34);
-  ropeGroup.add(handL);
-  const handR = new THREE.Mesh(new THREE.SphereGeometry(0.24, 10, 10), gloveMat);
-  handR.scale.set(1.1, 0.85, 1.25);
-  handR.position.set(0.52, 1.52, 0.44);
-  ropeGroup.add(handR);
-  const iceWall = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 2.2), iceMat);
-  iceWall.position.set(0, 3.2, -5.5);
-  ropeGroup.add(iceWall);
 
-  const ropeKeyLight = new THREE.PointLight(0xfff4e0, 8.0, 22, 1);
-  ropeKeyLight.position.set(1.0, 2.6, 3.4);
+  // Taut diagonal 3-strand braided rope running top-left -> over shoulder -> bottom-right across the entire 9:16 frame
+  const ropeMat = new THREE.MeshStandardMaterial({ color: 0xdcb476, roughness: 0.82 });
+  const ropeDarkMat = new THREE.MeshStandardMaterial({ color: 0x9b723e, roughness: 0.90 });
+  const ropeLightMat = new THREE.MeshStandardMaterial({ color: 0xf2d39c, roughness: 0.78 });
+
+  const ropeCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-0.82, 2.95, 0.20),
+    new THREE.Vector3(-0.22, 2.16, 0.44),
+    new THREE.Vector3( 0.16, 1.48, 0.52),
+    new THREE.Vector3( 0.76, 0.55, 0.64),
+  ]);
+  const ropeStrainGroup = new THREE.Group();
+  ropeStrainGroup.name = 'macro_rope_strain';
+  ropeStrainGroup.add(new THREE.Mesh(new THREE.TubeGeometry(ropeCurve, 36, 0.085, 10, false), ropeMat));
+
+  // Two helical braided strands wrapped tightly around the core curve for unmistakable rope texture
+  for (let s = 0; s < 2; s++) {
+    const strandPts = [];
+    const phase = s * Math.PI;
+    for (let i = 0; i <= 48; i++) {
+      const u = i / 48;
+      const pt = ropeCurve.getPoint(u);
+      const ang = u * Math.PI * 16 + phase;
+      strandPts.push(new THREE.Vector3(
+        pt.x + Math.cos(ang) * 0.068,
+        pt.y + Math.sin(ang) * 0.035,
+        pt.z + Math.sin(ang) * 0.068
+      ));
+    }
+    const strandCurve = new THREE.CatmullRomCurve3(strandPts);
+    ropeStrainGroup.add(new THREE.Mesh(
+      new THREE.TubeGeometry(strandCurve, 48, 0.034, 6, false),
+      s === 0 ? ropeDarkMat : ropeLightMat
+    ));
+  }
+
+  // Two sculpted leather-gloved hands + coat forearms firmly gripping the taut diagonal rope in centre frame
+  const ropeHandUpper = makeGrippingHand(-0.82, -0.32, -0.10);
+  ropeHandUpper.position.set(-0.14, 2.04, 0.46);
+  ropeHandUpper.rotation.z = 0.54;
+  ropeStrainGroup.add(ropeHandUpper);
+
+  const ropeHandLower = makeGrippingHand(0.84, -0.26, -0.06);
+  ropeHandLower.position.set(0.18, 1.44, 0.54);
+  ropeHandLower.rotation.z = 0.54;
+  ropeStrainGroup.add(ropeHandLower);
+
+  ropeGroup.add(ropeStrainGroup);
+
+  const ropeKeyLight = new THREE.PointLight(0xfff4e0, 10.0, 22, 1);
+  ropeKeyLight.position.set(1.0, 2.6, 3.6);
   ropeGroup.add(ropeKeyLight);
+  const ropeRimLight = new THREE.PointLight(0xaad8ff, 6.0, 20, 1);
+  ropeRimLight.position.set(-1.8, 2.4, 2.4);
+  ropeGroup.add(ropeRimLight);
   macro.add(ropeGroup);
 
-  return { group: macro, ropeGroup, adzePivot, chips, bootPivot };
+  return { group: macro, ropeGroup, ropeStrainGroup, adzePivot, chips, bootPivot };
 }
 
 function makeTitleCard(THREE) {
@@ -768,10 +895,16 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
   marchMistSil.position.set(-9.5, 0, -14.0);
   pMarch.add(marchMistSil);
 
-  const marchRopeMat = new THREE.MeshStandardMaterial({ color: 0xc4a06a, roughness: 0.9 });
-  const marchRope = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 12.0, 8), marchRopeMat);
-  marchRope.rotation.x = Math.PI / 2;
-  marchRope.position.set(0, 1.35, 0);
+  // Snow-level trailing rope trace alongside 4th footprints (y = 0.04, x = +1.75 — never pierces any character)
+  const marchRopeMat = new THREE.MeshStandardMaterial({ color: 0xb89664, roughness: 0.92 });
+  const marchTrailCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(1.72, 0.04, -5.5),
+    new THREE.Vector3(1.86, 0.04, -2.0),
+    new THREE.Vector3(1.68, 0.04,  1.5),
+    new THREE.Vector3(1.82, 0.04,  5.0),
+  ]);
+  const marchRope = new THREE.Mesh(new THREE.TubeGeometry(marchTrailCurve, 24, 0.032, 6, false), marchRopeMat);
+  marchRope.name = 'march_ground_rope_trace';
   pMarch.add(marchRope);
 
   const snowMarch = makeSnowField(THREE, 120, 28, 14, 34, 105);
@@ -1209,24 +1342,26 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
     macroRigs.bootPivot.rotation.z = 0.62 * (1 - bootU) + 0.24 * bootU;
     macroRigs.bootPivot.rotation.x = -0.52 * (1 - bootU) - 0.28 * bootU;
 
-    // SH12 (27.35-28.65 s, Frame 840 @ t=28.0 s): Adze swings down & bites into glacier ice + flying chips
-    const adzeU = smoothstep(27.35, 27.85, t);
+    // SH12 (27.35-28.65 s, Frame 840 @ t=28.0 s): Adze swings down & bites cleanly into ice crest + crisp flying ice chips
+    const adzeU = smoothstep(27.35, 27.95, t);
     const adzeStrike = Math.sin(adzeU * Math.PI * 0.5);
-    macroRigs.adzePivot.rotation.z = -0.68 * (1 - adzeStrike) + 0.06 * adzeStrike;
-    const chipDt = Math.max(0, t - 27.82);
+    macroRigs.adzePivot.rotation.z = -0.38 * (1 - adzeStrike) + 0.04 * adzeStrike;
+    const chipCycle = Math.max(0, t - 27.62);
     for (let i = 0; i < macroRigs.chips.length; i++) {
       const ch = macroRigs.chips[i];
-      ch.visible = t >= 27.80 && t <= 28.70;
+      const dt = Math.max(0, (chipCycle - ch.userData.delay) % 0.65);
+      ch.visible = t >= 27.60 && t <= 28.70;
       ch.position.set(
-        ch.userData.vx * chipDt,
-        1.78 + ch.userData.vy * chipDt - 4.8 * chipDt * chipDt,
-        0.45 + ch.userData.vz * chipDt
+        -0.06 + ch.userData.vx * dt,
+        1.34 + ch.userData.vy * dt - 2.4 * dt * dt,
+        0.54 + ch.userData.vz * dt
       );
-      ch.rotation.set(t * 6 + i, t * 5, 0);
+      ch.rotation.set(t * 6 + i, t * 5, i * 0.7);
     }
 
-    // SH13 (28.65-30.00 s): Taut braided rope vibration under strain
-    macroRigs.ropeGroup.rotation.z = Math.sin(t * 18.0) * 0.015;
+    // SH13 (28.65-30.00 s, Frame 882 @ t=29.4 s): Taut braided rope + gripping hands tremor under load
+    macroRigs.ropeStrainGroup.position.x = Math.sin(t * 22.0) * 0.012;
+    macroRigs.ropeStrainGroup.position.y = Math.cos(t * 19.0) * 0.008;
 
     // 7. Shelter stove glow & window mist drift
     stoveGlow.scale.set(1, 0.94 + Math.sin(t * 11.0) * 0.08, 1);
