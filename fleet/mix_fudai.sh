@@ -119,7 +119,11 @@ def win_rms(a, ch, sr, wins):
 def overall_rms(a):
     return math.sqrt(sum(x*x for x in a)/len(a))/32768.0
 cj = json.load(open(sys.argv[5]))
-wins = [(max(0.0, x['t0']-0.05), x['t1']+0.05) for x in cj['words']]
+cwords = cj['words'] if isinstance(cj, dict) else cj
+def wspan(x):
+    if 't0' in x: return (max(0.0, x['t0']-0.05), x['t1']+0.05)
+    return (max(0.0, x['start']-0.05), x['end']+0.05)
+wins = [wspan(x) for x in cwords]
 va, vch = read_rms(sys.argv[2]); ba, bch = read_rms(sys.argv[3]); da, dch = read_rms(sys.argv[4])
 sr = 48000
 vr = win_rms(va, vch, sr, wins); br = win_rms(da, dch, sr, wins)
