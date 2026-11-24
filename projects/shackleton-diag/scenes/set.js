@@ -742,39 +742,6 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   adzeStage.add(adzeRimLight);
   macro.add(adzeStage);
 
-  // DIAG4 (shackleton-diag only): marker GRID over the adze stage + the first
-  // two rungs of the PARENT LADDER at the bite point. All build-time
-  // (construction code, never update). Grid cubes are red and direct children
-  // of adzeStage; ladder cubes are green. Name encoding: 'm' = minus sign,
-  // 'p' = decimal point (e.g. grid_xm1p5_y1p38_z0p52 = x -1.5, y 1.38, z 0.52).
-  const __diag4Fmt = (v) => String(v).replace('-', 'm').replace('.', 'p');
-  const __diagGridMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  const __diagGridGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-  for (const gx of [-1.5, -0.1, 1.5]) {
-    for (const gy of [0.6, 1.38, 2.2, 3.2]) {
-      for (const gz of [-5.2, 0.52]) {
-        const gm = new THREE.Mesh(__diagGridGeo, __diagGridMat);
-        gm.name = 'grid_x' + __diag4Fmt(gx) + '_y' + __diag4Fmt(gy) + '_z' + __diag4Fmt(gz);
-        gm.position.set(gx, gy, gz);
-        adzeStage.add(gm);
-      }
-    }
-  }
-  const __diagLadderMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const __diagLadderGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-  // Bite point in stage-local coords; world = (1235.90, 1.38, -5.48) via
-  // pCross (1200,0,0) + macro_zone (0,0,0) + adzeStage (36,0,-6).
-  const ladderStage = new THREE.Mesh(__diagLadderGeo, __diagLadderMat);
-  ladderStage.name = 'ladder_stage';
-  ladderStage.position.set(-0.10, 1.38, 0.52);
-  adzeStage.add(ladderStage);
-  // adzePivot sits at (-0.06, 1.32, 0.52); pivot-local (0, 0.06, 0) is the
-  // blade's original pivot-local spot (stage-local (-0.06, 1.38, 0.52)).
-  const ladderPivot = new THREE.Mesh(__diagLadderGeo, __diagLadderMat);
-  ladderPivot.name = 'ladder_pivot';
-  ladderPivot.position.set(0, 0.06, 0);
-  adzePivot.add(ladderPivot);
-
   // 3. x = +50 (SH13, Frame 882 @ t=29.4 s): Two hands gripping taut diagonal rope over hero's shoulder (fills entire frame)
   const ropeGroup = new THREE.Group();
   ropeGroup.name = 'macro_rope_shoulder';
@@ -900,6 +867,28 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   ropeRimLight.position.set(-1.8, 2.4, 2.4);
   ropeGroup.add(ropeRimLight);
   macro.add(ropeGroup);
+
+  // DIAG5 (shackleton-diag only): render lattice — the SAME 6-point lattice of
+  // small red cubes on each of the three macro stages, so the desk can map
+  // which spatial volumes draw under each stage's own shot (frames 801 / 840 /
+  // 882). All build-time (construction code, never update). One shared unlit
+  // red material, Box(0.3). Name encoding: 'm' = minus, 'p' = decimal point
+  // (e.g. g5_adze_xm0p1_y1p38_z0p52 = adze stage-local x -0.1, y 1.38, z 0.52).
+  const __diag5Fmt = (v) => String(v).replace('-', 'm').replace('.', 'p');
+  const __diag5Mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const __diag5Geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+  const __diag5Pts = [
+    [-0.1, 0.6, 0.52], [-0.1, 1.38, 0.52], [-0.1, 2.2, 0.52], [-0.1, 3.2, 0.52],
+    [-0.1, 1.38, -5.2], [-0.1, 3.2, -5.2],
+  ];
+  for (const [__tag5, __stage5] of [['boot', bootStage], ['adze', adzeStage], ['rope', ropeGroup]]) {
+    for (const [__px5, __py5, __pz5] of __diag5Pts) {
+      const __m5 = new THREE.Mesh(__diag5Geo, __diag5Mat);
+      __m5.name = 'g5_' + __tag5 + '_x' + __diag5Fmt(__px5) + '_y' + __diag5Fmt(__py5) + '_z' + __diag5Fmt(__pz5);
+      __m5.position.set(__px5, __py5, __pz5);
+      __stage5.add(__m5);
+    }
+  }
 
   return { group: macro, ropeGroup, ropeStrainGroup, adzePivot, chips, bootPivot };
 }
@@ -1190,26 +1179,6 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
   const macroRigs = makeMacroZone(THREE, iceMat, snowMat);
   pCross.add(macroRigs.group);
 
-  // DIAG4 (shackleton-diag only): remaining PARENT LADDER rungs at the same
-  // world bite point (1235.90, 1.38, -5.48). Offsets read from the code:
-  // pCross at (1200, 0, 0); macro_zone at (0, 0, 0) inside pCross; root
-  // 'fourth_man_set' at the origin. So place-local and macro-local are both
-  // (35.90, 1.38, -5.48); root-local is the world position itself.
-  const __diagLadderMat4 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const __diagLadderGeo4 = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-  const ladderPlace = new THREE.Mesh(__diagLadderGeo4, __diagLadderMat4);
-  ladderPlace.name = 'ladder_place';
-  ladderPlace.position.set(35.90, 1.38, -5.48);
-  pCross.add(ladderPlace);
-  const ladderMacro = new THREE.Mesh(__diagLadderGeo4, __diagLadderMat4);
-  ladderMacro.name = 'ladder_macro';
-  ladderMacro.position.set(35.90, 1.38, -5.48);
-  macroRigs.group.add(ladderMacro);
-  const ladderRoot = new THREE.Mesh(__diagLadderGeo4, __diagLadderMat4);
-  ladderRoot.name = 'ladder_root';
-  ladderRoot.position.set(1235.90, 1.38, -5.48);
-  root.add(ladderRoot);
-
   const snowCross = makeSnowField(THREE, 140, 70, 14, 34, 408);
   snowCross.group.position.set(18, 0, -4);
   pCross.add(snowCross.group);
@@ -1442,7 +1411,7 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
   root.add(pLand);
 
   let __diagDumped = false;
-  let __diag4Done = false;
+  let __diag5Done = false;
   function update(t) {
     // DIAG (shackleton-diag only): one-shot live scene-graph dump at t >= 27.99
     if (!__diagDumped && t >= 27.99) {
@@ -1489,26 +1458,26 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
       }
     }
 
-    // DIAG4 (shackleton-diag only): grid + ladder census \u2014 one-shot at first
-    // t >= 27.99. For every grid_* and ladder_* object: name, parent name,
+    // DIAG5 (shackleton-diag only): three-stage lattice census \u2014 one-shot at first
+    // t >= 27.99. For every g5_* marker: name, parent name, world position.
     // world position.
-    if (!__diag4Done && t >= 27.99) {
-      __diag4Done = true;
+    if (!__diag5Done && t >= 27.99) {
+      __diag5Done = true;
       try {
-        const __v4 = new THREE.Vector3();
-        const __items4 = [];
+        const __v5 = new THREE.Vector3();
+        const __items5 = [];
         root.traverse((cc) => {
-          if (cc.name && (cc.name.indexOf('grid_') === 0 || cc.name.indexOf('ladder_') === 0)) {
-            __items4.push({
+          if (cc.name && cc.name.indexOf('g5_') === 0) {
+            __items5.push({
               name: cc.name,
               parent: cc.parent ? (cc.parent.name || '(unnamed)') : null,
-              world: cc.getWorldPosition(__v4).toArray(),
+              world: cc.getWorldPosition(__v5).toArray(),
             });
           }
         });
-        console.log('DIAGDUMP4 ' + JSON.stringify({ t, count: __items4.length, items: __items4 }));
-      } catch (__e4) {
-        console.log('DIAGDUMP4_ERROR ' + ((__e4 && __e4.stack) || __e4));
+        console.log('DIAGDUMP5 ' + JSON.stringify({ t, count: __items5.length, items: __items5 }));
+      } catch (__e5) {
+        console.log('DIAGDUMP5_ERROR ' + ((__e5 && __e5.stack) || __e5));
       }
     }
 
