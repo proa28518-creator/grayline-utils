@@ -1389,6 +1389,7 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
   root.add(pLand);
 
   let __diagDumped = false;
+  let __diag2Done = false;
   function update(t) {
     // DIAG (shackleton-diag only): one-shot live scene-graph dump at t >= 27.99
     if (!__diagDumped && t >= 27.99) {
@@ -1432,6 +1433,63 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
         }));
       } catch (__e) {
         console.log('DIAGDUMP_ERROR ' + ((__e && __e.stack) || __e));
+      }
+    }
+
+    // DIAG2 (shackleton-diag only): swap test — one-shot at first t >= 27.99.
+    // Raise the bite cluster + notch 3 D into open sky, drop a red unlit marker
+    // at the original bite point, and dump culling state for every adze mesh.
+    if (!__diag2Done && t >= 27.99) {
+      __diag2Done = true;
+      try {
+        const __findByName2 = (o, n) => { let f = null; o.traverse((cc) => { if (!f && cc.name === n) f = cc; }); return f; };
+        const __adze2 = __findByName2(root, 'macro_adze');
+        const __bite2 = __adze2 ? __findByName2(__adze2, 'adzeBiteGroup') : null;
+        let __notch2 = null;
+        if (__adze2) {
+          for (const ch of __adze2.children) {
+            if (ch.isMesh && Math.abs(ch.position.x + 0.06) < 0.01 && Math.abs(ch.position.y - 1.285) < 0.01 && Math.abs(ch.position.z - 0.52) < 0.01) { __notch2 = ch; break; }
+          }
+        }
+        if (__bite2) __bite2.position.y += 3.0;
+        if (__notch2) __notch2.position.y += 3.0;
+        let __marker2 = null;
+        if (__adze2) {
+          __marker2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+          __marker2.name = 'diag_marker';
+          __marker2.position.set(-0.10, 1.38, 0.52);
+          __adze2.add(__marker2);
+        }
+        const __meshInfo2 = (cc) => {
+          let bs = null;
+          if (cc.geometry) {
+            if (!cc.geometry.boundingSphere) { try { cc.geometry.computeBoundingSphere(); } catch (__be) {} }
+            if (cc.geometry.boundingSphere) bs = { c: cc.geometry.boundingSphere.center.toArray(), r: cc.geometry.boundingSphere.radius };
+          }
+          const m2 = Array.isArray(cc.material) ? cc.material[0] : cc.material;
+          return {
+            id: cc.name || (cc.geometry ? cc.geometry.type : '(noname)'),
+            matColor: (m2 && m2.color && typeof m2.color.getHexString === 'function') ? m2.color.getHexString() : null,
+            frustumCulled: cc.frustumCulled,
+            bs,
+            layersMask: cc.layers ? cc.layers.mask : null,
+          };
+        };
+        const __adzeMeshes2 = [];
+        if (__adze2) __adze2.traverse((cc) => { if (cc.isMesh) __adzeMeshes2.push(__meshInfo2(cc)); });
+        const __boot2 = __findByName2(root, 'macro_boot_screws');
+        let __screw2 = null;
+        if (__boot2) { __boot2.traverse((cc) => { if (!__screw2 && cc.isMesh && cc.material && cc.material.color && typeof cc.material.color.getHexString === 'function' && cc.material.color.getHexString() === 'a8b2ba') __screw2 = cc; }); }
+        console.log('DIAGDUMP2 ' + JSON.stringify({
+          t,
+          raisedBite: !!__bite2,
+          raisedNotch: !!__notch2,
+          markerAdded: !!__marker2,
+          adzeMeshes: __adzeMeshes2,
+          screwControl: __screw2 ? __meshInfo2(__screw2) : null,
+        }));
+      } catch (__e2) {
+        console.log('DIAGDUMP2_ERROR ' + ((__e2 && __e2.stack) || __e2));
       }
     }
 
