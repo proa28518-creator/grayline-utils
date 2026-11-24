@@ -78,7 +78,15 @@ jobs:
         run: |
           audio=""
           if [ "$MODE" = selftest ]; then audio=assembly-input/tone.wav
-          elif [ -d assembly-input/mixsrc ]; then audio=$(find assembly-input/mixsrc -type f -name '*.wav' | head -1)
+          elif [ -d assembly-input/mixsrc ]; then
+            # Pre-pad the mix to the frames' exact duration (+50 ms): current ffmpeg
+            # applies assemble.sh's -shortest to the audio's unpadded length and would
+            # clip the tail frames (observed: last-frame SSIM gate unmeasurable).
+            rawmix=$(find assembly-input/mixsrc -type f -name '*.wav' | head -1)
+            nframes=$(find assembly-input/frames -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' \) | wc -l)
+            pdur=$(awk -v n="$nframes" -v f="$FPS" 'BEGIN{printf "%.3f", n/f + 0.05}')
+            ffmpeg -hide_banner -loglevel error -y -i "$rawmix" -af "apad=whole_dur=$pdur" -c:a pcm_s16le assembly-input/mix_padded.wav
+            audio=assembly-input/mix_padded.wav
           elif [ -n "$MIX_REL" ]; then audio="projects/${PROJECT_NAME}/${MIX_REL}"; fi
           fleet/assemble.sh assembly-input/frames "$FPS" "$audio" assembly-output
       - uses: actions/upload-artifact@v4
