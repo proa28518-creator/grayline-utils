@@ -287,7 +287,7 @@ const props = [
     owner: 'shackleton',
     in: 'hand:R',
     at: [0, 0, 0],
-    rot: [0, 0, 0],
+    rot: [0, 0, 180],
     scale: 0.92,
     keys: [
       { t: 'line:1.start',  in: 'hand:R' },
@@ -483,31 +483,33 @@ const shots = [
     },
   },
   {
-    id: 'SH11', // §7 MANDATORY CLOSE-UP (Frame 801 — UNTOUCHED, landed in Repair 1): Boot screws biting ice
+    id: 'SH11', // §7 MANDATORY CLOSE-UP (Frame 801 — Build Repair 3): Boot screws biting ice
     t0: 'line:11.start',
     t1: 'line:11.start+1.35',
     place: 'GLACIER_CROSSING',
+    lowCam: true,
     camera: {
       move: 'push',
       t0: 'line:11.start',
       t1: 'line:11.start+1.35',
-      from: { pos: P('GLACIER_CROSSING', 22.8, 2.10, -1.6), target: P('GLACIER_CROSSING', 22.1, 1.85, -5.8), fov: 26 },
-      to:   { pos: P('GLACIER_CROSSING', 21.8, 2.05, -2.1), target: P('GLACIER_CROSSING', 22.1, 1.85, -5.8), fov: 25 },
+      from: { pos: P('GLACIER_CROSSING', 23.22, 1.86, -0.02), target: P('GLACIER_CROSSING', 22.26, 1.52, -5.78), fov: 28 },
+      to:   { pos: P('GLACIER_CROSSING', 23.16, 1.84, -0.36), target: P('GLACIER_CROSSING', 22.26, 1.52, -5.78), fov: 27 },
       roll: [-2.0, 1.5],
       ease: 'outCubic',
     },
   },
   {
-    id: 'SH12', // §7 MANDATORY CLOSE-UP (Frame 840 — RE-STAGED): Adze mid-swing biting ice + ice chips + gripping hands/forearms
+    id: 'SH12', // §7 MANDATORY CLOSE-UP (Frame 840 — Build Repair 3): Adze mid-swing biting ice + ice chips + gripping hands/forearms
     t0: 'line:11.start+1.35',
     t1: 'line:11.start+2.65',
     place: 'GLACIER_CROSSING',
+    lowCam: true,
     camera: {
       move: 'push',
       t0: 'line:11.start+1.35',
       t1: 'line:11.start+2.65',
-      from: { pos: P('GLACIER_CROSSING', 36.65, 2.02, -0.80), target: P('GLACIER_CROSSING', 36.22, 1.72, -5.48), fov: 28 },
-      to:   { pos: P('GLACIER_CROSSING', 36.22, 1.92, -1.30), target: P('GLACIER_CROSSING', 36.20, 1.68, -5.48), fov: 26 },
+      from: { pos: P('GLACIER_CROSSING', 36.17, 2.08, 1.75), target: P('GLACIER_CROSSING', 35.94, 1.65, -5.48), fov: 27 },
+      to:   { pos: P('GLACIER_CROSSING', 36.16, 2.06, 1.40), target: P('GLACIER_CROSSING', 35.94, 1.65, -5.48), fov: 26 },
       roll: [1.2, -0.8],
       ease: 'outCubic',
     },

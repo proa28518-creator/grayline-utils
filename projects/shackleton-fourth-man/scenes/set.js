@@ -306,19 +306,23 @@ function makePeakRing(THREE, matRock, matSnow, seed, count, minR, maxR, minH, ma
 
 function makeFootprintTrail(THREE, countPerLane, zStart, zStep, includeFourth = true) {
   const g = new THREE.Group();
-  const printMat = new THREE.MeshStandardMaterial({ color: 0x4c6b8c, roughness: 0.92 });
-  const fourthMat = new THREE.MeshStandardMaterial({ color: 0x38587a, roughness: 0.90 });
+  const rnd = mulberry32(419 + countPerLane * 13);
+  const printMat = new THREE.MeshStandardMaterial({ color: 0x39526e, roughness: 1.0 });
+  const fourthMat = new THREE.MeshStandardMaterial({ color: 0x2e4660, roughness: 1.0 });
   const lanes = includeFourth ? [-1.55, -0.52, 0.52, 1.58] : [-1.1, 0.0, 1.1];
   for (let l = 0; l < lanes.length; l++) {
     const isFourth = includeFourth && l === 3;
+    const lanePhaseZ = 0.37 * l;
     for (let i = 0; i < countPerLane; i++) {
-      const side = (i % 2 === 0 ? -1 : 1) * 0.14;
+      const side = (i % 2 === 0 ? -1 : 1) * 0.16;
+      const zJitter = (rnd() * 2 - 1) * 0.09;
+      const rotJitter = (rnd() * 2 - 1) * 0.06;
       const fp = new THREE.Mesh(
-        new THREE.BoxGeometry(0.24, 0.06, 0.44),
+        new THREE.BoxGeometry(0.26, 0.012, 0.46),
         isFourth ? fourthMat : printMat
       );
-      fp.position.set(lanes[l] + side, 0.03, zStart + i * zStep);
-      fp.rotation.y = (i % 2 === 0 ? 0.07 : -0.07);
+      fp.position.set(lanes[l] + side, 0.002, zStart + lanePhaseZ + i * zStep + zJitter);
+      fp.rotation.y = (i % 2 === 0 ? 0.07 : -0.07) + rotJitter;
       fp.userData = { lane: l, stepIdx: i, isFourth };
       g.add(fp);
     }
@@ -497,7 +501,7 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   bootPivot.position.set(0.08, 2.15, 0.20);
   const leatherMat = new THREE.MeshStandardMaterial({ color: 0x4d311f, roughness: 0.72 });
   const soleMat = new THREE.MeshStandardMaterial({ color: 0x261810, roughness: 0.85 });
-  const screwMat = new THREE.MeshStandardMaterial({ color: 0xf4d26e, emissive: 0x3b2c08, roughness: 0.22, metalness: 0.65 });
+  const screwMat = new THREE.MeshStandardMaterial({ color: 0xa8b2ba, emissive: 0x000000, roughness: 0.35, metalness: 0.85 });
 
   const ankle = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.50, 1.35, 12), leatherMat);
   ankle.position.set(-0.32, 0.85, 0);
@@ -512,21 +516,21 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   heel.position.set(-0.36, -0.26, 0);
   bootPivot.add(heel);
 
-  // 10 gleaming threaded screws (مسامير قلاووظ) clearly visible on underside & biting ice
+  // 10 steel threaded screws (مسامير قلاووظ) flush with sole bottom & biting into glacier frost
   const screwCoords = [
     [0.80, -0.32, -0.28], [0.80, -0.32, 0.28],
     [0.44, -0.32, -0.34], [0.44, -0.32, 0.00], [0.44, -0.32, 0.34],
     [0.08, -0.32, -0.28], [0.08, -0.32, 0.28],
-    [-0.28, -0.45, -0.26], [-0.28, -0.45, 0.26], [-0.54, -0.45, 0.00],
+    [-0.28, -0.32, -0.26], [-0.28, -0.32, 0.26], [-0.54, -0.32, 0.00],
   ];
   for (const [sx, sy, sz] of screwCoords) {
     const screw = new THREE.Group();
-    const head = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.06, 10), screwMat);
+    const head = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.05, 10), screwMat);
     head.position.y = 0.04;
     screw.add(head);
-    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.062, 0.28, 8), screwMat);
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.10, 8), screwMat);
     tip.rotation.x = Math.PI;
-    tip.position.y = -0.10;
+    tip.position.y = -0.05;
     screw.add(tip);
     screw.position.set(sx, sy, sz);
     bootPivot.add(screw);
@@ -572,28 +576,82 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   const cuffMat = new THREE.MeshStandardMaterial({ color: 0x382416, roughness: 0.88 });
   const sleeveMat = new THREE.MeshStandardMaterial({ color: 0x2a3d5c, roughness: 0.84 });
 
-  function makeGrippingHand(armDx, armDy, armDz) {
-    const hg = new THREE.Group();
-    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.22, 0.20), gloveLeatherMat);
-    hg.add(palm);
-    // 4 distinct curled fingers wrapping over the front (+Z) of the grip
-    for (let f = 0; f < 4; f++) {
-      const fy = -0.075 + f * 0.05;
-      const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.024, 0.20, 8), gloveFingerMat);
-      finger.rotation.z = Math.PI / 2;
-      finger.position.set(0.0, fy, 0.095);
-      hg.add(finger);
+  function makeCapsuleGeo(r, len) {
+    if (typeof THREE.CapsuleGeometry === 'function') {
+      return new THREE.CapsuleGeometry(r, len, 4, 8);
     }
-    // Opposing thumb
-    const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.026, 0.16, 8), gloveLeatherMat);
-    thumb.rotation.z = 0.55;
-    thumb.position.set(-0.07, 0.11, 0.07);
-    hg.add(thumb);
-    // Stitched glove cuff + woollen coat forearm extending off-frame
+    return new THREE.CylinderGeometry(r, r, len + r * 2, 8);
+  }
+
+  // Curled grip hand: local +z runs along the gripped rope/handle axis (centred at local origin, r = 0.085)
+  // Palm sits on -x; 4 x 2-segment fingers (r 0.030) wrap ~200 deg around the rope onto +x/-y far side; opposing thumb on near side.
+  function makeGrippingHand(armDx, armDy, armDz, mode = 'adze') {
+    const hg = new THREE.Group();
+    const palm = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), gloveLeatherMat);
+    palm.scale.set(1.0, 0.85, 0.95);
+
+    if (mode === 'rope') {
+      // Local +z = rope curve tangent; rope passes straight through (0, 0, z) with radius 0.085
+      palm.position.set(-0.155, -0.015, 0);
+      hg.add(palm);
+
+      const seg1Geo = makeCapsuleGeo(0.030, 0.075);
+      const seg2Geo = makeCapsuleGeo(0.030, 0.070);
+      const baseAngle = 55 * Math.PI / 180;      // 55 deg from palm toward rope axis
+      const tipBend   = 65 * Math.PI / 180;      // further 65 deg onto far side (~200 deg wrap around r=0.085)
+      const seg1Span  = 0.125;
+
+      for (let f = 0; f < 4; f++) {
+        const fz = -0.095 + f * 0.063;
+        const fingerRoot = new THREE.Group();
+        fingerRoot.position.set(-0.085, 0.072, fz);
+        // Base segment angled 55 deg from +y palm edge over the rope (+x/+y)
+        fingerRoot.rotation.z = -baseAngle;
+        const baseSeg = new THREE.Mesh(seg1Geo, gloveFingerMat);
+        baseSeg.position.y = seg1Span * 0.5;
+        fingerRoot.add(baseSeg);
+
+        // Tip segment angled a further 65 deg wrapping down onto the rope's far side (+x / -y)
+        const tipJoint = new THREE.Group();
+        tipJoint.position.y = seg1Span;
+        tipJoint.rotation.z = -tipBend;
+        const tipSeg = new THREE.Mesh(seg2Geo, gloveFingerMat);
+        tipSeg.position.y = 0.055;
+        tipJoint.add(tipSeg);
+        fingerRoot.add(tipJoint);
+        hg.add(fingerRoot);
+      }
+
+      // Opposing thumb capsule on the near (-y / -x) side of the rope
+      const thumbGeo = makeCapsuleGeo(0.032, 0.085);
+      const thumb = new THREE.Mesh(thumbGeo, gloveLeatherMat);
+      thumb.position.set(-0.035, -0.105, 0.055);
+      thumb.rotation.z = -1.15;
+      thumb.rotation.x = 0.25;
+      hg.add(thumb);
+    } else {
+      // SH12 adze handle grip (unchanged orientation, upgraded to rounded curled palm + fingers)
+      hg.add(palm);
+      const segGeo = makeCapsuleGeo(0.026, 0.12);
+      for (let f = 0; f < 4; f++) {
+        const fy = -0.075 + f * 0.05;
+        const finger = new THREE.Mesh(segGeo, gloveFingerMat);
+        finger.rotation.z = Math.PI / 2;
+        finger.position.set(0.0, fy, 0.095);
+        hg.add(finger);
+      }
+      const thumb = new THREE.Mesh(makeCapsuleGeo(0.028, 0.10), gloveLeatherMat);
+      thumb.rotation.z = 0.55;
+      thumb.position.set(-0.07, 0.11, 0.07);
+      hg.add(thumb);
+    }
+
+    // Stitched glove cuff + woollen coat forearm extending off-frame (unchanged)
     const armLen = Math.hypot(armDx, armDy, armDz) || 0.8;
     const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.125, 0.18, 10), cuffMat);
     const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.125, 0.155, armLen, 10), sleeveMat);
     const armGroup = new THREE.Group();
+    if (mode === 'rope') armGroup.position.set(-0.155, -0.015, 0);
     cuff.position.y = 0.16;
     forearm.position.y = 0.18 + armLen * 0.5;
     armGroup.add(cuff, forearm);
@@ -747,15 +805,46 @@ function makeMacroZone(THREE, iceMat, snowMat) {
     ));
   }
 
-  // Two sculpted leather-gloved hands + coat forearms firmly gripping the taut diagonal rope in centre frame
-  const ropeHandUpper = makeGrippingHand(-0.82, -0.32, -0.10);
-  ropeHandUpper.position.set(-0.14, 2.04, 0.46);
-  ropeHandUpper.rotation.z = 0.54;
+  // Seat each SH13 hand on ropeCurve via getPointAt nearest palm centres & orient local +z along curve tangent
+  function nearestRopeU(tx, ty, tz) {
+    let bestU = 0.5, bestD2 = Infinity;
+    for (let i = 0; i <= 200; i++) {
+      const u = i / 200;
+      const p = typeof ropeCurve.getPointAt === 'function' ? ropeCurve.getPointAt(u) : ropeCurve.getPoint(u);
+      const dx = p.x - tx, dy = p.y - ty, dz = p.z - tz;
+      const d2 = dx * dx + dy * dy + dz * dz;
+      if (d2 < bestD2) { bestD2 = d2; bestU = u; }
+    }
+    return bestU;
+  }
+
+  function seatRopeHand(tx, ty, tz, armDx, armDy, armDz, mirrorX = false) {
+    const u = nearestRopeU(tx, ty, tz);
+    const p = typeof ropeCurve.getPointAt === 'function' ? ropeCurve.getPointAt(u) : ropeCurve.getPoint(u);
+    const uNext = Math.min(1, u + 0.01);
+    const uPrev = Math.max(0, u - 0.01);
+    const pA = typeof ropeCurve.getPointAt === 'function' ? ropeCurve.getPointAt(uPrev) : ropeCurve.getPoint(uPrev);
+    const pB = typeof ropeCurve.getPointAt === 'function' ? ropeCurve.getPointAt(uNext) : ropeCurve.getPoint(uNext);
+    const tLen = Math.hypot(pB.x - pA.x, pB.y - pA.y, pB.z - pA.z) || 1;
+    const tz0 = (pB.x - pA.x) / tLen, tz1 = (pB.y - pA.y) / tLen, tz2 = (pB.z - pA.z) / tLen; // local +z along rope tangent
+
+    const hand = makeGrippingHand(armDx, armDy, armDz, 'rope');
+    if (mirrorX) hand.scale.x = -1; // Mirror palm/forearm to opposite side while keeping curled fingers facing camera (+Y -> +Z)
+    hand.position.set(p.x, p.y, p.z);
+    if (typeof hand.lookAt === 'function') {
+      // Orient local +z along curve tangent with up = (0, 0, 1) facing camera
+      hand.up.set(0, 0, 1);
+      hand.lookAt(p.x + tz0, p.y + tz1, p.z + tz2);
+    }
+    hand.userData = { ropeU: u, seatedAt: [p.x, p.y, p.z], tangent: [tz0, tz1, tz2] };
+    return hand;
+  }
+
+  // Upper hand forearm extends left (+local x via mirrorX=true); lower hand forearm extends right (-local x)
+  const ropeHandUpper = seatRopeHand(-0.14, 2.04, 0.46, -0.78, -0.18, -0.12, true);
   ropeStrainGroup.add(ropeHandUpper);
 
-  const ropeHandLower = makeGrippingHand(0.84, -0.26, -0.06);
-  ropeHandLower.position.set(0.18, 1.44, 0.54);
-  ropeHandLower.rotation.z = 0.54;
+  const ropeHandLower = seatRopeHand(0.18, 1.44, 0.54, -0.78, -0.18, -0.10, false);
   ropeStrainGroup.add(ropeHandLower);
 
   ropeGroup.add(ropeStrainGroup);
@@ -1336,11 +1425,11 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
     flameInner.scale.set(1.0, 0.85 + Math.sin(t * 17.5) * 0.16, 1.0);
 
     // 6. §7 Macro Close-Ups (Beat 3: 26.0-30.0 s)
-    // SH11 (26.0-27.35 s, Frame 801 @ t=26.7 s): Boot sole with gleaming screws tilted to show underside, biting ice
-    const bootU = smoothstep(26.15, 27.15, t);
-    macroRigs.bootPivot.position.y = 2.38 - bootU * 0.56;
-    macroRigs.bootPivot.rotation.z = 0.62 * (1 - bootU) + 0.24 * bootU;
-    macroRigs.bootPivot.rotation.x = -0.52 * (1 - bootU) - 0.28 * bootU;
+    // SH11 (26.0-27.35 s, Frame 801 @ t=26.7 s): Boot settled before frame 801, all 10 steel screws biting frost
+    const bootU = smoothstep(26.05, 26.60, t);
+    macroRigs.bootPivot.position.y = 2.38 - bootU * 0.549;
+    macroRigs.bootPivot.rotation.z = 0.30 * (1 - bootU) + 0.04 * bootU;
+    macroRigs.bootPivot.rotation.x = -0.34 * (1 - bootU) - 0.05 * bootU;
 
     // SH12 (27.35-28.65 s, Frame 840 @ t=28.0 s): Adze swings down & bites cleanly into ice crest + crisp flying ice chips
     const adzeU = smoothstep(27.35, 27.95, t);
