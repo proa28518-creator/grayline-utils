@@ -1,114 +1,1178 @@
-{
- "source": "owner file Hady_Raie_Transcript_Timestamped_7_zpdc.txt, converted mechanically 1:1 (no word or time changed; the (وقفة قصيرة) pause marker at 12-13 s is not a spoken segment and is recorded under 'pauses' only)",
- "file": "audio/clean.wav",
- "duration": 62.92,
- "segments": [
-  {
-   "text": "سنة 1916،",
-   "t0": 0,
-   "t1": 1
-  },
-  {
-   "text": "إرنست شاكلتون",
-   "t0": 1,
-   "t1": 2
-  },
-  {
-   "text": "ماشي بقاله 36 ساعة",
-   "t0": 2,
-   "t1": 4
-  },
-  {
-   "text": "وسط جبال محدش في الدنيا رسملها خريطة.",
-   "t0": 4,
-   "t1": 7
-  },
-  {
-   "text": "وفجأة، بدأ يحس بحاجة غريبة.",
-   "t0": 7,
-   "t1": 9
-  },
-  {
-   "text": "حاسس إن في راجل رابع ماشي جنبه.",
-   "t0": 9,
-   "t1": 12
-  },
-  {
-   "text": "بعد 16 يوم في مركب نجاة وسط المحيط الجنوبي،",
-   "t0": 13,
-   "t1": 16
-  },
-  {
-   "text": "كان قدامه هو وفرانك ورسلي وتوم كرين",
-   "t0": 16,
-   "t1": 18
-  },
-  {
-   "text": "طريق واحد بس عشان ينقذوا 22 راجل عالقين في آخر الدنيا على جزيرة الفيل:",
-   "t0": 18,
-   "t1": 23
-  },
-  {
-   "text": "إنهم يعدوا جبال جورجيا الجنوبية الجليدية على رجليهم،",
-   "t0": 23,
-   "t1": 26
-  },
-  {
-   "text": "ومعهمش غير حبل وفأس ومسامير قلاووظ مثبتينها في نعل جزمهم.",
-   "t0": 26,
-   "t1": 30
-  },
-  {
-   "text": "من كتر التعب، ورسلي وكرين مقدروش يكملوا ووقعوا من النوم على التلج.",
-   "t0": 30,
-   "t1": 34
-  },
-  {
-   "text": "شاكلتون سابهم يناموا خمس دقايق بالظبط،",
-   "t0": 34,
-   "t1": 36
-  },
-  {
-   "text": "ولما صحاهم، كدب عليهم وقالهم إنهم ناموا نص ساعة كاملة.",
-   "t0": 36,
-   "t1": 39
-  },
-  {
-   "text": "في الوقت ده، شاكلتون مكنش حكى لحد عن الراجل الرابع اللي كان حاسس بيه،",
-   "t0": 39,
-   "t1": 44
-  },
-  {
-   "text": "لحد ما ورسلي اعترف بعد كده إنه كان حاسس بنفس الإحساس،",
-   "t0": 44,
-   "t1": 47
-  },
-  {
-   "text": "وكرين كمان أكد نفس الكلام.",
-   "t0": 47,
-   "t1": 49
-  },
-  {
-   "text": "التلاتة، كل واحد لوحده، كانوا حاسين بكيان رابع معاهم.",
-   "t0": 49,
-   "t1": 53
-  },
-  {
-   "text": "مش بس هما؛ متسلقين وبحارة وناجين من كوارث كتير حكوا عن نفس الرفيق الخفي اللي محدش شافه،",
-   "t0": 53,
-   "t1": 59
-  },
-  {
-   "text": "ظاهرة معروفة في علم النفس بـ \"ظاهرة الرجل الثالث\".",
-   "t0": 59,
-   "t1": 63
-  }
- ],
- "pauses": [
-  {
-   "t0": 12,
-   "t1": 13,
-   "note": "pause marker in source transcript — not a spoken segment; the timing gap is preserved by the neighbouring segments' absolute times"
-  }
- ]
-}
+[
+ {
+  "start": 0.0,
+  "end": 0.42,
+  "line": 1,
+  "who": null,
+  "word": "سنة"
+ },
+ {
+  "start": 0.42,
+  "end": 1.36,
+  "line": 1,
+  "who": null,
+  "word": "1916،"
+ },
+ {
+  "start": 1.36,
+  "end": 2.06,
+  "line": 2,
+  "who": null,
+  "word": "إرنست"
+ },
+ {
+  "start": 2.06,
+  "end": 2.52,
+  "line": 2,
+  "who": null,
+  "word": "شاكلتون"
+ },
+ {
+  "start": 2.52,
+  "end": 2.86,
+  "line": 3,
+  "who": null,
+  "word": "ماشي"
+ },
+ {
+  "start": 2.86,
+  "end": 3.16,
+  "line": 3,
+  "who": null,
+  "word": "بقاله"
+ },
+ {
+  "start": 3.34,
+  "end": 3.92,
+  "line": 3,
+  "who": null,
+  "word": "36"
+ },
+ {
+  "start": 3.92,
+  "end": 4.54,
+  "line": 3,
+  "who": null,
+  "word": "ساعة"
+ },
+ {
+  "start": 4.54,
+  "end": 4.98,
+  "line": 4,
+  "who": null,
+  "word": "وسط"
+ },
+ {
+  "start": 4.98,
+  "end": 5.32,
+  "line": 4,
+  "who": null,
+  "word": "جبال"
+ },
+ {
+  "start": 5.32,
+  "end": 5.8,
+  "line": 4,
+  "who": null,
+  "word": "محدش"
+ },
+ {
+  "start": 5.8,
+  "end": 5.88,
+  "line": 4,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 5.88,
+  "end": 6.28,
+  "line": 4,
+  "who": null,
+  "word": "الدنيا"
+ },
+ {
+  "start": 6.5,
+  "end": 6.66,
+  "line": 4,
+  "who": null,
+  "word": "رسملها"
+ },
+ {
+  "start": 6.66,
+  "end": 7.04,
+  "line": 4,
+  "who": null,
+  "word": "خريطة."
+ },
+ {
+  "start": 7.04,
+  "end": 7.64,
+  "line": 5,
+  "who": null,
+  "word": "وفجأة،"
+ },
+ {
+  "start": 7.64,
+  "end": 8.1,
+  "line": 5,
+  "who": null,
+  "word": "بدأ"
+ },
+ {
+  "start": 8.1,
+  "end": 8.48,
+  "line": 5,
+  "who": null,
+  "word": "يحس"
+ },
+ {
+  "start": 8.48,
+  "end": 8.74,
+  "line": 5,
+  "who": null,
+  "word": "بحاجة"
+ },
+ {
+  "start": 8.74,
+  "end": 9.08,
+  "line": 5,
+  "who": null,
+  "word": "غريبة."
+ },
+ {
+  "start": 9.08,
+  "end": 9.96,
+  "line": 6,
+  "who": null,
+  "word": "حاسس"
+ },
+ {
+  "start": 9.96,
+  "end": 10.06,
+  "line": 6,
+  "who": null,
+  "word": "إن"
+ },
+ {
+  "start": 10.06,
+  "end": 10.28,
+  "line": 6,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 10.28,
+  "end": 10.72,
+  "line": 6,
+  "who": null,
+  "word": "راجل"
+ },
+ {
+  "start": 10.72,
+  "end": 11.26,
+  "line": 6,
+  "who": null,
+  "word": "رابع"
+ },
+ {
+  "start": 11.26,
+  "end": 11.54,
+  "line": 6,
+  "who": null,
+  "word": "ماشي"
+ },
+ {
+  "start": 11.54,
+  "end": 11.86,
+  "line": 6,
+  "who": null,
+  "word": "جنبه."
+ },
+ {
+  "start": 11.86,
+  "end": 13.04,
+  "line": 7,
+  "who": null,
+  "word": "بعد"
+ },
+ {
+  "start": 13.04,
+  "end": 13.26,
+  "line": 7,
+  "who": null,
+  "word": "16"
+ },
+ {
+  "start": 13.26,
+  "end": 13.68,
+  "line": 7,
+  "who": null,
+  "word": "يوم"
+ },
+ {
+  "start": 13.68,
+  "end": 13.8,
+  "line": 7,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 13.8,
+  "end": 14.1,
+  "line": 7,
+  "who": null,
+  "word": "مركب"
+ },
+ {
+  "start": 14.1,
+  "end": 14.36,
+  "line": 7,
+  "who": null,
+  "word": "نجاة"
+ },
+ {
+  "start": 14.36,
+  "end": 14.64,
+  "line": 7,
+  "who": null,
+  "word": "وسط"
+ },
+ {
+  "start": 14.64,
+  "end": 14.94,
+  "line": 7,
+  "who": null,
+  "word": "المحيط"
+ },
+ {
+  "start": 14.94,
+  "end": 15.34,
+  "line": 7,
+  "who": null,
+  "word": "الجنوبي،"
+ },
+ {
+  "start": 15.34,
+  "end": 15.76,
+  "line": 8,
+  "who": null,
+  "word": "كان"
+ },
+ {
+  "start": 15.76,
+  "end": 16.14,
+  "line": 8,
+  "who": null,
+  "word": "قدامه"
+ },
+ {
+  "start": 16.14,
+  "end": 16.3,
+  "line": 8,
+  "who": null,
+  "word": "هو"
+ },
+ {
+  "start": 16.3,
+  "end": 16.72,
+  "line": 8,
+  "who": null,
+  "word": "وفرانك"
+ },
+ {
+  "start": 16.72,
+  "end": 17.06,
+  "line": 8,
+  "who": null,
+  "word": "ورسلي"
+ },
+ {
+  "start": 17.06,
+  "end": 17.44,
+  "line": 8,
+  "who": null,
+  "word": "وتوم"
+ },
+ {
+  "start": 17.44,
+  "end": 17.72,
+  "line": 8,
+  "who": null,
+  "word": "كرين"
+ },
+ {
+  "start": 17.72,
+  "end": 18.28,
+  "line": 9,
+  "who": null,
+  "word": "طريق"
+ },
+ {
+  "start": 18.28,
+  "end": 18.62,
+  "line": 9,
+  "who": null,
+  "word": "واحد"
+ },
+ {
+  "start": 18.62,
+  "end": 18.9,
+  "line": 9,
+  "who": null,
+  "word": "بس"
+ },
+ {
+  "start": 18.9,
+  "end": 19.08,
+  "line": 9,
+  "who": null,
+  "word": "عشان"
+ },
+ {
+  "start": 19.08,
+  "end": 19.46,
+  "line": 9,
+  "who": null,
+  "word": "ينقذوا"
+ },
+ {
+  "start": 19.46,
+  "end": 19.62,
+  "line": 9,
+  "who": null,
+  "word": "22"
+ },
+ {
+  "start": 19.62,
+  "end": 20.6,
+  "line": 9,
+  "who": null,
+  "word": "راجل"
+ },
+ {
+  "start": 20.6,
+  "end": 20.94,
+  "line": 9,
+  "who": null,
+  "word": "عالقين"
+ },
+ {
+  "start": 20.94,
+  "end": 21.04,
+  "line": 9,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 21.04,
+  "end": 21.32,
+  "line": 9,
+  "who": null,
+  "word": "آخر"
+ },
+ {
+  "start": 21.32,
+  "end": 21.82,
+  "line": 9,
+  "who": null,
+  "word": "الدنيا"
+ },
+ {
+  "start": 21.82,
+  "end": 21.9,
+  "line": 9,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 21.9,
+  "end": 22.22,
+  "line": 9,
+  "who": null,
+  "word": "جزيرة"
+ },
+ {
+  "start": 22.22,
+  "end": 22.6,
+  "line": 9,
+  "who": null,
+  "word": "الفيل:"
+ },
+ {
+  "start": 22.6,
+  "end": 23.3,
+  "line": 10,
+  "who": null,
+  "word": "إنهم"
+ },
+ {
+  "start": 23.3,
+  "end": 23.66,
+  "line": 10,
+  "who": null,
+  "word": "يعدوا"
+ },
+ {
+  "start": 23.66,
+  "end": 23.92,
+  "line": 10,
+  "who": null,
+  "word": "جبال"
+ },
+ {
+  "start": 23.92,
+  "end": 24.24,
+  "line": 10,
+  "who": null,
+  "word": "جورجيا"
+ },
+ {
+  "start": 24.24,
+  "end": 24.7,
+  "line": 10,
+  "who": null,
+  "word": "الجنوبية"
+ },
+ {
+  "start": 24.7,
+  "end": 25.08,
+  "line": 10,
+  "who": null,
+  "word": "الجليدية"
+ },
+ {
+  "start": 25.08,
+  "end": 25.26,
+  "line": 10,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 25.26,
+  "end": 25.66,
+  "line": 10,
+  "who": null,
+  "word": "رجليهم،"
+ },
+ {
+  "start": 25.66,
+  "end": 26.34,
+  "line": 11,
+  "who": null,
+  "word": "ومعهمش"
+ },
+ {
+  "start": 26.34,
+  "end": 26.62,
+  "line": 11,
+  "who": null,
+  "word": "غير"
+ },
+ {
+  "start": 26.62,
+  "end": 26.94,
+  "line": 11,
+  "who": null,
+  "word": "حبل"
+ },
+ {
+  "start": 26.94,
+  "end": 27.38,
+  "line": 11,
+  "who": null,
+  "word": "وفأس"
+ },
+ {
+  "start": 27.38,
+  "end": 27.92,
+  "line": 11,
+  "who": null,
+  "word": "ومسامير"
+ },
+ {
+  "start": 27.92,
+  "end": 28.24,
+  "line": 11,
+  "who": null,
+  "word": "قلاووظ"
+ },
+ {
+  "start": 28.36,
+  "end": 28.8,
+  "line": 11,
+  "who": null,
+  "word": "مثبتينها"
+ },
+ {
+  "start": 28.8,
+  "end": 28.9,
+  "line": 11,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 28.9,
+  "end": 29.06,
+  "line": 11,
+  "who": null,
+  "word": "نعل"
+ },
+ {
+  "start": 29.06,
+  "end": 29.48,
+  "line": 11,
+  "who": null,
+  "word": "جزمهم."
+ },
+ {
+  "start": 29.48,
+  "end": 30.04,
+  "line": 12,
+  "who": null,
+  "word": "من"
+ },
+ {
+  "start": 30.04,
+  "end": 30.26,
+  "line": 12,
+  "who": null,
+  "word": "كتر"
+ },
+ {
+  "start": 30.26,
+  "end": 30.56,
+  "line": 12,
+  "who": null,
+  "word": "التعب،"
+ },
+ {
+  "start": 30.56,
+  "end": 31.22,
+  "line": 12,
+  "who": null,
+  "word": "ورسلي"
+ },
+ {
+  "start": 31.22,
+  "end": 31.54,
+  "line": 12,
+  "who": null,
+  "word": "وكرين"
+ },
+ {
+  "start": 31.66,
+  "end": 31.94,
+  "line": 12,
+  "who": null,
+  "word": "مقدروش"
+ },
+ {
+  "start": 31.94,
+  "end": 32.36,
+  "line": 12,
+  "who": null,
+  "word": "يكملوا"
+ },
+ {
+  "start": 32.36,
+  "end": 32.76,
+  "line": 12,
+  "who": null,
+  "word": "ووقعوا"
+ },
+ {
+  "start": 32.76,
+  "end": 32.9,
+  "line": 12,
+  "who": null,
+  "word": "من"
+ },
+ {
+  "start": 32.9,
+  "end": 33.12,
+  "line": 12,
+  "who": null,
+  "word": "النوم"
+ },
+ {
+  "start": 33.12,
+  "end": 33.2,
+  "line": 12,
+  "who": null,
+  "word": "على"
+ },
+ {
+  "start": 33.2,
+  "end": 33.64,
+  "line": 12,
+  "who": null,
+  "word": "التلج."
+ },
+ {
+  "start": 33.64,
+  "end": 34.22,
+  "line": 13,
+  "who": null,
+  "word": "شاكلتون"
+ },
+ {
+  "start": 34.22,
+  "end": 34.48,
+  "line": 13,
+  "who": null,
+  "word": "سابهم"
+ },
+ {
+  "start": 34.48,
+  "end": 34.8,
+  "line": 13,
+  "who": null,
+  "word": "يناموا"
+ },
+ {
+  "start": 34.8,
+  "end": 35.0,
+  "line": 13,
+  "who": null,
+  "word": "خمس"
+ },
+ {
+  "start": 35.0,
+  "end": 35.42,
+  "line": 13,
+  "who": null,
+  "word": "دقايق"
+ },
+ {
+  "start": 35.42,
+  "end": 35.88,
+  "line": 13,
+  "who": null,
+  "word": "بالظبط،"
+ },
+ {
+  "start": 35.88,
+  "end": 36.34,
+  "line": 14,
+  "who": null,
+  "word": "ولما"
+ },
+ {
+  "start": 36.34,
+  "end": 36.78,
+  "line": 14,
+  "who": null,
+  "word": "صحاهم،"
+ },
+ {
+  "start": 36.78,
+  "end": 37.3,
+  "line": 14,
+  "who": null,
+  "word": "كدب"
+ },
+ {
+  "start": 37.3,
+  "end": 37.58,
+  "line": 14,
+  "who": null,
+  "word": "عليهم"
+ },
+ {
+  "start": 37.58,
+  "end": 37.86,
+  "line": 14,
+  "who": null,
+  "word": "وقالهم"
+ },
+ {
+  "start": 37.86,
+  "end": 38.1,
+  "line": 14,
+  "who": null,
+  "word": "إنهم"
+ },
+ {
+  "start": 38.1,
+  "end": 38.34,
+  "line": 14,
+  "who": null,
+  "word": "ناموا"
+ },
+ {
+  "start": 38.34,
+  "end": 38.56,
+  "line": 14,
+  "who": null,
+  "word": "نص"
+ },
+ {
+  "start": 38.56,
+  "end": 38.8,
+  "line": 14,
+  "who": null,
+  "word": "ساعة"
+ },
+ {
+  "start": 38.8,
+  "end": 39.12,
+  "line": 14,
+  "who": null,
+  "word": "كاملة."
+ },
+ {
+  "start": 39.12,
+  "end": 39.74,
+  "line": 15,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 39.74,
+  "end": 40.04,
+  "line": 15,
+  "who": null,
+  "word": "الوقت"
+ },
+ {
+  "start": 40.04,
+  "end": 40.18,
+  "line": 15,
+  "who": null,
+  "word": "ده،"
+ },
+ {
+  "start": 40.18,
+  "end": 40.8,
+  "line": 15,
+  "who": null,
+  "word": "شاكلتون"
+ },
+ {
+  "start": 40.92,
+  "end": 41.14,
+  "line": 15,
+  "who": null,
+  "word": "مكنش"
+ },
+ {
+  "start": 41.14,
+  "end": 41.38,
+  "line": 15,
+  "who": null,
+  "word": "حكى"
+ },
+ {
+  "start": 41.38,
+  "end": 41.58,
+  "line": 15,
+  "who": null,
+  "word": "لحد"
+ },
+ {
+  "start": 41.58,
+  "end": 41.76,
+  "line": 15,
+  "who": null,
+  "word": "عن"
+ },
+ {
+  "start": 41.76,
+  "end": 42.24,
+  "line": 15,
+  "who": null,
+  "word": "الراجل"
+ },
+ {
+  "start": 42.24,
+  "end": 42.76,
+  "line": 15,
+  "who": null,
+  "word": "الرابع"
+ },
+ {
+  "start": 42.76,
+  "end": 42.94,
+  "line": 15,
+  "who": null,
+  "word": "اللي"
+ },
+ {
+  "start": 42.94,
+  "end": 43.04,
+  "line": 15,
+  "who": null,
+  "word": "كان"
+ },
+ {
+  "start": 43.04,
+  "end": 43.38,
+  "line": 15,
+  "who": null,
+  "word": "حاسس"
+ },
+ {
+  "start": 43.38,
+  "end": 43.5,
+  "line": 15,
+  "who": null,
+  "word": "بيه،"
+ },
+ {
+  "start": 43.5,
+  "end": 44.16,
+  "line": 16,
+  "who": null,
+  "word": "لحد"
+ },
+ {
+  "start": 44.16,
+  "end": 44.3,
+  "line": 16,
+  "who": null,
+  "word": "ما"
+ },
+ {
+  "start": 44.3,
+  "end": 44.54,
+  "line": 16,
+  "who": null,
+  "word": "ورسلي"
+ },
+ {
+  "start": 44.54,
+  "end": 44.84,
+  "line": 16,
+  "who": null,
+  "word": "اعترف"
+ },
+ {
+  "start": 44.84,
+  "end": 45.0,
+  "line": 16,
+  "who": null,
+  "word": "بعد"
+ },
+ {
+  "start": 45.0,
+  "end": 45.26,
+  "line": 16,
+  "who": null,
+  "word": "كده"
+ },
+ {
+  "start": 45.26,
+  "end": 45.42,
+  "line": 16,
+  "who": null,
+  "word": "إنه"
+ },
+ {
+  "start": 45.42,
+  "end": 45.56,
+  "line": 16,
+  "who": null,
+  "word": "كان"
+ },
+ {
+  "start": 45.56,
+  "end": 45.96,
+  "line": 16,
+  "who": null,
+  "word": "حاسس"
+ },
+ {
+  "start": 45.96,
+  "end": 46.24,
+  "line": 16,
+  "who": null,
+  "word": "بنفس"
+ },
+ {
+  "start": 46.24,
+  "end": 46.76,
+  "line": 16,
+  "who": null,
+  "word": "الإحساس،"
+ },
+ {
+  "start": 46.76,
+  "end": 47.4,
+  "line": 17,
+  "who": null,
+  "word": "وكرين"
+ },
+ {
+  "start": 47.4,
+  "end": 47.68,
+  "line": 17,
+  "who": null,
+  "word": "كمان"
+ },
+ {
+  "start": 47.68,
+  "end": 48.12,
+  "line": 17,
+  "who": null,
+  "word": "أكد"
+ },
+ {
+  "start": 48.12,
+  "end": 48.36,
+  "line": 17,
+  "who": null,
+  "word": "نفس"
+ },
+ {
+  "start": 48.36,
+  "end": 48.74,
+  "line": 17,
+  "who": null,
+  "word": "الكلام."
+ },
+ {
+  "start": 48.74,
+  "end": 49.54,
+  "line": 18,
+  "who": null,
+  "word": "التلاتة،"
+ },
+ {
+  "start": 49.54,
+  "end": 49.9,
+  "line": 18,
+  "who": null,
+  "word": "كل"
+ },
+ {
+  "start": 49.9,
+  "end": 50.26,
+  "line": 18,
+  "who": null,
+  "word": "واحد"
+ },
+ {
+  "start": 50.26,
+  "end": 50.6,
+  "line": 18,
+  "who": null,
+  "word": "لوحده،"
+ },
+ {
+  "start": 50.6,
+  "end": 50.9,
+  "line": 18,
+  "who": null,
+  "word": "كانوا"
+ },
+ {
+  "start": 50.9,
+  "end": 51.24,
+  "line": 18,
+  "who": null,
+  "word": "حاسين"
+ },
+ {
+  "start": 51.24,
+  "end": 51.72,
+  "line": 18,
+  "who": null,
+  "word": "بكيان"
+ },
+ {
+  "start": 51.72,
+  "end": 52.22,
+  "line": 18,
+  "who": null,
+  "word": "رابع"
+ },
+ {
+  "start": 52.22,
+  "end": 52.74,
+  "line": 18,
+  "who": null,
+  "word": "معاهم."
+ },
+ {
+  "start": 52.74,
+  "end": 53.36,
+  "line": 19,
+  "who": null,
+  "word": "مش"
+ },
+ {
+  "start": 53.36,
+  "end": 53.62,
+  "line": 19,
+  "who": null,
+  "word": "بس"
+ },
+ {
+  "start": 53.62,
+  "end": 53.86,
+  "line": 19,
+  "who": null,
+  "word": "هما؛"
+ },
+ {
+  "start": 53.86,
+  "end": 54.8,
+  "line": 19,
+  "who": null,
+  "word": "متسلقين"
+ },
+ {
+  "start": 54.8,
+  "end": 55.44,
+  "line": 19,
+  "who": null,
+  "word": "وبحارة"
+ },
+ {
+  "start": 55.44,
+  "end": 55.82,
+  "line": 19,
+  "who": null,
+  "word": "وناجين"
+ },
+ {
+  "start": 55.82,
+  "end": 55.94,
+  "line": 19,
+  "who": null,
+  "word": "من"
+ },
+ {
+  "start": 55.94,
+  "end": 56.26,
+  "line": 19,
+  "who": null,
+  "word": "كوارث"
+ },
+ {
+  "start": 56.26,
+  "end": 56.64,
+  "line": 19,
+  "who": null,
+  "word": "كتير"
+ },
+ {
+  "start": 56.64,
+  "end": 57.14,
+  "line": 19,
+  "who": null,
+  "word": "حكوا"
+ },
+ {
+  "start": 57.14,
+  "end": 57.24,
+  "line": 19,
+  "who": null,
+  "word": "عن"
+ },
+ {
+  "start": 57.24,
+  "end": 57.52,
+  "line": 19,
+  "who": null,
+  "word": "نفس"
+ },
+ {
+  "start": 57.52,
+  "end": 57.94,
+  "line": 19,
+  "who": null,
+  "word": "الرفيق"
+ },
+ {
+  "start": 57.94,
+  "end": 58.28,
+  "line": 19,
+  "who": null,
+  "word": "الخفي"
+ },
+ {
+  "start": 58.28,
+  "end": 58.62,
+  "line": 19,
+  "who": null,
+  "word": "اللي"
+ },
+ {
+  "start": 58.66,
+  "end": 58.98,
+  "line": 19,
+  "who": null,
+  "word": "محدش"
+ },
+ {
+  "start": 58.98,
+  "end": 59.28,
+  "line": 19,
+  "who": null,
+  "word": "شافه،"
+ },
+ {
+  "start": 59.28,
+  "end": 60.02,
+  "line": 20,
+  "who": null,
+  "word": "ظاهرة"
+ },
+ {
+  "start": 60.02,
+  "end": 60.3,
+  "line": 20,
+  "who": null,
+  "word": "معروفة"
+ },
+ {
+  "start": 60.3,
+  "end": 60.4,
+  "line": 20,
+  "who": null,
+  "word": "في"
+ },
+ {
+  "start": 60.4,
+  "end": 60.58,
+  "line": 20,
+  "who": null,
+  "word": "علم"
+ },
+ {
+  "start": 60.58,
+  "end": 60.9,
+  "line": 20,
+  "who": null,
+  "word": "النفس"
+ },
+ {
+  "start": 60.9,
+  "end": 60.93,
+  "line": 20,
+  "who": null,
+  "word": "بـ"
+ },
+ {
+  "start": 60.9,
+  "end": 61.64,
+  "line": 20,
+  "who": null,
+  "word": "\"ظاهرة"
+ },
+ {
+  "start": 61.64,
+  "end": 62.12,
+  "line": 20,
+  "who": null,
+  "word": "الرجل"
+ },
+ {
+  "start": 62.12,
+  "end": 62.52,
+  "line": 20,
+  "who": null,
+  "word": "الثالث\"."
+ }
+]
