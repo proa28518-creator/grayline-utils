@@ -7,6 +7,9 @@ on:
       frames_run_id: { description: Fleet render workflow run id, required: false, default: '', type: string }
       fps: { description: Output frame rate, required: true, default: '30', type: choice, options: ['24','30'] }
       mix_rel: { description: Mix WAV path inside project, required: false, default: '', type: string }
+      frames_run_ids: { description: 'Comma-separated fleet render run ids; chunk artifact fleet-chunk-<project>-<run_id> is downloaded from each (Seat 5 extension for multi-chunk films)', required: false, default: '', type: string }
+      mix_artifact: { description: Artifact name holding the mix WAV from a fleet-mix run, required: false, default: '', type: string }
+      mix_run_id: { description: Fleet mix workflow run id, required: false, default: '', type: string }
       mode: { description: Assembly mode, required: true, default: assemble, type: choice, options: [assemble, selftest] }
 jobs:
   assemble:
@@ -20,11 +23,28 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           FRAMES_RUN_ID: ${{ inputs.frames_run_id }}
           FRAMES_ARTIFACT: ${{ inputs.frames_artifact }}
+          FRAMES_RUN_IDS: ${{ inputs.frames_run_ids }}
+          MIX_ARTIFACT: ${{ inputs.mix_artifact }}
+          MIX_RUN_ID: ${{ inputs.mix_run_id }}
+          PROJECT_NAME: ${{ inputs.project }}
           MODE: ${{ inputs.mode }}
           FPS: ${{ inputs.fps }}
         run: |
           mkdir -p assembly-input/frames
-          if [ "$MODE" = selftest ]; then
+          if [ "$MODE" != selftest ] && [ -n "$MIX_ARTIFACT" ]; then
+            gh run download "$MIX_RUN_ID" --name "$MIX_ARTIFACT" -D assembly-input/mixsrc
+            find assembly-input/mixsrc -type f -name '*.wav' | grep . || { echo "GATE mix_source: no WAV in artifact $MIX_ARTIFACT" >&2; exit 1; }
+          fi
+          if [ "$MODE" != selftest ] && [ -n "$FRAMES_RUN_IDS" ]; then
+            IFS=',' read -ra ids <<< "$FRAMES_RUN_IDS"
+            for rid in "${ids[@]}"; do
+              rid=$(echo "$rid" | tr -d ' ')
+              [ -n "$rid" ] || continue
+              gh run download "$rid" --name "fleet-chunk-${PROJECT_NAME}-${rid}" -D "assembly-input/source/$rid"
+            done
+            find assembly-input/source -type f -name '*.tar.gz' -exec tar -xzf {} -C assembly-input/frames \;
+            find assembly-input/source -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} assembly-input/frames/ \;
+          elif [ "$MODE" = selftest ]; then
             for i in $(seq -w 1 12); do ffmpeg -hide_banner -loglevel error -f lavfi -i "color=c=0x243447:s=1080x1920:d=0.1" -vf "drawbox=x=0:y=$((10#$i*100)):w=1080:h=80:color=0xe9b949:t=fill" -frames:v 1 "assembly-input/frames/frame_000${i}.png"; done
             ffmpeg -hide_banner -loglevel error -y -f lavfi -i sine=frequency=440:duration=2 -c:a pcm_s16le assembly-input/tone.wav
           elif [ -n "$FRAMES_ARTIFACT" ]; then
@@ -51,6 +71,7 @@ jobs:
         run: |
           audio=""
           if [ "$MODE" = selftest ]; then audio=assembly-input/tone.wav
+          elif [ -d assembly-input/mixsrc ]; then audio=$(find assembly-input/mixsrc -type f -name '*.wav' | head -1)
           elif [ -n "$MIX_REL" ]; then audio="projects/${PROJECT_NAME}/${MIX_REL}"; fi
           fleet/assemble.sh assembly-input/frames "$FPS" "$audio" assembly-output
       - uses: actions/upload-artifact@v4
