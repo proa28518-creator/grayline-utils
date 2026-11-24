@@ -105,7 +105,7 @@ const acts = {
       { t: 'line:20.start+0.15',   at: P('GLACIER_MARCH',      1.8, 2.2, 14.0) },
     ],
     face: [
-      { t: 'line:1.start',         eyes: 'wide',     brow: 'knit',    mouth: 'tight', react: false },
+      { t: 0,                      eyes: 'wide',     brow: 'knit',    mouth: 'grid',  react: false },
       { t: 'line:2.start+0.14',    eyes: 'open',     brow: 'knit',    mouth: 'flat'  },
       { t: 'line:3.start+0.14',    eyes: 'half',     brow: 'down',    mouth: 'tight' },
       { t: 'line:4.start+0.14',    eyes: 'look_l',   brow: 'knit',    mouth: 'flat'  },
@@ -122,7 +122,7 @@ const acts = {
       { t: 'line:16.start+0.80',   eyes: 'wide',     brow: 'up',      mouth: 'o'     }, // Listener reaction 2f after confession
       { t: 'line:17.start+0.55',   eyes: 'pinpoint', brow: 'worried', mouth: 'gulp'  },
       { t: 'line:18.start+0.14',   eyes: 'wide',     brow: 'worried', mouth: 'flat'  },
-      { t: 'line:20.start+0.14',   eyes: 'open',     brow: 'up',      mouth: 'rest'  },
+      { t: 'line:20.start+0.14',   eyes: 'wide',     brow: 'up',      mouth: 'o'     },
     ],
     clips: [
       { clip: 'carry',      at: 'line:1.start',       params: { prop: 'adze_shackleton', side: 'R' }, hold: 12.6, out: 6, keep: false },
