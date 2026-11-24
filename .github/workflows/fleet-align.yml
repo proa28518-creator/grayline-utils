@@ -1,0 +1,34 @@
+name: Fleet Align (Whisper word timings)
+# Word-timings driver — transcribes a project's audio/clean.wav with
+# faster-whisper large-v3 ON THE FLEET (owner's standing condition: no
+# heavy processing on the desk VM) and uploads the raw word list as an
+# artifact. The desk then forced-maps the script's exact words onto these
+# timings to build a word-level clean.json (the engine matches film.js
+# voice lines word-by-word against clean.json as a word list).
+on:
+  workflow_dispatch:
+    inputs:
+      project: { description: Project name, required: true, default: shackleton-fourth-man, type: string }
+jobs:
+  align:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ui/unified-interface
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install faster-whisper
+        run: pip install --no-cache-dir faster-whisper
+      - name: Transcribe with word timestamps (read-only on clean.wav)
+        run: python3 fleet/align_whisper.py "projects/${{ inputs.project }}/audio/clean.wav" whisper-words.json
+      - name: Upload word timings artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: whisper-words-${{ inputs.project }}-${{ github.run_id }}
+          path: whisper-words.json
+          retention-days: 30
