@@ -89,7 +89,7 @@ ff -i "$W/voice.wav" -i "$W/bed_ducked.wav" -i "$W/sfx.wav" \
   -filter_complex "[0:a][1:a][2:a]amix=inputs=3:normalize=0[pm]" -map "[pm]" -c:a pcm_f32le "$W/premaster.wav"
 P1=$(ffmpeg -hide_banner -i "$W/premaster.wav" -af "loudnorm=I=-16:TP=-1.0:LRA=11:print_format=json" -f null - 2>&1 | sed -n '/^{/,/^}/p')
 echo "loudnorm pass1: $P1"
-MEAS=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d['input_i'], d['input_tp'], d['input_lra'], d['input_thresh'], d['offset'])" "$P1")
+MEAS=$(python3 -c "import json,sys; d=json.loads(sys.argv[1]); print(d['input_i'], d['input_tp'], d['input_lra'], d['input_thresh'], d['target_offset'])" "$P1")
 read -r MI MTP MLRA MTH OFF <<< "$MEAS"
 if ! ff -i "$W/premaster.wav" -af "loudnorm=I=-16:TP=-1.0:LRA=11:measured_I=$MI:measured_TP=$MTP:measured_LRA=$MLRA:measured_thresh=$MTH:offset=$OFF:linear=true,aresample=48000" -c:a pcm_s16le "$OUT/fudai_wall_mix_48k.wav"; then
   echo "linear loudnorm failed; retrying dynamic"
