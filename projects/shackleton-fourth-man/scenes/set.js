@@ -787,8 +787,8 @@ function makeMacroZone(THREE, iceMat, snowMat) {
 
   const ropeCurve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-0.82, 2.95, 0.20),
-    new THREE.Vector3(-0.22, 2.16, 0.44),
-    new THREE.Vector3( 0.16, 1.48, 0.52),
+    new THREE.Vector3(-0.22, 2.16, 0.84),
+    new THREE.Vector3( 0.16, 1.48, 0.76),
     new THREE.Vector3( 0.76, 0.55, 0.64),
   ]);
   const ropeStrainGroup = new THREE.Group();

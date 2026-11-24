@@ -46,20 +46,28 @@
 
 ## Build Repair 6 — the lead's face: frame-0 and ending keys
 
-* **Measured cause:** The locked spec's handlebar moustache (`1.0 R`-wide ∪ decal) masked small mouths (`tight`/`flat`/`rest`), while `line:1.start` began at `0.22 s` (leaving frames 0–6 on the default `open`/`on`/`rest` face) and the line-20 ending key was authored `open`/`up`/`rest` while the companions showed wide ring eyes.
-
 * **Two face-key edits for `shackleton` (`scenes/film.js` only; `scenes/set.js` untouched):**
 
   1. Frame-0 key: `{ t: 'line:1.start', eyes: 'wide', brow: 'knit', mouth: 'tight', react: false }` → `{ t: 0, eyes: 'wide', brow: 'knit', mouth: 'grid', react: false }`.
 
   2. Line-20 ending key: `{ t: 'line:20.start+0.14', eyes: 'open', brow: 'up', mouth: 'rest' }` → `{ t: 'line:20.start+0.14', eyes: 'wide', brow: 'up', mouth: 'o' }`.
 
-## HANDOVER (build — post Build Repair 6, 2026-11-24)
+## Build Repair 7 — SH13 rope clears the torso
 
-AT THE BAR: `scenes/film.js` updated with the two `shackleton` face-key fixes (frame-0 `t: 0`, `mouth: 'grid'`; line-20 `eyes: 'wide', brow: 'up', mouth: 'o'`); `scenes/set.js` untouched. Syntax clean (`node --check`). Acceptance pending desk fleet probes at frames `0, 90, 1860` and fresh blind critic round.
+* **Measured cause:** `ropeCurve` middle control points `P1` (`z = 0.44`) and `P2` (`z = 0.52`) sat behind `heroTorso`'s front surface (`z ≈ 0.65–0.68`), burying 236 of 1,093 rope-tube vertices and the lower grip inside the torso/shoulder/collar.
+
+* **Two `z` changes in `scenes/set.js` (`ropeCurve` only; `scenes/film.js`, hands, and seat constants untouched):**
+
+  1. `P1`: `(-0.22, 2.16, 0.44)` → `(-0.22, 2.16, 0.84)`
+
+  2. `P2`: `(0.16, 1.48, 0.52)` → `(0.16, 1.48, 0.76)`
+
+## HANDOVER (build — post Build Repair 7, 2026-11-24)
+
+AT THE BAR: `scenes/set.js` updated so `SH13` `ropeCurve` clears `heroTorso`, `heroShoulder`, and `heroCollar` (`P1.z = 0.84`, `P2.z = 0.76`; tube, braid strands, and both `getPointAt`-seated hands follow automatically); `scenes/film.js` untouched. Syntax clean (`node --check`). Acceptance pending desk fleet probe at frame `882` (with frames `840` and `801` as controls) and fresh blind critic round.
 STILL BELOW THE BAR (for downstream passes):
 
 1. Sparse, flat-shaded procedural set geometry — job: `environment`.
 
 2. Ending warm-light shift, DoF, haze, bloom, and face shading — job: `post` and `shading`.
-   DO NOT TOUCH: `audio/clean.wav`, `audio/clean.json`, 20 lines, 21 cast specs, shot order/timing, FOURTH MAN RULE, Repairs 1–5 (`scenes/set.js` untouched).
+   DO NOT TOUCH: `audio/clean.wav`, `audio/clean.json`, `scenes/film.js`, 20 lines, 21 cast specs, shot order/timing, FOURTH MAN RULE, Repairs 1–6.
