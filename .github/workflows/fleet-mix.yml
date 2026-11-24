@@ -27,6 +27,7 @@ jobs:
           BED_TRIM_DB: ${{ inputs.bed_trim_db }}
           SFX_TRIM_DB: ${{ inputs.sfx_trim_db }}
         run: |
+          set -o pipefail
           chmod +x fleet/mix_fudai.sh
           fleet/mix_fudai.sh "projects/${PROJECT_NAME}" mix-output 2>&1 | tee mix-output.log
       - uses: actions/upload-artifact@v4

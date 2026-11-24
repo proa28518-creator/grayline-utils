@@ -13,7 +13,13 @@ DUR=68.08
 V="$PROJ/audio/clean.wav"; SFXD="$PROJ/audio/sfx"; CJ="$PROJ/audio/clean.json"
 mkdir -p "$OUT/work"; W="$OUT/work"
 ff(){ ffmpeg -hide_banner -loglevel error -y "$@"; }
-rms_db(){ ffmpeg -hide_banner -i "$1" -af astats -f null - 2>&1 | grep 'RMS level dBFS' | tail -1 | sed 's/.*: *//' | awk '{print $1}'; }
+rms_db(){
+  local raw v
+  raw=$(ffmpeg -hide_banner -i "$1" -af astats -f null - 2>&1) || { echo "rms_db: ffmpeg failed on $1" >&2; echo "$raw" | tail -5 >&2; exit 1; }
+  v=$(printf '%s\n' "$raw" | awk '/RMS level dBFS/{x=$NF} END{print x}')
+  if [ -z "$v" ]; then echo "rms_db: no RMS line for $1; astats said:" >&2; printf '%s\n' "$raw" | tail -8 >&2; exit 1; fi
+  printf '%s' "$v"
+}
 
 echo "== 1. voice stem: 24k -> 48k, limiter (ceiling -1.0 dBTP) BEFORE +1.9 dB gain =="
 ff -i "$V" -af "aresample=48000,alimiter=limit=0.88:attack=5:release=50:level=false,volume=1.9dB,pan=stereo|c0=c0|c1=c0" -c:a pcm_f32le "$W/voice.wav"
