@@ -345,7 +345,7 @@ const shots = [
     },
   },
   {
-    id: 'SH02', // Upper talking band (380-430 px), -29 deg tracking lead walkers, clears Worsley from left edge
+    id: 'SH02', // Upper talking band (380-430 px), -29 deg tracking lead walkers, camY raised so adze grip clears chin
     t0: 'line:3.start',
     t1: 'line:3.end',
     place: 'GLACIER_MARCH',
@@ -354,8 +354,8 @@ const shots = [
       move: 'push',
       t0: 'line:3.start',
       t1: 'line:3.end',
-      from: { pos: P('GLACIER_MARCH', -4.75, 1.56, 11.10), target: P('GLACIER_MARCH', 0.0, 1.96, 2.4), fov: 27 },
-      to:   { pos: P('GLACIER_MARCH', -4.45, 1.62, 11.60), target: P('GLACIER_MARCH', 0.0, 1.98, 3.5), fov: 27 },
+      from: { pos: P('GLACIER_MARCH', -4.75, 2.12, 11.10), target: P('GLACIER_MARCH', 0.0, 1.96, 2.4), fov: 27 },
+      to:   { pos: P('GLACIER_MARCH', -4.45, 2.18, 11.60), target: P('GLACIER_MARCH', 0.0, 1.98, 3.5), fov: 27 },
       roll: [-4.6, -4.0],
       ease: 'linear',
     },
@@ -411,7 +411,7 @@ const shots = [
 
   // === BEAT 2: FLASHBACK — LIFEBOAT + ELEPHANT ISLAND (13–23 s) ===
   {
-    id: 'SH06', // James Caird: rides near the boat's long axis (~9 deg), chest-to-eye, +12.5% push, sea roll
+    id: 'SH06', // James Caird: off-axis +30 deg, MF->MT talking band (387->424 px), deliberate sea roll
     t0: 'line:7.start',
     t1: 'line:7.end',
     place: 'LIFEBOAT_SEA',
@@ -420,9 +420,9 @@ const shots = [
       move: 'push',
       t0: 'line:7.start',
       t1: 'line:7.end',
-      from: { pos: P('LIFEBOAT_SEA',  1.9, 1.78, 10.6), target: P('LIFEBOAT_SEA', 0.0, 1.85, -1.2), fov: 30 },
-      to:   { pos: P('LIFEBOAT_SEA',  1.5, 1.84,  9.6), target: P('LIFEBOAT_SEA', 0.0, 1.88, -1.2), fov: 29 },
-      roll: [-3.5, 3.0],
+      from: { pos: P('LIFEBOAT_SEA',  5.18, 1.92,  6.46), target: P('LIFEBOAT_SEA', 0.0, 2.15, -2.5), fov: 27 },
+      to:   { pos: P('LIFEBOAT_SEA',  4.72, 1.98,  5.68), target: P('LIFEBOAT_SEA', 0.0, 2.18, -2.5), fov: 27 },
+      roll: [-4.6, -4.0],
       ease: 'inOutSine',
     },
   },
@@ -438,7 +438,7 @@ const shots = [
       t1: 'line:8.end',
       from: { pos: P('LIFEBOAT_SEA', -5.8, 1.72,  7.6), target: P('LIFEBOAT_SEA', 0.2, 1.88, -1.2), fov: 29 },
       to:   { pos: P('LIFEBOAT_SEA', -5.1, 1.78,  6.7), target: P('LIFEBOAT_SEA', 0.2, 1.90, -1.2), fov: 29 },
-      roll: [3.2, -2.6],
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -459,7 +459,7 @@ const shots = [
     },
   },
   {
-    id: 'SH09', // Elephant Island tighten: opposite 3/4 left (-23 deg) on foreground faces (295->334 px, +13%), depth behind
+    id: 'SH09', // Elephant Island tighten: -44 deg stacks crowd in depth, zero sliced faces at F/f630/L, stays MF
     t0: 'line:9.start+2.5',
     t1: 'line:9.end',
     place: 'ELEPHANT_ISLAND',
@@ -468,16 +468,16 @@ const shots = [
       move: 'push',
       t0: 'line:9.start+2.5',
       t1: 'line:9.end',
-      from: { pos: P('ELEPHANT_ISLAND', -4.7, 1.68, 12.1), target: P('ELEPHANT_ISLAND', 0.0, 1.85, 1.2), fov: 30 },
-      to:   { pos: P('ELEPHANT_ISLAND', -4.1, 1.74, 10.8), target: P('ELEPHANT_ISLAND', 0.0, 1.88, 1.2), fov: 30 },
-      roll: [2.0, -1.4],
+      from: { pos: P('ELEPHANT_ISLAND', -7.96, 1.68,  9.84), target: P('ELEPHANT_ISLAND', 0.0, 1.86, 1.6), fov: 28 },
+      to:   { pos: P('ELEPHANT_ISLAND', -7.15, 1.74,  9.01), target: P('ELEPHANT_ISLAND', 0.0, 1.86, 1.6), fov: 28 },
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
 
   // === BEAT 3: THE CROSSING + MANDATORY §7 BIG CLOSE-UPS (23–30 s, GLACIER_CROSSING) ===
   {
-    id: 'SH10', // Crossing opener: low (+31 deg) against the slope from walking side, +13% push
+    id: 'SH10', // Crossing opener: low (+31 deg) against slope, MF->MT talking band (396->435 px)
     t0: 'line:10.start',
     t1: 'line:10.end',
     place: 'GLACIER_CROSSING',
@@ -486,9 +486,9 @@ const shots = [
       move: 'push',
       t0: 'line:10.start',
       t1: 'line:10.end',
-      from: { pos: P('GLACIER_CROSSING',  6.8, 1.38, 13.8), target: P('GLACIER_CROSSING', 0.1, 1.92, 2.4), fov: 30 },
-      to:   { pos: P('GLACIER_CROSSING',  6.4, 1.48, 14.6), target: P('GLACIER_CROSSING', 0.4, 1.96, 4.4), fov: 30 },
-      roll: [-2.8, 1.8],
+      from: { pos: P('GLACIER_CROSSING',  5.20, 1.52, 10.75), target: P('GLACIER_CROSSING', 0.1, 1.94, 2.4), fov: 27 },
+      to:   { pos: P('GLACIER_CROSSING',  5.15, 1.60, 11.95), target: P('GLACIER_CROSSING', 0.4, 1.98, 4.4), fov: 27 },
+      roll: [-4.6, -4.0],
       ease: 'outCubic',
     },
   },
@@ -553,7 +553,7 @@ const shots = [
       t1: 'line:12.start+2.0',
       from: { pos: P('SNOW_SLEEP', -7.6, 1.36, 14.6), target: P('SNOW_SLEEP', 0.0, 1.60, 0.8), fov: 32 },
       to:   { pos: P('SNOW_SLEEP', -6.8, 1.42, 13.0), target: P('SNOW_SLEEP', 0.0, 1.62, 0.8), fov: 32 },
-      roll: [2.2, -1.2],
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -590,7 +590,7 @@ const shots = [
     },
   },
   {
-    id: 'SH17', // The kind lie: medium-close (325->368 px, +13%) on Shackleton (+22 deg) as he wakes them
+    id: 'SH17', // The kind lie: +30 deg 3/4 on Shackleton, stays MF (334->378 px)
     t0: 'line:14.start',
     t1: 'line:14.end',
     place: 'SNOW_SLEEP',
@@ -599,9 +599,9 @@ const shots = [
       move: 'push',
       t0: 'line:14.start',
       t1: 'line:14.end',
-      from: { pos: P('SNOW_SLEEP',  4.5, 1.68, 11.5), target: P('SNOW_SLEEP', 0.0, 1.88, 0.4), fov: 27 },
-      to:   { pos: P('SNOW_SLEEP',  4.0, 1.74, 10.2), target: P('SNOW_SLEEP', 0.0, 1.90, 0.4), fov: 27 },
-      roll: [-1.8, 1.2],
+      from: { pos: P('SNOW_SLEEP',  5.94, 1.68, 10.65), target: P('SNOW_SLEEP', 0.0, 1.88, 0.4), fov: 27 },
+      to:   { pos: P('SNOW_SLEEP',  5.25, 1.74,  9.47), target: P('SNOW_SLEEP', 0.0, 1.90, 0.4), fov: 27 },
+      roll: [-4.6, -4.0],
       ease: 'outCubic',
     },
   },
@@ -624,7 +624,7 @@ const shots = [
     },
   },
   {
-    id: 'SH19', // Confession 1 (Shackleton): low 3/4 right (+24 deg), talking band (350->396 px, +13%)
+    id: 'SH19', // Confession 1 (Shackleton): low 3/4 right (+31 deg), stays MT (369->415 px)
     t0: 'line:15.start+2.5',
     t1: 'line:15.end',
     place: 'SHELTER_CONFESSION',
@@ -633,9 +633,9 @@ const shots = [
       move: 'push',
       t0: 'line:15.start+2.5',
       t1: 'line:15.end',
-      from: { pos: P('SHELTER_CONFESSION',  4.6, 1.54, 11.0), target: P('SHELTER_CONFESSION', 0.0, 1.92, 0.6), fov: 26 },
-      to:   { pos: P('SHELTER_CONFESSION',  4.1, 1.60,  9.8), target: P('SHELTER_CONFESSION', 0.0, 1.94, 0.6), fov: 26 },
-      roll: [-2.2, 1.4],
+      from: { pos: P('SHELTER_CONFESSION',  5.76, 1.54, 10.20), target: P('SHELTER_CONFESSION', 0.0, 1.92, 0.6), fov: 26 },
+      to:   { pos: P('SHELTER_CONFESSION',  5.10, 1.60,  9.12), target: P('SHELTER_CONFESSION', 0.0, 1.94, 0.6), fov: 26 },
+      roll: [-4.6, -4.0],
       ease: 'outCubic',
     },
   },
@@ -656,7 +656,7 @@ const shots = [
     },
   },
   {
-    id: 'SH21', // Confession 3 (Crean): straighter, tighter, lower left-front (-17 deg), talking band (370->418 px, +13%)
+    id: 'SH21', // Confession 3 (Crean): lower left-front (-30 deg), stays MT (385->432 px)
     t0: 'line:17.start',
     t1: 'line:17.end',
     place: 'SHELTER_CONFESSION',
@@ -665,14 +665,14 @@ const shots = [
       move: 'push',
       t0: 'line:17.start',
       t1: 'line:17.end',
-      from: { pos: P('SHELTER_CONFESSION', -1.2, 1.62, 11.2), target: P('SHELTER_CONFESSION',  2.15, 2.02, 0.4), fov: 25 },
-      to:   { pos: P('SHELTER_CONFESSION', -0.8, 1.66, 10.0), target: P('SHELTER_CONFESSION',  2.15, 2.04, 0.4), fov: 25 },
-      roll: [-1.8, 2.2],
+      from: { pos: P('SHELTER_CONFESSION', -3.48, 1.62, 10.15), target: P('SHELTER_CONFESSION',  2.15, 2.02, 0.4), fov: 25 },
+      to:   { pos: P('SHELTER_CONFESSION', -2.85, 1.66,  9.06), target: P('SHELTER_CONFESSION',  2.15, 2.04, 0.4), fov: 25 },
+      roll: [-4.6, -4.0],
       ease: 'outCubic',
     },
   },
   {
-    id: 'SH22A', // Trio realisation: real 18-deg lateral orbit + push (-24 deg -> -6 deg, +13%)
+    id: 'SH22A', // Trio realisation: 17-deg lateral orbit inside band (-43 deg -> -26 deg), stays W
     t0: 'line:18.start',
     t1: 'line:18.start+2.0',
     place: 'SHELTER_CONFESSION',
@@ -681,9 +681,9 @@ const shots = [
       move: 'push',
       t0: 'line:18.start',
       t1: 'line:18.start+2.0',
-      from: { pos: P('SHELTER_CONFESSION', -6.4, 1.72, 14.8), target: P('SHELTER_CONFESSION', 0.0, 1.92, 0.5), fov: 32 },
-      to:   { pos: P('SHELTER_CONFESSION', -1.4, 1.78, 14.4), target: P('SHELTER_CONFESSION', 0.0, 1.94, 0.5), fov: 32 },
-      roll: [2.0, -2.0],
+      from: { pos: P('SHELTER_CONFESSION', -10.50, 1.72, 11.75), target: P('SHELTER_CONFESSION', 0.0, 1.92, 0.5), fov: 32 },
+      to:   { pos: P('SHELTER_CONFESSION',  -6.00, 1.78, 12.82), target: P('SHELTER_CONFESSION', 0.0, 1.94, 0.5), fov: 32 },
+      roll: [4.6, 4.0],
       ease: 'inOutSine',
     },
   },
@@ -706,7 +706,7 @@ const shots = [
 
   // === BEAT 6: THE LANDING — VIGNETTES + REVELATION + FINAL TITLE (53–62.92 s) ===
   {
-    id: 'SH23', // Vignette A (Climber): low 3/4 right (+26 deg) against the snow ridge, +14% push
+    id: 'SH23', // Vignette A (Climber): low 3/4 right (+26 deg), MF->CU close band (455->518 px)
     t0: 'line:19.start',
     t1: 'line:19.start+2.0',
     place: 'LANDING_VIGNETTES',
@@ -715,14 +715,14 @@ const shots = [
       move: 'push',
       t0: 'line:19.start',
       t1: 'line:19.start+2.0',
-      from: { pos: P('LANDING_VIGNETTES',  4.5, 1.38, 10.8), target: P('LANDING_VIGNETTES', -0.4, 1.92, 0.8), fov: 27 },
-      to:   { pos: P('LANDING_VIGNETTES',  4.1, 1.44, 10.8), target: P('LANDING_VIGNETTES', -0.4, 1.94, 1.6), fov: 27 },
-      roll: [-2.4, 1.4],
+      from: { pos: P('LANDING_VIGNETTES',  3.45, 1.56,  8.65), target: P('LANDING_VIGNETTES', -0.4, 2.15, 0.8), fov: 26 },
+      to:   { pos: P('LANDING_VIGNETTES',  3.15, 1.62,  8.85), target: P('LANDING_VIGNETTES', -0.4, 2.18, 1.6), fov: 26 },
+      roll: [-4.6, -4.0],
       ease: 'outCubic',
     },
   },
   {
-    id: 'SH24', // Vignette B (Sailor): along ship deck's long axis (-14 deg), +13% push, sea roll
+    id: 'SH24', // Vignette B (Sailor): -30 deg 3/4 along deck, stays MF (355->399 px)
     t0: 'line:19.start+2.0',
     t1: 'line:19.start+4.0',
     place: 'LANDING_VIGNETTES',
@@ -731,9 +731,9 @@ const shots = [
       move: 'push',
       t0: 'line:19.start+2.0',
       t1: 'line:19.start+4.0',
-      from: { pos: P('LANDING_VIGNETTES', 42.3, 1.78, 10.6), target: P('LANDING_VIGNETTES', 45.0, 1.95, 0.0), fov: 28 },
-      to:   { pos: P('LANDING_VIGNETTES', 42.6, 1.84,  9.4), target: P('LANDING_VIGNETTES', 45.0, 1.98, 0.0), fov: 28 },
-      roll: [2.6, -2.2],
+      from: { pos: P('LANDING_VIGNETTES', 39.60, 1.78,  9.36), target: P('LANDING_VIGNETTES', 45.0, 1.95, 0.0), fov: 28 },
+      to:   { pos: P('LANDING_VIGNETTES', 40.20, 1.84,  8.32), target: P('LANDING_VIGNETTES', 45.0, 1.98, 0.0), fov: 28 },
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -754,7 +754,7 @@ const shots = [
     },
   },
   {
-    id: 'SH26A', // Closing face push-in (Dread Cuts): ends cropped (sy_hip >= 1920) at +36 deg separating Worsley head
+    id: 'SH26A', // Closing face push-in (Dread Cuts): +27 deg keeps lead crop identical & brings Worsley fully inside [537, 1030]
     t0: 'line:20.start',
     t1: 'line:20.start+1.8',
     place: 'GLACIER_MARCH',
@@ -763,8 +763,8 @@ const shots = [
       move: 'push',
       t0: 'line:20.start',
       t1: 'line:20.start+1.8',
-      from: { pos: P('GLACIER_MARCH',  4.95, 1.92, 13.55), target: P('GLACIER_MARCH', 0.0, 2.82, 5.0), fov: 25.5 },
-      to:   { pos: P('GLACIER_MARCH',  3.30, 2.10,  9.55), target: P('GLACIER_MARCH', 0.0, 2.64, 5.0), fov: 25 },
+      from: { pos: P('GLACIER_MARCH',  4.48, 1.92, 13.80), target: P('GLACIER_MARCH', 0.0, 2.82, 5.0), fov: 25.5 },
+      to:   { pos: P('GLACIER_MARCH',  2.55, 2.10, 10.01), target: P('GLACIER_MARCH', 0.0, 2.64, 5.0), fov: 25 },
       roll: [4.8, 4.0],
       ease: 'outCubic',
     },
