@@ -742,28 +742,38 @@ function makeMacroZone(THREE, iceMat, snowMat) {
   adzeStage.add(adzeRimLight);
   macro.add(adzeStage);
 
-  // DIAG3 (shackleton-diag only): build-time red markers — unlit cubes placed at
-  // CONSTRUCTION time (not inside update), so any absence in the captured frame
-  // is a capture/region/material fact, not an update()-ordering fact.
-  // M1 = the bite point, M2 = inside adzeBiteGroup, M3 = beside the raised
-  // handle/hand zone (renders), M4 = out over the iceBlock (renders).
-  const __diagMarkerMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  const diagM1 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), __diagMarkerMat);
-  diagM1.name = 'diagM1';
-  diagM1.position.set(-0.10, 1.38, 0.52);
-  adzeStage.add(diagM1);
-  const diagM2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), __diagMarkerMat);
-  diagM2.name = 'diagM2';
-  diagM2.position.set(0, 0, 0);
-  adzeBiteGroup.add(diagM2);
-  const diagM3 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), __diagMarkerMat);
-  diagM3.name = 'diagM3';
-  diagM3.position.set(0.30, 3.20, 0.52);
-  adzeStage.add(diagM3);
-  const diagM4 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), __diagMarkerMat);
-  diagM4.name = 'diagM4';
-  diagM4.position.set(3.00, 1.00, 0.15);
-  adzeStage.add(diagM4);
+  // DIAG4 (shackleton-diag only): marker GRID over the adze stage + the first
+  // two rungs of the PARENT LADDER at the bite point. All build-time
+  // (construction code, never update). Grid cubes are red and direct children
+  // of adzeStage; ladder cubes are green. Name encoding: 'm' = minus sign,
+  // 'p' = decimal point (e.g. grid_xm1p5_y1p38_z0p52 = x -1.5, y 1.38, z 0.52).
+  const __diag4Fmt = (v) => String(v).replace('-', 'm').replace('.', 'p');
+  const __diagGridMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const __diagGridGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+  for (const gx of [-1.5, -0.1, 1.5]) {
+    for (const gy of [0.6, 1.38, 2.2, 3.2]) {
+      for (const gz of [-5.2, 0.52]) {
+        const gm = new THREE.Mesh(__diagGridGeo, __diagGridMat);
+        gm.name = 'grid_x' + __diag4Fmt(gx) + '_y' + __diag4Fmt(gy) + '_z' + __diag4Fmt(gz);
+        gm.position.set(gx, gy, gz);
+        adzeStage.add(gm);
+      }
+    }
+  }
+  const __diagLadderMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const __diagLadderGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+  // Bite point in stage-local coords; world = (1235.90, 1.38, -5.48) via
+  // pCross (1200,0,0) + macro_zone (0,0,0) + adzeStage (36,0,-6).
+  const ladderStage = new THREE.Mesh(__diagLadderGeo, __diagLadderMat);
+  ladderStage.name = 'ladder_stage';
+  ladderStage.position.set(-0.10, 1.38, 0.52);
+  adzeStage.add(ladderStage);
+  // adzePivot sits at (-0.06, 1.32, 0.52); pivot-local (0, 0.06, 0) is the
+  // blade's original pivot-local spot (stage-local (-0.06, 1.38, 0.52)).
+  const ladderPivot = new THREE.Mesh(__diagLadderGeo, __diagLadderMat);
+  ladderPivot.name = 'ladder_pivot';
+  ladderPivot.position.set(0, 0.06, 0);
+  adzePivot.add(ladderPivot);
 
   // 3. x = +50 (SH13, Frame 882 @ t=29.4 s): Two hands gripping taut diagonal rope over hero's shoulder (fills entire frame)
   const ropeGroup = new THREE.Group();
@@ -1180,6 +1190,26 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
   const macroRigs = makeMacroZone(THREE, iceMat, snowMat);
   pCross.add(macroRigs.group);
 
+  // DIAG4 (shackleton-diag only): remaining PARENT LADDER rungs at the same
+  // world bite point (1235.90, 1.38, -5.48). Offsets read from the code:
+  // pCross at (1200, 0, 0); macro_zone at (0, 0, 0) inside pCross; root
+  // 'fourth_man_set' at the origin. So place-local and macro-local are both
+  // (35.90, 1.38, -5.48); root-local is the world position itself.
+  const __diagLadderMat4 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const __diagLadderGeo4 = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+  const ladderPlace = new THREE.Mesh(__diagLadderGeo4, __diagLadderMat4);
+  ladderPlace.name = 'ladder_place';
+  ladderPlace.position.set(35.90, 1.38, -5.48);
+  pCross.add(ladderPlace);
+  const ladderMacro = new THREE.Mesh(__diagLadderGeo4, __diagLadderMat4);
+  ladderMacro.name = 'ladder_macro';
+  ladderMacro.position.set(35.90, 1.38, -5.48);
+  macroRigs.group.add(ladderMacro);
+  const ladderRoot = new THREE.Mesh(__diagLadderGeo4, __diagLadderMat4);
+  ladderRoot.name = 'ladder_root';
+  ladderRoot.position.set(1235.90, 1.38, -5.48);
+  root.add(ladderRoot);
+
   const snowCross = makeSnowField(THREE, 140, 70, 14, 34, 408);
   snowCross.group.position.set(18, 0, -4);
   pCross.add(snowCross.group);
@@ -1412,8 +1442,7 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
   root.add(pLand);
 
   let __diagDumped = false;
-  let __diag2Done = false;
-  let __diag3Done = false;
+  let __diag4Done = false;
   function update(t) {
     // DIAG (shackleton-diag only): one-shot live scene-graph dump at t >= 27.99
     if (!__diagDumped && t >= 27.99) {
@@ -1460,129 +1489,26 @@ export async function buildSet(THREE, scene, opts = {}, _kit) {
       }
     }
 
-    // DIAG2 (shackleton-diag only): swap test — one-shot at first t >= 27.99.
-    // Raise the bite cluster + notch 3 D into open sky, drop a red unlit marker
-    // at the original bite point, and dump culling state for every adze mesh.
-    if (!__diag2Done && t >= 27.99) {
-      __diag2Done = true;
+    // DIAG4 (shackleton-diag only): grid + ladder census \u2014 one-shot at first
+    // t >= 27.99. For every grid_* and ladder_* object: name, parent name,
+    // world position.
+    if (!__diag4Done && t >= 27.99) {
+      __diag4Done = true;
       try {
-        const __findByName2 = (o, n) => { let f = null; o.traverse((cc) => { if (!f && cc.name === n) f = cc; }); return f; };
-        const __adze2 = __findByName2(root, 'macro_adze');
-        const __bite2 = __adze2 ? __findByName2(__adze2, 'adzeBiteGroup') : null;
-        let __notch2 = null;
-        if (__adze2) {
-          for (const ch of __adze2.children) {
-            if (ch.isMesh && Math.abs(ch.position.x + 0.06) < 0.01 && Math.abs(ch.position.y - 1.285) < 0.01 && Math.abs(ch.position.z - 0.52) < 0.01) { __notch2 = ch; break; }
+        const __v4 = new THREE.Vector3();
+        const __items4 = [];
+        root.traverse((cc) => {
+          if (cc.name && (cc.name.indexOf('grid_') === 0 || cc.name.indexOf('ladder_') === 0)) {
+            __items4.push({
+              name: cc.name,
+              parent: cc.parent ? (cc.parent.name || '(unnamed)') : null,
+              world: cc.getWorldPosition(__v4).toArray(),
+            });
           }
-        }
-        if (__bite2) __bite2.position.y += 3.0;
-        if (__notch2) __notch2.position.y += 3.0;
-        let __marker2 = null;
-        if (__adze2) {
-          __marker2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-          __marker2.name = 'diag_marker';
-          __marker2.position.set(-0.10, 1.38, 0.52);
-          __adze2.add(__marker2);
-        }
-        const __meshInfo2 = (cc) => {
-          let bs = null;
-          if (cc.geometry) {
-            if (!cc.geometry.boundingSphere) { try { cc.geometry.computeBoundingSphere(); } catch (__be) {} }
-            if (cc.geometry.boundingSphere) bs = { c: cc.geometry.boundingSphere.center.toArray(), r: cc.geometry.boundingSphere.radius };
-          }
-          const m2 = Array.isArray(cc.material) ? cc.material[0] : cc.material;
-          return {
-            id: cc.name || (cc.geometry ? cc.geometry.type : '(noname)'),
-            matColor: (m2 && m2.color && typeof m2.color.getHexString === 'function') ? m2.color.getHexString() : null,
-            frustumCulled: cc.frustumCulled,
-            bs,
-            layersMask: cc.layers ? cc.layers.mask : null,
-          };
-        };
-        const __adzeMeshes2 = [];
-        if (__adze2) __adze2.traverse((cc) => { if (cc.isMesh) __adzeMeshes2.push(__meshInfo2(cc)); });
-        const __boot2 = __findByName2(root, 'macro_boot_screws');
-        let __screw2 = null;
-        if (__boot2) { __boot2.traverse((cc) => { if (!__screw2 && cc.isMesh && cc.material && cc.material.color && typeof cc.material.color.getHexString === 'function' && cc.material.color.getHexString() === 'a8b2ba') __screw2 = cc; }); }
-        console.log('DIAGDUMP2 ' + JSON.stringify({
-          t,
-          raisedBite: !!__bite2,
-          raisedNotch: !!__notch2,
-          markerAdded: !!__marker2,
-          adzeMeshes: __adzeMeshes2,
-          screwControl: __screw2 ? __meshInfo2(__screw2) : null,
-        }));
-      } catch (__e2) {
-        console.log('DIAGDUMP2_ERROR ' + ((__e2 && __e2.stack) || __e2));
-      }
-    }
-
-    // DIAG3 (shackleton-diag only): material-state dump — one-shot at first
-    // t >= 27.99. Reports the render-state fields DIAGDUMP/DIAGDUMP2 did not
-    // cover, for the key adze-stage meshes, the boot control screw, and the
-    // build-time markers diagM1..diagM4.
-    if (!__diag3Done && t >= 27.99) {
-      __diag3Done = true;
-      try {
-        const __findByName3 = (o, n) => { let f = null; o.traverse((cc) => { if (!f && cc.name === n) f = cc; }); return f; };
-        const __childAt = (parent, x, y, z) => {
-          if (!parent) return null;
-          for (const ch of parent.children) {
-            if (ch.isMesh && Math.abs(ch.position.x - x) < 0.01 && Math.abs(ch.position.y - y) < 0.01 && Math.abs(ch.position.z - z) < 0.01) return ch;
-          }
-          return null;
-        };
-        const __chainNames = (o) => { const c = []; let p = o; while (p) { c.push(p.name || '(unnamed)'); p = p.parent; } return c; };
-        const __matInfo3 = (label, o) => {
-          if (!o) return { label, found: false };
-          const m3 = Array.isArray(o.material) ? o.material[0] : o.material;
-          return {
-            label,
-            found: true,
-            name: o.name || '(unnamed)',
-            geo: o.geometry ? o.geometry.type : null,
-            matType: m3 ? (m3.type || null) : null,
-            matColor: (m3 && m3.color && typeof m3.color.getHexString === 'function') ? m3.color.getHexString() : null,
-            transparent: m3 ? m3.transparent : null,
-            opacity: m3 ? m3.opacity : null,
-            depthWrite: m3 ? m3.depthWrite : null,
-            depthTest: m3 ? m3.depthTest : null,
-            side: m3 ? m3.side : null,
-            alphaTest: m3 ? m3.alphaTest : null,
-            renderOrder: o.renderOrder,
-            matrixAutoUpdate: o.matrixAutoUpdate,
-            chain: __chainNames(o),
-          };
-        };
-        const __adze3 = __findByName3(root, 'macro_adze');
-        const __bite3 = __adze3 ? __findByName3(__adze3, 'adzeBiteGroup') : null;
-        let __chip3 = null;
-        if (__adze3) {
-          for (const ch of __adze3.children) {
-            if (ch.isMesh && ch.geometry && ch.geometry.type === 'OctahedronGeometry') { __chip3 = ch; break; }
-          }
-        }
-        const __boot3 = __findByName3(root, 'macro_boot_screws');
-        let __screw3 = null;
-        if (__boot3) { __boot3.traverse((cc) => { if (!__screw3 && cc.isMesh && cc.material && cc.material.color && typeof cc.material.color.getHexString === 'function' && cc.material.color.getHexString() === 'a8b2ba') __screw3 = cc; }); }
-        console.log('DIAGDUMP3 ' + JSON.stringify({
-          t,
-          meshes: [
-            __matInfo3('iceBlock', __childAt(__adze3, 0, 0.50, 0.15)),
-            __matInfo3('iceCrust', __childAt(__adze3, 0, 1.26, 0.15)),
-            __matInfo3('carvedNotch', __childAt(__adze3, -0.06, 1.285, 0.52)),
-            __matInfo3('adzeBackdrop', __childAt(__adze3, 0, 4.2, -5.2)),
-            __matInfo3('blade', __childAt(__bite3, -0.102, 1.378, 0.52)),
-            __matInfo3('chip', __chip3),
-            __matInfo3('bootScrewControl', __screw3),
-            __matInfo3('diagM1', __findByName3(root, 'diagM1')),
-            __matInfo3('diagM2', __findByName3(root, 'diagM2')),
-            __matInfo3('diagM3', __findByName3(root, 'diagM3')),
-            __matInfo3('diagM4', __findByName3(root, 'diagM4')),
-          ],
-        }));
-      } catch (__e3) {
-        console.log('DIAGDUMP3_ERROR ' + ((__e3 && __e3.stack) || __e3));
+        });
+        console.log('DIAGDUMP4 ' + JSON.stringify({ t, count: __items4.length, items: __items4 }));
+      } catch (__e4) {
+        console.log('DIAGDUMP4_ERROR ' + ((__e4 && __e4.stack) || __e4));
       }
     }
 
