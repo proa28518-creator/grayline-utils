@@ -329,7 +329,7 @@ const props = [
 const shots = [
   // === BEAT 1: THE MARCH + THE STRANGE FEELING (0–13 s, GLACIER_MARCH) — DREAD CUTS ===
   {
-    id: 'SH01', // Frame 0: True low close-up on Shackleton (>=430 px whole shot, chest crop), tracking walk
+    id: 'SH01', // Frame 0: Cropped close-up on Shackleton's face (sy_hip >= 1920, head >= 430), tracking walk
     t0: 'line:1.start',
     t1: 'line:2.end',
     place: 'GLACIER_MARCH',
@@ -338,9 +338,9 @@ const shots = [
       move: 'push',
       t0: 'line:1.start',
       t1: 'line:2.end',
-      from: { pos: P('GLACIER_MARCH',  2.65, 1.62,  9.20), target: P('GLACIER_MARCH', 0.0, 1.98, 1.2), fov: 26 },
-      to:   { pos: P('GLACIER_MARCH',  2.45, 1.68,  9.65), target: P('GLACIER_MARCH', 0.0, 2.00, 2.3), fov: 25 },
-      roll: [3.0, 2.2],
+      from: { pos: P('GLACIER_MARCH',  1.95, 2.05,  6.40), target: P('GLACIER_MARCH', 0.0, 2.62, 1.2), fov: 25 },
+      to:   { pos: P('GLACIER_MARCH',  1.85, 2.10,  7.20), target: P('GLACIER_MARCH', 0.0, 2.64, 2.3), fov: 25 },
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -356,7 +356,7 @@ const shots = [
       t1: 'line:3.end',
       from: { pos: P('GLACIER_MARCH', -4.75, 1.56, 11.10), target: P('GLACIER_MARCH', 0.0, 1.96, 2.4), fov: 27 },
       to:   { pos: P('GLACIER_MARCH', -4.45, 1.62, 11.60), target: P('GLACIER_MARCH', 0.0, 1.98, 3.5), fov: 27 },
-      roll: [-3.2, -2.2],
+      roll: [-4.6, -4.0],
       ease: 'linear',
     },
   },
@@ -372,12 +372,12 @@ const shots = [
       t1: 'line:4.end',
       from: { pos: P('GLACIER_MARCH',  6.8, 1.66, 18.6), target: P('GLACIER_MARCH', 0.0, 1.95, 3.6), fov: 33 },
       to:   { pos: P('GLACIER_MARCH',  6.0, 1.72, 18.8), target: P('GLACIER_MARCH', 0.0, 1.95, 5.1), fov: 33 },
-      roll: [2.8, 2.0],
+      roll: [4.4, 4.0],
       ease: 'outCubic',
     },
   },
   {
-    id: 'SH04', // Reaction push-in (380-430 px) from non-adze +19 deg side so carried adze clears face
+    id: 'SH04', // Reaction push-in from widened +40 deg non-adze side (separates march laterally, clears adze)
     t0: 'line:5.start',
     t1: 'line:5.end',
     place: 'GLACIER_MARCH',
@@ -386,14 +386,14 @@ const shots = [
       move: 'push',
       t0: 'line:5.start',
       t1: 'line:5.end',
-      from: { pos: P('GLACIER_MARCH',  3.45, 1.50, 15.10), target: P('GLACIER_MARCH', 0.0, 1.96, 5.2), fov: 26 },
-      to:   { pos: P('GLACIER_MARCH',  3.20, 1.56, 14.45), target: P('GLACIER_MARCH', 0.0, 1.98, 5.2), fov: 26 },
-      roll: [-2.2, -4.2],
+      from: { pos: P('GLACIER_MARCH',  6.55, 1.52, 13.00), target: P('GLACIER_MARCH', 0.0, 1.96, 5.2), fov: 26 },
+      to:   { pos: P('GLACIER_MARCH',  6.05, 1.58, 12.40), target: P('GLACIER_MARCH', 0.0, 1.98, 5.2), fov: 26 },
+      roll: [-4.2, -4.8],
       ease: 'inOutQuad',
     },
   },
   {
-    id: 'SH05', // Footprints crane UP & IN from non-adze +21 deg side (clears adze), ends in 380-430 px band, settles into pause
+    id: 'SH05', // Footprints crane UP & IN from widened +40 deg non-adze side (separates legs, ends closer)
     t0: 'line:6.start',
     t1: 'line:6.end+1.0',
     place: 'GLACIER_MARCH',
@@ -402,9 +402,9 @@ const shots = [
       move: 'push',
       t0: 'line:6.start',
       t1: 'line:6.end+1.0',
-      from: { pos: P('GLACIER_MARCH',  4.80, 1.18, 17.60), target: P('GLACIER_MARCH', 0.2, 0.30, 5.0), fov: 30 },
-      to:   { pos: P('GLACIER_MARCH',  3.60, 1.66, 16.70), target: P('GLACIER_MARCH', 0.0, 1.96, 7.6), fov: 27 },
-      roll: [2.6, 0.0],
+      from: { pos: P('GLACIER_MARCH',  8.55, 1.22, 15.20), target: P('GLACIER_MARCH', 0.2, 0.30, 5.0), fov: 30 },
+      to:   { pos: P('GLACIER_MARCH',  6.10, 1.66, 14.85), target: P('GLACIER_MARCH', 0.0, 1.96, 7.6), fov: 27 },
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -558,7 +558,7 @@ const shots = [
     },
   },
   {
-    id: 'SH15', // Upper talking band (380-430 px), opposite low +28 deg side to SH14, separates sleepers & clears lamp
+    id: 'SH15', // Snow-sleep reframe: Worsley fully in frame, Crean fully out right, Shackleton >=394->421 px
     t0: 'line:12.start+2.0',
     t1: 'line:12.end',
     place: 'SNOW_SLEEP',
@@ -567,9 +567,9 @@ const shots = [
       move: 'push',
       t0: 'line:12.start+2.0',
       t1: 'line:12.end',
-      from: { pos: P('SNOW_SLEEP',  4.10, 1.38,  9.65), target: P('SNOW_SLEEP', -0.45, 1.72, 0.4), fov: 27 },
-      to:   { pos: P('SNOW_SLEEP',  3.80, 1.44,  9.05), target: P('SNOW_SLEEP', -0.45, 1.74, 0.4), fov: 27 },
-      roll: [-3.2, -2.2],
+      from: { pos: P('SNOW_SLEEP', -5.95, 1.42,  8.92), target: P('SNOW_SLEEP', -0.75, 1.72, 0.60), fov: 26 },
+      to:   { pos: P('SNOW_SLEEP', -5.58, 1.48,  8.38), target: P('SNOW_SLEEP', -0.75, 1.74, 0.60), fov: 26 },
+      roll: [-4.6, -4.0],
       ease: 'outCubic',
     },
   },
@@ -619,7 +619,7 @@ const shots = [
       t1: 'line:15.start+2.5',
       from: { pos: P('SHELTER_CONFESSION', -5.6, 1.66, 16.0), target: P('SHELTER_CONFESSION', 0.0, 1.88, 0.4), fov: 32 },
       to:   { pos: P('SHELTER_CONFESSION', -4.9, 1.72, 14.1), target: P('SHELTER_CONFESSION', 0.0, 1.90, 0.4), fov: 32 },
-      roll: [2.8, 2.2],
+      roll: [4.4, 4.0],
       ease: 'outCubic',
     },
   },
@@ -640,7 +640,7 @@ const shots = [
     },
   },
   {
-    id: 'SH20', // Confession 2 (Worsley): true close-up (>=430 px first->last, chest crop), higher OTS-angled +26 deg
+    id: 'SH20', // Confession 2 (Worsley): cropped close-up on face (sy_hip >= 1920, sy_top >= 0), higher OTS-angled +26 deg
     t0: 'line:16.start',
     t1: 'line:16.end',
     place: 'SHELTER_CONFESSION',
@@ -649,9 +649,9 @@ const shots = [
       move: 'push',
       t0: 'line:16.start',
       t1: 'line:16.end',
-      from: { pos: P('SHELTER_CONFESSION',  1.45, 1.84,  7.90), target: P('SHELTER_CONFESSION', -2.15, 1.96, 0.4), fov: 25 },
-      to:   { pos: P('SHELTER_CONFESSION',  1.15, 1.88,  7.25), target: P('SHELTER_CONFESSION', -2.15, 1.98, 0.4), fov: 25 },
-      roll: [3.2, 2.2],
+      from: { pos: P('SHELTER_CONFESSION',  0.35, 2.25,  5.45), target: P('SHELTER_CONFESSION', -2.15, 2.82, 0.4), fov: 25 },
+      to:   { pos: P('SHELTER_CONFESSION',  0.10, 2.28,  5.05), target: P('SHELTER_CONFESSION', -2.15, 2.84, 0.4), fov: 25 },
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -699,7 +699,7 @@ const shots = [
       t1: 'line:18.end',
       from: { pos: P('GLACIER_MARCH', -5.25, 1.44, 12.85), target: P('GLACIER_MARCH', -0.05, 1.94, 4.2), fov: 27 },
       to:   { pos: P('GLACIER_MARCH', -4.95, 1.50, 12.35), target: P('GLACIER_MARCH', -0.05, 1.96, 4.2), fov: 27 },
-      roll: [3.4, 2.2],
+      roll: [4.6, 4.0],
       ease: 'outCubic',
     },
   },
@@ -754,7 +754,7 @@ const shots = [
     },
   },
   {
-    id: 'SH26A', // Closing face push-in (Dread Cuts): starts ~310 px, ends >=430 px (chest crop) on Shackleton, roll settles to 0
+    id: 'SH26A', // Closing face push-in (Dread Cuts): ends cropped (sy_hip >= 1920) at +36 deg separating Worsley head
     t0: 'line:20.start',
     t1: 'line:20.start+1.8',
     place: 'GLACIER_MARCH',
@@ -763,9 +763,9 @@ const shots = [
       move: 'push',
       t0: 'line:20.start',
       t1: 'line:20.start+1.8',
-      from: { pos: P('GLACIER_MARCH',  3.90, 1.62, 16.80), target: P('GLACIER_MARCH', 0.0, 1.95, 5.0), fov: 27 },
-      to:   { pos: P('GLACIER_MARCH',  2.55, 1.72, 12.85), target: P('GLACIER_MARCH', 0.0, 1.98, 5.0), fov: 25 },
-      roll: [2.8, 0.0],
+      from: { pos: P('GLACIER_MARCH',  4.95, 1.92, 13.55), target: P('GLACIER_MARCH', 0.0, 2.82, 5.0), fov: 25.5 },
+      to:   { pos: P('GLACIER_MARCH',  3.30, 2.10,  9.55), target: P('GLACIER_MARCH', 0.0, 2.64, 5.0), fov: 25 },
+      roll: [4.8, 4.0],
       ease: 'outCubic',
     },
   },
