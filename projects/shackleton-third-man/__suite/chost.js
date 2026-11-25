@@ -229,11 +229,19 @@ window.addEventListener('message', async e => {
 
 // ---------- render worker API (render mode) ----------
 const NO_FILM = 'There is no film yet (scenes/film.js): press Build first.';
+let stillsWarmed = false;
 window.suite = {
   info,
   // o.captions === false: the frames without the burned-in captions (film_check calm / flicker measure the picture, not the words)
   async stills(times, scale = .5, o = {}) {
     const res = [];
+    // first render of a session compiles shaders/uploads textures: its picture is washed out
+    // (flat paper sky, no dome gradient). Render one throwaway frame and let it settle first.
+    if (!stillsWarmed && F) {
+      stillsWarmed = true;
+      try { await F.frame(Math.max(0, Math.min(END, (times[0] || 0) + 1 / 30))); await frameAt(Math.max(0, Math.min(END, times[0] || 0))); } catch {}
+      await new Promise(r => setTimeout(r, 60));
+    }
     for (const tt of times) {
       try {
         if (!F) { res.push(null); continue; }

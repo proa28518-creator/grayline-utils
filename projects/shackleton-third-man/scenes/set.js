@@ -28,13 +28,14 @@ function placeA(THREE, g) {
     hump.scale.y = 0.5; g.add(hump);
   }
   const far = new THREE.Mesh(new THREE.BoxGeometry(120, 8, 8), mat);
-  far.position.set(0, 3, -60); far.rotation.y = 0.2; g.add(far); // the far saddle at 60 D
-  // the moon disc: a small bright sphere high over the far end, seen in the wide shots
+  far.position.set(25, 3, -60); far.rotation.y = 0.2; g.add(far); // the far saddle at 60 D, inside shot 0's frustum
+  // the moon disc: a small bright sphere high over the far end, placed inside shot 0's frustum
+  // (camera [-2.6,2.05,6.6] -> [0.15,2.28,0.5], fov 42: elevation <= ~18 deg, |az| <= ~12 deg)
   const moon = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 12),
     new THREE.MeshBasicMaterial({ color: '#f3f7ff' }));
-  moon.name = 'moon'; moon.position.set(-6, 26, -55); g.add(moon);
+  moon.name = 'moon'; moon.position.set(14, 12, -30); g.add(moon);
   // the men's headlamps: two warm points on the trek line, with stub beams
-  for (const [x, z] of [[-9, 1.5], [7, -1]]) {
+  for (const [x, z] of [[-0.5, 3.2], [7, -1]]) {
     const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 6),
       new THREE.MeshBasicMaterial({ color: '#ffe9b0' }));
     lamp.name = 'headlamp_' + x; lamp.position.set(x, 2.5, z); g.add(lamp);
@@ -43,13 +44,14 @@ function placeA(THREE, g) {
     beam.name = 'beam_' + x; beam.position.set(x + 0.5, 2.3, z + 1.2);
     beam.rotation.x = Math.PI / 2 - 0.1; g.add(beam);
   }
-  // the hand lantern of the man behind: a warm pool low on the snow
+  // the hand lantern of the man behind: a warm pool low on the snow, inside shot 0's frustum
+  // (left of the figure, between camera and face — a visible warm practical in the opening frame)
   const lantern = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8),
     new THREE.MeshBasicMaterial({ color: '#ffcf8a' }));
-  lantern.name = 'handLantern'; lantern.position.set(-4, 0.9, 2.2); g.add(lantern);
+  lantern.name = 'handLantern'; lantern.position.set(0.6, 0.9, 1.6); g.add(lantern);
   const pool = new THREE.Mesh(new THREE.CircleGeometry(1.6, 16),
     new THREE.MeshBasicMaterial({ color: '#c98f4a', transparent: true, opacity: 0.28 }));
-  pool.name = 'lanternPool'; pool.rotation.x = -Math.PI / 2; pool.position.set(-4, 0.02, 2.2); g.add(pool);
+  pool.name = 'lanternPool'; pool.rotation.x = -Math.PI / 2; pool.position.set(0.6, 0.02, 1.6); g.add(pool);
 }
 
 // B: the James Caird on the South Ocean (origin [400,0])

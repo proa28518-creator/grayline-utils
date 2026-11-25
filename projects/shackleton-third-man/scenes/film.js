@@ -119,7 +119,7 @@ export default {
     // put down on the cut into line 2 before the right hand takes the gear
     { id: 'map', kind: 'book', owner: 'shackleton', in: 'hidden',
       at: 'line:1.word:17.start', print: { title: '— unmapped —', blank: true },
-      keys: [ { t: 'line:1.word:17.start', in: 'hand:L' }, { t: 'line:2.start', stow: true } ] },
+      keys: [ { t: 'line:1.word:17.start', in: 'hand:L', fetch: true }, { t: 'line:2.start', stow: true } ] },
     // rope coil — hidden until the right hand picks it up ON SCREEN on its word (pick_up clip: world spot -> hand),
     // put down on the cut into line 3
     { id: 'rope', kind: 'rope_coil', owner: 'shackleton', in: 'hidden',
@@ -130,11 +130,11 @@ export default {
     { id: 'axe', kind: 'ice_axe', owner: 'shackleton', in: 'hidden',
       at: 'line:2.word:42.start',
       keys: [ { t: 'line:2.word:41.start', in: 'world', at: [1.1, 0.05, 0.8] } ] },
-    // nailed boot — WORN: exists from the cut into the glacier shot (word 31), stomps on its
-    // real hit word (snap: true — the PROP GUARD allows a snap), then persists in the world
-    { id: 'boot', kind: 'boot_nailed', owner: 'shackleton', in: 'world',
-      at: 'line:2.word:31.start', pos: [400.6, 0.05, 0.4],
-      keys: [ { t: 'line:2.word:45.start', snap: true, at: [400.6, 0.05, 0.4] } ] },
+    // nailed boot — WORN: appears on the cut into the glacier shot (word 31, PROP GUARD: on a cut),
+    // stomps on its real hit word (snap: true — the PROP GUARD allows a snap), then persists in the world
+    { id: 'boot', kind: 'boot_nailed', owner: 'shackleton', in: 'hidden',
+      at: 'line:2.word:31.start',
+      keys: [ { t: 'line:2.word:31.start', in: 'world', at: [0.6, 0.05, 0.4] }, { t: 'line:2.word:45.start', snap: true, at: [0.6, 0.05, 0.4] } ] },
     // pocket watch — hidden until the right hand picks it up ON SCREEN on its word (the push shot focuses it),
     // pocketed (stow) on the cut into line 4
     { id: 'watch', kind: 'pocket_watch', owner: 'shackleton', in: 'hidden',
@@ -154,39 +154,64 @@ export default {
     // LINE 1 — A: the trek, then the feeling arrives
     { t0: 0, t1: 'line:1.word:4.end',
       camera: { move: 'park', pos: [-2.6, 2.05, 6.6], target: [0.15, 2.28, 0.5], fov: 42 } }, // OPENING: face L-of-centre, the moon + ridge humps + far saddle seen behind him (set bar 22%+, no flat 80%)
-    { t0: 'line:1.word:5.start', t1: 'line:1.word:16.end',
+    { t0: 'line:1.word:5.start', t1: 'line:1.word:10.start',
       camera: { move: 'follow', who: 'shackleton', camOffset: [2.6, 3.2, 7], look: [0, 1.4, 0] } }, // the walk along the ridge (look = the lookOffset triple; a string here aimed the camera at NaN = the blank shot 2)
-    { t0: 'line:1.word:17.start', t1: 'line:2.start',
+    { t0: 'line:1.word:10.start', t1: 'line:1.word:17.start',
+      camera: { move: 'follow', who: 'shackleton', camOffset: [3.4, 2.6, 6], look: [0, 1.6, 0] } }, // walk, closer and lower — a second setup on the same trek (held through the pause to the next word)
+    { t0: 'line:1.word:17.start', t1: 'line:1.word:23.start',
       camera: { move: 'push', from: { pos: [1.4, 2.4, 5], target: [0.1, 2.3, 0.5] },
-                to: { pos: [0.7, 2.3, 3.2], target: [0.2, 2.35, 0.5] } } }, // وفجأة → he stops, half-turns; hold on the stare
+                to: { pos: [1.0, 2.35, 4], target: [0.15, 2.32, 0.5] } } }, // وفجأة — he stops, half-turns
+    { t0: 'line:1.word:23.start', t1: 'line:2.start',
+      camera: { move: 'push', from: { pos: [1.0, 2.35, 4], target: [0.15, 2.32, 0.5] },
+                to: { pos: [0.7, 2.3, 3.2], target: [0.2, 2.35, 0.5] } } }, // hold on the stare (2.77 s — word:23 and word:26 share starts, so one setup)
 
     // LINE 2 — B: the boat, the odds, the gear; A2: the glacier face
-    { t0: 'line:2.start', t1: 'line:2.word:17.start',
-      camera: { move: 'orbit', who: 'shackleton', az0: -0.5, az1: 0.6, el: 0.12, dist: 9, height: 2.4, fov: 40 } }, // the Caird on the swell
-    { t0: 'line:2.word:17.start', t1: 'line:2.word:31.start',
+    { t0: 'line:2.start', t1: 'line:2.word:9.start',
+      camera: { move: 'orbit', who: 'shackleton', az0: -0.5, az1: 0.0, el: 0.12, dist: 9, height: 2.4, fov: 40 } }, // the Caird on the swell
+    { t0: 'line:2.word:9.start', t1: 'line:2.word:14.start',
+      camera: { move: 'orbit', who: 'shackleton', az0: 0.0, az1: 0.3, el: 0.12, dist: 9, height: 2.4, fov: 40 } }, // the Caird, mid swing
+    { t0: 'line:2.word:14.start', t1: 'line:2.word:17.start',
+      camera: { move: 'orbit', who: 'shackleton', az0: 0.3, az1: 0.6, el: 0.12, dist: 9, height: 2.4, fov: 40 } }, // the Caird, end of the swing
+    { t0: 'line:2.word:17.start', t1: 'line:2.word:24.start',
       camera: { move: 'push', from: { pos: [3, 3.4, 8], target: [0.6, 2.4, 0] },
                 to: { pos: [1.2, 2.6, 4.2], target: [0.6, 2.4, 0] } } }, // the three, the odds named
-    { t0: 'line:2.word:31.start', t1: 'line:2.word:45.start-0.6',
+    { t0: 'line:2.word:24.start', t1: 'line:2.word:32.start',
+      camera: { move: 'park', pos: [3.4, 2.8, 5.4], target: [0.6, 2.4, 0], fov: 42 } }, // the three, held — the odds weigh
+    { t0: 'line:2.word:32.start', t1: 'line:2.word:38.start',
       camera: { move: 'park', pos: [403, 2.6, 6.5], target: [400.4, 2.2, 0], fov: 42 } }, // low wide: roped on the glacier
+    { t0: 'line:2.word:38.start', t1: 'line:2.word:45.start-0.6',
+      camera: { move: 'push', from: { pos: [403.4, 2.8, 7.2], target: [400.4, 2.2, 0] },
+                to: { pos: [402.4, 2.6, 6.2], target: [400.4, 2.2, 0] } } }, // roped wide, creeping closer on the rope line
     { t0: 'line:2.word:45.start-0.6', t1: 'line:3.start',
       camera: { move: 'park', pos: [401.2, 0.7, 2.2], target: [400.6, 0.35, 0.4], fov: 34, hard: true } }, // INSERT: nailed boot slams
 
     // LINE 3 — C: collapse, the mercy lie
-    { t0: 'line:3.start', t1: 'line:3.word:13.start',
+    { t0: 'line:3.start', t1: 'line:3.word:7.start',
       camera: { move: 'park', pos: [403.4, 3.2, 6], target: [400.4, 1.6, 0.6], fov: 40 } }, // they drop mid-step ووقعوا
+    { t0: 'line:3.word:7.start', t1: 'line:3.word:13.start',
+      camera: { move: 'push', from: { pos: [403.0, 3.0, 5.4], target: [400.4, 1.6, 0.6] },
+                to: { pos: [402.2, 2.6, 4.4], target: [400.4, 1.6, 0.6] } } }, // ووقعوا — down they go, closer
     { t0: 'line:3.word:13.start', t1: 'line:3.word:19.start',
       camera: { move: 'push', from: { pos: [402.2, 2.2, 3.6], target: [400.6, 1.9, 0.4] },
                 to: { pos: [401.4, 2.0, 2.4], target: [400.6, 1.9, 0.4] }, focus: 'watch' } }, // خمس دقايق — the watch
-    { t0: 'line:3.word:19.start', t1: 'line:4.start',
+    { t0: 'line:3.word:19.start', t1: 'line:3.word:25.start',
       camera: { move: 'push', from: { pos: [401.8, 2.1, 2.6], target: [400.6, 2.0, 0.4] },
                 to: { pos: [401.0, 2.1, 1.8], target: [400.6, 2.1, 0.4] } } }, // كدب — the lie lands on his face
+    { t0: 'line:3.word:25.start', t1: 'line:4.start',
+      camera: { move: 'park', pos: [401.0, 2.1, 1.8], target: [400.6, 2.1, 0.4], fov: 38 } }, // the lie held on his face
 
     // LINE 4 — C fire: the secret, then Worsley's confession
-    { t0: 'line:4.start', t1: 'line:4.word:15.start',
+    { t0: 'line:4.start', t1: 'line:4.word:8.start',
       camera: { move: 'park', pos: [402.6, 2.0, 4.2], target: [400.4, 1.9, 0.6], fov: 38 } }, // apart, the fire between them
-    { t0: 'line:4.word:15.start', t1: 'line:5.start',
+    { t0: 'line:4.word:8.start', t1: 'line:4.word:15.start',
+      camera: { move: 'push', from: { pos: [402.6, 2.0, 4.2], target: [400.4, 1.9, 0.6] },
+                to: { pos: [401.8, 1.9, 3.4], target: [400.4, 1.9, 0.6] } } }, // the fire between them, nearer
+    { t0: 'line:4.word:15.start', t1: 'line:4.word:21.start+0.05',
       camera: { move: 'push', from: { pos: [401.4, 2.0, 3.2], target: [399.2, 1.9, 0.6] },
-                to: { pos: [400.4, 2.0, 2.2], target: [399.2, 1.9, 0.6] } } }, // ورسلي اعترف — on Worsley
+                to: { pos: [400.9, 2.0, 2.7], target: [399.2, 1.9, 0.6] } } }, // ورسلي اعترف — on Worsley, part 1
+    { t0: 'line:4.word:21.start+0.05', t1: 'line:5.start',
+      camera: { move: 'push', from: { pos: [400.9, 2.0, 2.7], target: [399.2, 1.9, 0.6] },
+                to: { pos: [400.4, 2.0, 2.2], target: [399.2, 1.9, 0.6] } } }, // ورسلي اعترف — on Worsley, part 2
 
     // LINE 5 — D: Crean's nod
     { t0: 'line:5.start', t1: 'line:6.start',
@@ -200,20 +225,23 @@ export default {
                 to: { pos: [-399.6, 1.8, 2.6], target: [-400.05, 1.5, 0.4] } } }, // the space between them
 
     // LINE 7 — D: the circle widens; the shadow no one casts
-    { t0: 'line:7.start', t1: 'line:7.word:10.start',
+    { t0: 'line:7.start', t1: 'line:7.word:5.start',
+      camera: { move: 'park', pos: [-398.6, 2.2, 4.2], target: [-400.2, 1.8, 0.4], fov: 38 } }, // the reach, held
+    { t0: 'line:7.word:5.start', t1: 'line:7.word:10.start',
       camera: { move: 'path', keys: [
-        { t: 'line:7.start', pos: [-398.6, 2.2, 4.2], target: [-400.2, 1.8, 0.4], fov: 38 },
-        { t: 'line:7.word:6.start', pos: [-399.4, 2.0, 3.2], target: [-400.1, 1.8, 0.4], fov: 36 }
+        { t: 'line:7.word:5.start', pos: [-399.0, 2.1, 3.7], target: [-400.15, 1.8, 0.4], fov: 37 },
+        { t: 'line:7.word:10.start', pos: [-399.4, 2.0, 3.2], target: [-400.1, 1.8, 0.4], fov: 36 }
       ] } },
     { t0: 'line:7.word:10.start', t1: 'line:8.start',
       camera: { move: 'park', pos: [-400.8, 1.9, 2.8], target: [-400.2, 1.7, 0.4], fov: 34 } }, // حكوا — the shadow across the floor
 
     // LINE 8 — D: the name lands
-    { t0: 'line:8.start', t1: 'line:8.word:6.start',
+    { t0: 'line:8.start', t1: 'line:8.word:7.start-0.3',
       camera: { move: 'push', from: { pos: [-399.2, 2.2, 3.4], target: [-399.6, 2.2, 0.6] },
-                to: { pos: [-398.9, 2.3, 2.4], target: [-399.6, 2.3, 0.6] } } },
-    { t0: 'line:8.word:6.start', t1: 'line:8.end+0.43',
-      camera: { move: 'park', pos: [-399.78, 2.42, -0.5], target: [-399.6, 2.4, 0.6], fov: 30 } } // final hold: from the side the cast faces (backs to the SE), head in frame (≥300 px)
+                to: { pos: [-398.95, 2.28, 2.6], target: [-399.6, 2.28, 0.6] } } }, // the name lands (1.60 s)
+    { t0: 'line:8.word:7.start-0.3', t1: 62.99,
+      camera: { move: 'push', from: { pos: [-398.95, 2.28, 2.6], target: [-399.6, 2.28, 0.6] },
+                to: { pos: [-399.05, 2.3, 2.2], target: [-399.6, 2.3, 0.6] } } } // final creep to the last frame (1.61 s)
   ],
 
   captions: 'words',

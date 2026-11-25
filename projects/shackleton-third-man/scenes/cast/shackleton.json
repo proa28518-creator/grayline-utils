@@ -1,7 +1,7 @@
 {
   "id": "shackleton",
   "name": "Ernest Shackleton",
-  "sentence": "Late 40s, stout and weathered; heavy navy parka with worn leather trim, one owned colour deep navy #24304a; tells-apart: grinning craggy face with receding dark hair.",
+  "sentence": "Late 40s, stout and weathered; heavy navy parka with worn leather trim, one owned colour deep navy #24304a; tells-apart: grey handlebar moustache, grey lobe hair, dark officer's cap, coat with 4 gold buttons.",
   "torso": {
     "body": {
       "build": "stout",
@@ -18,22 +18,30 @@
           "color": "#24304a",
           "lapels": false,
           "openW": 0.06,
-          "welts": true
+          "welts": true,
+          "buttons": 4,
+          "buttonColor": "#e0b94c"
         }
       ],
       "trousers": "#2c2f36"
     }
   },
   "hair": {
-    "style": "receding",
-    "colour": "#201a16"
+    "style": "lobe",
+    "colour": "grey"
   },
   "facialHair": {
-    "kind": "stubble",
-    "colour": "#201a16"
+    "kind": "handlebar",
+    "colour": "grey"
   },
   "hat": {
-    "kind": "none"
+    "kind": "officer",
+    "crownLit": "#2d3a58",
+    "crownMid": "#232d46",
+    "crownDark": "#1a2133",
+    "band": "#141a29",
+    "visor": "#141a29",
+    "gold": "#e0b94c"
   },
   "face": {
     "browThick": 1.4
