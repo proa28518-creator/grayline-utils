@@ -1,0 +1,20 @@
+{
+  "id": "worsley",
+  "name": "Frank Worsley",
+  "sentence": "40s captain, slim and lanky; salt-faded officer jersey, one owned colour faded indigo #4a5d7a; tells-apart: trim moustache and side-parted hair under no hat.",
+  "torso": {
+    "body": { "build": "slim", "W": 0.66 },
+    "outfit": {
+      "layers": [
+        { "t": "shirt", "color": "#8a8f96" },
+        { "t": "jumper", "color": "#4a5d7a" }
+      ],
+      "trousers": { "color": "#3a3d44" }
+    }
+  },
+  "limbs": { "legLen": 1.05, "armLen": 0.98 },
+  "hair": { "style": "side_part", "colour": "#2e2620" },
+  "facialHair": { "kind": "moustache", "colour": "#2e2620" },
+  "hat": { "kind": "none" },
+  "face": { "browThick": 1.2 }
+}

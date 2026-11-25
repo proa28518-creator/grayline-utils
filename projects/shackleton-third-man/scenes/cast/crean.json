@@ -1,0 +1,19 @@
+{
+  "id": "crean",
+  "name": "Tom Crean",
+  "sentence": "Nearly 6ft 3, broad-shouldered farm strength; heavy sailor's jersey, one owned colour sea-green #4f6a5a; tells-apart: great walrus moustache and big brows, short hair under a worn wool cap.",
+  "torso": {
+    "body": { "build": "stout", "W": 0.9 },
+    "outfit": {
+      "layers": [
+        { "t": "jumper", "color": "#4f6a5a" }
+      ],
+      "trousers": { "color": "#33302a" }
+    }
+  },
+  "limbs": { "legLen": 1.14, "armLen": 1.0 },
+  "hair": { "style": "short", "colour": "#241d18" },
+  "facialHair": { "kind": "walrus", "colour": "#241d18", "scale": 0.78 },
+  "hat": { "kind": "beanie", "colour": "#5a4f42" },
+  "face": { "browThick": 1.45 }
+}
