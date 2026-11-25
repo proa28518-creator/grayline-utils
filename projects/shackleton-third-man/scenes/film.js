@@ -153,7 +153,7 @@ export default {
   shots: [
     // LINE 1 — A: the trek, then the feeling arrives
     { t0: 0, t1: 'line:1.word:4.end',
-      camera: { move: 'park', pos: [0.15, 2.2, 3.1], target: [0.15, 2.35, 0.5], fov: 38 } }, // OPENING: face, head 300px+
+      camera: { move: 'park', pos: [0.15, 1.92, 8], target: [0.15, 2.35, 0.5], fov: 38 } }, // OPENING: face, full head in frame 300-430px (was 3.1 z: head ~1070px, cut by the left edge)
     { t0: 'line:1.word:5.start', t1: 'line:1.word:16.end',
       camera: { move: 'follow', who: 'shackleton', camOffset: [2.6, 3.2, 7], look: 'shackleton' } }, // the walk along the ridge
     { t0: 'line:1.word:17.start', t1: 'line:2.start',
