@@ -1,5 +1,5 @@
 // Build-stage film draft — «ظاهرة الرجل الثالث»
-// Voice as-is: audio/clean.wav (62.92 s). Word times: audio/clean.json (169 words, member timings).
+// Voice as-is: audio/clean.wav (62.99 s). Word times: audio/clean.json (169 words, member timings).
 // All lines are narrator (the recorded voice); the characters act and listen, no lip sync needed.
 // Build previz: real D, real depth, practicals; hero detail comes in the Environment overhaul.
 export default {
@@ -46,11 +46,11 @@ export default {
         { t: 0, place: 'A', at: [-0.5, 0.5] },
         { t: 'line:2.start', place: 'B', at: [1.2, -0.2], y: 1.9 }, // in the boat
         { t: 'line:3.start', place: 'C', at: [0.6, 0.4] },
-        { t: 'line:5.start', place: 'D', at: [0.4, 0.6] }
+        { t: 'line:5.start', place: 'D', at: [0.4, 0.6], ry: 165 }
       ],
       face: [
-        { t: 0, expr: 'dread' },                        // opening: expressive face, frame 0
-        { t: 'line:1.word:17.start+0.07', expr: 'fear', react: 'jolt' },   // وفجأة
+        { t: 0, expr: 'fear', eyes: 'wide', brow: 'worried', mouth: 'grid' },   // opening DREAD: wide eyes, clenched, readable at 352 px (BIBLE t0)
+        { t: 'line:1.word:17.start+0.07', expr: 'fear', eyes: 'wide', brow: 'worried', mouth: 'grid', react: 'jolt' },   // وفجأة
         { t: 'line:1.word:26.start+0.07', expr: 'stare' },                  // رابع
         { t: 'line:3.word:21.start-0.1', expr: 'hope' },                    // كدب — softens into the lie
         { t: 'line:4.word:6.start+0.03', expr: 'blank' },                   // حكى — shuts it away
@@ -80,7 +80,7 @@ export default {
         { t: 0, place: 'A', at: [-30, 2] },                  // offstage in A until the boat
         { t: 'line:2.start', place: 'B', at: [-1.2, -0.2], y: 1.9 },
         { t: 'line:3.start', place: 'C', at: [-1.6, 0.8], y: 0.4 },   // asleep on the shelf
-        { t: 'line:5.start', place: 'D', at: [-1.4, 0.4] }
+        { t: 'line:5.start', place: 'D', at: [-1.4, 0.4], ry: 140 }
       ],
       face: [
         { t: 'line:2.start', expr: 'blank' },
@@ -99,7 +99,7 @@ export default {
         { t: 0, place: 'A', at: [-34, 3] },
         { t: 'line:2.start', place: 'B', at: [0, -1.4], y: 1.9 },
         { t: 'line:3.start', place: 'C', at: [2.2, 1.1], y: 0.4 },
-        { t: 'line:5.start', place: 'D', at: [1.6, 0.5] }
+        { t: 'line:5.start', place: 'D', at: [1.6, 0.5], ry: 46 }
       ],
       face: [
         { t: 'line:2.start', expr: 'blank' },
@@ -115,31 +115,31 @@ export default {
   },
 
   props: [
-    // the unmarked map — in his LEFT hand; appears on the cut to shot 3 (no mid-shot pop),
+    // the unmarked map — taken into the LEFT hand on the cut to shot 3 (PROP GUARD: appears on a cut, not mid-shot),
     // put down on the cut into line 2 before the right hand takes the gear
-    { id: 'map', kind: 'book', owner: 'shackleton', in: 'hand:L',
+    { id: 'map', kind: 'book', owner: 'shackleton', in: 'hidden',
       at: 'line:1.word:17.start', print: { title: '— unmapped —', blank: true },
-      keys: [ { t: 'line:2.start', stow: true } ] },
-    // rope coil — right hand; fetch mid-shot on its word (PROP GUARD allows fetch keys),
+      keys: [ { t: 'line:1.word:17.start', in: 'hand:L' }, { t: 'line:2.start', stow: true } ] },
+    // rope coil — hidden until the right hand picks it up ON SCREEN on its word (pick_up clip: world spot -> hand),
     // put down on the cut into line 3
-    { id: 'rope', kind: 'rope_coil', owner: 'shackleton', in: 'hand:R',
+    { id: 'rope', kind: 'rope_coil', owner: 'shackleton', in: 'hidden',
       at: 'line:2.word:41.start',
-      keys: [ { t: 'line:2.word:41.start', fetch: true } ] },
-    // ice axe — right hand after the rope is stowed? No: both carried, axe in the LEFT when rope is up? Keep axe in RIGHT,
-    // it is the taller grip; fetch on its word
-    { id: 'axe', kind: 'ice_axe', owner: 'shackleton', in: 'hand:R',
+      keys: [ { t: 'line:2.word:40.start', in: 'world', at: [0.9, 0.05, 0.9] } ] },
+    // ice axe — hidden until the right hand picks it up ON SCREEN on its word, right after the rope,
+    // put down on the cut into line 3
+    { id: 'axe', kind: 'ice_axe', owner: 'shackleton', in: 'hidden',
       at: 'line:2.word:42.start',
-      keys: [ { t: 'line:2.word:42.start', fetch: true } ] },
+      keys: [ { t: 'line:2.word:41.start', in: 'world', at: [1.1, 0.05, 0.8] } ] },
     // nailed boot — WORN: exists from the cut into the glacier shot (word 31), stomps on its
     // real hit word (snap: true — the PROP GUARD allows a snap), then persists in the world
     { id: 'boot', kind: 'boot_nailed', owner: 'shackleton', in: 'world',
       at: 'line:2.word:31.start', pos: [400.6, 0.05, 0.4],
       keys: [ { t: 'line:2.word:45.start', snap: true, at: [400.6, 0.05, 0.4] } ] },
-    // pocket watch — right hand; fetch mid-shot on its word (the push shot focuses it),
+    // pocket watch — hidden until the right hand picks it up ON SCREEN on its word (the push shot focuses it),
     // pocketed (stow) on the cut into line 4
-    { id: 'watch', kind: 'pocket_watch', owner: 'shackleton', in: 'hand:R',
+    { id: 'watch', kind: 'pocket_watch', owner: 'shackleton', in: 'hidden',
       at: 'line:3.word:16.start', open: 1,
-      keys: [ { t: 'line:3.word:16.start', fetch: true }, { t: 'line:4.start', stow: true } ] },
+      keys: [ { t: 'line:3.word:15.start', in: 'world', at: [0.4, 0.75, 0.3] }, { t: 'line:3.word:16.start', fetch: true }, { t: 'line:4.start', stow: true } ] },
     // the storm lantern — Worsley holds it in the boat (the warm pool travels with him);
     // set down on the cut into line 3, then it persists as the C fire-side pool
     { id: 'lantern', kind: 'lantern', owner: 'worsley', in: 'hand:L',
@@ -153,9 +153,9 @@ export default {
   shots: [
     // LINE 1 — A: the trek, then the feeling arrives
     { t0: 0, t1: 'line:1.word:4.end',
-      camera: { move: 'park', pos: [0.15, 1.92, 8], target: [0.15, 2.35, 0.5], fov: 38 } }, // OPENING: face, full head in frame 300-430px (was 3.1 z: head ~1070px, cut by the left edge)
+      camera: { move: 'park', pos: [-2.6, 2.05, 6.6], target: [0.15, 2.28, 0.5], fov: 42 } }, // OPENING: face L-of-centre, the moon + ridge humps + far saddle seen behind him (set bar 22%+, no flat 80%)
     { t0: 'line:1.word:5.start', t1: 'line:1.word:16.end',
-      camera: { move: 'follow', who: 'shackleton', camOffset: [2.6, 3.2, 7], look: 'shackleton' } }, // the walk along the ridge
+      camera: { move: 'follow', who: 'shackleton', camOffset: [2.6, 3.2, 7], look: [0, 1.4, 0] } }, // the walk along the ridge (look = the lookOffset triple; a string here aimed the camera at NaN = the blank shot 2)
     { t0: 'line:1.word:17.start', t1: 'line:2.start',
       camera: { move: 'push', from: { pos: [1.4, 2.4, 5], target: [0.1, 2.3, 0.5] },
                 to: { pos: [0.7, 2.3, 3.2], target: [0.2, 2.35, 0.5] } } }, // وفجأة → he stops, half-turns; hold on the stare
@@ -213,8 +213,9 @@ export default {
       camera: { move: 'push', from: { pos: [-399.2, 2.2, 3.4], target: [-399.6, 2.2, 0.6] },
                 to: { pos: [-398.9, 2.3, 2.4], target: [-399.6, 2.3, 0.6] } } },
     { t0: 'line:8.word:6.start', t1: 'line:8.end+0.43',
-      camera: { move: 'park', pos: [-399.35, 2.42, 1.55], target: [-399.6, 2.42, 0.6], fov: 30 } } // final hold: head fills the frame (≥300 px), door ajar behind
+      camera: { move: 'park', pos: [-399.78, 2.42, -0.5], target: [-399.6, 2.4, 0.6], fov: 30 } } // final hold: from the side the cast faces (backs to the SE), head in frame (≥300 px)
   ],
 
-  captions: 'words'
+  captions: 'words',
+  endFrame: false
 };

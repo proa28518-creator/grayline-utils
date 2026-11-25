@@ -3,17 +3,39 @@
   "name": "Ernest Shackleton",
   "sentence": "Late 40s, stout and weathered; heavy navy parka with worn leather trim, one owned colour deep navy #24304a; tells-apart: grinning craggy face with receding dark hair.",
   "torso": {
-    "body": { "build": "stout", "W": 0.94 },
+    "body": {
+      "build": "stout",
+      "W": 0.94
+    },
     "outfit": {
       "layers": [
-        { "t": "jumper", "color": "#3a4358" },
-        { "t": "coat", "color": "#24304a" }
+        {
+          "t": "jumper",
+          "color": "#3a4358"
+        },
+        {
+          "t": "coat",
+          "color": "#24304a",
+          "lapels": false,
+          "openW": 0.06,
+          "welts": true
+        }
       ],
-      "trousers": { "color": "#2c2f36" }
+      "trousers": "#2c2f36"
     }
   },
-  "hair": { "style": "receding", "colour": "#201a16" },
-  "facialHair": { "kind": "stubble", "colour": "#201a16" },
-  "hat": { "kind": "none" },
-  "face": { "browThick": 1.4 }
+  "hair": {
+    "style": "receding",
+    "colour": "#201a16"
+  },
+  "facialHair": {
+    "kind": "stubble",
+    "colour": "#201a16"
+  },
+  "hat": {
+    "kind": "none"
+  },
+  "face": {
+    "browThick": 1.4
+  }
 }

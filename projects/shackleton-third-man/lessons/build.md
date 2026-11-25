@@ -1,7 +1,7 @@
 # lessons/build.md — Stage 1 (Build) draft, Shackleton rebuild
 
 ## State
-- Project: projects/shackleton-third-man/. Voice as-is (clean.wav 62.92 s, 24 kHz mono pcm_s16le; never edited).
+- Project: projects/shackleton-third-man/. Voice as-is (clean.wav 62.99 s, 24 kHz mono pcm_s16le; never edited).
 - audio/clean.json built from the member's word timings (169 words, 8 sentence-lines, 0.22→62.49 s). Word count verified: 169 = script length. No word trimmed, cleaned or reordered.
 - BIBLE.md: line rows ×8 + place rows ×5 + colour script. film.js: 19 shots on word times, acts (face/look/clips), 7 props with word keys and per-prop module files. set.js previz: 4 places 400 D apart, practicals as data + real visible practicals in A (moon disc, headlamps, hand lantern) and the light rig mounted in the set group with real Object3D targets. Cast specs ×3 written to scenes/cast/<id>.json and validated against references/characters.md (W ranges, legLen/armLen, layers innermost first, distinct tells, no forbidden features).
 - Engine copy untouched; nothing rendered; no frames.
@@ -21,7 +21,7 @@
 
 ## HANDOVER
 - What this stage made: see "State" above. All work in repo/projects/shackleton-third-man/ (BIBLE.md, film.js, set.js, cast/*, props/*, audio/clean.{wav,json}).
-- Facts a later stage must know: voice clock = clean.json clock; last word ends 62.49 s, film ends 62.92 s (0.43 s end hold past the last word). Places: A [0,0] ice slopes, B [400,0] boat, C [400,-400] shelf (fire state for lines 4+), D [-400,0] Stromness room. Fourth man never cast — staged as space/shadow/door only.
+- Facts a later stage must know: voice clock = clean.json clock; last word ends 62.49 s, film ends 62.99 s (0.43 s end hold past the last word). Places: A [0,0] ice slopes, B [400,0] boat, C [400,-400] shelf (fire state for lines 4+), D [-400,0] Stromness room. Fourth man never cast — staged as space/shadow/door only.
 - What was hard: none blocking; see "Open risks".
 - Violations noticed and fixed: none. Violations noticed, not fixed: none.
 - Numbers: 8 lines, 169 words, 19 shots, 7 props, 4 places, 3 cast specs; every shot has line refs; every place sized in D; every line has place, beat, mood, action word, story prop.

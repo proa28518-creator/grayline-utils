@@ -44,7 +44,7 @@ for li, (a, b) in enumerate(SENTENCES, 1):
         for w in ws:
             words.append({"word": w, "start": round(s, 2), "end": round(e, 2), "line": li})
 
-out = {"fps": 30, "duration": 62.92, "words": words, "lines": lines,
+out = {"fps": 30, "duration": 62.99, "words": words, "lines": lines,
        "source": "member-provided word timings 2026-11-25, used as-is"}
 (root / "audio" / "clean.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
 print(f"timing lines: {len(entries)}  words: {total_words}  sentences: {len(lines)}")

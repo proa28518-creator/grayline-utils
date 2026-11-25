@@ -1,6 +1,6 @@
-# BIBLE — «ظاهرة الرجل الثالث» (Shackleton rebuild, 62.92 s, 9:16, 30 fps)
+# BIBLE — «ظاهرة الرجل الثالث» (Shackleton rebuild, 62.99 s, 9:16, 30 fps)
 
-Voice: `audio/clean.wav` used as-is (62.92 s, 24 kHz mono). Words: `audio/clean.json`
+Voice: `audio/clean.wav` used as-is (62.99 s, 24 kHz mono). Words: `audio/clean.json`
 (169 words, member-supplied word timings, unmodified). Script locked — nothing paraphrased.
 Narrator: unseen voice (who: null), captions 'words'.
 
